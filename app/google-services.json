@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "273594028474",
+    "project_id": "triptracker-8adee",
+    "storage_bucket": "triptracker-8adee.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:273594028474:android:25ff5774b0a482d15e0d83",
+        "android_client_info": {
+          "package_name": "com.example.triptracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "273594028474-f747m27ufsjs5ttqlnkvt0bmi2eev3g0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGpk-ov2fPoieibzUisTzCB-EXav4pkKg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "273594028474-f747m27ufsjs5ttqlnkvt0bmi2eev3g0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
