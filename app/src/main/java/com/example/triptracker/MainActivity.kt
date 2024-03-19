@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
       TripTrackerTheme {
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-          Greeting("TripTracker")
+          Greeting("TripTracker !")
         }
       }
     }
