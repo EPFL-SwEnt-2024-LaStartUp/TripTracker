@@ -29,7 +29,10 @@ class MainActivity : ComponentActivity() {
 
           NavHost(navController = navController, startDestination = Route.LOGIN) {
             composable(Route.LOGIN) {
-              LoginScreen(onNavigateTo = { navController.navigate(Route.UNDEFINED) }) //TODO change this once more screens are added
+              LoginScreen(
+                onNavigateTo = {
+                  navController.navigate(Route.UNDEFINED)
+                }) // TODO change this once more screens are added
             }
           }
         }
