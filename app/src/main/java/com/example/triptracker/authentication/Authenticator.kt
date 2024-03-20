@@ -6,15 +6,15 @@ import androidx.activity.result.ActivityResultLauncher
 
 interface Authenticator {
 
-    var signInLauncher: ActivityResultLauncher<Intent>?
+  var signInLauncher: ActivityResultLauncher<Intent>?
 
-    fun createSignInIntent(applicationContext: Context): Intent
+  fun createSignInIntent(applicationContext: Context): Intent
 
-    fun signIn(signInIntent: Intent)
+  fun signIn(signInIntent: Intent)
 
-    fun signOut()
+  fun signOut()
 
-    fun delete()
+  fun delete()
 
-    fun isSignedIn(): Boolean
+  fun isSignedIn(): Boolean
 }

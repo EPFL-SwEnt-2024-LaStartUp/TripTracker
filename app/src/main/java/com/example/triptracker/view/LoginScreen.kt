@@ -53,62 +53,58 @@ import com.google.android.gms.tasks.Task
 @Composable
 fun LoginScreen(onNavigateTo: () -> Unit, loginViewModel: LoginViewModel = viewModel()) {
 
-    val context = LocalContext.current
-    val authenticator = GoogleAuthenticator()
+  val context = LocalContext.current
+  val authenticator = GoogleAuthenticator()
 
-    val signInLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result
-            ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val intent = result.data
-                if (intent != null) {
-                    val task: Task<GoogleSignInAccount> =
-                        GoogleSignIn.getSignedInAccountFromIntent(intent)
-                    task.addOnCompleteListener { signInTask ->
-                        if (signInTask.isSuccessful) {
-                            val googleSignInAccount = signInTask.result
-                            if (googleSignInAccount != null) {
-                                val userName = googleSignInAccount.displayName
-                                val email = googleSignInAccount.email
-                                val photoUrl = googleSignInAccount.photoUrl?.toString()
+  val signInLauncher =
+      rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result
+        ->
+        if (result.resultCode == Activity.RESULT_OK) {
+          val intent = result.data
+          if (intent != null) {
+            val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(intent)
+            task.addOnCompleteListener { signInTask ->
+              if (signInTask.isSuccessful) {
+                val googleSignInAccount = signInTask.result
+                if (googleSignInAccount != null) {
+                  val userName = googleSignInAccount.displayName
+                  val email = googleSignInAccount.email
+                  val photoUrl = googleSignInAccount.photoUrl?.toString()
 
-                                loginViewModel.onSignInResult(true, userName, email, photoUrl)
-                            } else {
-                                // googleSignInAccount is null, handle the case accordingly
-                                loginViewModel.onSignInResult(false)
-                            }
-                        } else {
-                            // Sign-in failed
-                            loginViewModel.onSignInResult(false)
-                        }
-                    }
+                  loginViewModel.onSignInResult(true, userName, email, photoUrl)
+                } else {
+                  // googleSignInAccount is null, handle the case accordingly
+                  loginViewModel.onSignInResult(false)
                 }
-            } else {
+              } else {
+                // Sign-in failed
                 loginViewModel.onSignInResult(false)
+              }
             }
+          }
+        } else {
+          loginViewModel.onSignInResult(false)
         }
+      }
 
-    authenticator.signInLauncher = signInLauncher
+  authenticator.signInLauncher = signInLauncher
 
-    val loginResult = loginViewModel.authResult.observeAsState()
-    when (val response = loginResult.value) {
-        is AuthResponse.Success -> {
-            LoginResponseOk(result = response.data)
-            //            onNavigateToOverview() //TODO call this once new screens are added
-        }
-
-        is AuthResponse.Error -> {
-            LoginResponseFailure(message = response.errorMessage)
-        }
-
-        is AuthResponse.Loading -> {
-            LoginResponseFailure(message = "Loading")
-        }
-
-        else -> {
-            Login(context, authenticator)
-        }
+  val loginResult = loginViewModel.authResult.observeAsState()
+  when (val response = loginResult.value) {
+    is AuthResponse.Success -> {
+      LoginResponseOk(result = response.data)
+      //            onNavigateToOverview() //TODO call this once new screens are added
     }
+    is AuthResponse.Error -> {
+      LoginResponseFailure(message = response.errorMessage)
+    }
+    is AuthResponse.Loading -> {
+      LoginResponseFailure(message = "Loading")
+    }
+    else -> {
+      Login(context, authenticator)
+    }
+  }
 }
 
 @Composable
@@ -116,99 +112,86 @@ fun Login(
     context: Context,
     authenticator: GoogleAuthenticator,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(15.dp)
-            .testTag("LoginScreen"),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Spacer(modifier = Modifier.height(152.dp))
-        Image(
-            modifier = Modifier
-                .width(189.dp)
-                .height(189.dp),
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = "image description",
-            contentScale = ContentScale.FillBounds
-        )
-        Spacer(modifier = Modifier.height(40.dp))
-        Text(
-            text = "Welcome",
-            modifier = Modifier.testTag("LoginTitle"),
-            style =
+  Column(
+      modifier = Modifier.fillMaxSize().padding(15.dp).testTag("LoginScreen"),
+      verticalArrangement = Arrangement.Top,
+      horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
+    Spacer(modifier = Modifier.height(152.dp))
+    Image(
+        modifier = Modifier.width(189.dp).height(189.dp),
+        painter = painterResource(id = R.drawable.logo),
+        contentDescription = "image description",
+        contentScale = ContentScale.FillBounds)
+    Spacer(modifier = Modifier.height(40.dp))
+    Text(
+        text = "Welcome",
+        modifier = Modifier.testTag("LoginTitle"),
+        style =
             TextStyle(
                 fontSize = 57.sp,
                 lineHeight = 64.sp,
                 fontFamily = FontFamily(Font(R.font.roboto)),
                 fontWeight = FontWeight(400),
                 textAlign = TextAlign.Center,
-            )
-        )
-        Spacer(modifier = Modifier.height(120.dp))
-        Button(
-            onClick = {
-                val signInIntent = authenticator.createSignInIntent(context)
-                authenticator.signIn(signInIntent)
-            },
-            modifier = Modifier
-                .width(250.dp)
-                .height(40.dp)
-                .testTag("LoginButton"),
-            colors =
+            ))
+    Spacer(modifier = Modifier.height(120.dp))
+    Button(
+        onClick = {
+          val signInIntent = authenticator.createSignInIntent(context)
+          authenticator.signIn(signInIntent)
+        },
+        modifier = Modifier.width(250.dp).height(40.dp).testTag("LoginButton"),
+        colors =
             ButtonDefaults.buttonColors(
                 containerColor = md_theme_light_onPrimary,
             ),
-            border = BorderStroke(1.dp, md_theme_light_inverseSurface),
-            shape = RoundedCornerShape(size = 20.dp),
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
-                    modifier = Modifier.size(20.dp),
-                    painter = painterResource(id = R.drawable.googlelogo),
-                    contentDescription = "image description",
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(
-                    text = "Sign in with Google",
-                    textAlign = TextAlign.Center,
-                    color = md_theme_light_inverseSurface
-                )
-            }
-        }
+        border = BorderStroke(1.dp, md_theme_light_inverseSurface),
+        shape = RoundedCornerShape(size = 20.dp),
+    ) {
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Image(
+            modifier = Modifier.size(20.dp),
+            painter = painterResource(id = R.drawable.googlelogo),
+            contentDescription = "image description",
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = "Sign in with Google",
+            textAlign = TextAlign.Center,
+            color = md_theme_light_inverseSurface)
+      }
     }
+  }
 }
 
 @Composable
 fun LoginResponseOk(result: SignInResult) { // TODO REMOVE THIS
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(15.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(text = "Welcome ${result.name}")
-        Text(text = "Email: ${result.email}")
-        AsyncImage(
-            model = result.imageUrl,
-            contentDescription = "Profile Picture",
-        )
-    }
+  Column(
+      modifier = Modifier.fillMaxSize().padding(15.dp),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
+    Text(text = "Welcome ${result.name}")
+    Text(text = "Email: ${result.email}")
+    AsyncImage(
+        model = result.imageUrl,
+        contentDescription = "Profile Picture",
+    )
+  }
 }
 
 @Composable
 fun LoginResponseFailure(message: String) {
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-        Card(modifier = Modifier.padding(16.dp)) {
-            Text(text = message, fontWeight = FontWeight.Bold, modifier = Modifier.padding(16.dp))
-        }
+  Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+    Card(modifier = Modifier.padding(16.dp)) {
+      Text(text = message, fontWeight = FontWeight.Bold, modifier = Modifier.padding(16.dp))
     }
+  }
 }
 
 @Preview
 @Composable
 fun PreviewLoginResponseFailure() {
-    LoginResponseFailure("Error")
+  LoginResponseFailure("Error")
 }

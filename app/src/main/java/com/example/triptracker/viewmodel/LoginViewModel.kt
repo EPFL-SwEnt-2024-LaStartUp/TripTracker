@@ -9,20 +9,20 @@ import com.example.triptracker.model.authentication.SignInResult
 
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _authResult = MutableLiveData<AuthResponse<SignInResult>>()
-    val authResult: LiveData<AuthResponse<SignInResult>> = _authResult
+  private val _authResult = MutableLiveData<AuthResponse<SignInResult>>()
+  val authResult: LiveData<AuthResponse<SignInResult>> = _authResult
 
-    fun onSignInResult(
-        result: Boolean,
-        userName: String? = "",
-        email: String? = "",
-        photoUrl: String? = ""
-    ) {
-        _authResult.value =
-            if (result) {
-                AuthResponse.Success(SignInResult(userName, email, photoUrl))
-            } else {
-                AuthResponse.Error("Error")
-            }
-    }
+  fun onSignInResult(
+      result: Boolean,
+      userName: String? = "",
+      email: String? = "",
+      photoUrl: String? = ""
+  ) {
+    _authResult.value =
+        if (result) {
+          AuthResponse.Success(SignInResult(userName, email, photoUrl))
+        } else {
+          AuthResponse.Error("Error")
+        }
+  }
 }
