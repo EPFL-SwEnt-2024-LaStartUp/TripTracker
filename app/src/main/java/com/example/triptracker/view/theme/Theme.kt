@@ -1,4 +1,4 @@
-package com.example.triptracker.ui.theme
+package com.example.triptracker.view.theme
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
