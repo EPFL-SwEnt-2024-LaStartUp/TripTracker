@@ -25,14 +25,11 @@ class MainActivity : ComponentActivity() {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
           // Instance of NavController
           val navController = rememberNavController()
-          val navigationActions = remember(navController) { Navigation(navController) }
+          val navigation = remember(navController) { Navigation(navController) }
 
           NavHost(navController = navController, startDestination = Route.LOGIN) {
             composable(Route.LOGIN) {
-              LoginScreen(
-                  onNavigateTo = {
-                    navController.navigate(Route.UNDEFINED)
-                  }) // TODO change this once more screens are added
+              LoginScreen(navigation) // TODO change this once more screens are added
             }
           }
         }

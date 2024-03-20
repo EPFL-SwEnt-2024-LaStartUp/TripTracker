@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -51,10 +53,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 
 @Composable
-fun LoginScreen(onNavigateTo: () -> Unit, loginViewModel: LoginViewModel = viewModel()) {
+fun LoginScreen(navigation: Navigation, loginViewModel: LoginViewModel = viewModel()) {
 
   val context = LocalContext.current
-  val authenticator = GoogleAuthenticator()
+  val authenticator = GoogleAuthenticator(context)
 
   val signInLauncher =
       rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result
@@ -92,7 +94,12 @@ fun LoginScreen(onNavigateTo: () -> Unit, loginViewModel: LoginViewModel = viewM
   val loginResult = loginViewModel.authResult.observeAsState()
   when (val response = loginResult.value) {
     is AuthResponse.Success -> {
-      LoginResponseOk(result = response.data)
+      LoginResponseOk(
+          result = response.data,
+          onSignOut = {
+            authenticator.signOut()
+            navigation.navController.navigate(Route.LOGIN)
+          })
       //            onNavigateToOverview() //TODO call this once new screens are added
     }
     is AuthResponse.Error -> {
@@ -166,19 +173,36 @@ fun Login(
 }
 
 @Composable
-fun LoginResponseOk(result: SignInResult) { // TODO REMOVE THIS
+fun LoginResponseOk(result: SignInResult, onSignOut: () -> Unit) {
   Column(
-      modifier = Modifier.fillMaxSize().padding(15.dp),
+      modifier = Modifier.fillMaxSize(),
       verticalArrangement = Arrangement.Center,
-      horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    Text(text = "Welcome ${result.name}")
-    Text(text = "Email: ${result.email}")
-    AsyncImage(
-        model = result.imageUrl,
-        contentDescription = "Profile Picture",
-    )
-  }
+      horizontalAlignment = Alignment.CenterHorizontally) {
+        if (result.imageUrl != null) {
+          AsyncImage(
+              model = result.imageUrl,
+              contentDescription = "Profile picture",
+              modifier = Modifier.size(150.dp).clip(CircleShape),
+              contentScale = ContentScale.Crop)
+          Spacer(modifier = Modifier.height(16.dp))
+        }
+        if (result.name != null) {
+          Text(
+              text = result.name,
+              textAlign = TextAlign.Center,
+              fontSize = 36.sp,
+              fontWeight = FontWeight.SemiBold)
+          Spacer(modifier = Modifier.height(16.dp))
+        }
+        androidx.compose.material.Button(
+            onClick = {} /* TODO logic to navigate to overview screen : onNavigateTo */) {
+              androidx.compose.material.Text(text = "Go to overview")
+            }
+        // UNCOMMENT THIS CODE IF YOU WANT TO ADD A SIGN OUT BUTTON
+        androidx.compose.material.Button(onClick = onSignOut) {
+          androidx.compose.material.Text(text = "Sign out")
+        }
+      }
 }
 
 @Composable

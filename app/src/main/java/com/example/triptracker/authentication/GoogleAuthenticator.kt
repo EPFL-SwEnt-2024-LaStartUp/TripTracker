@@ -3,10 +3,11 @@ package com.example.triptracker.authentication
 import android.content.Context
 import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
+import com.firebase.ui.auth.AuthUI
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
-class GoogleAuthenticator : Authenticator {
+class GoogleAuthenticator(private val context: Context) : Authenticator {
 
   override var signInLauncher: ActivityResultLauncher<Intent>? = null
 
@@ -26,7 +27,9 @@ class GoogleAuthenticator : Authenticator {
   }
 
   override fun signOut() {
-    TODO("Not yet implemented")
+    AuthUI.getInstance().signOut(context).addOnCompleteListener {
+      // ...
+    }
   }
 
   override fun delete() {
