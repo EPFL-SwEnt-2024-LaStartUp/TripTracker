@@ -6,11 +6,15 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.triptracker.ui.theme.TripTrackerTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.triptracker.view.LoginScreen
+import com.example.triptracker.view.Navigation
+import com.example.triptracker.view.Route
+import com.example.triptracker.view.theme.TripTrackerTheme
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,20 +23,20 @@ class MainActivity : ComponentActivity() {
       TripTrackerTheme {
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-          Greeting("TripTracker")
+          // Instance of NavController
+          val navController = rememberNavController()
+          val navigationActions = remember(navController) { Navigation(navController) }
+
+          NavHost(navController = navController, startDestination = Route.LOGIN) {
+            composable(Route.LOGIN) {
+              LoginScreen(
+                  onNavigateTo = {
+                    navController.navigate(Route.UNDEFINED)
+                  }) // TODO change this once more screens are added
+            }
+          }
         }
       }
     }
   }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-  Text(text = "Hello $name!", modifier = modifier)
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-  TripTrackerTheme { Greeting("TripTracker") }
 }
