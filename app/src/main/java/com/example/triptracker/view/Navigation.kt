@@ -6,13 +6,19 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 
+/** Destinations used in the app. */
 object Route {
   const val LOGIN = "login"
   const val UNDEFINED = "undefined" // TODO remove this once other views are added
 }
 
+/** Models of the top level destinations for the bottom navigation bar. */
 data class TopLevelDestination(val route: String, val icon: ImageVector, val textId: String)
 
+/**
+ * Navigation that handles the navigation in the app. Allows to go back to the previous screen in a
+ * non blocking way. Allows to navigate to a specific TopLevelDestination.
+ */
 class Navigation(val navController: NavHostController) {
   fun navigateTo(destination: TopLevelDestination) {
     navController.navigate(destination.route) {
@@ -33,6 +39,7 @@ class Navigation(val navController: NavHostController) {
   }
 }
 
+/** Destinations that are displayed at the bottom of the screen. */
 val TOP_LEVEL_DESTINATIONS =
     listOf(
         TopLevelDestination(Route.LOGIN, Icons.Default.List, "Login"),

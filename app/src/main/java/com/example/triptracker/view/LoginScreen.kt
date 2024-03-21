@@ -53,6 +53,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 
 @Composable
+/**
+ * @param navigation: Navigation object to navigate to other screens
+ * @param loginViewModel: ViewModel to handle the login logic @return: Composable function to
+ *   Displays the login screen or the user's information if they are already authenticated or an
+ *   error screen if the login fails
+ */
 fun LoginScreen(navigation: Navigation, loginViewModel: LoginViewModel = viewModel()) {
 
   val context = LocalContext.current
@@ -115,6 +121,11 @@ fun LoginScreen(navigation: Navigation, loginViewModel: LoginViewModel = viewMod
 }
 
 @Composable
+/**
+ * @param context: Context of the application
+ * @param authenticator: GoogleAuthenticator object to handle the login logic @return: Composable
+ *   Displays the login screen screen and button when no user is authenticated
+ */
 fun Login(
     context: Context,
     authenticator: GoogleAuthenticator,
@@ -173,6 +184,11 @@ fun Login(
 }
 
 @Composable
+/**
+ * @param result: SignInResult object containing the user's information to be displayed
+ * @param onSignOut: Function to sign out the user Displays the user's information and a button to
+ *   sign out
+ */
 fun LoginResponseOk(result: SignInResult, onSignOut: () -> Unit) {
   Column(
       modifier = Modifier.fillMaxSize(),
@@ -206,6 +222,10 @@ fun LoginResponseOk(result: SignInResult, onSignOut: () -> Unit) {
 }
 
 @Composable
+/**
+ * @param message: String containing the error message to be displayed Displays an error message
+ *   when the login fails
+ */
 fun LoginResponseFailure(message: String) {
   Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
     Card(modifier = Modifier.padding(16.dp)) {
