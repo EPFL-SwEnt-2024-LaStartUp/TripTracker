@@ -7,10 +7,12 @@ import com.firebase.ui.auth.AuthUI
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
+/** Implementation of the Authenticator interface for Google sign-in. */
 class GoogleAuthenticator(private val context: Context) : Authenticator {
 
   override var signInLauncher: ActivityResultLauncher<Intent>? = null
 
+  /** Creates a sign-in intent for Google sign-in. */
   override fun createSignInIntent(applicationContext: Context): Intent {
     val gso =
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

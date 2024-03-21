@@ -20,6 +20,7 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContent {
+      // Set the trip tracker theme
       TripTrackerTheme {
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
@@ -27,6 +28,7 @@ class MainActivity : ComponentActivity() {
           val navController = rememberNavController()
           val navigation = remember(navController) { Navigation(navController) }
 
+          // List of destinations for in app navigation
           NavHost(navController = navController, startDestination = Route.LOGIN) {
             composable(Route.LOGIN) {
               LoginScreen(navigation) // TODO change this once more screens are added
