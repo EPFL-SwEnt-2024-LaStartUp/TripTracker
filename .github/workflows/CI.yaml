@@ -75,7 +75,7 @@ jobs:
 
       - name: Create local.properties and set API key
         run: |
-          echo "API_KEY=${{ secrets.API_KEY }}" > local.properties
+          echo "API_KEY=\${{ secrets.API_KEY }}" > local.properties
 
       # Check formatting
       - name: KTFmt Check

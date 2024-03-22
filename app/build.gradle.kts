@@ -108,13 +108,7 @@ android {
     }
 }
 
-sonar {
-    properties {
-        property("sonar.host.url", "https://sonarcloud.io")
-    }
-}
-
-sonar {
+sonarqube {
     properties {
         property("sonar.projectKey", "EPFL-SwEnt-2024-LaStartUp_TripTracker")
         property("sonar.projectName", "La Start Up")
@@ -126,6 +120,8 @@ sonar {
         property("sonar.androidLint.reportPaths", "${project.layout.buildDirectory.get()}/reports/lint-results-debug.xml")
         // Paths to JaCoCo XML coverage report files.
         property("sonar.coverage.jacoco.xmlReportPaths", "${project.layout.buildDirectory.get()}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+
+        property("sonar.gradle.skipCompile", "true")
     }
 }
 
