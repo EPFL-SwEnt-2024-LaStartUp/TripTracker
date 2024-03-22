@@ -4,6 +4,8 @@ plugins {
     id("com.ncorti.ktfmt.gradle") version "0.16.0"
     id("com.google.gms.google-services")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("org.sonarqube") version "4.4.1.3373"
+    id("jacoco")
 }
 
 android {
@@ -37,6 +39,11 @@ android {
             enableAndroidTestCoverage = true
         }
     }
+
+    testCoverage {
+        jacocoVersion = "0.8.8"
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -57,6 +64,59 @@ android {
             merges += "META-INF/LICENSE-notice.md"
         }
     }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = false
+        }
+
+    }
+
+    // Robolectric needs to be run only in debug. But its tests are placed in the shared source set (test)
+    // The next lines transfers the src/test/* from shared to the testDebug one
+    //
+    // This prevent errors from occurring during unit tests
+    sourceSets.getByName("testDebug") {
+        val test = sourceSets.getByName("test")
+
+        java.setSrcDirs(test.java.srcDirs)
+        res.setSrcDirs(test.res.srcDirs)
+        resources.setSrcDirs(test.resources.srcDirs)
+    }
+
+    sourceSets.getByName("test") {
+        java.setSrcDirs(emptyList<File>())
+        res.setSrcDirs(emptyList<File>())
+        resources.setSrcDirs(emptyList<File>())
+    }
+}
+
+sonar {
+    properties {
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "EPFL-SwEnt-2024-LaStartUp_TripTracker")
+        property("sonar.projectName", "La Start Up")
+        property("sonar.organization", "epfl-swent-2024-lastartup")
+        property("sonar.host.url", "https://sonarcloud.io")
+        // Comma-separated paths to the various directories containing the *.xml JUnit report files. Each path may be absolute or relative to the project base directory.
+        property("sonar.junit.reportPaths", "${project.layout.buildDirectory.get()}/test-results/testDebugunitTest/")
+        // Paths to xml files with Android Lint issues. If the main flavor is changed, this file will have to be changed too.
+        property("sonar.androidLint.reportPaths", "${project.layout.buildDirectory.get()}/reports/lint-results-debug.xml")
+        // Paths to JaCoCo XML coverage report files.
+        property("sonar.coverage.jacoco.xmlReportPaths", "${project.layout.buildDirectory.get()}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+    }
+}
+
+// When a library is used both by robolectric and connected tests, use this function
+fun DependencyHandlerScope.globalTestImplementation(dep: Any) {
+    androidTestImplementation(dep)
+    testImplementation(dep)
 }
 
 dependencies {
@@ -143,6 +203,21 @@ dependencies {
     androidTestImplementation("io.mockk:mockk:1.13.7")
     androidTestImplementation("io.mockk:mockk-android:1.13.7")
     androidTestImplementation("io.mockk:mockk-agent:1.13.7")
+
+    // --------- Kaspresso test framework ----------
+    globalTestImplementation(libs.kaspresso)
+    globalTestImplementation(libs.kaspresso.compose)
+
+    // ----------       Robolectric     ------------
+    testImplementation(libs.robolectric)
+}
+
+tasks.withType<Test> {
+    // Configure Jacoco for each tests
+    configure<JacocoTaskExtension> {
+        isIncludeNoLocationClasses = true
+        excludes = listOf("jdk.internal.*")
+    }
 }
 
 tasks.register("jacocoTestReport", JacocoReport::class) {
@@ -173,3 +248,4 @@ tasks.register("jacocoTestReport", JacocoReport::class) {
         include("outputs/code_coverage/debugAndroidTest/connected/*/coverage.ec")
     })
 }
+
