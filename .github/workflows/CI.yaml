@@ -73,10 +73,9 @@ jobs:
         run: |
           chmod +x ./gradlew
 
-      - name: Update Username from Secrets
-        env:
-          MOCK_USERNAME: ${{ secrets.API_KEY }}
-        run: echo API_KEY="$API_KEY" > ./local.properties
+      - name: Create local.properties and set API key
+        run: |
+          echo "API_KEY=${{ secrets.API_KEY }}" > local.properties
 
       # Check formatting
       - name: KTFmt Check
