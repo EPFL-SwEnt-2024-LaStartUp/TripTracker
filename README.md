@@ -41,3 +41,11 @@ Other data to save are :
 - Security/privacy: if profile or path is not public, exclude data from the searches 
 - When the path record is activated, enters power efficiency mode for low energy consumption, and the app can be left while still working in the background
 
+---
+
+
+## Figma Project
+
+[Click here to access the Figma prototype](https://www.figma.com/file/mz89h5wBUL7VgwNr0ck3ol/TripTracker?type=design&node-id=0%3A1&mode=design&t=lfFxVepbbW9RYcwM-1) and explore the interactive design.
+
+Feel free to navigate through the prototype to get a glimpse of TripTracker's interface and functionalities.
