@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -26,6 +28,11 @@ android {
     }
 
     buildTypes {
+        val properties = Properties().apply {
+            load(project.rootProject.file("local.properties").inputStream())
+        }
+        val api = properties.getProperty("API_KEY")
+
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -35,6 +42,11 @@ android {
         }
 
         debug {
+            // Add API_KEY as a build config field
+            buildConfigField("String", "API_KEY", "\"$api\"")
+            // Add api as a resource value
+            resValue("string", "api", api)
+
             enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
         }
