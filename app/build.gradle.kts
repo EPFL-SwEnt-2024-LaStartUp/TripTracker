@@ -28,6 +28,7 @@ android {
     }
 
     buildTypes {
+        // Load properties from the local.properties file
         val properties = Properties().apply {
             load(project.rootProject.file("local.properties").inputStream())
         }
@@ -42,9 +43,9 @@ android {
         }
 
         debug {
-            // Add API_KEY as a build config field
+            // Safely add API_KEY as a build config field, with a fallback value if not found
             buildConfigField("String", "API_KEY", "\"$api\"")
-            // Add api as a resource value
+            // Add api as a resource value, similar fallback approach
             resValue("string", "api", api)
 
             enableUnitTestCoverage = true
