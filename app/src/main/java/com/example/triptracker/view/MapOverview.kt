@@ -27,6 +27,10 @@ import com.google.maps.android.compose.rememberCameraPositionState
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
+/**
+ * Composable displaying the map overview with all the paths and markers of trips that are around
+ * the user's location.
+ */
 fun MapOverview(mapViewModel: MapViewModel = MapViewModel()) {
 
   val gradient =
@@ -34,6 +38,7 @@ fun MapOverview(mapViewModel: MapViewModel = MapViewModel()) {
           colorStops =
               arrayOf(0.0f to Color.White, 0.1f to Color.White, 0.15f to Color.Transparent))
 
+  // Used to display the gradient with the top bar and the changing city location
   Box {
     Map(mapViewModel)
     Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
@@ -52,11 +57,13 @@ fun Map(
     mapViewModel: MapViewModel,
 ) {
 
+  // TODO change location to the users one with permissions
   val epfl = LatLng(46.520862035795545, 6.629670672118664)
   val cameraPositionState = rememberCameraPositionState {
     position = CameraPosition.fromLatLngZoom(epfl, 13f)
   }
 
+  // When the camera is moving, the city name is updated in the top bar with geo decoding
   LaunchedEffect(cameraPositionState.isMoving) {
     Log.d("CAMERA_STATE", "Camera is moving")
     mapViewModel.reverseDecode(
@@ -67,6 +74,7 @@ fun Map(
         "${cameraPositionState.position.target.latitude} and ${cameraPositionState.position.target.longitude}")
   }
 
+  // Displays the map
   GoogleMap(
       modifier =
           Modifier.fillMaxSize()
