@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -25,7 +27,18 @@ android {
         }
     }
 
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+
     buildTypes {
+        // Load properties from the local.properties file
+        val properties = Properties().apply {
+            load(project.rootProject.file("local.properties").inputStream())
+        }
+        val api = properties.getProperty("API_KEY")
+
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -35,6 +48,11 @@ android {
         }
 
         debug {
+            // Safely add API_KEY as a build config field, with a fallback value if not found
+            buildConfigField("String", "API_KEY", "\"$api\"")
+            // Add api as a resource value, similar fallback approach
+            resValue("string", "api", api)
+
             enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
         }
@@ -51,9 +69,7 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures {
-        compose = true
-    }
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
@@ -92,13 +108,7 @@ android {
     }
 }
 
-sonar {
-    properties {
-        property("sonar.host.url", "https://sonarcloud.io")
-    }
-}
-
-sonar {
+sonarqube {
     properties {
         property("sonar.projectKey", "EPFL-SwEnt-2024-LaStartUp_TripTracker")
         property("sonar.projectName", "La Start Up")
@@ -110,6 +120,8 @@ sonar {
         property("sonar.androidLint.reportPaths", "${project.layout.buildDirectory.get()}/reports/lint-results-debug.xml")
         // Paths to JaCoCo XML coverage report files.
         property("sonar.coverage.jacoco.xmlReportPaths", "${project.layout.buildDirectory.get()}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+
+        property("sonar.gradle.skipCompile", "true")
     }
 }
 
