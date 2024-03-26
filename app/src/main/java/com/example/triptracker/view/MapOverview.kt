@@ -67,7 +67,7 @@ fun MapOverview(mapViewModel: MapViewModel = MapViewModel()) {
           colorStops =
               arrayOf(0.0f to Color.White, 0.1f to Color.White, 0.15f to Color.Transparent))
 
-    // Displays the map
+  // Displays the map
   Box() {
     Box(modifier = Modifier.fillMaxSize()) {
       GoogleMap(
@@ -81,7 +81,7 @@ fun MapOverview(mapViewModel: MapViewModel = MapViewModel()) {
           uiSettings = uiSettings) {
             AdvancedMarker(state = MarkerState(position = epfl), title = "EPFL")
           }
-      }
+    }
     Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
       Text(
           text = mapViewModel.cityNameState.value,
@@ -89,11 +89,14 @@ fun MapOverview(mapViewModel: MapViewModel = MapViewModel()) {
           fontSize = 24.sp,
           fontFamily = FontFamily.SansSerif,
           color = Color.Black)
-        Switch(
-            checked = uiSettings.zoomControlsEnabled,
-            onCheckedChange = { uiSettings = uiSettings.copy(zoomControlsEnabled = it) },
-            modifier = Modifier.padding(15.dp)
-        )
+      Switch(
+          checked = uiSettings.zoomControlsEnabled,
+          onCheckedChange = { uiSettings = uiSettings.copy(zoomControlsEnabled = it) },
+          modifier = Modifier.padding(15.dp))
+      Switch(
+          checked = uiSettings.zoomControlsEnabled,
+          onCheckedChange = { uiSettings = uiSettings.copy(zoomControlsEnabled = it) },
+          modifier = Modifier.padding(15.dp))
     }
   }
 }
