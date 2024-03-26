@@ -6,9 +6,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -22,6 +27,9 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.AdvancedMarker
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
@@ -33,29 +41,9 @@ import com.google.maps.android.compose.rememberCameraPositionState
  */
 fun MapOverview(mapViewModel: MapViewModel = MapViewModel()) {
 
-  val gradient =
-      Brush.verticalGradient(
-          colorStops =
-              arrayOf(0.0f to Color.White, 0.1f to Color.White, 0.15f to Color.Transparent))
-
   // Used to display the gradient with the top bar and the changing city location
-  Box {
-    Map(mapViewModel)
-    Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
-      Text(
-          text = mapViewModel.cityNameState.value,
-          modifier = Modifier.padding(30.dp).align(Alignment.TopCenter),
-          fontSize = 24.sp,
-          fontFamily = FontFamily.SansSerif,
-          color = Color.Black)
-    }
-  }
-}
-
-@Composable
-fun Map(
-    mapViewModel: MapViewModel,
-) {
+  var uiSettings by remember { mutableStateOf(MapUiSettings()) }
+  var properties by remember { mutableStateOf(MapProperties(mapType = MapType.SATELLITE)) }
 
   // TODO change location to the users one with permissions
   val epfl = LatLng(46.520862035795545, 6.629670672118664)
@@ -74,15 +62,40 @@ fun Map(
         "${cameraPositionState.position.target.latitude} and ${cameraPositionState.position.target.longitude}")
   }
 
-  // Displays the map
-  GoogleMap(
-      modifier =
-          Modifier.fillMaxSize()
-              .background(
-                  brush = Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black))),
-      cameraPositionState = cameraPositionState) {
-        AdvancedMarker(state = MarkerState(position = epfl), title = "EPFL")
+  val gradient =
+      Brush.verticalGradient(
+          colorStops =
+              arrayOf(0.0f to Color.White, 0.1f to Color.White, 0.15f to Color.Transparent))
+
+    // Displays the map
+  Box() {
+    Box(modifier = Modifier.fillMaxSize()) {
+      GoogleMap(
+          modifier =
+              Modifier.matchParentSize()
+                  .background(
+                      brush =
+                          Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black))),
+          cameraPositionState = cameraPositionState,
+          properties = properties,
+          uiSettings = uiSettings) {
+            AdvancedMarker(state = MarkerState(position = epfl), title = "EPFL")
+          }
       }
+    Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
+      Text(
+          text = mapViewModel.cityNameState.value,
+          modifier = Modifier.padding(30.dp).align(Alignment.TopCenter),
+          fontSize = 24.sp,
+          fontFamily = FontFamily.SansSerif,
+          color = Color.Black)
+        Switch(
+            checked = uiSettings.zoomControlsEnabled,
+            onCheckedChange = { uiSettings = uiSettings.copy(zoomControlsEnabled = it) },
+            modifier = Modifier.padding(15.dp)
+        )
+    }
+  }
 }
 
 @Preview
