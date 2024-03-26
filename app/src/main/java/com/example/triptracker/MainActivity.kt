@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.triptracker.navigation.LaunchPermissionRequest
 import com.example.triptracker.view.LoginScreen
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
@@ -27,6 +28,8 @@ class MainActivity : ComponentActivity() {
           // Instance of NavController
           val navController = rememberNavController()
           val navigation = remember(navController) { Navigation(navController) }
+
+          LaunchPermissionRequest(context = this)
 
           // List of destinations for in app navigation
           NavHost(navController = navController, startDestination = Route.LOGIN) {
