@@ -11,7 +11,7 @@ class MapViewModel {
 
   val geocoder = NominatimApi()
 
-  val cityNameState = mutableStateOf("Lausanne")
+  val cityNameState = mutableStateOf("")
 
   fun reverseDecode(lat: Float, lon: Float) {
     geocoder.reverseDecode(lat, lon) { cityName -> cityNameState.value = cityName }
