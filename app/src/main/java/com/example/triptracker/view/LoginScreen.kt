@@ -105,7 +105,8 @@ fun LoginScreen(navigation: Navigation, loginViewModel: LoginViewModel = viewMod
           onSignOut = {
             authenticator.signOut()
             navigation.navController.navigate(Route.LOGIN)
-          }, navigation = navigation)
+          },
+          navigation = navigation)
       //            onNavigateToOverview() //TODO call this once new screens are added
     }
     is AuthResponse.Error -> {
@@ -212,7 +213,7 @@ fun LoginResponseOk(result: SignInResult, onSignOut: () -> Unit, navigation: Nav
         }
         androidx.compose.material.Button(
             onClick = {
-                navigation.navController.navigate(Route.HOME)
+              navigation.navController.navigate(Route.HOME)
             } /* TODO logic to navigate to overview screen : onNavigateTo */) {
               androidx.compose.material.Text(text = "Go to overview")
             }
