@@ -1,6 +1,7 @@
 package com.example.triptracker.view
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,10 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.triptracker.navigation.LocationProvider
 import com.example.triptracker.viewmodel.MapViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -39,14 +42,20 @@ import com.google.maps.android.compose.rememberCameraPositionState
  * Composable displaying the map overview with all the paths and markers of trips that are around
  * the user's location.
  */
-fun MapOverview(mapViewModel: MapViewModel = MapViewModel()) {
+fun MapOverview(mapViewModel: MapViewModel = MapViewModel(), context: Context) {
 
   // Used to display the gradient with the top bar and the changing city location
   var uiSettings by remember { mutableStateOf(MapUiSettings()) }
-  var properties by remember { mutableStateOf(MapProperties(mapType = MapType.SATELLITE)) }
+  var properties by remember {
+    mutableStateOf(MapProperties(mapType = MapType.SATELLITE, isMyLocationEnabled = true))
+  }
+  var deviceLocation by remember { mutableStateOf(LatLng(0.0, 0.0)) }
 
+  // TODO put in viewmodel
+  val test = LocationProvider()
   // TODO change location to the users one with permissions
-  val epfl = LatLng(46.520862035795545, 6.629670672118664)
+
+  val epfl = LatLng(46.519962, 6.633597)
   val cameraPositionState = rememberCameraPositionState {
     position = CameraPosition.fromLatLngZoom(epfl, 13f)
   }
@@ -60,6 +69,16 @@ fun MapOverview(mapViewModel: MapViewModel = MapViewModel()) {
     Log.d(
         "LAT_LON",
         "${cameraPositionState.position.target.latitude} and ${cameraPositionState.position.target.longitude}")
+  }
+
+  LaunchedEffect(Unit) {
+    test.getCurrentLocation(
+        context,
+        onGetCurrentLocationSuccess = {
+          deviceLocation = LatLng(it.first, it.second)
+          Log.d("Location", "$it")
+        },
+        onGetCurrentLocationFailed = { Log.d("Location", "Failed to get location") })
   }
 
   val gradient =
@@ -78,9 +97,10 @@ fun MapOverview(mapViewModel: MapViewModel = MapViewModel()) {
                           Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black))),
           cameraPositionState = cameraPositionState,
           properties = properties,
-          uiSettings = uiSettings) {
-            AdvancedMarker(state = MarkerState(position = epfl), title = "EPFL")
-          }
+          uiSettings = uiSettings,
+      ) {
+        AdvancedMarker(state = MarkerState(position = epfl), title = "EPFL")
+      }
     }
     Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
       Text(
@@ -104,5 +124,6 @@ fun MapOverview(mapViewModel: MapViewModel = MapViewModel()) {
 @Preview
 @Composable
 fun MapOverviewPreview() {
-  MapOverview(MapViewModel())
+  val context = LocalContext.current
+  MapOverview(MapViewModel(), context)
 }
