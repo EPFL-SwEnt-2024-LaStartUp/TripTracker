@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.triptracker.navigation.LocationProvider
+import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.viewmodel.MapViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -47,9 +48,11 @@ fun MapOverview(mapViewModel: MapViewModel = MapViewModel(), context: Context) {
   // Used to display the gradient with the top bar and the changing city location
   var uiSettings by remember { mutableStateOf(MapUiSettings()) }
   var properties by remember {
-    mutableStateOf(MapProperties(mapType = MapType.SATELLITE, isMyLocationEnabled = true))
+    mutableStateOf(MapProperties(mapType = MapType.SATELLITE, isMyLocationEnabled = checkForLocationPermission(context)))
   }
   var deviceLocation by remember { mutableStateOf(LatLng(0.0, 0.0)) }
+
+
 
   // TODO put in viewmodel
   val test = LocationProvider()
@@ -72,13 +75,13 @@ fun MapOverview(mapViewModel: MapViewModel = MapViewModel(), context: Context) {
   }
 
   LaunchedEffect(Unit) {
-    test.getCurrentLocation(
-        context,
-        onGetCurrentLocationSuccess = {
-          deviceLocation = LatLng(it.first, it.second)
-          Log.d("Location", "$it")
-        },
-        onGetCurrentLocationFailed = { Log.d("Location", "Failed to get location") })
+          test.getCurrentLocation(
+              context,
+              onGetCurrentLocationSuccess = {
+                  deviceLocation = LatLng(it.first, it.second)
+                  Log.d("Location", "$it")
+              },
+              onGetCurrentLocationFailed = { Log.d("Location", "Failed to get location") })
   }
 
   val gradient =
