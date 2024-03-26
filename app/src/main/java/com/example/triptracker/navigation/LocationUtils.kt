@@ -1,7 +1,9 @@
 package com.example.triptracker.navigation
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
+import android.location.Location
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,6 +18,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.tasks.CancellationTokenSource
 
 fun checkForLocationPermission(context: Context): Boolean {
   return !(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) !=
@@ -104,5 +110,40 @@ fun LaunchPermissionRequest(context: Context) {
           hasLocationPermission = false
           Log.d("Permission", "Location Permission NOT Granted")
         })
+  }
+}
+
+@SuppressLint("MissingPermission")
+fun getCurrentLocation(
+    context: Context,
+    onLocationFetched: (LatLng) -> Unit,
+    priority: Boolean = true
+) {
+  // Determine the accuracy priority based on the 'priority' parameter
+  if (checkForLocationPermission(context)) {
+    val accuracy =
+        if (priority) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY
+
+    var loc: LatLng
+    val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
+
+    fusedLocationProviderClient
+        .getCurrentLocation(
+            accuracy,
+            CancellationTokenSource().token,
+        )
+        .addOnSuccessListener { location: Location? ->
+          if (location != null) {
+            val latitude = location.latitude
+            val longitude = location.longitude
+            loc = LatLng(latitude, longitude)
+            onLocationFetched(loc)
+            Log.d("MAP-LOCATION", loc.toString())
+          }
+        }
+        .addOnFailureListener { exception: Exception ->
+          // Handle failure to get location
+          Log.d("MAP-EXCEPTION", exception.message.toString())
+        }
   }
 }
