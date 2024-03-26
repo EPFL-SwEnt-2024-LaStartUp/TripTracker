@@ -105,7 +105,7 @@ fun LoginScreen(navigation: Navigation, loginViewModel: LoginViewModel = viewMod
           onSignOut = {
             authenticator.signOut()
             navigation.navController.navigate(Route.LOGIN)
-          })
+          }, navigation = navigation)
       //            onNavigateToOverview() //TODO call this once new screens are added
     }
     is AuthResponse.Error -> {
@@ -189,7 +189,7 @@ fun Login(
  * @param onSignOut: Function to sign out the user Displays the user's information and a button to
  *   sign out
  */
-fun LoginResponseOk(result: SignInResult, onSignOut: () -> Unit) {
+fun LoginResponseOk(result: SignInResult, onSignOut: () -> Unit, navigation: Navigation) {
   Column(
       modifier = Modifier.fillMaxSize(),
       verticalArrangement = Arrangement.Center,
@@ -211,7 +211,9 @@ fun LoginResponseOk(result: SignInResult, onSignOut: () -> Unit) {
           Spacer(modifier = Modifier.height(16.dp))
         }
         androidx.compose.material.Button(
-            onClick = {} /* TODO logic to navigate to overview screen : onNavigateTo */) {
+            onClick = {
+                navigation.navController.navigate(Route.HOME)
+            } /* TODO logic to navigate to overview screen : onNavigateTo */) {
               androidx.compose.material.Text(text = "Go to overview")
             }
         // UNCOMMENT THIS CODE IF YOU WANT TO ADD A SIGN OUT BUTTON

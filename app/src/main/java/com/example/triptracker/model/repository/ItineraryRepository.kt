@@ -3,6 +3,7 @@ package com.example.triptracker.model.repository
 import android.util.Log
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
+import com.example.triptracker.model.location.Pin
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
@@ -37,27 +38,37 @@ open class ItineraryRepository {
             .get()
             .addOnSuccessListener { result -> itineraryList(result) }
             .addOnFailureListener { e -> Log.e(TAG, "Error getting all itineraries", e) }
+        Log.d("ItineraryRepository", _itineraryList.toString())
         return _itineraryList
     }
 
     // Convert the query snapshot to a list of itineraries
-    fun itineraryList(taskSnapshot: QuerySnapshot) {
+    private fun itineraryList(taskSnapshot: QuerySnapshot) {
         for (document in taskSnapshot) {
             val locationData = document.data["location"] as Map<*, *>
-
             val location =
                 Location(
                     locationData["latitude"] as Double,
                     locationData["longitude"] as Double,
                     locationData["name"] as String)
+            var pinnedPlaces: List<Pin> = listOf()
+            pinnedPlaces = if (document.data["pinnedPlaces"] is List<*> && document.data["pinnedPlaces"] != null){
+                document.data["pinnedPlaces"] as List<Pin>
+            } else {
+                listOf()
+            }
             val itinerary =
                 Itinerary(
                     document.id,
                     document.data["title"] as String,
+                    document.data["username"] as String,
                     location,
-                    document.data["startDate"] as String,
-                    document.data["endDate"] as String,
+                    document.data["flameCount"] as Long,
+                    document.data["startDateAndTime"] as String,
+                    document.data["endDateAndTime"] as String,
+                    pinnedPlaces,
                     document.data["description"] as String)
+
             _itineraryList.add(itinerary)
         }
     }

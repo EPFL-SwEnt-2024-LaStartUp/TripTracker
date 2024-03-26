@@ -6,15 +6,18 @@ package com.example.triptracker.model.itinerary
  * @param itineraryList List of Itinerary
  */
 data class ItineraryList(var itineraryList: List<Itinerary>) {
-    fun getAllTask(): List<Itinerary> {
+    // Returns all tasks
+    fun getAllItineraries(): List<Itinerary> {
         return itineraryList
     }
 
-    fun getFilteredTask(task: String): List<Itinerary> {
+    // Returns filtered itinerary based on search query
+    fun getFilteredItineraries(task: String): List<Itinerary> {
         return itineraryList.filter { it.title.contains(task, ignoreCase = true) }
     }
 
-    fun getTask(taskUid: String): Itinerary {
+    // Returns task based on taskid
+    fun getItinerary(taskUid: String): Itinerary {
         return itineraryList.find { it.id == taskUid }!!
     }
 
