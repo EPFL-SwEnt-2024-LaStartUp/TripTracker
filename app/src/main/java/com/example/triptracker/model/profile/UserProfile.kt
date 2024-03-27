@@ -20,4 +20,3 @@ data class UserProfile(
     var pseudo: String = "",
     var profileImageUrl: String? = null
 )
-
