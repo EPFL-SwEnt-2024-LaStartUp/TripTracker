@@ -30,12 +30,12 @@ data class UserProfileList(var userProfileList: List<UserProfile>) {
     }
 
     /**
-     * This function returns the user's profile that matches the taskUid.
+     * This function returns the user's profile that matches the Uid.
      *
-     * @param taskUid : String to search for in the user's profiles
-     * @return User's profile that matches the taskUid
+     * @param Uid : unique identifier of the user's profile
+     * @return User's profile that matches the Uid
      */
-    fun getItinerary(taskUid: String): UserProfile {
+    fun getUserProfile(taskUid: String): UserProfile {
         return userProfileList.find { it.id == taskUid }!!
     }
 
