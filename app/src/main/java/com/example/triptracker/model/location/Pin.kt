@@ -7,9 +7,13 @@ data class Pin(
     val description: String,
     val image_url:
         String // will use this to store the image url and fetch the image from the url on the
-               // Firestore
+    // Firestore
 ) {
   override fun toString(): String {
     return "Pin(latitude=$latitude, longitude=$longitude, name='$name', description='$description', image=$image_url)"
+  }
+
+  fun getPinName(): String {
+    return name
   }
 }

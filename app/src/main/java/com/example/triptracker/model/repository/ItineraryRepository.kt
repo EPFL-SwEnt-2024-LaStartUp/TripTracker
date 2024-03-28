@@ -33,13 +33,28 @@ open class ItineraryRepository {
   }
 
   // Get all itineraries from the database
-  open fun getAllItineraries(): List<Itinerary> {
+  open fun getAllItineraries(callback: (List<Itinerary>) -> Unit): List<Itinerary> {
     db.collection("itineraries")
         .get()
-        .addOnSuccessListener { result -> itineraryList(result) }
+        .addOnSuccessListener { result ->
+          itineraryList(result)
+          callback(_itineraryList)
+        }
         .addOnFailureListener { e -> Log.e(TAG, "Error getting all itineraries", e) }
-    Log.d("ItineraryRepository", _itineraryList.toString())
     return _itineraryList
+  }
+
+  open fun getPinNames(itinerary: Itinerary): List<String> {
+    val pinNames = mutableListOf<String>()
+    for (pin in itinerary.pinnedPlaces) {
+      if (pin is Pin) {
+        pinNames.add(pin.name)
+      } else {
+        Log.e("Error", "Expected item to be Pin, but got ${pin.javaClass.simpleName}")
+      }
+    }
+    Log.d("PinNames", pinNames.toString())
+    return pinNames
   }
 
   // Convert the query snapshot to a list of itineraries
@@ -51,13 +66,18 @@ open class ItineraryRepository {
               locationData["latitude"] as Double,
               locationData["longitude"] as Double,
               locationData["name"] as String)
-      var pinnedPlaces: List<Pin> = listOf()
-      pinnedPlaces =
-          if (document.data["pinnedPlaces"] is List<*> && document.data["pinnedPlaces"] != null) {
-            document.data["pinnedPlaces"] as List<Pin>
-          } else {
-            listOf()
-          }
+      val pinnedPlacesData = document.data["pinnedPlaces"] as? List<Map<String, Any>>
+      val pinnedPlaces: List<Pin> =
+          pinnedPlacesData?.map { pinData ->
+            // Assuming Pin class has a constructor that takes these fields:
+            Pin(
+                pinData["latitude"] as? Double ?: 0.0,
+                pinData["longitude"] as? Double ?: 0.0,
+                pinData["name"] as? String ?: "",
+                pinData["description"] as? String ?: "",
+                pinData["image-url"] as? String ?: "")
+          } ?: emptyList()
+
       val itinerary =
           Itinerary(
               document.id,

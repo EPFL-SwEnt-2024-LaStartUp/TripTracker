@@ -79,9 +79,9 @@ class MainActivity : ComponentActivity() {
                     "stupid-image-url.com")),
             "I'm tired")
 
-    repository.addNewItinerary(itinerary_1)
-    repository.addNewItinerary(itinerary_2)
-    repository.addNewItinerary(itinerary_3)
+    // repository.addNewItinerary(itinerary_1)
+    // repository.addNewItinerary(itinerary_2)
+    // repository.addNewItinerary(itinerary_3)
 
     setContent {
       // Set the trip tracker theme
