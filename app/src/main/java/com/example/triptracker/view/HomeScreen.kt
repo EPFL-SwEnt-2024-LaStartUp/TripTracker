@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,7 +22,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -29,7 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -43,6 +43,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.view.theme.md_theme_gray
 import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_orange
@@ -91,52 +92,70 @@ fun DisplayItinerary(
     navigation: Navigation,
     pinNamesMap: Map<String, List<String>>
 ) {
-  val numNotDisplayed = 3 // Number of additional itineraries not displayed
-  pinNamesMap[itinerary.id]?.let { Log.d("PIN", "Pinned places: $it") }
+  // Number of additional itineraries not displayed
+  val pinNames = pinNamesMap[itinerary.id]
+  val numNotDisplayed = pinNames?.size?.minus(3)
+  // pinNamesMap[itinerary.id]?.let { Log.d("PININHOME", "Pinned places: $it") }
+  val pinListString = pinNames?.let { convertPinListToString(it) }
+  // Log.d("AHHH", "$pinListString")
   Box(
       modifier =
           Modifier.fillMaxWidth()
               .padding(vertical = 10.dp)
-              .background(color = md_theme_light_black, shape = RoundedCornerShape(10.dp))
+              .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))
               .clickable { navigation.navController.navigate(Route.LOGIN) }) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-              AsyncImage(
-                  model =
-                      "https://img.freepik.com/free-photo/portrait-beautiful-young-woman-standing-grey-wall_231208-10760.jpg?w=2000&t=st=1711454089~exp=1711454689~hmac=6f14370e52705014b746e505ad5eaa349d39cb10da32e08df52fdeb9dbf9ad9f",
-                  contentDescription = "User Avatar",
-                  modifier = Modifier.size(20.dp).clip(CircleShape))
-              Spacer(modifier = Modifier.width(12.dp))
-              Column {
-                Text(
-                    text = itinerary.username,
-                    fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp)
-                Text(
-                    text = itinerary.title,
-                    fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
-                    color = md_theme_light_onPrimary)
-                Text(
-                    text = "${itinerary.flameCount}🔥",
-                    color = md_theme_orange, // This is the orange color
-                    fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                    fontSize = 14.sp)
-                Spacer(modifier = Modifier.heightIn(3.dp).weight(1f))
-                Text(
-                    text = "${itinerary.pinnedPlaces}, and $numNotDisplayed more.",
-                    fontSize = 14.sp,
-                    fontFamily = FontFamily(Font(R.font.montserrat_medium)))
+        Column(modifier = Modifier.fillMaxWidth().padding(25.dp)) {
+          Row(modifier = Modifier.fillMaxWidth()) {
+            AsyncImage(
+                model =
+                    "https://img.freepik.com/free-photo/portrait-beautiful-young-woman-standing-grey-wall_231208-10760.jpg?w=2000&t=st=1711454089~exp=1711454689~hmac=6f14370e52705014b746e505ad5eaa349d39cb10da32e08df52fdeb9dbf9ad9f",
+                contentDescription = "User Avatar",
+                modifier = Modifier.size(20.dp).clip(CircleShape))
+            Spacer(modifier = Modifier.width(15.dp))
+            Text(
+                text = itinerary.username,
+                fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                color = md_theme_gray)
+            Spacer(modifier = Modifier.width(120.dp))
+            Icon(
+                imageVector = Icons.Outlined.Star,
+                contentDescription = "Star",
+                Modifier.size(20.dp)) // it's here but yo
+          }
+          Spacer(modifier = Modifier.height(10.dp))
 
-                Log.d("PIN", "Pinned places: ${itinerary.pinnedPlaces}")
-              }
-              Spacer(modifier = Modifier.width(8.dp))
-              Icon(imageVector = Icons.Default.Star, contentDescription = "Star")
-            }
+          Text(
+              text = itinerary.title,
+              fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+              fontWeight = FontWeight.Bold,
+              fontSize = 24.sp,
+              color = md_theme_light_onPrimary)
+          Text(
+              text = "${itinerary.flameCount}🔥",
+              color = md_theme_orange, // This is the orange color
+              fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+              fontSize = 14.sp)
+          Spacer(modifier = Modifier.height(20.dp))
+          Spacer(modifier = Modifier.heightIn(6.dp).weight(1f))
+          Text(
+              text = "$pinListString",
+              fontSize = 14.sp,
+              fontFamily = FontFamily(Font(R.font.montserrat_medium)),
+              color = md_theme_gray)
+        }
       }
+}
+
+fun convertPinListToString(pinList: List<String>): String {
+  return if (pinList.size <= 3) {
+    pinList.joinToString(", ")
+  } else {
+    val displayedPins = pinList.take(3).joinToString(", ")
+    val remainingCount = pinList.size - 3
+    "$displayedPins, and $remainingCount more"
+  }
 }
 
 // Replace 'R.drawable.ic_profile' with actual drawable resource identifier
