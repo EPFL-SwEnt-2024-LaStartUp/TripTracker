@@ -94,7 +94,6 @@ fun Map(
     position = CameraPosition.fromLatLngZoom(deviceLocation, 16f)
   }
 
-
   // When the camera is moving, the city name is updated in the top bar with geo decoding
   LaunchedEffect(cameraPositionState.isMoving) {
     Log.d("CAMERA_STATE", "Camera is moving")
@@ -107,11 +106,12 @@ fun Map(
   }
 
   LaunchedEffect(Unit) {
-      getCurrentLocation(context = context, onLocationFetched = {
-        deviceLocation = it
+    getCurrentLocation(
+        context = context,
+        onLocationFetched = {
+          deviceLocation = it
           cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 16f)
-      })
-
+        })
   }
 
   val gradient =
@@ -124,45 +124,39 @@ fun Map(
     Box(modifier = Modifier.fillMaxSize()) {
       GoogleMap(
           modifier =
-          Modifier
-              .matchParentSize()
-              .background(
-                  brush =
-                  Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black))
-              ),
-          cameraPositionState =  cameraPositionState,
+              Modifier.matchParentSize()
+                  .background(
+                      brush =
+                          Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black))),
+          cameraPositionState = cameraPositionState,
           properties = properties,
           uiSettings = ui,
       ) {
-//        AdvancedMarker(state = MarkerState(position = startLocation), title = "EPFL")
+        //        AdvancedMarker(state = MarkerState(position = startLocation), title = "EPFL")
       }
     }
-    Box(modifier = Modifier
-        .matchParentSize()
-        .background(gradient)
-        .align(Alignment.TopCenter)) {
+    Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
       Text(
           text = mapViewModel.cityNameState.value,
-          modifier = Modifier
-              .padding(30.dp)
-              .align(Alignment.TopCenter),
+          modifier = Modifier.padding(30.dp).align(Alignment.TopCenter),
           fontSize = 24.sp,
           fontFamily = FontFamily.SansSerif,
           color = Color.Black)
 
-        IconButton(onClick = {
-
-            getCurrentLocation(context = context, onLocationFetched = {
-                deviceLocation = it
-                cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 16f)
-            })
-        }) {
+      IconButton(
+          onClick = {
+            getCurrentLocation(
+                context = context,
+                onLocationFetched = {
+                  deviceLocation = it
+                  cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 16f)
+                })
+          }) {
             Icon(
                 modifier = Modifier.padding(40.dp),
                 painter = painterResource(id = R.drawable.ic_gps_fixed),
-                contentDescription = null
-            )
-        }
+                contentDescription = null)
+          }
     }
   }
 }
