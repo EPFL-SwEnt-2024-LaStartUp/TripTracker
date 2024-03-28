@@ -42,9 +42,9 @@ class NominatimApi {
   private val httpClient = OkHttpClient()
 
   /**
-   * Function to get the search URL.
+   * Function to get the search URL given a query.
    *
-   * @param query address to search for
+   * @param query : address to search for
    * @return the search URL
    */
   private fun getSearchUrl(query: String): String {
@@ -52,10 +52,10 @@ class NominatimApi {
   }
 
   /**
-   * Function to get the reverse search URL
+   * Function to get the reverse search URL.
    *
-   * @param lat latitude of the location
-   * @param lon longitude of the location
+   * @param lat : latitude of the location
+   * @param lon : longitude of the location
    * @return the reverse search URL
    */
   private fun getReverseUrl(lat: Float, lon: Float): String {
@@ -65,9 +65,9 @@ class NominatimApi {
   /**
    * Function to reverse decode the location.
    *
-   * @param lat latitude of the location
-   * @param lon longitude of the location
-   * @param callback function to call when the location is decoded into a city
+   * @param lat : latitude of the location
+   * @param lon : longitude of the location
+   * @param callback : function to call when the location is decoded into a city
    */
   fun reverseDecode(lat: Float, lon: Float, callback: (String) -> Unit) {
 
