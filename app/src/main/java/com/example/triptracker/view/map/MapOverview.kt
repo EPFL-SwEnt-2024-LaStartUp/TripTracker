@@ -43,7 +43,8 @@ import com.google.maps.android.compose.rememberCameraPositionState
 @Composable
 /**
  * Composable displaying the map overview with all the paths and markers of trips that are around
- * the user's location.
+ * the user's location. Needs the context of the app in order to ask for location permission and
+ * access location.
  */
 fun MapOverview(
     mapViewModel: MapViewModel = MapViewModel(),
@@ -58,6 +59,10 @@ fun MapOverview(
 
   getCurrentLocation(context = context, onLocationFetched = { deviceLocation = it })
 
+  // Check if the location permission is granted if not re-ask for it. If the result is still
+  // negative then disable the location button and center the view on EPFL
+  // else enable the location button and center the view on the user's location and show real time
+  // location
   when (checkForLocationPermission(context = context)) {
     true -> {
       Map(mapViewModel, context, deviceLocation, mapProperties, uiSettings)
@@ -89,7 +94,6 @@ fun Map(
   val properties by remember { mutableStateOf(mapProperties) }
   var deviceLocation by remember { mutableStateOf(startLocation) }
 
-  /// TODO change location to the users one with permissions
   val cameraPositionState = rememberCameraPositionState {
     position = CameraPosition.fromLatLngZoom(deviceLocation, 16f)
   }
@@ -105,6 +109,7 @@ fun Map(
         "${cameraPositionState.position.target.latitude} and ${cameraPositionState.position.target.longitude}")
   }
 
+  // Fetch the device location when the composable is launched
   LaunchedEffect(Unit) {
     getCurrentLocation(
         context = context,
@@ -131,9 +136,7 @@ fun Map(
           cameraPositionState = cameraPositionState,
           properties = properties,
           uiSettings = ui,
-      ) {
-        //        AdvancedMarker(state = MarkerState(position = startLocation), title = "EPFL")
-      }
+      ) {}
     }
     Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
       Text(
@@ -163,6 +166,7 @@ fun Map(
 
 @Preview
 @Composable
+// Start this screen to only see the overview of the map
 fun MapOverviewPreview() {
   val context = LocalContext.current
   MapOverview(

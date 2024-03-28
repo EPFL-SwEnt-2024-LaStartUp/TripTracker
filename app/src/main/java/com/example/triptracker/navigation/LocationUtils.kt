@@ -23,6 +23,10 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.CancellationTokenSource
 
+/**
+ * Utils function that checks if the location permission is granted. Need both fine and coarse
+ * location permissions.
+ */
 fun checkForLocationPermission(context: Context): Boolean {
   return !(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) !=
       android.content.pm.PackageManager.PERMISSION_GRANTED &&
@@ -31,6 +35,11 @@ fun checkForLocationPermission(context: Context): Boolean {
 }
 
 @Composable
+/**
+ * Composable that displays an AlertDialog asking the user to allow location permission. If the user
+ * allows the permission, the onPermissionGranted lambda is called. If the user denies the
+ * permission, the onPermissionDenied lambda is called.
+ */
 fun AllowLocationPermission(onPermissionGranted: () -> Unit, onPermissionDenied: () -> Unit) {
 
   val openAlertDialog = remember { mutableStateOf(true) }
@@ -95,6 +104,10 @@ fun AllowLocationPermission(onPermissionGranted: () -> Unit, onPermissionDenied:
 }
 
 @Composable
+/**
+ * Composable that launches the permission request for location and sets the result to a mutable
+ * state only if the permission was not already granted
+ */
 fun LaunchPermissionRequest(context: Context) {
   var hasLocationPermission by remember { mutableStateOf(checkForLocationPermission(context)) }
 
@@ -114,6 +127,11 @@ fun LaunchPermissionRequest(context: Context) {
 }
 
 @SuppressLint("MissingPermission")
+/**
+ * Function that fetches the real time current location of the device. If the priority is set to
+ * true, the function will try to get the most accurate location. If the priority is set to false,
+ * the function will try to get the location with the least battery consumption.
+ */
 fun getCurrentLocation(
     context: Context,
     onLocationFetched: (LatLng) -> Unit,
