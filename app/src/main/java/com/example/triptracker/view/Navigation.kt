@@ -9,6 +9,8 @@ import androidx.navigation.NavHostController
 /** Destinations used in the app. */
 object Route {
   const val LOGIN = "login"
+  const val HOME = "home"
+  const val ITINERARY_PREVIEW = "itinerary_preview"
   const val UNDEFINED = "undefined" // TODO remove this once other views are added
 }
 
