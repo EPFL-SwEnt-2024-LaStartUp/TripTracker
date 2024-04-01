@@ -15,7 +15,7 @@ class RecordViewModel {
     private val endTime = mutableLongStateOf(0L)
     val isPaused = mutableStateOf(false)
 
-    var _latLongList = mutableListOf<LatLng>()
+    private var _latLongList = mutableListOf<LatLng>()
     val latLongList: List<LatLng>
         get() = _latLongList
 

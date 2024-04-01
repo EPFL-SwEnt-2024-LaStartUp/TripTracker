@@ -25,7 +25,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,13 +35,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,12 +49,10 @@ import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.viewmodel.RecordViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.AdvancedMarker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.delay
@@ -69,6 +62,19 @@ val lightDark = Color(0xFF1D2022)
 val redFox = Color(0xFFD4622B)
 val lightGray = Color(0xFFC0C7CD)
 val transparentGray = Color(0xC0C0C7CD)
+
+//[lat/lng: (46.5239117,6.5819433), lat/lng: (46.5239017,6.5819315), lat/lng: (46.5238697,6.5818997), lat/lng: (46.5238317,6.5818633), lat/lng: (46.52379,6.5818367), lat/lng: (46.5237499,6.58181), lat/lng: (46.52371,6.58178), lat/lng: (46.5236768,6.5817272)]
+val pathTest = listOf(
+    LatLng(46.5239117,6.5819433),
+    LatLng(46.5239017,6.5819315),
+    LatLng(46.5238697,6.5818997),
+    LatLng(46.5238317,6.5818633),
+    LatLng(46.52379,6.5818367),
+    LatLng(46.5237499,6.58181),
+    LatLng(46.52371,6.58178),
+    LatLng(46.5236768,6.5817272)
+
+)
 
 @Composable
 fun RecordScreen(
@@ -118,7 +124,7 @@ fun Map(
     val ui by remember { mutableStateOf(uiSettings) }
     val properties by remember { mutableStateOf(mapProperties) }
     var deviceLocation by remember { mutableStateOf(startLocation) }
-    val latLngList = remember { mutableStateOf(listOf<LatLng>()) }
+    val localLatLngList = remember { mutableStateOf(listOf<LatLng>()) }
 
 
     /// TODO change location to the users one with permissions
@@ -152,8 +158,8 @@ fun Map(
         while (viewModel.isRecording() && !viewModel.isPaused.value) {
 
             viewModel.addLatLng(deviceLocation)
-            latLngList.value = viewModel.latLongList
-            delay(3000)
+            localLatLngList.value = viewModel.latLongList
+            delay(5000)
         }
     }
 
@@ -179,15 +185,15 @@ fun Map(
                 properties = MapProperties(isMyLocationEnabled = true),
                 uiSettings = MapUiSettings(myLocationButtonEnabled = true),
             ) {
-                if (viewModel._latLongList.isNotEmpty() && viewModel.isRecording()) {
-                    Log.e("polyline", viewModel._latLongList.toString())
-                    Polyline(
-                        points = viewModel._latLongList,
-                        color = Color.Red,
-                        width = 5f
-                    )
-                }
-
+//                if (localLatLngList.value.isNotEmpty() && viewModel.isRecording()) {
+//                    Log.e("POLYLINE", localLatLngList.value.toString())
+//                    Polyline(
+//                        points = localLatLngList.value,
+//                        color = Color.Red,
+//                        width = 5f
+//                    )
+//                }
+                DrawPolyline(localLatLngList.value)
             }
         }
         Box(modifier = Modifier
@@ -430,6 +436,15 @@ fun displayTime(time: Long): String {
     val hours = TimeUnit.MILLISECONDS.toHours(time)
 
     return String.format("%02d:%02d:%02d", hours, minutes, seconds)
+}
+
+/**
+ * Function to draw a polyline on the map
+ * @param localLatLngList the list of LatLng points
+ */
+@Composable
+fun DrawPolyline(localLatLngList: List<LatLng>) {
+    Polyline(points = localLatLngList, color = Color.Red, width = 8f)
 }
 
 /**
