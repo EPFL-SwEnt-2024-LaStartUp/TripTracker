@@ -128,6 +128,10 @@ fun Map(
 
     //update the device location when the location changed
 
+    LaunchedEffect(key1 = viewModel.latLongList) {
+        Log.e("lat long list", viewModel.latLongList.toString())
+    }
+
 
     LaunchedEffect(key1 = deviceLocation) {
         Log.e("device location", deviceLocation.toString())
@@ -135,16 +139,21 @@ fun Map(
         cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
         //viewModel.updateLocation(deviceLocation)
     }
+    //update the device location every 5 seconds
+    LaunchedEffect(Unit) {
+        while (true) {
+            getCurrentLocation(context = context, onLocationFetched = { deviceLocation = it })
+            delay(5000)
+        }
+    }
 
-    //if is recoring then add the current location to the list every second
+    //if is recoring then add the current location to the list every 5 seconds
     LaunchedEffect(key1 = viewModel.isRecording()) {
         while (viewModel.isRecording() && !viewModel.isPaused.value) {
-            val currentLocation = deviceLocation
-            viewModel.addLatLng(currentLocation)
+
+            viewModel.addLatLng(deviceLocation)
             latLngList.value = viewModel.latLongList
-            Log.d("pos added",  viewModel.latLongList.toString())
-            Log.d("list size", viewModel.latLongList.size.toString())
-            delay(1000)
+            delay(3000)
         }
     }
 
@@ -157,7 +166,6 @@ fun Map(
     Box {
         Box(modifier = Modifier
             .fillMaxSize()
-            //.blur(5.dp)
         ) {
             GoogleMap(
                 modifier =
@@ -260,7 +268,11 @@ fun Map(
     }
 }
 
-
+/**
+ * Function to display the start window
+ * @param context the context of the application
+ * @param viewModel the viewmodel of the application
+ */
 @Composable
 fun StartWindow(
     context: Context,
@@ -269,15 +281,18 @@ fun StartWindow(
 
     val timer = remember { mutableLongStateOf(0L) }
 
+    //if is recording then update the timer
     if(viewModel.isRecording()) {
         LaunchedEffect(key1 = viewModel.isRecording()) {
             while (viewModel.isRecording()) {
+                // update the timer
                 timer.longValue = viewModel.getElapsedTime()
                 delay(1000)
             }
         }
     }
 
+    // Display the recording window if the user is recording
     if(viewModel.isRecording()) {
         Column (
             modifier = Modifier
@@ -331,7 +346,6 @@ fun StartWindow(
                 modifier = Modifier
                     .fillMaxHeight(0.5f)
                     .fillMaxWidth()
-                //.padding(top = 20.dp)
             ) {
                 Box(
                     modifier = Modifier
@@ -406,6 +420,10 @@ fun StartWindow(
     }
 }
 
+/**
+ * Function to display the time in a readable format
+ * @param time the time in milliseconds
+ */
 fun displayTime(time: Long): String {
     val seconds = TimeUnit.MILLISECONDS.toSeconds(time) % 60
     val minutes = TimeUnit.MILLISECONDS.toMinutes(time) % 60
@@ -414,6 +432,9 @@ fun displayTime(time: Long): String {
     return String.format("%02d:%02d:%02d", hours, minutes, seconds)
 }
 
+/**
+ * Function to preview the RecordScreen
+ */
 @Preview
 @Composable
 fun RecordScreenPreview() {
