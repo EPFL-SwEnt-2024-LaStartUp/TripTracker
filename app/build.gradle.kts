@@ -227,6 +227,9 @@ dependencies {
     // ----------       Location     ------------
     implementation("com.google.android.gms:play-services-location:21.2.0")
     implementation("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
+
+    // ----------       Icons     ------------
+    implementation("androidx.compose.material:material-icons-extended:1.6.0-alpha05")
 }
 
 tasks.withType<Test> {
