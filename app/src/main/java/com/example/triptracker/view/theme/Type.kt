@@ -9,15 +9,14 @@ import androidx.compose.ui.unit.sp
 import com.example.triptracker.R
 
 // CREATE FONT FAMILY
-val Montserrat = FontFamily(
-    Font(R.font.montserrat_black, FontWeight.Black),
-    Font(R.font.montserrat_medium, FontWeight.Medium),
-    Font(R.font.montserrat_bold, FontWeight.Bold),
-    Font(R.font.montserrat_light, FontWeight.Light),
-    Font(R.font.montserrat_thin, FontWeight.Thin),
-    Font(R.font.montserrat_semi_bold, FontWeight.SemiBold)
-)
-
+val Montserrat =
+    FontFamily(
+        Font(R.font.montserrat_black, FontWeight.Black),
+        Font(R.font.montserrat_medium, FontWeight.Medium),
+        Font(R.font.montserrat_bold, FontWeight.Bold),
+        Font(R.font.montserrat_light, FontWeight.Light),
+        Font(R.font.montserrat_thin, FontWeight.Thin),
+        Font(R.font.montserrat_semi_bold, FontWeight.SemiBold))
 
 // Set of Material typography styles to start with
 val Typography =
