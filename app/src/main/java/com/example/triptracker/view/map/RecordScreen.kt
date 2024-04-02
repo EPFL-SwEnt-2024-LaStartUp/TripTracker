@@ -1,7 +1,12 @@
 package com.example.triptracker.view.map
 
 import android.content.Context
-import android.util.Log
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,8 +35,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +54,7 @@ import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.viewmodel.RecordViewModel
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -56,150 +64,160 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
+// Define color constants
 val lightDark = Color(0xFF1D2022)
 val redFox = Color(0xFFD4622B)
 val lightGray = Color(0xFFC0C7CD)
 val transparentGray = Color(0xC0C0C7CD)
 
-//[lat/lng: (46.5239117,6.5819433), lat/lng: (46.5239017,6.5819315), lat/lng: (46.5238697,6.5818997), lat/lng: (46.5238317,6.5818633), lat/lng: (46.52379,6.5818367), lat/lng: (46.5237499,6.58181), lat/lng: (46.52371,6.58178), lat/lng: (46.5236768,6.5817272)]
-val pathTest = listOf(
-    LatLng(46.5239117,6.5819433),
-    LatLng(46.5239017,6.5819315),
-    LatLng(46.5238697,6.5818997),
-    LatLng(46.5238317,6.5818633),
-    LatLng(46.52379,6.5818367),
-    LatLng(46.5237499,6.58181),
-    LatLng(46.52371,6.58178),
-    LatLng(46.5236768,6.5817272)
+// Define the delay for the location update
+const val DELAY = 5000L
 
-)
-
+/**
+ * Composable function for displaying the RecordScreen.
+ *
+ * @param context The application context.
+ * @param viewModel The RecordViewModel instance.
+ */
 @Composable
 fun RecordScreen(
     context: Context,
     viewModel : RecordViewModel = RecordViewModel()
-) {    //there will be the viewmodel
-
+) {
+    // default device location is EPFL
     var deviceLocation = LatLng(46.518831258,6.559331096)
+
+    // Default map properties and UI settings
     var mapProperties =
         MapProperties(
-            mapType = MapType.SATELLITE, isMyLocationEnabled = checkForLocationPermission(context))
-
+            mapType = MapType.NORMAL, isMyLocationEnabled = checkForLocationPermission(context)
+        )
     var uiSettings = MapUiSettings(myLocationButtonEnabled = checkForLocationPermission(context))
 
+    // Get current device location
     getCurrentLocation(context = context, onLocationFetched = { deviceLocation = it })
 
+    // Check for location permission
     when (checkForLocationPermission(context = context)) {
         true -> {
-            Map(context, viewModel, deviceLocation, mapProperties, uiSettings)
+            Map(context, viewModel, deviceLocation)
         }
 
         false -> {
             AllowLocationPermission(
                 onPermissionGranted = {
                     mapProperties =
-                        MapProperties(mapType = MapType.SATELLITE, isMyLocationEnabled = true)
+                        MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
                     uiSettings = MapUiSettings(myLocationButtonEnabled = true)
                 },
                 onPermissionDenied = {
                     mapProperties =
-                        MapProperties(mapType = MapType.SATELLITE, isMyLocationEnabled = false)
+                        MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
                     uiSettings = MapUiSettings(myLocationButtonEnabled = false)
                 })
         }
     }
-
 }
+/**
+ * Composable function for displaying the map.
+ *
+ * @param context The application context.
+ * @param viewModel The RecordViewModel instance.
+ * @param startLocation The starting location.
+ */
 @Composable
 fun Map(
     context: Context,
     viewModel: RecordViewModel,
-    startLocation: LatLng,
-    mapProperties: MapProperties,
-    uiSettings: MapUiSettings
+    startLocation: LatLng
 ) {
-    // Used to display the gradient with the top bar and the changing city location
-    val ui by remember { mutableStateOf(uiSettings) }
-    val properties by remember { mutableStateOf(mapProperties) }
+    // Mutable state for the device location and the local LatLng list
     var deviceLocation by remember { mutableStateOf(startLocation) }
-    val localLatLngList = remember { mutableStateOf(listOf<LatLng>()) }
+    val localLatLngList = remember { mutableStateListOf<LatLng>() }
 
+    // Coroutine scope for the animations
+    val coroutineScope = rememberCoroutineScope()
 
-    /// TODO change location to the users one with permissions
+    // Remember camera position state
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
     }
 
-    //update the device location when the location changed
-
-    LaunchedEffect(key1 = viewModel.latLongList) {
-        Log.e("lat long list", viewModel.latLongList.toString())
-    }
-
-
+    // Animate camera to device location
     LaunchedEffect(key1 = deviceLocation) {
-        Log.e("device location", deviceLocation.toString())
-        //getCurrentLocation(context = context, onLocationFetched = { deviceLocation = it })
-        cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
-        //viewModel.updateLocation(deviceLocation)
+        coroutineScope.launch {
+            cameraPositionState.animate(
+                CameraUpdateFactory.newCameraPosition(
+                    CameraPosition.fromLatLngZoom(deviceLocation, 17f)
+                )
+            )
+        }
     }
-    //update the device location every 5 seconds
+
+    // Update device location
     LaunchedEffect(Unit) {
         while (true) {
             getCurrentLocation(context = context, onLocationFetched = { deviceLocation = it })
-            delay(5000)
+            delay(DELAY)
         }
     }
 
-    //if is recoring then add the current location to the list every 5 seconds
+    // Add current location to list every "DELAY" seconds if recording
     LaunchedEffect(key1 = viewModel.isRecording()) {
-        while (viewModel.isRecording() && !viewModel.isPaused.value) {
-
-            viewModel.addLatLng(deviceLocation)
-            localLatLngList.value = viewModel.latLongList
-            delay(5000)
+        while (viewModel.isRecording()) {
+            if(!viewModel.isPaused.value) {
+                viewModel.addLatLng(deviceLocation)
+                if (viewModel.latLongList.isNotEmpty()) {
+                    localLatLngList.add(viewModel.latLongList.last())
+                }
+            }
+            delay(DELAY)
         }
     }
 
+    // Define gradient for top bar
     val gradient =
         Brush.verticalGradient(
-            colorStops =
-            arrayOf(0.0f to Color.White, 0.1f to Color.White, 0.3f to Color.Transparent))
+            colorStops = arrayOf(
+                0.0f to Color.White,
+                0.1f to Color.White,
+                0.3f to Color.Transparent
+            )
+        )
 
-    // Displays the map
+    // Display the map
     Box {
-        Box(modifier = Modifier
-            .fillMaxSize()
-        ) {
+        Box(modifier = Modifier.fillMaxSize()) {
             GoogleMap(
-                modifier =
-                Modifier
+                modifier = Modifier
                     .matchParentSize()
                     .background(
-                        brush =
-                        Brush.verticalGradient(colors = listOf(Color.Transparent, lightDark))
+                        brush = Brush.verticalGradient(
+                            colors = listOf(Color.Transparent, lightDark)
+                        )
                     ),
                 cameraPositionState = cameraPositionState,
                 properties = MapProperties(isMyLocationEnabled = true),
                 uiSettings = MapUiSettings(myLocationButtonEnabled = true),
             ) {
-//                if (localLatLngList.value.isNotEmpty() && viewModel.isRecording()) {
-//                    Log.e("POLYLINE", localLatLngList.value.toString())
-//                    Polyline(
-//                        points = localLatLngList.value,
-//                        color = Color.Red,
-//                        width = 5f
-//                    )
-//                }
-                DrawPolyline(localLatLngList.value)
+                Polyline(
+                    points = localLatLngList.toList(),
+                    color = redFox,
+                    width = 15f,
+
+                )
             }
         }
+
+        // Display gradient for top bar
         Box(modifier = Modifier
             .matchParentSize()
             .background(gradient)
-            .align(Alignment.TopCenter)) {
+            .align(Alignment.TopCenter)
+        ) {
             Text(
                 text = "Record",
                 modifier = Modifier
@@ -211,10 +229,13 @@ fun Map(
                 color = lightDark
             )
         }
-        StartWindow(context = context, viewModel = viewModel)
+
+        // Display start window
+        StartWindow(viewModel = viewModel)
+
+        // Button to center on device location
         Row(
-            modifier = Modifier
-                .align(Alignment.BottomCenter),
+            modifier = Modifier.align(Alignment.BottomCenter),
             horizontalArrangement = Arrangement.Center
         ) {
 
@@ -227,40 +248,42 @@ fun Map(
                     .background(transparentGray, shape = RoundedCornerShape(16.dp))
                     .padding(10.dp)
                     .align(Alignment.CenterVertically)
-
                     .clickable {
-                        cameraPositionState.position =
-                            CameraPosition.fromLatLngZoom(deviceLocation, 17f)
+                        coroutineScope.launch {
+                            cameraPositionState.animate(
+                                CameraUpdateFactory.newCameraPosition(
+                                    CameraPosition.fromLatLngZoom(deviceLocation, 17f)
+                                )
+                            )
+                        }
                     }
 
             )
 
+            // Button to start/stop recording
             FilledTonalButton(
                 onClick = {
                     if (viewModel.isRecording()) {
                         viewModel.stopRecording()
                         viewModel.resetRecording()
+                        localLatLngList.clear()
                     } else {
                         viewModel.startRecording()
                     }
 
                 },
                 modifier = Modifier
-
                     .padding(50.dp)
                     .fillMaxWidth(0.6f)
                     .fillMaxHeight(0.1f),
                 colors = ButtonDefaults.filledTonalButtonColors(
-                    //container color is D4622B
                     containerColor = redFox,
                     contentColor = Color.White
                 ),
 
                 ) {
                 Text(
-                    text = deviceLocation.latitude.toString(),
-                    //text = if (viewModel.isRecording()) viewModel._latLongList.size.toString() else "Start",
-                    //text = if (viewModel.isRecording()) "Stop" else "Start",
+                    text = if (viewModel.isRecording()) "Stop" else "Start",
                     fontSize = 24.sp,
                     fontFamily = Montserrat,
                     fontWeight = FontWeight.SemiBold,
@@ -275,148 +298,156 @@ fun Map(
 }
 
 /**
- * Function to display the start window
- * @param context the context of the application
- * @param viewModel the viewmodel of the application
+ * Composable function to display the start window.
+ *
+ * @param viewModel The RecordViewModel instance.
  */
 @Composable
 fun StartWindow(
-    context: Context,
-    viewModel: RecordViewModel,
-    ){
-
+    viewModel: RecordViewModel
+){
     val timer = remember { mutableLongStateOf(0L) }
 
-    //if is recording then update the timer
+    // Update timer if recording
     if(viewModel.isRecording()) {
         LaunchedEffect(key1 = viewModel.isRecording()) {
             while (viewModel.isRecording()) {
-                // update the timer
                 timer.longValue = viewModel.getElapsedTime()
                 delay(1000)
             }
         }
     }
 
-    // Display the recording window if the user is recording
-    if(viewModel.isRecording()) {
-        Column (
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth()
-                .padding(top = 20.dp, bottom = 100.dp)
-            ,
-
-            verticalArrangement = Arrangement.SpaceBetween
-        ){
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight(0.35f)
-                    .fillMaxWidth()
-                    //.padding(top = 20.dp)
+    // Display recording window if user is recording
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth()
+            .padding(top = 20.dp, bottom = 100.dp),
+        verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            // animate the visibility of the recording window
+            AnimatedVisibility(
+                visible = viewModel.isRecording(),
+                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+                exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)
             ) {
+                // Display the timer
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .fillMaxHeight(0.5f)
-                        .background(lightDark, shape = RoundedCornerShape(35.dp))
-                        .align(Alignment.Center)
-
-
+                        .fillMaxHeight(0.35f)
+                        .fillMaxWidth()
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Text(
-                            text = "TIME",
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically),
-                            fontSize = 22.sp,
-                            fontFamily = Montserrat,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color.White
-                        )
-                        Text(
-                            text = displayTime(timer.longValue), modifier = Modifier
-                                .align(Alignment.CenterVertically),
-                            fontSize = 22.sp,
-                            fontFamily = Montserrat,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color.White
-                        )
-                    }
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight(0.5f)
-                    .fillMaxWidth()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .fillMaxHeight(0.45f)
-                        .background(lightDark, shape = RoundedCornerShape(35.dp))
-                        .align(Alignment.Center)
 
-                ) {
-                    Row(
+                    Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                            .fillMaxWidth(0.9f)
+                            .fillMaxHeight(0.5f)
+                            .background(lightDark, shape = RoundedCornerShape(35.dp))
+                            .align(Alignment.Center)
                     ) {
-                        FilledTonalButton(
-                            onClick = {
-                                if (viewModel.isPaused.value) {
-                                    viewModel.resumeRecording()
-                                } else {
-                                    viewModel.pauseRecording()
-                                }
-                            },
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .fillMaxHeight(0.6f),
-                            colors = ButtonDefaults.filledTonalButtonColors(
-                                containerColor = Color.White,
-                                contentColor = lightDark),
-                            ) {
-                            Text(
-                                text = if (viewModel.isPaused.value) "Resume" else "Pause",
-                                fontSize = 14.sp,
-                                fontFamily = Montserrat,
-                                fontWeight = FontWeight.SemiBold,
-                                color = lightDark
-                            )
-                        }
                         Row(
-                            modifier = Modifier.align(Alignment.CenterVertically),
+                            modifier = Modifier.fillMaxSize(),
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             Text(
-                                text = "Add spot", modifier = Modifier
-                                    .align(Alignment.CenterVertically),
-                                fontSize = 14.sp,
+                                text = "TIME",
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                                fontSize = 22.sp,
                                 fontFamily = Montserrat,
                                 fontWeight = FontWeight.SemiBold,
-                                color = transparentGray
+                                color = Color.White
                             )
-                            Spacer(modifier = Modifier.width(20.dp))
-                            IconButton(
-                                onClick = { /*TODO*/ },
+                            Text(
+                                text = displayTime(timer.longValue),
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                                fontSize = 22.sp,
+                                fontFamily = Montserrat,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+            }
+            // animate the visibility of the pause/resume button
+            AnimatedVisibility(
+                visible = viewModel.isRecording(),
+                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+                exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Bottom)
+            ) {
+                // Display the pause/resume button and add spot button
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight(0.5f)
+                        .fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .fillMaxHeight(0.45f)
+                            .background(lightDark, shape = RoundedCornerShape(35.dp))
+                            .align(Alignment.Center)
+
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            FilledTonalButton(
+                                onClick = {
+                                    if (viewModel.isPaused.value) {
+                                        viewModel.resumeRecording()
+                                    } else {
+                                        viewModel.pauseRecording()
+                                    }
+                                },
                                 modifier = Modifier
                                     .align(Alignment.CenterVertically)
-                                    .size(50.dp)
-                                    .background(Color.White, shape = CircleShape),
-                                ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Add,
-                                    contentDescription = "Add spot",
-                                    tint = lightDark,
-                                    modifier = Modifier.size(30.dp)
-
+                                    .fillMaxHeight(0.6f),
+                                colors = ButtonDefaults.filledTonalButtonColors(
+                                    containerColor = Color.White,
+                                    contentColor = lightDark
+                                ),
+                            ) {
+                                Text(
+                                    text = if (viewModel.isPaused.value) "Resume" else "Pause",
+                                    fontSize = 14.sp,
+                                    fontFamily = Montserrat,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = lightDark
                                 )
+                            }
+                            Row(
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                Text(
+                                    text = "Add spot", modifier = Modifier
+                                        .align(Alignment.CenterVertically),
+                                    fontSize = 14.sp,
+                                    fontFamily = Montserrat,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = transparentGray
+                                )
+                                Spacer(modifier = Modifier.width(20.dp))
+                                IconButton(
+                                    onClick = { /*TODO*/ },
+                                    modifier = Modifier
+                                        .align(Alignment.CenterVertically)
+                                        .size(50.dp)
+                                        .background(Color.White, shape = CircleShape),
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Add,
+                                        contentDescription = "Add spot",
+                                        tint = lightDark,
+                                        modifier = Modifier.size(30.dp)
+
+                                    )
+                                }
                             }
                         }
                     }
@@ -424,11 +455,12 @@ fun StartWindow(
             }
         }
     }
-}
 
 /**
- * Function to display the time in a readable format
- * @param time the time in milliseconds
+ * Function to display the time in a readable format.
+ *
+ * @param time The time in milliseconds.
+ * @return A formatted time string.
  */
 fun displayTime(time: Long): String {
     val seconds = TimeUnit.MILLISECONDS.toSeconds(time) % 60
@@ -436,15 +468,6 @@ fun displayTime(time: Long): String {
     val hours = TimeUnit.MILLISECONDS.toHours(time)
 
     return String.format("%02d:%02d:%02d", hours, minutes, seconds)
-}
-
-/**
- * Function to draw a polyline on the map
- * @param localLatLngList the list of LatLng points
- */
-@Composable
-fun DrawPolyline(localLatLngList: List<LatLng>) {
-    Polyline(points = localLatLngList, color = Color.Red, width = 8f)
 }
 
 /**

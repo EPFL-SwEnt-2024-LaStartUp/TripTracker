@@ -29,6 +29,9 @@ class RecordViewModel {
 
     fun stopRecording() {
         endTime.longValue = System.currentTimeMillis()
+        // TODO do something with the data
+        Log.e("DATA", "Data collected: ${_latLongList.size} points, ${getElapsedTime()} ms")
+        //clear the list
     }
 
     fun resetRecording() {
