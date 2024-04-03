@@ -45,12 +45,16 @@ import com.google.maps.android.compose.rememberCameraPositionState
  * Composable displaying the map overview with all the paths and markers of trips that are around
  * the user's location. Needs the context of the app in order to ask for location permission and
  * access location.
+ *
+ * @param mapViewModel: The view model of the map
+ * @param context: The context of the app (needed for location permission and real time location)
  */
 fun MapOverview(
     mapViewModel: MapViewModel = MapViewModel(),
     context: Context,
 ) {
 
+  // The device location is set to EPFL by default
   var deviceLocation = LatLng(46.519962, 6.633597)
   var mapProperties =
       MapProperties(
@@ -81,6 +85,15 @@ fun MapOverview(
   }
 }
 
+/**
+ * Composable displaying the map with the user's location and the city name on the top bar.
+ *
+ * @param mapViewModel: The view model of the map
+ * @param context: The context of the app (needed for location permission and real time location)
+ * @param startLocation: The starting location of the map
+ * @param mapProperties: The properties of the map (type, location enabled)
+ * @param uiSettings: The settings of the map (location button enabled)
+ */
 @Composable
 fun Map(
     mapViewModel: MapViewModel,

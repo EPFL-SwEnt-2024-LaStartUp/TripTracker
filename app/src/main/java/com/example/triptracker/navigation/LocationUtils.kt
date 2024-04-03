@@ -131,6 +131,10 @@ fun LaunchPermissionRequest(context: Context) {
  * Function that fetches the real time current location of the device. If the priority is set to
  * true, the function will try to get the most accurate location. If the priority is set to false,
  * the function will try to get the location with the least battery consumption.
+ *
+ * @param context The context of the activity (needed to check for location permission)
+ * @param onLocationFetched The lambda that is called when the location is fetched
+ * @param priority The priority of the location request
  */
 fun getCurrentLocation(
     context: Context,

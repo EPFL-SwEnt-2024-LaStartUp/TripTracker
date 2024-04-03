@@ -1,13 +1,13 @@
 package com.example.triptracker.model.geocoder
 
 import android.util.Log
-import java.io.IOException
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
+import java.io.IOException
 
 /**
  * Class containing all the nominatim API variants that describe a city to reverse decode the
@@ -20,7 +20,11 @@ object LocationStrings {
   const val TOWN = "town"
 }
 
-/** Class containing all the error messages that can be returned by the API. */
+/**
+ * Class containing all the error messages that can be returned by the API. Unknown: when nothing
+ * was decoded callback with this Error: when the API returns an error json object Fail: when the
+ * request fails
+ */
 object LocationErrors {
   const val UNKNOWN = "Unknown"
   const val ERROR = "{\"error\":\"Unable to geocode\"}"
@@ -71,26 +75,32 @@ class NominatimApi {
    */
   fun reverseDecode(lat: Float, lon: Float, callback: (String) -> Unit) {
 
+    // generate the URL
     val url = getReverseUrl(lat, lon)
     val request = Request.Builder().url(url).build()
     val call = httpClient.newCall(request)
 
+    // execute the request
     call.enqueue(
         object : Callback {
 
+          // if the request fails log the error and call the callback with the error
           override fun onFailure(call: Call, e: IOException) {
             Log.d("API RESPONSE", LocationErrors.FAIL)
             callback(LocationErrors.UNKNOWN)
           }
 
+          // if the request is successful, parse the response and call the callback with the city
           override fun onResponse(call: Call, response: Response) {
             val result = response.body?.string()
             if (result == LocationErrors.ERROR || result == "") {
               callback(LocationErrors.UNKNOWN)
               return
             }
+            // parse the response in json
             val json = result?.let { JSONObject(it) }
 
+            // get the address from the json (which is a new json object)
             val address = json?.get(LocationStrings.ADDRESS)
 
             if (address == null) {
@@ -98,6 +108,8 @@ class NominatimApi {
               return
             }
 
+            // get the city, village or town from the address json object since there are multiple
+            // ways to describe a "city"
             val addressJson = address as JSONObject
             if (addressJson.has(LocationStrings.CITY)) {
               val cityName =
