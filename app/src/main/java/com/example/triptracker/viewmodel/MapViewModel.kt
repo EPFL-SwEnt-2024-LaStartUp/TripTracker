@@ -16,8 +16,8 @@ class MapViewModel {
   val cityNameState = mutableStateOf("")
 
   /**
-   * Reverse decodes the location to get the city name.
-   * On success update the cityNameState at the top of the screen
+   * Reverse decodes the location to get the city name. On success update the cityNameState at the
+   * top of the screen
    *
    * @param lat : latitude of the location
    * @param lon : longitude of the location
