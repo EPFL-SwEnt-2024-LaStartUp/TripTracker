@@ -8,7 +8,15 @@ import androidx.navigation.NavHostController
 
 /** Destinations used in the app. */
 object Route {
+  /** Login route. */
   const val LOGIN = "login"
+
+  /** Top level routes at the bottom of the screen */
+  const val HOME = "home"
+  const val MAPS = "maps"
+  const val RECORD = "record"
+  const val PROFILE = "profile"
+
   const val UNDEFINED = "undefined" // TODO remove this once other views are added
 }
 
@@ -42,5 +50,9 @@ class Navigation(val navController: NavHostController) {
 /** Destinations that are displayed at the bottom of the screen. */
 val TOP_LEVEL_DESTINATIONS =
     listOf(
-        TopLevelDestination(Route.LOGIN, Icons.Default.List, "Login"),
+        //TopLevelDestination(Route.LOGIN, Icons.Default.List, "Login"),
+        TopLevelDestination(Route.HOME, Icons.Default.List, "Home"),
+        TopLevelDestination(Route.MAPS, Icons.Default.List, "Maps"),
+        TopLevelDestination(Route.RECORD, Icons.Default.List, "Record"),
+        TopLevelDestination(Route.PROFILE, Icons.Default.List, "Profile"),
     )
