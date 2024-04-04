@@ -15,12 +15,13 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 /**
+ * @brief NavigationBar composable that displays the bottom navigation bar once logged in
  * @param navigation: Navigation object to navigate to other screens
  */
 fun NavigationBar(navigation: Navigation) {
     val selectedItem = remember { mutableIntStateOf(0) }  // By default, the home page is displayed
 
-    NavigationBar (
+    NavigationBar(
         containerColor = Color.Black, // Set the background color to black
         content = {
             val destinations = navigation.getTopLevelDestinations()
