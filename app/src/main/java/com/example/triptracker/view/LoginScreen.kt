@@ -100,8 +100,11 @@ fun LoginScreen(navigation: Navigation, loginViewModel: LoginViewModel = viewMod
   val loginResult = loginViewModel.authResult.observeAsState()
   when (val response = loginResult.value) {
     is AuthResponse.Success -> {
-        Box(modifier = Modifier.fillMaxSize()) {
-            // Display the login response information
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter // Aligns children to the bottom center
+        ) {
+            // Display the login response OK information
             LoginResponseOk(
                 result = response.data,
                 onSignOut = {
@@ -110,7 +113,7 @@ fun LoginScreen(navigation: Navigation, loginViewModel: LoginViewModel = viewMod
                 }
             )
 
-            // Overlay the navigation bar at the bottom
+            // Overlay the navigation bar at the bottom of the screen
             NavigationBar(navigation)
         }
     }
@@ -137,13 +140,18 @@ fun Login(
     authenticator: GoogleAuthenticator,
 ) {
   Column(
-      modifier = Modifier.fillMaxSize().padding(15.dp).testTag("LoginScreen"),
+      modifier = Modifier
+          .fillMaxSize()
+          .padding(15.dp)
+          .testTag("LoginScreen"),
       verticalArrangement = Arrangement.Top,
       horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Spacer(modifier = Modifier.height(152.dp))
     Image(
-        modifier = Modifier.width(189.dp).height(189.dp),
+        modifier = Modifier
+            .width(189.dp)
+            .height(189.dp),
         painter = painterResource(id = R.drawable.logo),
         contentDescription = "image description",
         contentScale = ContentScale.FillBounds)
@@ -165,7 +173,10 @@ fun Login(
           val signInIntent = authenticator.createSignInIntent(context)
           authenticator.signIn(signInIntent)
         },
-        modifier = Modifier.width(250.dp).height(40.dp).testTag("LoginButton"),
+        modifier = Modifier
+            .width(250.dp)
+            .height(40.dp)
+            .testTag("LoginButton"),
         colors =
             ButtonDefaults.buttonColors(
                 containerColor = md_theme_light_onPrimary,
@@ -204,7 +215,9 @@ fun LoginResponseOk(result: SignInResult, onSignOut: () -> Unit) {
           AsyncImage(
               model = result.imageUrl,
               contentDescription = "Profile picture",
-              modifier = Modifier.size(150.dp).clip(CircleShape),
+              modifier = Modifier
+                  .size(150.dp)
+                  .clip(CircleShape),
               contentScale = ContentScale.Crop)
           Spacer(modifier = Modifier.height(16.dp))
         }

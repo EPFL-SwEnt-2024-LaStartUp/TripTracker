@@ -5,6 +5,8 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import com.example.triptracker.R
+import androidx.compose.ui.res.vectorResource
 
 /** Destinations used in the app. */
 object Route {
@@ -21,16 +23,16 @@ object Route {
 }
 
 /** Models of the top level destinations for the bottom navigation bar. */
-data class TopLevelDestination(val route: String, val icon: ImageVector, val textId: String)
+data class TopLevelDestination(val route: String, val icon: Int, val textId: String)
 
 /** Destinations that are displayed at the bottom of the screen. */
 val TOP_LEVEL_DESTINATIONS =
     listOf(
         //TopLevelDestination(Route.LOGIN, Icons.Default.List, "Login"),
-        TopLevelDestination(Route.HOME, Icons.Default.List, "Home"),
-        TopLevelDestination(Route.MAPS, Icons.Default.List, "Maps"),
-        TopLevelDestination(Route.RECORD, Icons.Default.List, "Record"),
-        TopLevelDestination(Route.PROFILE, Icons.Default.List, "Profile"),
+        TopLevelDestination(Route.HOME, R.drawable.icon_home, "Home"),
+        TopLevelDestination(Route.MAPS, R.drawable.icon_map, "Maps"),
+        TopLevelDestination(Route.RECORD, R.drawable.icon_record, "Record"),
+        TopLevelDestination(Route.PROFILE, R.drawable.icon_profile, "Profile"),
     )
 
 /**
