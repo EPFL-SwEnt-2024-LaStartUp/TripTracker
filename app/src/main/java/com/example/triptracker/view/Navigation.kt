@@ -23,6 +23,16 @@ object Route {
 /** Models of the top level destinations for the bottom navigation bar. */
 data class TopLevelDestination(val route: String, val icon: ImageVector, val textId: String)
 
+/** Destinations that are displayed at the bottom of the screen. */
+val TOP_LEVEL_DESTINATIONS =
+    listOf(
+        //TopLevelDestination(Route.LOGIN, Icons.Default.List, "Login"),
+        TopLevelDestination(Route.HOME, Icons.Default.List, "Home"),
+        TopLevelDestination(Route.MAPS, Icons.Default.List, "Maps"),
+        TopLevelDestination(Route.RECORD, Icons.Default.List, "Record"),
+        TopLevelDestination(Route.PROFILE, Icons.Default.List, "Profile"),
+    )
+
 /**
  * Navigation that handles the navigation in the app. Allows to go back to the previous screen in a
  * non blocking way. Allows to navigate to a specific TopLevelDestination.
@@ -45,14 +55,9 @@ class Navigation(val navController: NavHostController) {
   fun goBack() {
     navController.popBackStack()
   }
-}
 
-/** Destinations that are displayed at the bottom of the screen. */
-val TOP_LEVEL_DESTINATIONS =
-    listOf(
-        //TopLevelDestination(Route.LOGIN, Icons.Default.List, "Login"),
-        TopLevelDestination(Route.HOME, Icons.Default.List, "Home"),
-        TopLevelDestination(Route.MAPS, Icons.Default.List, "Maps"),
-        TopLevelDestination(Route.RECORD, Icons.Default.List, "Record"),
-        TopLevelDestination(Route.PROFILE, Icons.Default.List, "Profile"),
-    )
+  // Function to access TOP_LEVEL_DESTINATIONS
+  fun getTopLevelDestinations(): List<TopLevelDestination> {
+    return TOP_LEVEL_DESTINATIONS
+  }
+}
