@@ -1,12 +1,9 @@
 package com.example.triptracker.view
 
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.triptracker.R
-import androidx.compose.ui.res.vectorResource
 
 /** Destinations used in the app. */
 object Route {
@@ -26,9 +23,9 @@ object Route {
 data class TopLevelDestination(val route: String, val icon: Int, val textId: String)
 
 /** Destinations that are displayed at the bottom of the screen. */
-val TOP_LEVEL_DESTINATIONS =
+private val TOP_LEVEL_DESTINATIONS =
     listOf(
-        //TopLevelDestination(Route.LOGIN, Icons.Default.List, "Login"),
+        // TopLevelDestination(Route.LOGIN, Icons.Default.List, "Login"),
         TopLevelDestination(Route.HOME, R.drawable.icon_home, "Home"),
         TopLevelDestination(Route.MAPS, R.drawable.icon_map, "Maps"),
         TopLevelDestination(Route.RECORD, R.drawable.icon_record, "Record"),
@@ -58,8 +55,8 @@ class Navigation(val navController: NavHostController) {
     navController.popBackStack()
   }
 
-  // Function to access TOP_LEVEL_DESTINATIONS
+  // Getter function to access a copy of the attribute TOP_LEVEL_DESTINATIONS
   fun getTopLevelDestinations(): List<TopLevelDestination> {
-    return TOP_LEVEL_DESTINATIONS
+    return TOP_LEVEL_DESTINATIONS.toMutableList()
   }
 }

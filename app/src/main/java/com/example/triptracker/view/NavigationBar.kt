@@ -15,36 +15,36 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 /**
- * @brief NavigationBar composable that displays the bottom navigation bar once logged in
  * @param navigation: Navigation object to navigate to other screens
+ * @brief NavigationBar composable that displays the bottom navigation bar once logged in
  */
 fun NavigationBar(navigation: Navigation) {
-    val selectedItem = remember { mutableIntStateOf(0) }  // By default, the home page is displayed
+  val selectedItem = remember { mutableIntStateOf(0) } // By default, the home page is displayed
 
-    NavigationBar(
-        containerColor = Color.Black, // Set the background color to black
-        content = {
-            val destinations = navigation.getTopLevelDestinations()
-            destinations.forEachIndexed { index, item ->
-                NavigationBarItem(
-                    icon = {
-                        Image(
-                            modifier = Modifier.size(24.dp),
-                            painter = painterResource(id = item.icon),
-                            contentDescription = item.route,
-                        )
-                    },
-                    label = { Text(item.textId, color = Color.White) }, // Set text color to white
-                    selected = selectedItem.intValue == index,
-                    onClick = {
-                        selectedItem.intValue = index
-
-                        /** TODO uncomment this once the navigation and the other tabs are implemented */
-                        // navigation.navigateTo(destinations[selectedItem])
-                    }
+  NavigationBar(
+      containerColor = Color.Black, // Set the background color to black
+      content = {
+        val destinations = navigation.getTopLevelDestinations()
+        destinations.forEachIndexed { index, item ->
+          NavigationBarItem(
+              icon = {
+                Image(
+                    modifier = Modifier.size(24.dp),
+                    painter = painterResource(id = item.icon),
+                    contentDescription = item.route,
                 )
-            }
-        },
-        contentColor = Color.White, // When another tab is clicked, a small transition animation in white appears
-    )
+              },
+              label = { Text(item.textId, color = Color.White) }, // Set text color to white
+              selected = selectedItem.intValue == index,
+              onClick = {
+                selectedItem.intValue = index
+
+                /** TODO uncomment this once the navigation and the other tabs are implemented */
+                // navigation.navigateTo(destinations[selectedItem])
+              })
+        }
+      },
+      contentColor =
+          Color.White, // When another tab is clicked, a small transition animation in white appears
+  )
 }
