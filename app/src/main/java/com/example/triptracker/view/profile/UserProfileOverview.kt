@@ -77,7 +77,7 @@ fun UserProfilePreview() {
               Text(
                   text =
                       "MICHAEL JACKSON", // I think we only show the pseudo here and keep birthdate
-                                         // name and surname private.
+                  // name and surname private.
                   style =
                       TextStyle(
                           fontSize = 24.sp,
@@ -234,7 +234,7 @@ fun UserProfileOverview(
                   text =
                       profile
                           .name, // I think we only show the pseudo here and keep birthdate name and
-                                 // surname private.
+                  // surname private.
                   style =
                       TextStyle(
                           fontSize = 24.sp,
