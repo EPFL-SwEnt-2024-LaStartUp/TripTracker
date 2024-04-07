@@ -121,7 +121,7 @@ fun DisplayItinerary(
             Icon(
                 imageVector = Icons.Outlined.Star,
                 contentDescription = "Star",
-                Modifier.size(20.dp)) // it's here but yo
+                Modifier.size(20.dp))
           }
           Spacer(modifier = Modifier.height(5.dp))
 
