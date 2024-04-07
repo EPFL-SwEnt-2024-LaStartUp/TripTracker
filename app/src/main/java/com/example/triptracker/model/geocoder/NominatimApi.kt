@@ -9,7 +9,6 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
-
 /**
  * Class containing all the nominatim API variants that describe a city to reverse decode the
  * location.
