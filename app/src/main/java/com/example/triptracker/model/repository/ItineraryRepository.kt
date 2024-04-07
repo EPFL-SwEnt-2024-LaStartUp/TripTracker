@@ -78,7 +78,8 @@ open class ItineraryRepository {
                 pinData["image-url"] as? String ?: "")
           }
 
-      val itinerary = Itinerary(
+      val itinerary =
+          Itinerary(
               id = document.id,
               title = document.getString("title") ?: "",
               username = document.getString("username") ?: "",
@@ -87,8 +88,7 @@ open class ItineraryRepository {
               startDateAndTime = document.getString("startDateAndTime") ?: "",
               endDateAndTime = document.getString("endDateAndTime") ?: "",
               pinnedPlaces = pinnedPlaces,
-              description = document.getString("description") ?: ""
-            )
+              description = document.getString("description") ?: "")
 
       _itineraryList.add(itinerary)
     }

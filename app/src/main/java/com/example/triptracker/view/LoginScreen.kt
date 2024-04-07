@@ -108,6 +108,22 @@ fun LoginScreen(navigation: Navigation, loginViewModel: LoginViewModel = viewMod
           },
           navigation = navigation)
       //            onNavigateToOverview() //TODO call this once new screens are added
+      Box(
+          modifier = Modifier.fillMaxSize(),
+          contentAlignment = Alignment.BottomCenter // Aligns children to the bottom center
+          ) {
+            // Display the login response OK information
+            LoginResponseOk(
+                result = response.data,
+                onSignOut = {
+                  authenticator.signOut()
+                  navigation.navController.navigate(Route.LOGIN)
+                },
+                navigation = navigation)
+
+            // Overlay the navigation bar at the bottom of the screen
+            NavigationBar(navigation)
+          }
     }
     is AuthResponse.Error -> {
       LoginResponseFailure(message = response.errorMessage)

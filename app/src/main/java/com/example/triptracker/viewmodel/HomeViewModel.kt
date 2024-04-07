@@ -28,20 +28,18 @@ class HomeViewModel : ViewModel() {
     fetchItineraries()
   }
 
-  /**
-   * Fetches all itineraries from the repository and stores them in the itineraryList LiveData
-   */
+  /** Fetches all itineraries from the repository and stores them in the itineraryList LiveData */
   private fun fetchItineraries() {
     itineraryInstance.itineraryList =
         repository.getAllItineraries(callback = { itineraryList -> fetchPinNames(itineraryList) })
     _itineraryList.value = itineraryInstance.itineraryList
   }
 
-    /**
-     * Fetches the names of all pinned places for each itinerary in the list
-     *
-     * @param itineraries List of itineraries
-     */
+  /**
+   * Fetches the names of all pinned places for each itinerary in the list
+   *
+   * @param itineraries List of itineraries
+   */
   private fun fetchPinNames(itineraries: List<Itinerary>) {
     val pinNamesMap = mutableMapOf<String, List<String>>()
 

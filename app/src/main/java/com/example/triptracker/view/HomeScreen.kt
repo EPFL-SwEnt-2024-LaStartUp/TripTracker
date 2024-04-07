@@ -70,7 +70,7 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
                 fontSize = 18.sp)
           }
           else -> {
-              // will display the list of itineraries
+            // will display the list of itineraries
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("ItineraryList"),
                 contentPadding = PaddingValues(16.dp)) {
@@ -104,7 +104,7 @@ fun DisplayItinerary(
               .clickable { navigation.navController.navigate(Route.LOGIN) }) {
         Column(modifier = Modifier.fillMaxWidth().padding(25.dp)) {
           Row(modifier = Modifier.fillMaxWidth()) {
-              // change the image to the user's profile picture
+            // change the image to the user's profile picture
             AsyncImage(
                 model =
                     "https://blueprintdigital.com/wp-content/uploads/2014/11/stock-photo-happy-man-giving-okay-sign-portrait-on-white-background-141327337.jpg",
