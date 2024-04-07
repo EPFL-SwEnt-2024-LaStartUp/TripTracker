@@ -66,9 +66,9 @@ open class ItineraryRepository {
               locationData["latitude"] as Double,
               locationData["longitude"] as Double,
               locationData["name"] as String)
-      val pinnedPlacesData = document.data["pinnedPlaces"] as? List<Map<String, Any>>
+      val pinnedPlacesData = document.data["pinnedPlaces"] as? List<Map<String, Any>> ?: emptyList()
       val pinnedPlaces: List<Pin> =
-          pinnedPlacesData?.map { pinData ->
+          pinnedPlacesData.map { pinData ->
             // Assuming Pin class has a constructor that takes these fields:
             Pin(
                 pinData["latitude"] as? Double ?: 0.0,
@@ -76,19 +76,19 @@ open class ItineraryRepository {
                 pinData["name"] as? String ?: "",
                 pinData["description"] as? String ?: "",
                 pinData["image-url"] as? String ?: "")
-          } ?: emptyList()
+          }
 
-      val itinerary =
-          Itinerary(
-              document.id,
-              document.data["title"] as String,
-              document.data["username"] as String,
-              location,
-              document.data["flameCount"] as Long,
-              document.data["startDateAndTime"] as String,
-              document.data["endDateAndTime"] as String,
-              pinnedPlaces,
-              document.data["description"] as String)
+      val itinerary = Itinerary(
+              id = document.id,
+              title = document.getString("title") ?: "",
+              username = document.getString("username") ?: "",
+              location = location,
+              flameCount = document.getLong("flameCount") ?: 0L,
+              startDateAndTime = document.getString("startDateAndTime") ?: "",
+              endDateAndTime = document.getString("endDateAndTime") ?: "",
+              pinnedPlaces = pinnedPlaces,
+              description = document.getString("description") ?: ""
+            )
 
       _itineraryList.add(itinerary)
     }

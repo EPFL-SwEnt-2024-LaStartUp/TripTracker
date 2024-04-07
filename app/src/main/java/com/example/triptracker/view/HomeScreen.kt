@@ -62,7 +62,7 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
         // Bottom bar content goes here, if any
       },
       modifier = Modifier.testTag("HomeScreen")) { innerPadding ->
-        when (val itineraries = homeViewModel.itineraryList.value) {
+        when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
           null -> {
             Text(
                 text = "You do not have any itineraries yet.",
@@ -70,6 +70,7 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
                 fontSize = 18.sp)
           }
           else -> {
+              // will display the list of itineraries
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("ItineraryList"),
                 contentPadding = PaddingValues(16.dp)) {
@@ -94,10 +95,7 @@ fun DisplayItinerary(
 ) {
   // Number of additional itineraries not displayed
   val pinNames = pinNamesMap[itinerary.id]
-  val numNotDisplayed = pinNames?.size?.minus(3)
-  // pinNamesMap[itinerary.id]?.let { Log.d("PININHOME", "Pinned places: $it") }
   val pinListString = pinNames?.let { convertPinListToString(it) }
-  // Log.d("AHHH", "$pinListString")
   Box(
       modifier =
           Modifier.fillMaxWidth()
@@ -106,9 +104,10 @@ fun DisplayItinerary(
               .clickable { navigation.navController.navigate(Route.LOGIN) }) {
         Column(modifier = Modifier.fillMaxWidth().padding(25.dp)) {
           Row(modifier = Modifier.fillMaxWidth()) {
+              // change the image to the user's profile picture
             AsyncImage(
                 model =
-                    "https://img.freepik.com/free-photo/portrait-beautiful-young-woman-standing-grey-wall_231208-10760.jpg?w=2000&t=st=1711454089~exp=1711454689~hmac=6f14370e52705014b746e505ad5eaa349d39cb10da32e08df52fdeb9dbf9ad9f",
+                    "https://blueprintdigital.com/wp-content/uploads/2014/11/stock-photo-happy-man-giving-okay-sign-portrait-on-white-background-141327337.jpg",
                 contentDescription = "User Avatar",
                 modifier = Modifier.size(20.dp).clip(CircleShape))
             Spacer(modifier = Modifier.width(15.dp))
@@ -124,7 +123,7 @@ fun DisplayItinerary(
                 contentDescription = "Star",
                 Modifier.size(20.dp)) // it's here but yo
           }
-          Spacer(modifier = Modifier.height(10.dp))
+          Spacer(modifier = Modifier.height(5.dp))
 
           Text(
               text = itinerary.title,

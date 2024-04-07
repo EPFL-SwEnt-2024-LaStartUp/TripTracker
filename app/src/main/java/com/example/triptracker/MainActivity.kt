@@ -11,13 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.view.HomeScreen
 import com.example.triptracker.view.LoginScreen
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.theme.TripTrackerTheme
-import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
@@ -25,25 +23,6 @@ class MainActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    FirebaseApp.initializeApp(applicationContext)
-    auth = FirebaseAuth.getInstance()
-    val repository = ItineraryRepository()
-
-    // add some Itinerary data by hand to test
-    /*
-    val itinerary_1 =
-        Itinerary(
-            "1",
-            "My NYC Trip",
-            "Lomimi",
-            Location(0.0, 0.0, "NYC baby"),
-            3504,
-            "2024-03-25T13:51:50",
-            "2024-03-25T17:31:10",
-            listOf(Pin(60.4, 58.2, "Empire State Building", "Beautiful", "stupid-image-url.com")),
-            "Many places seen")
-            */
-
     setContent {
       // Set the trip tracker theme
       TripTrackerTheme {
