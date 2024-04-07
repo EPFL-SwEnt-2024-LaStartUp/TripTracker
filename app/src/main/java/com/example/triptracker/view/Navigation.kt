@@ -1,6 +1,5 @@
 package com.example.triptracker.view
 
-import androidx.compose.material.icons.filled.List
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.triptracker.R
@@ -9,6 +8,7 @@ import com.example.triptracker.R
 object Route {
   /** Login route. */
   const val LOGIN = "login"
+  const val ITINERARY_PREVIEW = "itinerary_preview"
 
   /** Top level routes at the bottom of the screen */
   const val HOME = "home"

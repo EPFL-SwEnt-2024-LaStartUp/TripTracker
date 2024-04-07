@@ -2,6 +2,10 @@ package com.example.triptracker.view.theme
 
 import androidx.compose.ui.graphics.Color
 
+val md_theme_orange = Color(0xFFD4622B)
+val md_theme_gray = Color(0xFFC0C7CD)
+
+val md_theme_light_black = Color(0xFF1D2022)
 val md_theme_light_primary = Color(0xFF00668A)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)
 val md_theme_light_primaryContainer = Color(0xFFC3E7FF)
@@ -32,6 +36,7 @@ val md_theme_light_surfaceTint = Color(0xFF00668A)
 val md_theme_light_outlineVariant = Color(0xFFC0C7CD)
 val md_theme_light_scrim = Color(0xFF000000)
 
+val md_theme_dark_black = Color(0xFFE2DFDD)
 val md_theme_dark_primary = Color(0xFF7BD0FF)
 val md_theme_dark_onPrimary = Color(0xFF003549)
 val md_theme_dark_primaryContainer = Color(0xFF004C69)

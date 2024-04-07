@@ -24,7 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.MyLocation
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -69,6 +69,7 @@ import kotlinx.coroutines.launch
 // Define color constants
 val lightDark = Color(0xFF1D2022)
 val redFox = Color(0xFFD4622B)
+// two shades of gray, one transparent
 val lightGray = Color(0xFFC0C7CD)
 val transparentGray = Color(0xC0C0C7CD)
 
@@ -208,7 +209,7 @@ fun Map(context: Context, viewModel: RecordViewModel, startLocation: LatLng) {
         modifier = Modifier.align(Alignment.BottomCenter),
         horizontalArrangement = Arrangement.Center) {
           Icon(
-              imageVector = Icons.Outlined.MyLocation,
+              imageVector = Icons.Outlined.LocationOn,
               contentDescription = "Center on device location",
               tint = Color.White,
               modifier =

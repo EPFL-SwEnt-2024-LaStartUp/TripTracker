@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.navigation.LaunchPermissionRequest
+import com.example.triptracker.view.HomeScreen
 import com.example.triptracker.view.LoginScreen
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
@@ -36,6 +37,7 @@ class MainActivity : ComponentActivity() {
             composable(Route.LOGIN) {
               LoginScreen(navigation) // TODO change this once more screens are added
             }
+            composable(Route.HOME) { HomeScreen(navigation) }
           }
         }
       }
