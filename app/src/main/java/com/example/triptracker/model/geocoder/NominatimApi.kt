@@ -31,6 +31,7 @@ object LocationErrors {
   const val FAIL = "Failed to execute request"
 }
 
+/** Class to interact with the Nominatim API to reverse decode the location. */
 class NominatimApi {
 
   // URL for the search query (address to lat and lon)
