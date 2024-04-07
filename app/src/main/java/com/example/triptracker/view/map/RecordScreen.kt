@@ -69,7 +69,7 @@ import java.util.concurrent.TimeUnit
 // Define color constants
 val lightDark = Color(0xFF1D2022)
 val redFox = Color(0xFFD4622B)
-// two shades of gray
+// two shades of gray, one transparent
 val lightGray = Color(0xFFC0C7CD)
 val transparentGray = Color(0xC0C0C7CD)
 
