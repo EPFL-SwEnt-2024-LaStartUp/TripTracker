@@ -21,10 +21,12 @@ import com.google.maps.android.compose.CameraPositionState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-
 val gradient =
     Brush.verticalGradient(
         colorStops = arrayOf(0.0f to Color.White, 0.1f to Color.White, 0.3f to Color.Transparent))
+
+val DEFAULT_LOCATION = LatLng(46.518831258, 6.559331096)
+
 @Composable
 fun DisplayCenterLocationButton(
     coroutineScope: CoroutineScope,

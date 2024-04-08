@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -56,7 +55,7 @@ fun MapOverview(
 ) {
 
   // The device location is set to EPFL by default
-  var deviceLocation = LatLng(46.519962, 6.633597)
+  var deviceLocation = DEFAULT_LOCATION
   var mapProperties =
       MapProperties(
           mapType = MapType.NORMAL, isMyLocationEnabled = checkForLocationPermission(context))
@@ -133,8 +132,6 @@ fun Map(
           cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
         })
   }
-
-
 
   // Displays the map
   Box() {

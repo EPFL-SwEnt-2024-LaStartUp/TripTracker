@@ -82,7 +82,7 @@ const val DELAY = 5000L
 @Composable
 fun RecordScreen(context: Context, viewModel: RecordViewModel = RecordViewModel()) {
   // default device location is EPFL
-  var deviceLocation = LatLng(46.518831258, 6.559331096)
+  var deviceLocation = DEFAULT_LOCATION
 
   // Default map properties and UI settings
   var mapProperties =
