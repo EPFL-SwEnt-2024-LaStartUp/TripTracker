@@ -37,6 +37,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -149,7 +150,11 @@ fun Map(
           cameraPositionState = cameraPositionState,
           properties = properties,
           uiSettings = ui,
-      ) {}
+      ) {
+        mapViewModel.itineraryList.value?.forEach { (location, latLngList) ->
+          Polyline(points = latLngList, color = redFox, width = 15f)
+        }
+      }
     }
     Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
       Text(
