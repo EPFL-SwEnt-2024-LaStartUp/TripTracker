@@ -134,9 +134,7 @@ fun Map(
         })
   }
 
-    val gradient =
-        Brush.verticalGradient(
-            colorStops = arrayOf(0.0f to Color.White, 0.1f to Color.White, 0.3f to Color.Transparent))
+
 
   // Displays the map
   Box() {

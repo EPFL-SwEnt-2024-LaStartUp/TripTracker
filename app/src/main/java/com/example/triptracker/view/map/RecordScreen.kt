@@ -169,11 +169,6 @@ fun Map(
     }
   }
 
-  // Define gradient for top bar
-  val gradient =
-      Brush.verticalGradient(
-          colorStops = arrayOf(0.0f to Color.White, 0.1f to Color.White, 0.3f to Color.Transparent))
-
   // Display the map
   Box {
     Box(modifier = Modifier.fillMaxSize()) {
