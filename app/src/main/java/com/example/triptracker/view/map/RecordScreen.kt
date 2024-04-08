@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,7 +22,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -122,12 +119,18 @@ fun RecordScreen(context: Context, viewModel: RecordViewModel = RecordViewModel(
  * @param startLocation The starting location.
  */
 @Composable
-fun Map(context: Context, viewModel: RecordViewModel, startLocation: LatLng, mapProperties: MapProperties, uiSettings: MapUiSettings ) {
+fun Map(
+    context: Context,
+    viewModel: RecordViewModel,
+    startLocation: LatLng,
+    mapProperties: MapProperties,
+    uiSettings: MapUiSettings
+) {
   // Mutable state for the device location and the local LatLng list
   var deviceLocation by remember { mutableStateOf(startLocation) }
   val localLatLngList = remember { mutableStateListOf<LatLng>() }
-    val ui by remember { mutableStateOf(uiSettings) }
-    val properties by remember { mutableStateOf(mapProperties) }
+  val ui by remember { mutableStateOf(uiSettings) }
+  val properties by remember { mutableStateOf(mapProperties) }
 
   // Coroutine scope for the animations
   val coroutineScope = rememberCoroutineScope()
@@ -176,12 +179,10 @@ fun Map(context: Context, viewModel: RecordViewModel, startLocation: LatLng, map
     Box(modifier = Modifier.fillMaxSize()) {
       GoogleMap(
           modifier =
-          Modifier
-              .matchParentSize()
-              .background(
-                  brush =
-                  Brush.verticalGradient(colors = listOf(Color.Transparent, lightDark))
-              ),
+              Modifier.matchParentSize()
+                  .background(
+                      brush =
+                          Brush.verticalGradient(colors = listOf(Color.Transparent, lightDark))),
           cameraPositionState = cameraPositionState,
           properties = properties,
           uiSettings = ui,
@@ -195,15 +196,10 @@ fun Map(context: Context, viewModel: RecordViewModel, startLocation: LatLng, map
     }
 
     // Display gradient for top bar
-    Box(modifier = Modifier
-        .matchParentSize()
-        .background(gradient)
-        .align(Alignment.TopCenter)) {
+    Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
       Text(
           text = "Record",
-          modifier = Modifier
-              .padding(30.dp)
-              .align(Alignment.TopCenter),
+          modifier = Modifier.padding(30.dp).align(Alignment.TopCenter),
           fontSize = 24.sp,
           fontFamily = Montserrat,
           fontWeight = FontWeight.SemiBold,
@@ -217,15 +213,14 @@ fun Map(context: Context, viewModel: RecordViewModel, startLocation: LatLng, map
     Row(
         modifier = Modifier.align(Alignment.BottomCenter),
         horizontalArrangement = Arrangement.Center) {
-        if (ui.myLocationButtonEnabled && properties.isMyLocationEnabled) {
+          if (ui.myLocationButtonEnabled && properties.isMyLocationEnabled) {
             Box(modifier = Modifier.padding(horizontal = 0.dp, vertical = 60.dp)) {
-                DisplayCenterLocationButton(
-                    coroutineScope = coroutineScope,
-                    deviceLocation = deviceLocation,
-                    cameraPositionState = cameraPositionState
-                )
+              DisplayCenterLocationButton(
+                  coroutineScope = coroutineScope,
+                  deviceLocation = deviceLocation,
+                  cameraPositionState = cameraPositionState)
             }
-        }
+          }
 
           // Button to start/stop recording
           FilledTonalButton(
@@ -238,10 +233,7 @@ fun Map(context: Context, viewModel: RecordViewModel, startLocation: LatLng, map
                   viewModel.startRecording()
                 }
               },
-              modifier = Modifier
-                  .padding(50.dp)
-                  .fillMaxWidth(0.6f)
-                  .fillMaxHeight(0.1f),
+              modifier = Modifier.padding(50.dp).fillMaxWidth(0.6f).fillMaxHeight(0.1f),
               colors =
                   ButtonDefaults.filledTonalButtonColors(
                       containerColor = redFox, contentColor = Color.White),
@@ -279,10 +271,7 @@ fun StartWindow(viewModel: RecordViewModel) {
 
   // Display recording window if user is recording
   Column(
-      modifier = Modifier
-          .fillMaxHeight()
-          .fillMaxWidth()
-          .padding(top = 20.dp, bottom = 100.dp),
+      modifier = Modifier.fillMaxHeight().fillMaxWidth().padding(top = 20.dp, bottom = 100.dp),
       verticalArrangement = Arrangement.SpaceBetween) {
         // animate the visibility of the recording window
         AnimatedVisibility(
@@ -290,16 +279,13 @@ fun StartWindow(viewModel: RecordViewModel) {
             enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
             exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)) {
               // Display the timer
-              Box(modifier = Modifier
-                  .fillMaxHeight(0.35f)
-                  .fillMaxWidth()) {
+              Box(modifier = Modifier.fillMaxHeight(0.35f).fillMaxWidth()) {
                 Box(
                     modifier =
-                    Modifier
-                        .fillMaxWidth(0.9f)
-                        .fillMaxHeight(0.5f)
-                        .background(lightDark, shape = RoundedCornerShape(35.dp))
-                        .align(Alignment.Center)) {
+                        Modifier.fillMaxWidth(0.9f)
+                            .fillMaxHeight(0.5f)
+                            .background(lightDark, shape = RoundedCornerShape(35.dp))
+                            .align(Alignment.Center)) {
                       Row(
                           modifier = Modifier.fillMaxSize(),
                           horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -327,21 +313,17 @@ fun StartWindow(viewModel: RecordViewModel) {
             enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
             exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Bottom)) {
               // Display the pause/resume button and add spot button
-              Box(modifier = Modifier
-                  .fillMaxHeight(0.5f)
-                  .fillMaxWidth()) {
+              Box(modifier = Modifier.fillMaxHeight(0.5f).fillMaxWidth()) {
                 Box(
                     modifier =
-                    Modifier
-                        .fillMaxWidth(0.9f)
-                        .fillMaxHeight(0.45f)
-                        .background(lightDark, shape = RoundedCornerShape(35.dp))
-                        .align(Alignment.Center)) {
+                        Modifier.fillMaxWidth(0.9f)
+                            .fillMaxHeight(0.45f)
+                            .background(lightDark, shape = RoundedCornerShape(35.dp))
+                            .align(Alignment.Center)) {
                       Row(
                           modifier =
-                          Modifier
-                              .fillMaxSize()
-                              .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
+                              Modifier.fillMaxSize()
+                                  .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
                           horizontalArrangement = Arrangement.SpaceBetween) {
                             FilledTonalButton(
                                 onClick = {
@@ -352,9 +334,7 @@ fun StartWindow(viewModel: RecordViewModel) {
                                   }
                                 },
                                 modifier =
-                                Modifier
-                                    .align(Alignment.CenterVertically)
-                                    .fillMaxHeight(0.6f),
+                                    Modifier.align(Alignment.CenterVertically).fillMaxHeight(0.6f),
                                 colors =
                                     ButtonDefaults.filledTonalButtonColors(
                                         containerColor = Color.White, contentColor = lightDark),
@@ -380,10 +360,9 @@ fun StartWindow(viewModel: RecordViewModel) {
                                   IconButton(
                                       onClick = { /*TODO*/},
                                       modifier =
-                                      Modifier
-                                          .align(Alignment.CenterVertically)
-                                          .size(50.dp)
-                                          .background(Color.White, shape = CircleShape),
+                                          Modifier.align(Alignment.CenterVertically)
+                                              .size(50.dp)
+                                              .background(Color.White, shape = CircleShape),
                                   ) {
                                     Icon(
                                         imageVector = Icons.Outlined.Add,
