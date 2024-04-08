@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,13 +23,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
+import com.example.triptracker.view.Navigation
+import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.viewmodel.MapViewModel
@@ -53,8 +58,8 @@ import com.google.maps.android.compose.rememberCameraPositionState
 fun MapOverview(
     mapViewModel: MapViewModel = MapViewModel(),
     context: Context,
+    navigation: Navigation
 ) {
-
   // The device location is set to EPFL by default
   var deviceLocation = DEFAULT_LOCATION
   var mapProperties =
@@ -70,18 +75,30 @@ fun MapOverview(
   // location
   when (checkForLocationPermission(context = context)) {
     true -> {
-      Map(mapViewModel, context, deviceLocation, mapProperties, uiSettings)
+      Scaffold(
+          bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
+              innerPadding ->
+            Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+              Map(mapViewModel, context, deviceLocation, mapProperties, uiSettings)
+            }
+          }
     }
     false -> {
-      AllowLocationPermission(
-          onPermissionGranted = {
-            mapProperties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
-            uiSettings = MapUiSettings(myLocationButtonEnabled = true)
-          },
-          onPermissionDenied = {
-            mapProperties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
-            uiSettings = MapUiSettings(myLocationButtonEnabled = false)
-          })
+      Scaffold(
+          bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
+              innerPadding ->
+            AllowLocationPermission(
+                onPermissionGranted = {
+                  mapProperties =
+                      MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
+                  uiSettings = MapUiSettings(myLocationButtonEnabled = true)
+                },
+                onPermissionDenied = {
+                  mapProperties =
+                      MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
+                  uiSettings = MapUiSettings(myLocationButtonEnabled = false)
+                })
+          }
     }
   }
 }
@@ -177,8 +194,7 @@ fun Map(
 // Start this screen to only see the overview of the map
 fun MapOverviewPreview() {
   val context = LocalContext.current
-  MapOverview(
-      MapViewModel(),
-      context,
-  )
+  val navController = rememberNavController()
+  val navigation = remember(navController) { Navigation(navController) }
+  MapOverview(MapViewModel(), context, navigation)
 }
