@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.triptracker.view.theme.md_theme_gray
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -41,7 +42,7 @@ fun DisplayCenterLocationButton(
       modifier =
           Modifier.width(50.dp)
               .height(50.dp)
-              .background(transparentGray, shape = RoundedCornerShape(16.dp))
+              .background(md_theme_gray, shape = RoundedCornerShape(16.dp))
               .padding(10.dp)
               .clickable {
                 coroutineScope.launch {

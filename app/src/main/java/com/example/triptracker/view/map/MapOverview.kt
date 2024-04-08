@@ -30,6 +30,7 @@ import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
 import com.example.triptracker.view.theme.Montserrat
+import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.viewmodel.MapViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -154,7 +155,7 @@ fun Map(
           fontSize = 24.sp,
           fontFamily = Montserrat,
           fontWeight = FontWeight.SemiBold,
-          color = lightDark)
+          color = md_theme_light_dark)
     }
     Row(
         modifier = Modifier.align(Alignment.BottomStart),

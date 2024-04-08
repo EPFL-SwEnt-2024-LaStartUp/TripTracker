@@ -49,6 +49,9 @@ import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
 import com.example.triptracker.view.theme.Montserrat
+import com.example.triptracker.view.theme.md_theme_gray
+import com.example.triptracker.view.theme.md_theme_light_dark
+import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.RecordViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -62,13 +65,6 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
-// Define color constants
-val lightDark = Color(0xFF1D2022)
-val redFox = Color(0xFFD4622B)
-// two shades of gray, one transparent
-val lightGray = Color(0xFFC0C7CD)
-val transparentGray = Color(0xC0C0C7CD)
 
 // Define the delay for the location update
 const val DELAY = 5000L
@@ -177,14 +173,15 @@ fun Map(
               Modifier.matchParentSize()
                   .background(
                       brush =
-                          Brush.verticalGradient(colors = listOf(Color.Transparent, lightDark))),
+                          Brush.verticalGradient(
+                              colors = listOf(Color.Transparent, md_theme_light_dark))),
           cameraPositionState = cameraPositionState,
           properties = properties,
           uiSettings = ui,
       ) {
         Polyline(
             points = localLatLngList.toList(),
-            color = redFox,
+            color = md_theme_orange,
             width = 15f,
         )
       }
@@ -198,7 +195,7 @@ fun Map(
           fontSize = 24.sp,
           fontFamily = Montserrat,
           fontWeight = FontWeight.SemiBold,
-          color = lightDark)
+          color = md_theme_light_dark)
     }
 
     // Display start window
@@ -231,7 +228,7 @@ fun Map(
               modifier = Modifier.padding(50.dp).fillMaxWidth(0.6f).fillMaxHeight(0.1f),
               colors =
                   ButtonDefaults.filledTonalButtonColors(
-                      containerColor = redFox, contentColor = Color.White),
+                      containerColor = md_theme_orange, contentColor = Color.White),
           ) {
             Text(
                 text = if (viewModel.isRecording()) "Stop" else "Start",
@@ -279,7 +276,7 @@ fun StartWindow(viewModel: RecordViewModel) {
                     modifier =
                         Modifier.fillMaxWidth(0.9f)
                             .fillMaxHeight(0.5f)
-                            .background(lightDark, shape = RoundedCornerShape(35.dp))
+                            .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
                             .align(Alignment.Center)) {
                       Row(
                           modifier = Modifier.fillMaxSize(),
@@ -313,7 +310,7 @@ fun StartWindow(viewModel: RecordViewModel) {
                     modifier =
                         Modifier.fillMaxWidth(0.9f)
                             .fillMaxHeight(0.45f)
-                            .background(lightDark, shape = RoundedCornerShape(35.dp))
+                            .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
                             .align(Alignment.Center)) {
                       Row(
                           modifier =
@@ -332,14 +329,15 @@ fun StartWindow(viewModel: RecordViewModel) {
                                     Modifier.align(Alignment.CenterVertically).fillMaxHeight(0.6f),
                                 colors =
                                     ButtonDefaults.filledTonalButtonColors(
-                                        containerColor = Color.White, contentColor = lightDark),
+                                        containerColor = Color.White,
+                                        contentColor = md_theme_light_dark),
                             ) {
                               Text(
                                   text = if (viewModel.isPaused.value) "Resume" else "Pause",
                                   fontSize = 14.sp,
                                   fontFamily = Montserrat,
                                   fontWeight = FontWeight.SemiBold,
-                                  color = lightDark)
+                                  color = md_theme_light_dark)
                             }
                             Row(
                                 modifier = Modifier.align(Alignment.CenterVertically),
@@ -350,7 +348,7 @@ fun StartWindow(viewModel: RecordViewModel) {
                                       fontSize = 14.sp,
                                       fontFamily = Montserrat,
                                       fontWeight = FontWeight.SemiBold,
-                                      color = transparentGray)
+                                      color = md_theme_gray)
                                   Spacer(modifier = Modifier.width(20.dp))
                                   IconButton(
                                       onClick = { /*TODO*/},
@@ -362,7 +360,7 @@ fun StartWindow(viewModel: RecordViewModel) {
                                     Icon(
                                         imageVector = Icons.Outlined.Add,
                                         contentDescription = "Add spot",
-                                        tint = lightDark,
+                                        tint = md_theme_light_dark,
                                         modifier = Modifier.size(30.dp))
                                   }
                                 }
