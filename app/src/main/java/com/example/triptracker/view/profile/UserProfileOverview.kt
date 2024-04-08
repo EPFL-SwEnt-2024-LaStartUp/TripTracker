@@ -197,7 +197,7 @@ fun UserProfileOverview(
     userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
     navigation: Navigation
 ) {
-  // Url de la photo de profil à récupérer grace à l'uid
+  // UID of the user that needs to be fetched from ??, usred to fetch the profile from the database
   val uid = "TODO"
   val profile = userProfileViewModel.userProfileList.getUserProfile(uid)
   val url = profile.profileImageUrl
@@ -284,7 +284,7 @@ fun UserProfileOverview(
                     onClick = {
                       navigation.navigateTo(
                           TopLevelDestination(
-                              Route.FAVORITES, Icons.Outlined.FavoriteBorder, "Favorites"))
+                              Route.FAVORITES, R.drawable.favorite, "Favorites"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     modifier =
@@ -303,7 +303,7 @@ fun UserProfileOverview(
                 Button(
                     onClick = {
                       navigation.navigateTo(
-                          TopLevelDestination(Route.FRIENDS, Icons.Outlined.Person, "Friends"))
+                          TopLevelDestination(Route.FRIENDS, R.drawable.friends, "Friends"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     modifier =
@@ -322,7 +322,7 @@ fun UserProfileOverview(
                 Button(
                     onClick = {
                       navigation.navigateTo(
-                          TopLevelDestination(Route.MYTRIPS, Icons.Outlined.List, "MyTrips"))
+                          TopLevelDestination(Route.MYTRIPS, R.drawable.mytrips, "MyTrips"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     modifier =
@@ -341,7 +341,7 @@ fun UserProfileOverview(
                 Button(
                     onClick = {
                       navigation.navigateTo(
-                          TopLevelDestination(Route.SETTINGS, Icons.Outlined.Settings, "Settings"))
+                          TopLevelDestination(Route.SETTINGS, R.drawable.settings, "Settings"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     modifier =
