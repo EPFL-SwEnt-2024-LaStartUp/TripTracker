@@ -23,12 +23,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
+import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.viewmodel.MapViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -132,10 +134,9 @@ fun Map(
         })
   }
 
-  val gradient =
-      Brush.verticalGradient(
-          colorStops =
-              arrayOf(0.0f to Color.White, 0.1f to Color.White, 0.15f to Color.Transparent))
+    val gradient =
+        Brush.verticalGradient(
+            colorStops = arrayOf(0.0f to Color.White, 0.1f to Color.White, 0.3f to Color.Transparent))
 
   // Displays the map
   Box() {
@@ -156,8 +157,9 @@ fun Map(
           text = mapViewModel.cityNameState.value,
           modifier = Modifier.padding(30.dp).align(Alignment.TopCenter),
           fontSize = 24.sp,
-          fontFamily = FontFamily.SansSerif,
-          color = Color.Black)
+          fontFamily = Montserrat,
+          fontWeight = FontWeight.SemiBold,
+          color = lightDark)
     }
     Row(
         modifier = Modifier.align(Alignment.BottomStart),
