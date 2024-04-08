@@ -159,20 +159,24 @@ fun Map(
           fontFamily = FontFamily.SansSerif,
           color = Color.Black)
 
-      IconButton(
-          onClick = {
-            getCurrentLocation(
-                context = context,
-                onLocationFetched = {
-                  deviceLocation = it
-                  cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 16f)
-                })
-          }) {
-            Icon(
-                modifier = Modifier.padding(40.dp),
-                painter = painterResource(id = R.drawable.ic_gps_fixed),
-                contentDescription = null)
-          }
+        if(ui.myLocationButtonEnabled && mapProperties.isMyLocationEnabled) {
+            IconButton(
+                onClick = {
+                    getCurrentLocation(
+                        context = context,
+                        onLocationFetched = {
+                            deviceLocation = it
+                            cameraPositionState.position =
+                                CameraPosition.fromLatLngZoom(deviceLocation, 16f)
+                        })
+                }) {
+                Icon(
+                    modifier = Modifier.padding(40.dp),
+                    painter = painterResource(id = R.drawable.ic_gps_fixed),
+                    contentDescription = null
+                )
+            }
+        }
     }
   }
 }
