@@ -26,6 +26,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,6 +52,7 @@ import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
 import com.example.triptracker.view.Navigation
+import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
@@ -78,7 +81,11 @@ const val DELAY = 5000L
  * @param viewModel The RecordViewModel instance.
  */
 @Composable
-fun RecordScreen(context: Context, navigation: Navigation, viewModel: RecordViewModel = RecordViewModel()) {
+fun RecordScreen(
+    context: Context,
+    navigation: Navigation,
+    viewModel: RecordViewModel = RecordViewModel()
+) {
   // default device location is EPFL
   var deviceLocation = DEFAULT_LOCATION
 
@@ -94,18 +101,28 @@ fun RecordScreen(context: Context, navigation: Navigation, viewModel: RecordView
   // Check for location permission
   when (checkForLocationPermission(context = context)) {
     true -> {
-      Map(context, viewModel, deviceLocation, mapProperties, uiSettings)
+      Scaffold(
+          bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
+              innerPadding ->
+            Map(context, viewModel, deviceLocation, mapProperties, uiSettings)
+          }
     }
     false -> {
-      AllowLocationPermission(
-          onPermissionGranted = {
-            mapProperties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
-            uiSettings = MapUiSettings(myLocationButtonEnabled = true)
-          },
-          onPermissionDenied = {
-            mapProperties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
-            uiSettings = MapUiSettings(myLocationButtonEnabled = false)
-          })
+      Scaffold(
+          bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
+              innerPadding ->
+            AllowLocationPermission(
+                onPermissionGranted = {
+                  mapProperties =
+                      MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
+                  uiSettings = MapUiSettings(myLocationButtonEnabled = true)
+                },
+                onPermissionDenied = {
+                  mapProperties =
+                      MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
+                  uiSettings = MapUiSettings(myLocationButtonEnabled = false)
+                })
+          }
     }
   }
 }
@@ -396,8 +413,5 @@ fun RecordScreenPreview() {
   val context = LocalContext.current
   val navController = rememberNavController()
   val navigation = remember(navController) { Navigation(navController) }
-  RecordScreen(
-      context,
-      navigation
-  )
+  RecordScreen(context, navigation)
 }
