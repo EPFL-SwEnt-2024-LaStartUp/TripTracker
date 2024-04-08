@@ -8,6 +8,13 @@ import com.example.triptracker.R
 object Route {
   /** Login route. */
   const val LOGIN = "login"
+
+  /** Profile routes */
+  const val FAVORITES = "favorites"
+  const val FRIENDS = "friends"
+  const val MYTRIPS = "mytrips"
+  const val SETTINGS = "settings"
+
   const val ITINERARY_PREVIEW = "itinerary_preview"
 
   /** Top level routes at the bottom of the screen */
@@ -15,8 +22,6 @@ object Route {
   const val MAPS = "maps"
   const val RECORD = "record"
   const val PROFILE = "profile"
-
-  const val UNDEFINED = "undefined" // TODO remove this once other views are added
 }
 
 /** Models of the top level destinations for the bottom navigation bar. */
