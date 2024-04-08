@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
  * @param navigation (Navigation): Navigation object to navigate to other screens
  * @brief NavigationBar composable that displays the bottom navigation bar once logged in
  */
-fun NavigationBar(navigation: Navigation, selectedItem: TopLevelDestination) {
+fun NavigationBar(navigation: Navigation) {
   NavigationBar(
       containerColor = Color.Black, // Set the background color to black
       content = {
@@ -31,7 +31,7 @@ fun NavigationBar(navigation: Navigation, selectedItem: TopLevelDestination) {
                 )
               },
               label = { Text(item.textId, color = Color.White) }, // Set text color to white
-              selected = selectedItem.route == item.route,
+              selected = navigation.getCurrentDestination().route == item.route,
               onClick = { navigation.navigateTo(destinations[index]) })
         }
       },

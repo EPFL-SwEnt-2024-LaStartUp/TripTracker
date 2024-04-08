@@ -76,8 +76,8 @@ fun MapOverview(
   when (checkForLocationPermission(context = context)) {
     true -> {
       Scaffold(
-          bottomBar = { NavigationBar(navigation, navigation.getCurrentDestination()) },
-          modifier = Modifier.testTag("MapOverview")) { innerPadding ->
+          bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
+              innerPadding ->
             Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
               Map(mapViewModel, context, deviceLocation, mapProperties, uiSettings)
             }
@@ -85,8 +85,8 @@ fun MapOverview(
     }
     false -> {
       Scaffold(
-          bottomBar = { NavigationBar(navigation, navigation.getCurrentDestination()) },
-          modifier = Modifier.testTag("MapOverview")) { innerPadding ->
+          bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
+              innerPadding ->
             AllowLocationPermission(
                 onPermissionGranted = {
                   mapProperties =
