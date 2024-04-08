@@ -5,9 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,7 +16,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.view.HomeScreen
 import com.example.triptracker.view.LoginScreen
 import com.example.triptracker.view.Navigation
-import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.map.MapOverview
 import com.example.triptracker.view.map.RecordScreen
@@ -58,25 +55,15 @@ class MainActivity : ComponentActivity() {
           NavHost(
               navController = navController,
               startDestination = Route.LOGIN,
-              ) {
-                composable(Route.LOGIN) { LoginScreen(navigation) }
-                composable(Route.HOME) { HomeScreen(navigation) }
-                composable(Route.MAPS) {
-                  MapOverview(
-                      context = context,
-                      navigation = navigation
-                  )
-                }
-                composable(Route.RECORD) {
-                  RecordScreen(
-                      context,
-                      navigation
-                  )
-                }
-                composable(Route.PROFILE) {
-                  // TODO: Call the profile composable
-                }
-              }
+          ) {
+            composable(Route.LOGIN) { LoginScreen(navigation) }
+            composable(Route.HOME) { HomeScreen(navigation) }
+            composable(Route.MAPS) { MapOverview(context = context, navigation = navigation) }
+            composable(Route.RECORD) { RecordScreen(context, navigation) }
+            composable(Route.PROFILE) {
+              // TODO: Call the profile composable
+            }
+          }
         }
       }
     }

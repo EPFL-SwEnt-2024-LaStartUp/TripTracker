@@ -1,14 +1,11 @@
 package com.example.triptracker.view
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -35,9 +32,7 @@ fun NavigationBar(navigation: Navigation, selectedItem: TopLevelDestination) {
               },
               label = { Text(item.textId, color = Color.White) }, // Set text color to white
               selected = selectedItem.route == item.route,
-              onClick = {
-                navigation.navigateTo(destinations[index])
-              })
+              onClick = { navigation.navigateTo(destinations[index]) })
         }
       },
       contentColor =
