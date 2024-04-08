@@ -60,37 +60,43 @@ fun MapOverview(
     context: Context,
     navigation: Navigation
 ) {
+  // The device location is set to EPFL by default
+  var deviceLocation = DEFAULT_LOCATION
+  var mapProperties =
+      MapProperties(
+          mapType = MapType.NORMAL, isMyLocationEnabled = checkForLocationPermission(context))
+  var uiSettings = MapUiSettings(myLocationButtonEnabled = checkForLocationPermission(context))
 
-  Scaffold(bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
-      innerPadding ->
-    // The device location is set to EPFL by default
-    var deviceLocation = DEFAULT_LOCATION
-    var mapProperties =
-        MapProperties(
-            mapType = MapType.NORMAL, isMyLocationEnabled = checkForLocationPermission(context))
-    var uiSettings = MapUiSettings(myLocationButtonEnabled = checkForLocationPermission(context))
+  getCurrentLocation(context = context, onLocationFetched = { deviceLocation = it })
 
-    getCurrentLocation(context = context, onLocationFetched = { deviceLocation = it })
-
-    // Check if the location permission is granted if not re-ask for it. If the result is still
-    // negative then disable the location button and center the view on EPFL
-    // else enable the location button and center the view on the user's location and show real time
-    // location
-    when (checkForLocationPermission(context = context)) {
-      true -> {
-        Map(mapViewModel, context, deviceLocation, mapProperties, uiSettings)
-      }
-      false -> {
-        AllowLocationPermission(
-            onPermissionGranted = {
-              mapProperties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
-              uiSettings = MapUiSettings(myLocationButtonEnabled = true)
-            },
-            onPermissionDenied = {
-              mapProperties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
-              uiSettings = MapUiSettings(myLocationButtonEnabled = false)
-            })
-      }
+  // Check if the location permission is granted if not re-ask for it. If the result is still
+  // negative then disable the location button and center the view on EPFL
+  // else enable the location button and center the view on the user's location and show real time
+  // location
+  when (checkForLocationPermission(context = context)) {
+    true -> {
+      Scaffold(
+          bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
+              innerPadding ->
+            Map(mapViewModel, context, deviceLocation, mapProperties, uiSettings)
+          }
+    }
+    false -> {
+      Scaffold(
+          bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
+              innerPadding ->
+            AllowLocationPermission(
+                onPermissionGranted = {
+                  mapProperties =
+                      MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
+                  uiSettings = MapUiSettings(myLocationButtonEnabled = true)
+                },
+                onPermissionDenied = {
+                  mapProperties =
+                      MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
+                  uiSettings = MapUiSettings(myLocationButtonEnabled = false)
+                })
+          }
     }
   }
 }
@@ -188,9 +194,5 @@ fun MapOverviewPreview() {
   val context = LocalContext.current
   val navController = rememberNavController()
   val navigation = remember(navController) { Navigation(navController) }
-  MapOverview(
-      MapViewModel(),
-      context,
-      navigation
-  )
+  MapOverview(MapViewModel(), context, navigation)
 }
