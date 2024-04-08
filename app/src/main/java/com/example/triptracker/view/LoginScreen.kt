@@ -100,30 +100,16 @@ fun LoginScreen(navigation: Navigation, loginViewModel: LoginViewModel = viewMod
   val loginResult = loginViewModel.authResult.observeAsState()
   when (val response = loginResult.value) {
     is AuthResponse.Success -> {
-      LoginResponseOk(
-          result = response.data,
-          onSignOut = {
-            authenticator.signOut()
-            navigation.navController.navigate(Route.LOGIN)
-          },
-          navigation = navigation)
-      //            onNavigateToOverview() //TODO call this once new screens are added
-      Box(
-          modifier = Modifier.fillMaxSize(),
-          contentAlignment = Alignment.BottomCenter // Aligns children to the bottom center
-          ) {
-            // Display the login response OK information
-            LoginResponseOk(
-                result = response.data,
-                onSignOut = {
-                  authenticator.signOut()
-                  navigation.navController.navigate(Route.LOGIN)
-                },
-                navigation = navigation)
+      // LoginResponseOk(
+      //     result = response.data,
+      //     onSignOut = {
+      //       authenticator.signOut()
+      //       navigation.navController.navigate(Route.LOGIN)
+      //     },
+      //     navigation = navigation)
+      // onNavigateToOverview() // TODO call this once new screens are added
 
-            // Overlay the navigation bar at the bottom of the screen
-            NavigationBar(navigation)
-          }
+      navigation.setIsLoggedIn()
     }
     is AuthResponse.Error -> {
       LoginResponseFailure(message = response.errorMessage)

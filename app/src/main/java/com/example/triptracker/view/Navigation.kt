@@ -37,6 +37,25 @@ private val TOP_LEVEL_DESTINATIONS =
  * non blocking way. Allows to navigate to a specific TopLevelDestination.
  */
 class Navigation(val navController: NavHostController) {
+
+  /** Private boolean that tracks the logging status, since it influences the navigation behavior */
+  private var isLoggedIn = false
+
+  /** Getter for the isLoggedIn boolean */
+  fun getIsLoggedIn(): Boolean {
+    return isLoggedIn
+  }
+
+  /** Setter for the isLoggedIn boolean */
+  fun setIsLoggedIn() {
+    isLoggedIn = true
+  }
+
+  /** Reset for the isLoggedIn boolean */
+  fun resetIsLoggedIn() {
+    isLoggedIn = false
+  }
+
   fun navigateTo(destination: TopLevelDestination) {
     navController.navigate(destination.route) {
       // Pop up to the start destination of the graph to
