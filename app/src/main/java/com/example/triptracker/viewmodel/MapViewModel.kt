@@ -4,7 +4,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.triptracker.model.geocoder.NominatimApi
-import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.google.android.gms.maps.model.LatLng
@@ -36,10 +35,10 @@ class MapViewModel {
     geocoder.reverseDecode(lat, lon) { cityName -> cityNameState.value = cityName }
   }
 
-  fun getAllPaths(){
+  fun getAllPaths() {
     repository.getAllItineraries { itineraries ->
       for (itinerary in itineraries) {
-//        _itineraryList.value += //TODO add the list of LatLng points of the itinerary
+        //        _itineraryList.value += //TODO add the list of LatLng points of the itinerary
       }
     }
   }
