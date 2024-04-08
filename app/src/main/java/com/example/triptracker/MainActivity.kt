@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -21,9 +22,10 @@ import com.example.triptracker.view.LoginScreen
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
-import com.example.triptracker.view.map.MapOverviewPreview
-import com.example.triptracker.view.map.RecordScreenPreview
+import com.example.triptracker.view.map.MapOverview
+import com.example.triptracker.view.map.RecordScreen
 import com.example.triptracker.view.theme.TripTrackerTheme
+import com.example.triptracker.viewmodel.MapViewModel
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -40,6 +42,7 @@ class MainActivity : ComponentActivity() {
           // Instance of NavController
           val navController = rememberNavController()
           val navigation = remember(navController) { Navigation(navController) }
+          val context = LocalContext.current
 
           LaunchPermissionRequest(context = this)
 
@@ -60,8 +63,17 @@ class MainActivity : ComponentActivity() {
                   startDestination = Route.HOME,
                   Modifier.padding(innerPadding)) {
                     composable(Route.HOME) { HomeScreen(navigation) }
-                    composable(Route.MAPS) { MapOverviewPreview() }
-                    composable(Route.RECORD) { RecordScreenPreview() }
+                    composable(Route.MAPS) {
+                      MapOverview(
+                          MapViewModel(),
+                          context,
+                      )
+                    }
+                    composable(Route.RECORD) {
+                      RecordScreen(
+                          context,
+                      )
+                    }
                     composable(Route.PROFILE) {
                       // TODO: Call the profile composable
                     }
