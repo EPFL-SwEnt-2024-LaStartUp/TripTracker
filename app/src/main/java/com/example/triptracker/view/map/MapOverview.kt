@@ -4,17 +4,27 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +41,7 @@ import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
 import com.example.triptracker.viewmodel.MapViewModel
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -38,6 +49,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -106,9 +118,10 @@ fun Map(
   val ui by remember { mutableStateOf(uiSettings) }
   val properties by remember { mutableStateOf(mapProperties) }
   var deviceLocation by remember { mutableStateOf(startLocation) }
+  val coroutineScope = rememberCoroutineScope()
 
   val cameraPositionState = rememberCameraPositionState {
-    position = CameraPosition.fromLatLngZoom(deviceLocation, 16f)
+    position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
   }
 
   // When the camera is moving, the city name is updated in the top bar with geo decoding
@@ -128,7 +141,7 @@ fun Map(
         context = context,
         onLocationFetched = {
           deviceLocation = it
-          cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 16f)
+          cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
         })
   }
 
@@ -159,25 +172,33 @@ fun Map(
           fontFamily = FontFamily.SansSerif,
           color = Color.Black)
 
-        if(ui.myLocationButtonEnabled && mapProperties.isMyLocationEnabled) {
-            IconButton(
-                onClick = {
-                    getCurrentLocation(
-                        context = context,
-                        onLocationFetched = {
-                            deviceLocation = it
-                            cameraPositionState.position =
-                                CameraPosition.fromLatLngZoom(deviceLocation, 16f)
-                        })
-                }) {
-                Icon(
-                    modifier = Modifier.padding(40.dp),
-                    painter = painterResource(id = R.drawable.ic_gps_fixed),
-                    contentDescription = null
-                )
-            }
-        }
     }
+      if(ui.myLocationButtonEnabled && mapProperties.isMyLocationEnabled) {
+          Row(
+              modifier = Modifier.align(Alignment.BottomStart).padding(horizontal = 35.dp, vertical = 62.dp),
+              horizontalArrangement = Arrangement.Center) {
+              Icon(
+                  imageVector = Icons.Outlined.LocationOn,
+                  contentDescription = "Center on device location",
+                  tint = Color.White,
+                  modifier =
+                  Modifier.width(50.dp)
+                      .height(50.dp)
+                      .background(transparentGray, shape = RoundedCornerShape(16.dp))
+                      .padding(10.dp)
+                      .align(Alignment.CenterVertically)
+                      .clickable {
+                          coroutineScope.launch {
+                              cameraPositionState.animate(
+                                  CameraUpdateFactory.newCameraPosition(
+                                      CameraPosition.fromLatLngZoom(deviceLocation, 17f)
+                                  )
+                              )
+                          }
+                      })
+              Spacer(modifier = Modifier.width(50.dp))
+          }
+      }
   }
 }
 
