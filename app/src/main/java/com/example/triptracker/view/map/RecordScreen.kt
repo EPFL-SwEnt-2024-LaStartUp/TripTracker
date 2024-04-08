@@ -102,15 +102,17 @@ fun RecordScreen(
   when (checkForLocationPermission(context = context)) {
     true -> {
       Scaffold(
-          bottomBar = { NavigationBar(navigation, navigation.getCurrentDestination()) }, modifier = Modifier.testTag("MapOverview")) {
-              innerPadding ->
-            Map(context, viewModel, deviceLocation, mapProperties, uiSettings)
+          bottomBar = { NavigationBar(navigation, navigation.getCurrentDestination()) },
+          modifier = Modifier.testTag("RecordScreen")) { innerPadding ->
+            Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+              Map(context, viewModel, deviceLocation, mapProperties, uiSettings)
+            }
           }
     }
     false -> {
       Scaffold(
-          bottomBar = { NavigationBar(navigation, navigation.getCurrentDestination()) }, modifier = Modifier.testTag("MapOverview")) {
-              innerPadding ->
+          bottomBar = { NavigationBar(navigation, navigation.getCurrentDestination()) },
+          modifier = Modifier.testTag("RecordScreen")) { innerPadding ->
             AllowLocationPermission(
                 onPermissionGranted = {
                   mapProperties =
