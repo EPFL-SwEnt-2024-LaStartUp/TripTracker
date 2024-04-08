@@ -43,8 +43,12 @@ private val TOP_LEVEL_DESTINATIONS =
  */
 class Navigation(val navController: NavHostController) {
 
+  /** Current destination, helpful notably for the navigation bar */
+  private var currentDestination: TopLevelDestination = getStartingDestination()
+
   fun navigateTo(destination: TopLevelDestination) {
     navController.navigate(destination.route) {
+      currentDestination = destination
       // Pop up to the start destination of the graph to
       // avoid building up a large stack of destinations
       // on the back stack as users select items
@@ -69,5 +73,10 @@ class Navigation(val navController: NavHostController) {
   /** Retrieve the app starting destination once logged in */
   fun getStartingDestination(): TopLevelDestination {
     return TOP_LEVEL_DESTINATIONS[0]
+  }
+
+  /** Retrieve the current destination once logged in */
+  fun getCurrentDestination(): TopLevelDestination {
+    return currentDestination
   }
 }
