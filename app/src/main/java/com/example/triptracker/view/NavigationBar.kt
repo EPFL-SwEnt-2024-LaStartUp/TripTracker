@@ -18,9 +18,7 @@ import androidx.compose.ui.unit.dp
  * @param navigation (Navigation): Navigation object to navigate to other screens
  * @brief NavigationBar composable that displays the bottom navigation bar once logged in
  */
-fun NavigationBar(navigation: Navigation) {
-  val selectedItem = remember { mutableIntStateOf(0) } // By default, the home page is displayed
-
+fun NavigationBar(navigation: Navigation, selectedItem: TopLevelDestination) {
   NavigationBar(
       containerColor = Color.Black, // Set the background color to black
       content = {
@@ -35,12 +33,9 @@ fun NavigationBar(navigation: Navigation) {
                 )
               },
               label = { Text(item.textId, color = Color.White) }, // Set text color to white
-              selected = selectedItem.intValue == index,
+              selected = selectedItem.route == item.route,
               onClick = {
-                selectedItem.intValue = index
-
-                /** TODO uncomment this once the navigation and the other tabs are implemented */
-                navigation.navigateTo(destinations[selectedItem.intValue])
+                navigation.navigateTo(destinations[index])
               })
         }
       },

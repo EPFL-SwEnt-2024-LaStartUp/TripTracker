@@ -58,7 +58,7 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
         SearchBar(
             modifier = Modifier.fillMaxWidth().padding(16.dp), onSearch = { /* handle search */})
       },
-      bottomBar = { NavigationBar(navigation) },
+      bottomBar = { NavigationBar(navigation, navigation.getCurrentDestination()) },
       modifier = Modifier.testTag("HomeScreen")) { innerPadding ->
         when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
           null -> {
