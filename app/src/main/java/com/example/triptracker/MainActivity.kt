@@ -1,5 +1,6 @@
 package com.example.triptracker
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,7 +13,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -25,12 +25,25 @@ import com.example.triptracker.view.Route
 import com.example.triptracker.view.map.MapOverview
 import com.example.triptracker.view.map.RecordScreen
 import com.example.triptracker.view.theme.TripTrackerTheme
-import com.example.triptracker.viewmodel.MapViewModel
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
-  // Private boolean that tracks the logging status
+
+  // Private boolean that tracks the logging status -- TODO remove it
   private var isLoggedIn = mutableStateOf(false)
+
+  init {
+    instance = this
+  }
+
+  /** Companion object to have a global application context */
+  companion object {
+    private var instance: MainActivity? = null
+
+    fun applicationContext(): Context {
+      return instance!!.applicationContext
+    }
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -42,8 +55,7 @@ class MainActivity : ComponentActivity() {
           // Instance of NavController
           val navController = rememberNavController()
           val navigation = remember(navController) { Navigation(navController) }
-          val context = LocalContext.current
-          val mapViewModel = MapViewModel()
+          val context: Context = MainActivity.applicationContext()
 
           LaunchPermissionRequest(context = this)
 
@@ -66,8 +78,7 @@ class MainActivity : ComponentActivity() {
                     composable(Route.HOME) { HomeScreen(navigation) }
                     composable(Route.MAPS) {
                       MapOverview(
-                          mapViewModel,
-                          context,
+                          context = context,
                       )
                     }
                     composable(Route.RECORD) {
