@@ -22,7 +22,6 @@ object Route {
   const val MAPS = "maps"
   const val RECORD = "record"
   const val PROFILE = "profile"
-  
 }
 
 /** Models of the top level destinations for the bottom navigation bar. */

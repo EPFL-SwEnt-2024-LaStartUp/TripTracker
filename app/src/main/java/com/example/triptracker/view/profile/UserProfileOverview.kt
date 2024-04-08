@@ -283,8 +283,7 @@ fun UserProfileOverview(
                 Button(
                     onClick = {
                       navigation.navigateTo(
-                          TopLevelDestination(
-                              Route.FAVORITES, R.drawable.favorite, "Favorites"))
+                          TopLevelDestination(Route.FAVORITES, R.drawable.favorite, "Favorites"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     modifier =
