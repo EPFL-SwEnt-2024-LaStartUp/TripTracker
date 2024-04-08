@@ -58,7 +58,7 @@ fun MapOverview(
   var deviceLocation = LatLng(46.519962, 6.633597)
   var mapProperties =
       MapProperties(
-          mapType = MapType.SATELLITE, isMyLocationEnabled = checkForLocationPermission(context))
+          mapType = MapType.NORMAL, isMyLocationEnabled = checkForLocationPermission(context))
   var uiSettings = MapUiSettings(myLocationButtonEnabled = checkForLocationPermission(context))
 
   getCurrentLocation(context = context, onLocationFetched = { deviceLocation = it })
@@ -74,11 +74,11 @@ fun MapOverview(
     false -> {
       AllowLocationPermission(
           onPermissionGranted = {
-            mapProperties = MapProperties(mapType = MapType.SATELLITE, isMyLocationEnabled = true)
+            mapProperties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
             uiSettings = MapUiSettings(myLocationButtonEnabled = true)
           },
           onPermissionDenied = {
-            mapProperties = MapProperties(mapType = MapType.SATELLITE, isMyLocationEnabled = false)
+            mapProperties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
             uiSettings = MapUiSettings(myLocationButtonEnabled = false)
           })
     }
