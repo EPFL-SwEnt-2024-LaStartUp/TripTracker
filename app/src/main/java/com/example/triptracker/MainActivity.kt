@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
           val navController = rememberNavController()
           val navigation = remember(navController) { Navigation(navController) }
           val context = LocalContext.current
+          val mapViewModel = MapViewModel()
 
           LaunchPermissionRequest(context = this)
 
@@ -65,7 +66,7 @@ class MainActivity : ComponentActivity() {
                     composable(Route.HOME) { HomeScreen(navigation) }
                     composable(Route.MAPS) {
                       MapOverview(
-                          MapViewModel(),
+                          mapViewModel,
                           context,
                       )
                     }
