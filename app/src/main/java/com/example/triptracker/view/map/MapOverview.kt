@@ -4,32 +4,33 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.triptracker.R
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
+import com.example.triptracker.view.theme.Montserrat
+import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.viewmodel.MapViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -56,10 +57,10 @@ fun MapOverview(
 ) {
 
   // The device location is set to EPFL by default
-  var deviceLocation = LatLng(46.519962, 6.633597)
+  var deviceLocation = DEFAULT_LOCATION
   var mapProperties =
       MapProperties(
-          mapType = MapType.SATELLITE, isMyLocationEnabled = checkForLocationPermission(context))
+          mapType = MapType.NORMAL, isMyLocationEnabled = checkForLocationPermission(context))
   var uiSettings = MapUiSettings(myLocationButtonEnabled = checkForLocationPermission(context))
 
   getCurrentLocation(context = context, onLocationFetched = { deviceLocation = it })
@@ -75,11 +76,11 @@ fun MapOverview(
     false -> {
       AllowLocationPermission(
           onPermissionGranted = {
-            mapProperties = MapProperties(mapType = MapType.SATELLITE, isMyLocationEnabled = true)
+            mapProperties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
             uiSettings = MapUiSettings(myLocationButtonEnabled = true)
           },
           onPermissionDenied = {
-            mapProperties = MapProperties(mapType = MapType.SATELLITE, isMyLocationEnabled = false)
+            mapProperties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
             uiSettings = MapUiSettings(myLocationButtonEnabled = false)
           })
     }
@@ -107,9 +108,10 @@ fun Map(
   val ui by remember { mutableStateOf(uiSettings) }
   val properties by remember { mutableStateOf(mapProperties) }
   var deviceLocation by remember { mutableStateOf(startLocation) }
+  val coroutineScope = rememberCoroutineScope()
 
   val cameraPositionState = rememberCameraPositionState {
-    position = CameraPosition.fromLatLngZoom(deviceLocation, 16f)
+    position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
   }
 
   // When the camera is moving, the city name is updated in the top bar with geo decoding
@@ -129,14 +131,9 @@ fun Map(
         context = context,
         onLocationFetched = {
           deviceLocation = it
-          cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 16f)
+          cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
         })
   }
-
-  val gradient =
-      Brush.verticalGradient(
-          colorStops =
-              arrayOf(0.0f to Color.White, 0.1f to Color.White, 0.15f to Color.Transparent))
 
   // Displays the map
   Box() {
@@ -161,24 +158,22 @@ fun Map(
           text = mapViewModel.cityNameState.value,
           modifier = Modifier.padding(30.dp).align(Alignment.TopCenter),
           fontSize = 24.sp,
-          fontFamily = FontFamily.SansSerif,
-          color = Color.Black)
-
-      IconButton(
-          onClick = {
-            getCurrentLocation(
-                context = context,
-                onLocationFetched = {
-                  deviceLocation = it
-                  cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 16f)
-                })
-          }) {
-            Icon(
-                modifier = Modifier.padding(40.dp),
-                painter = painterResource(id = R.drawable.ic_gps_fixed),
-                contentDescription = null)
-          }
+          fontFamily = Montserrat,
+          fontWeight = FontWeight.SemiBold,
+          color = md_theme_light_dark)
     }
+    Row(
+        modifier = Modifier.align(Alignment.BottomStart),
+        horizontalArrangement = Arrangement.Start) {
+          if (ui.myLocationButtonEnabled && properties.isMyLocationEnabled) {
+            Box(modifier = Modifier.padding(horizontal = 35.dp, vertical = 65.dp)) {
+              DisplayCenterLocationButton(
+                  coroutineScope = coroutineScope,
+                  deviceLocation = deviceLocation,
+                  cameraPositionState = cameraPositionState)
+            }
+          }
+        }
   }
 }
 
