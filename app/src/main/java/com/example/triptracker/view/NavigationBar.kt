@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 /**
- * @param navigation: Navigation object to navigate to other screens
+ * @param navigation (Navigation): Navigation object to navigate to other screens
  * @brief NavigationBar composable that displays the bottom navigation bar once logged in
  */
 fun NavigationBar(navigation: Navigation) {
@@ -40,7 +40,7 @@ fun NavigationBar(navigation: Navigation) {
                 selectedItem.intValue = index
 
                 /** TODO uncomment this once the navigation and the other tabs are implemented */
-                // navigation.navigateTo(destinations[selectedItem])
+                navigation.navigateTo(destinations[selectedItem.intValue])
               })
         }
       },
