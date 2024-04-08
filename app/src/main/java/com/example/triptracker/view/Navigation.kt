@@ -43,24 +43,6 @@ private val TOP_LEVEL_DESTINATIONS =
  */
 class Navigation(val navController: NavHostController) {
 
-  /** Private boolean that tracks the logging status, since it influences the navigation behavior */
-  private var isLoggedIn = false
-
-  /** Getter for the isLoggedIn boolean */
-  fun getIsLoggedIn(): Boolean {
-    return isLoggedIn
-  }
-
-  /** Setter for the isLoggedIn boolean */
-  fun setIsLoggedIn() {
-    isLoggedIn = true
-  }
-
-  /** Reset for the isLoggedIn boolean */
-  fun resetIsLoggedIn() {
-    isLoggedIn = false
-  }
-
   fun navigateTo(destination: TopLevelDestination) {
     navController.navigate(destination.route) {
       // Pop up to the start destination of the graph to
@@ -79,8 +61,13 @@ class Navigation(val navController: NavHostController) {
     navController.popBackStack()
   }
 
-  // Getter function to access a copy of the attribute TOP_LEVEL_DESTINATIONS
+  /** Getter function to access a copy of the attribute TOP_LEVEL_DESTINATIONS */
   fun getTopLevelDestinations(): List<TopLevelDestination> {
     return TOP_LEVEL_DESTINATIONS.toMutableList()
+  }
+
+  /** Retrieve the app starting destination once logged in */
+  fun getStartingDestination(): TopLevelDestination {
+    return TOP_LEVEL_DESTINATIONS[0]
   }
 }

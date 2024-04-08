@@ -45,9 +45,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
+import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
@@ -76,7 +78,7 @@ const val DELAY = 5000L
  * @param viewModel The RecordViewModel instance.
  */
 @Composable
-fun RecordScreen(context: Context, viewModel: RecordViewModel = RecordViewModel()) {
+fun RecordScreen(context: Context, navigation: Navigation, viewModel: RecordViewModel = RecordViewModel()) {
   // default device location is EPFL
   var deviceLocation = DEFAULT_LOCATION
 
@@ -392,7 +394,10 @@ fun displayTime(time: Long): String {
 @Composable
 fun RecordScreenPreview() {
   val context = LocalContext.current
+  val navController = rememberNavController()
+  val navigation = remember(navController) { Navigation(navController) }
   RecordScreen(
       context,
+      navigation
   )
 }
