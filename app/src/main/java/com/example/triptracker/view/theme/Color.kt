@@ -3,7 +3,7 @@ package com.example.triptracker.view.theme
 import androidx.compose.ui.graphics.Color
 
 val md_theme_orange = Color(0xFFD4622B)
-val md_theme_gray = Color(0xC0C0C7CD)
+val md_theme_grey = Color(0xC0C0C7CD)
 val md_theme_light_dark = Color(0xFF1D2022)
 
 val md_theme_light_black = Color(0xFF1D2022)

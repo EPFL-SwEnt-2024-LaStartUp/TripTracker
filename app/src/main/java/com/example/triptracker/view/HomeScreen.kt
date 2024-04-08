@@ -43,7 +43,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
-import com.example.triptracker.view.theme.md_theme_gray
+import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_orange
@@ -116,7 +116,7 @@ fun DisplayItinerary(
                 fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                 fontWeight = FontWeight.Normal,
                 fontSize = 14.sp,
-                color = md_theme_gray)
+                color = md_theme_grey)
             Spacer(modifier = Modifier.width(120.dp))
             Icon(
                 imageVector = Icons.Outlined.Star,
@@ -142,7 +142,7 @@ fun DisplayItinerary(
               text = "$pinListString",
               fontSize = 14.sp,
               fontFamily = FontFamily(Font(R.font.montserrat_medium)),
-              color = md_theme_gray)
+              color = md_theme_grey)
         }
       }
 }

@@ -49,7 +49,7 @@ import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
 import com.example.triptracker.view.theme.Montserrat
-import com.example.triptracker.view.theme.md_theme_gray
+import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.RecordViewModel
@@ -113,6 +113,8 @@ fun RecordScreen(context: Context, viewModel: RecordViewModel = RecordViewModel(
  * @param context The application context.
  * @param viewModel The RecordViewModel instance.
  * @param startLocation The starting location.
+ * @param mapProperties: The properties of the map (type, location enabled)
+ * @param uiSettings: The settings of the map (location button enabled)
  */
 @Composable
 fun Map(
@@ -348,7 +350,7 @@ fun StartWindow(viewModel: RecordViewModel) {
                                       fontSize = 14.sp,
                                       fontFamily = Montserrat,
                                       fontWeight = FontWeight.SemiBold,
-                                      color = md_theme_gray)
+                                      color = md_theme_grey)
                                   Spacer(modifier = Modifier.width(20.dp))
                                   IconButton(
                                       onClick = { /*TODO*/},
