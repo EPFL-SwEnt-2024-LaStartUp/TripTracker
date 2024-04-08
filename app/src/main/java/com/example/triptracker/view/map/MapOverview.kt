@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -19,6 +21,8 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,6 +45,7 @@ import com.example.triptracker.R
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
+import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.viewmodel.MapViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -155,49 +161,43 @@ fun Map(
     Box(modifier = Modifier.fillMaxSize()) {
       GoogleMap(
           modifier =
-              Modifier.matchParentSize()
-                  .background(
-                      brush =
-                          Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black))),
+          Modifier
+              .matchParentSize()
+              .background(
+                  brush =
+                  Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black))
+              ),
           cameraPositionState = cameraPositionState,
           properties = properties,
           uiSettings = ui,
       ) {}
     }
-    Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
+    Box(modifier = Modifier
+        .matchParentSize()
+        .background(gradient)
+        .align(Alignment.TopCenter)) {
       Text(
           text = mapViewModel.cityNameState.value,
-          modifier = Modifier.padding(30.dp).align(Alignment.TopCenter),
+          modifier = Modifier
+              .padding(30.dp)
+              .align(Alignment.TopCenter),
           fontSize = 24.sp,
           fontFamily = FontFamily.SansSerif,
           color = Color.Black)
-
-    }
-      if(ui.myLocationButtonEnabled && mapProperties.isMyLocationEnabled) {
-          Row(
-              modifier = Modifier.align(Alignment.BottomStart).padding(horizontal = 35.dp, vertical = 62.dp),
-              horizontalArrangement = Arrangement.Center) {
-              Icon(
-                  imageVector = Icons.Outlined.LocationOn,
-                  contentDescription = "Center on device location",
-                  tint = Color.White,
-                  modifier =
-                  Modifier.width(50.dp)
-                      .height(50.dp)
-                      .background(transparentGray, shape = RoundedCornerShape(16.dp))
-                      .padding(10.dp)
-                      .align(Alignment.CenterVertically)
-                      .clickable {
-                          coroutineScope.launch {
-                              cameraPositionState.animate(
-                                  CameraUpdateFactory.newCameraPosition(
-                                      CameraPosition.fromLatLngZoom(deviceLocation, 17f)
-                                  )
-                              )
-                          }
-                      })
-              Spacer(modifier = Modifier.width(50.dp))
+            }
+      Row(
+          modifier = Modifier.align(Alignment.BottomStart),
+          horizontalArrangement = Arrangement.Start) {
+          if (ui.myLocationButtonEnabled && properties.isMyLocationEnabled) {
+              Box(modifier = Modifier.padding(horizontal = 35.dp, vertical = 65.dp)) {
+                  DisplayCenterLocationButton(
+                      coroutineScope = coroutineScope,
+                      deviceLocation = deviceLocation,
+                      cameraPositionState = cameraPositionState
+                  )
+              }
           }
+
       }
   }
 }
