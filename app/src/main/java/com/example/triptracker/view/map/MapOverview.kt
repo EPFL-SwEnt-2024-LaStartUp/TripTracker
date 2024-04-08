@@ -31,6 +31,7 @@ import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_light_dark
+import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.MapViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -120,6 +121,8 @@ fun Map(
     mapViewModel.reverseDecode(
         cameraPositionState.position.target.latitude.toFloat(),
         cameraPositionState.position.target.longitude.toFloat())
+    // fetch the new paths from the DB
+    mapViewModel.getAllPaths()
     Log.d(
         "LAT_LON",
         "${cameraPositionState.position.target.latitude} and ${cameraPositionState.position.target.longitude}")
@@ -148,8 +151,8 @@ fun Map(
           properties = properties,
           uiSettings = ui,
       ) {
-        mapViewModel.itineraryList.value?.forEach { (location, latLngList) ->
-          Polyline(points = latLngList, color = redFox, width = 15f)
+        mapViewModel.pathList.value?.forEach { (location, latLngList) ->
+          Polyline(points = latLngList, color = md_theme_orange, width = 15f)
         }
       }
     }
