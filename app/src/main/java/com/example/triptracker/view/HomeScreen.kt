@@ -99,7 +99,14 @@ fun DisplayItinerary(
           Modifier.fillMaxWidth()
               .padding(vertical = 10.dp)
               .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))
-              .clickable { navigation.navController.navigate(Route.LOGIN) }) {
+              .clickable { // For now, when you click on an itinerary, it brings you to the map
+                // to view the itinerary, however it doesn't also switch on the navbar
+                // TODO : when changing Top Level Destination, the navbar should be updated to
+                // highlight the correct tab.
+                val map = navigation.getTopLevelDestinations()[1]
+                navigation.navigateTo(map)
+                // TODO : Would call DisplayItineraryInMap or sth similar later on
+              }) {
         Column(modifier = Modifier.fillMaxWidth().padding(25.dp)) {
           Row(modifier = Modifier.fillMaxWidth()) {
             // change the image to the user's profile picture
@@ -122,7 +129,7 @@ fun DisplayItinerary(
                 Modifier.size(20.dp))
           }
           Spacer(modifier = Modifier.height(5.dp))
-
+          Log.d("ItineraryRoute", itinerary.route.toString())
           Text(
               text = itinerary.title,
               fontFamily = FontFamily(Font(R.font.montserrat_regular)),
@@ -155,7 +162,6 @@ fun convertPinListToString(pinList: List<String>): String {
   }
 }
 
-// Replace 'R.drawable.ic_profile' with actual drawable resource identifier
 @Composable
 fun SearchBar(modifier: Modifier = Modifier, onSearch: (String) -> Unit) {
   TextField(

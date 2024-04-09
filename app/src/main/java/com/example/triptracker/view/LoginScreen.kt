@@ -100,8 +100,8 @@ fun LoginScreen(navigation: Navigation, loginViewModel: LoginViewModel = viewMod
   val loginResult = loginViewModel.authResult.observeAsState()
   when (val response = loginResult.value) {
     is AuthResponse.Success -> {
-      val home = navigation.getStartingDestination()
-      navigation.navigateTo(home)
+      val home = navigation.getStartingDestination().route
+      navigation.navController.navigate(home)
     }
     is AuthResponse.Error -> {
       LoginResponseFailure(message = response.errorMessage)
