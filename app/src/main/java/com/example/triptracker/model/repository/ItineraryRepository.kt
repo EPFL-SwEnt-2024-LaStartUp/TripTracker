@@ -147,9 +147,8 @@ open class ItineraryRepository {
             "description" to itinerary.description,
             "route" to
                 convertLatLngToMap(
-                    itinerary
-                        .route) // Assuming convertLatLngToMap is adapted for your LatLng
-                                // implementation
+                    itinerary.route) // Assuming convertLatLngToMap is adapted for your LatLng
+            // implementation
             )
     db.collection("itineraries")
         .document(itinerary.id)
@@ -190,9 +189,8 @@ open class ItineraryRepository {
             "description" to itinerary.description,
             "route" to
                 convertLatLngToMap(
-                    itinerary
-                        .route) // Assuming convertLatLngToMap is adapted for your LatLng
-                                // implementation
+                    itinerary.route) // Assuming convertLatLngToMap is adapted for your LatLng
+            // implementation
             )
 
     db.collection("itineraries")
