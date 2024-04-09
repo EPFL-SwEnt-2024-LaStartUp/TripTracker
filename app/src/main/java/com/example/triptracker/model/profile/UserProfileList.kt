@@ -5,7 +5,7 @@ package com.example.triptracker.model.profile
  *
  * @property userProfileList : List of user's profiles
  */
-data class UserProfileList(var userProfileList: List<UserProfile>) {
+data class UserProfileList(private var userProfileList: List<UserProfile>) {
   /**
    * This function returns all the user's profiles.
    *
@@ -13,6 +13,15 @@ data class UserProfileList(var userProfileList: List<UserProfile>) {
    */
   fun getAllUserProfiles(): List<UserProfile> {
     return userProfileList
+  }
+
+  /**
+   * This function sets the user's profiles list.
+   *
+   * @param userProfileList : List of user's profiles
+   */
+  fun setUserProfileList(userProfileList: List<UserProfile>) {
+    this.userProfileList = userProfileList
   }
 
   /**
