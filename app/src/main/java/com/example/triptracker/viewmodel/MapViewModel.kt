@@ -55,6 +55,9 @@ class MapViewModel : ViewModel() {
     return _pathList.value?.itineraryList?.map { it.title to it.route }?.toMap() ?: emptyMap()
   }
 
+  /**
+   * This function is used to update all the itineraries in the database with random routes. This is temporary code
+   */
   private fun updateAllItineraries() {
     repository.getAllItineraries { itineraries ->
       for (itinerary in itineraries) {
