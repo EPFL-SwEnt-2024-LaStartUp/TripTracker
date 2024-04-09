@@ -7,7 +7,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
@@ -29,7 +28,7 @@ fun NavigationBar(navigation: Navigation) {
                     contentDescription = destination.route,
                 )
               },
-              label = { Text(destination.textId, color = Color.White) }, // Set text color to white
+              label = { Text(destination.textId) },
               selected = navigation.getCurrentDestination().route == destination.route,
               onClick = { navigation.navigateTo(destination) })
         }
