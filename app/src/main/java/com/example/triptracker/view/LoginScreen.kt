@@ -101,7 +101,6 @@ fun LoginScreen(navigation: Navigation, loginViewModel: LoginViewModel = viewMod
   when (val response = loginResult.value) {
     is AuthResponse.Success -> {
       val home = navigation.getStartingDestination().route
-      // Had inconsistent behavior with the previous code so I commented it out
       navigation.navController.navigate(home)
     }
     is AuthResponse.Error -> {
