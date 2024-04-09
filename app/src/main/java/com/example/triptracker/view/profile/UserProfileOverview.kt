@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.List
+import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
@@ -286,7 +289,8 @@ fun UserProfileOverview(
                 Button(
                     onClick = {
                       navigation.navigateTo(
-                          TopLevelDestination(Route.FAVORITES, R.drawable.favorite, "Favorites"))
+                          TopLevelDestination(
+                              Route.FAVORITES, Icons.Outlined.Favorite, "Favorites"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     modifier =
@@ -305,7 +309,7 @@ fun UserProfileOverview(
                 Button(
                     onClick = {
                       navigation.navigateTo(
-                          TopLevelDestination(Route.FRIENDS, R.drawable.friends, "Friends"))
+                          TopLevelDestination(Route.FRIENDS, Icons.Outlined.People, "Friends"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     modifier =
@@ -324,7 +328,8 @@ fun UserProfileOverview(
                 Button(
                     onClick = {
                       navigation.navigateTo(
-                          TopLevelDestination(Route.MYTRIPS, R.drawable.mytrips, "MyTrips"))
+                          TopLevelDestination(
+                              Route.MYTRIPS, Icons.Outlined.BookmarkBorder, "MyTrips"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     modifier =
@@ -343,7 +348,7 @@ fun UserProfileOverview(
                 Button(
                     onClick = {
                       navigation.navigateTo(
-                          TopLevelDestination(Route.SETTINGS, R.drawable.settings, "Settings"))
+                          TopLevelDestination(Route.SETTINGS, Icons.Outlined.Settings, "Settings"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     modifier =
