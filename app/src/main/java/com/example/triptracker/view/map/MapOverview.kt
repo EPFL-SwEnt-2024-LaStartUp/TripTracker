@@ -2,7 +2,6 @@ package com.example.triptracker.view.map
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -130,20 +129,23 @@ fun Map(
   val properties by remember { mutableStateOf(mapProperties) }
   var deviceLocation by remember { mutableStateOf(startLocation) }
   val coroutineScope = rememberCoroutineScope()
-  var visibleRegion: VisibleRegion?
 
   val cameraPositionState = rememberCameraPositionState {
     position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
   }
+  var visibleRegion: VisibleRegion?
 
   // When the camera is moving, the city name is updated in the top bar with geo decoding
   LaunchedEffect(cameraPositionState.isMoving) {
     mapViewModel.reverseDecode(
         cameraPositionState.position.target.latitude.toFloat(),
         cameraPositionState.position.target.longitude.toFloat())
-    // fetch the new paths from the DB
+    // Get the visible region of the map
     visibleRegion = cameraPositionState.projection?.visibleRegion
-    Log.d("Map", "Visible region: $visibleRegion")
+    // Get the filtered paths based on the visible region of the map asynchronously
+    mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
+    //      Log.d("MAP_VISIBLE_REGION", visibleRegion?.latLngBounds.toString())
+    //      Log.d("MAP_FILTERED_PATHS",  mapViewModel.filteredPathList.value.toString())
   }
 
   // Fetch the device location when the composable is launched
@@ -169,7 +171,8 @@ fun Map(
           properties = properties,
           uiSettings = ui,
       ) {
-        mapViewModel.getAllPaths().forEach { (location, latLngList) ->
+        // Display the path of the trips on the map only when they enter the screen
+        mapViewModel.filteredPathList.value?.forEach { (location, latLngList) ->
           Polyline(
               points = latLngList,
               clickable = true,

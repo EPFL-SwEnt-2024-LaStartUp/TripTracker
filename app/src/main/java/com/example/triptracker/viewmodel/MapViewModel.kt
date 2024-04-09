@@ -10,6 +10,7 @@ import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryList
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import kotlin.random.Random
 import kotlinx.coroutines.launch
 
@@ -29,11 +30,10 @@ class MapViewModel : ViewModel() {
 
   private val _pathList = MutableLiveData<ItineraryList>()
 
+  val filteredPathList = MutableLiveData<Map<String, List<LatLng>>>()
+
   init {
-    viewModelScope.launch {
-      //        updateAllItineraries()
-      getAllItineraries()
-    }
+    viewModelScope.launch { getAllItineraries() }
   }
 
   /**
@@ -47,16 +47,40 @@ class MapViewModel : ViewModel() {
     geocoder.reverseDecode(lat, lon) { cityName -> cityNameState.value = cityName }
   }
 
+  /** Get all itineraries from the database and update the pathList */
   private fun getAllItineraries() {
     repository.getAllItineraries { itineraries -> _pathList.postValue(ItineraryList(itineraries)) }
   }
 
+  /**
+   * Get all paths from the pathList in the format of the title of the itinerary and the route
+   *
+   * @return a map of the title of the itinerary and the route
+   */
   fun getAllPaths(): Map<String, List<LatLng>> {
-    return _pathList.value?.itineraryList?.map { it.title to it.route }?.toMap() ?: emptyMap()
+    return _pathList.value?.getAllItineraries()?.map { it.title to it.route }?.toMap() ?: emptyMap()
   }
 
   /**
-   * This function is used to update all the itineraries in the database with random routes. This is temporary code
+   * Get the filtered paths based on the visible region of the map
+   *
+   * @param latLngBounds : the visible region of the map
+   */
+  fun getFilteredPaths(latLngBounds: LatLngBounds?) {
+    if (latLngBounds == null) {
+      filteredPathList.value = emptyMap()
+    } else {
+      filteredPathList.postValue(
+          _pathList.value
+              ?.getFilteredItineraries(latLngBounds)
+              ?.map { it.title to it.route }
+              ?.toMap() ?: emptyMap())
+    }
+  }
+
+  /**
+   * This function is used to update all the itineraries in the database with random routes. This is
+   * temporary code
    */
   private fun updateAllItineraries() {
     repository.getAllItineraries { itineraries ->
