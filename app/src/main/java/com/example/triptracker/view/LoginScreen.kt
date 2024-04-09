@@ -136,11 +136,11 @@ fun Login(
         painter = painterResource(id = R.drawable.triptrackerlogo),
         contentDescription = "image description",
         contentScale = ContentScale.FillBounds)
-      Image(
-          modifier = Modifier.width(189.dp),
-          painter = painterResource(id = R.drawable.triptracker_logo_text),
-          contentDescription = "image description",
-      )
+    Image(
+        modifier = Modifier.width(189.dp),
+        painter = painterResource(id = R.drawable.triptracker_logo_text),
+        contentDescription = "image description",
+    )
     Spacer(modifier = Modifier.height(70.dp))
     Text(
         text = "Welcome",
