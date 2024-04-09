@@ -130,13 +130,18 @@ fun Login(
       verticalArrangement = Arrangement.Top,
       horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    Spacer(modifier = Modifier.height(152.dp))
+    Spacer(modifier = Modifier.height(100.dp))
     Image(
         modifier = Modifier.width(189.dp).height(189.dp),
-        painter = painterResource(id = R.drawable.logo),
+        painter = painterResource(id = R.drawable.triptrackerlogo),
         contentDescription = "image description",
         contentScale = ContentScale.FillBounds)
-    Spacer(modifier = Modifier.height(40.dp))
+      Image(
+          modifier = Modifier.width(189.dp),
+          painter = painterResource(id = R.drawable.triptracker_logo_text),
+          contentDescription = "image description",
+      )
+    Spacer(modifier = Modifier.height(70.dp))
     Text(
         text = "Welcome",
         modifier = Modifier.testTag("LoginTitle"),
