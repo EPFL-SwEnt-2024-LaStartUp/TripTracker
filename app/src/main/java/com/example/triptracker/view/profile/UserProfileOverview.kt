@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -34,9 +35,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.view.Navigation
+import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.TopLevelDestination
 import com.example.triptracker.viewmodel.UserProfileViewModel
@@ -45,10 +48,11 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
 @Preview
 @Composable
 fun UserProfilePreview() {
+  val navController = rememberNavController()
+  val navigation = remember(navController) { Navigation(navController) }
   Scaffold(
-      topBar = {},
-      bottomBar = { /*Navigation Bar when it will be implemented */},
-      modifier = Modifier.fillMaxSize()) { innerPadding ->
+      topBar = {}, bottomBar = { NavigationBar(navigation) }, modifier = Modifier.fillMaxSize()) {
+          innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
           Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
 
@@ -203,9 +207,8 @@ fun UserProfileOverview(
   val url = profile.profileImageUrl
 
   Scaffold(
-      topBar = {},
-      bottomBar = { /*Navigation Bar when it will be implemented */},
-      modifier = Modifier.fillMaxSize()) { innerPadding ->
+      topBar = {}, bottomBar = { NavigationBar(navigation) }, modifier = Modifier.fillMaxSize()) {
+          innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
           Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
 
