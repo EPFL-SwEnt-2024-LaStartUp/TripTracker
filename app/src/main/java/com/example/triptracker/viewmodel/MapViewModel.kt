@@ -1,17 +1,23 @@
 package com.example.triptracker.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.geocoder.NominatimApi
+import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.itinerary.ItineraryList
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.google.android.gms.maps.model.LatLng
+import kotlin.random.Random
+import kotlinx.coroutines.launch
 
 /**
  * ViewModel for the MapOverview composable. It contains the city name state and the geocoder to
  * reverse decode the location.
  */
-class MapViewModel {
+class MapViewModel : ViewModel() {
 
   // geocoder with Nominatim API that allows to reverse decode the location
   val geocoder = NominatimApi()
@@ -21,8 +27,15 @@ class MapViewModel {
 
   private val repository = ItineraryRepository()
 
-  private val _pathList = MutableLiveData<Map<String, List<LatLng>>>(emptyMap())
-  val pathList: LiveData<Map<String, List<LatLng>>> = _pathList
+  private val _pathList = MutableLiveData<ItineraryList>()
+
+  init {
+    viewModelScope.launch {
+      //        updateAllItineraries()
+      getAllItineraries()
+    }
+  }
+
   /**
    * Reverse decodes the location to get the city name. On success update the cityNameState at the
    * top of the screen
@@ -34,30 +47,56 @@ class MapViewModel {
     geocoder.reverseDecode(lat, lon) { cityName -> cityNameState.value = cityName }
   }
 
-  fun getAllPaths() {
-    //    repository.getAllItineraries { itineraries ->
-    //      for (itinerary in itineraries) {
-    //        //        _pathList.value += //TODO add the list of LatLng points of the itinerary
-    //      }
+  private fun getAllItineraries() {
+    repository.getAllItineraries { itineraries -> _pathList.postValue(ItineraryList(itineraries)) }
+  }
 
-    _pathList.value =
-        mapOf(
-            "Lausanne" to
-                listOf(
-                    LatLng(46.5236427, 6.5746056),
-                    LatLng(46.5234576, 6.5747337),
-                    LatLng(46.522897, 6.5748407),
-                    LatLng(46.5226874, 6.5747289),
-                    LatLng(46.5216868, 6.5731126),
-                    LatLng(46.5216313, 6.5722793)),
-            "Ecublens" to
-                listOf(
-                    LatLng(46.5199086, 6.6297869),
-                    LatLng(46.5200088, 6.6294613),
-                    LatLng(46.5201087, 6.6291317),
-                    LatLng(46.520209, 6.6288057),
-                    LatLng(46.520309, 6.6284807),
-                    LatLng(46.5205159, 6.6277878),
-                ))
+  fun getAllPaths(): Map<String, List<LatLng>> {
+    return _pathList.value?.itineraryList?.map { it.title to it.route }?.toMap() ?: emptyMap()
+  }
+
+  private fun updateAllItineraries() {
+    repository.getAllItineraries { itineraries ->
+      for (itinerary in itineraries) {
+        val itin =
+            Itinerary(
+                id = itinerary.id,
+                title = itinerary.title,
+                username = itinerary.username,
+                location = itinerary.location,
+                flameCount = itinerary.flameCount,
+                startDateAndTime = itinerary.startDateAndTime,
+                endDateAndTime = itinerary.endDateAndTime,
+                pinnedPlaces = itinerary.pinnedPlaces,
+                description = itinerary.description,
+                route = generateRandomItinerary(Random.nextInt(5, 10)))
+        repository.updateItinerary(itin)
+        Log.d("ITINERARY UPDATE", itin.toString())
+      }
+    }
+  }
+
+  private fun generateRandomCoordinates(): LatLng {
+    // Define the latitude and longitude range (adjust as needed)
+    val minLat = 46.51
+    val maxLat = 46.53
+    val minLon = 6.62
+    val maxLon = 6.63
+
+    // Generate random latitude and longitude values within the specified range
+    val randomLat = Random.nextDouble(minLat, maxLat)
+    val randomLon = Random.nextDouble(minLon, maxLon)
+
+    return LatLng(randomLat, randomLon)
+  }
+
+  // Usage example to generate a list of random coordinates
+  private fun generateRandomItinerary(numPoints: Int): List<LatLng> {
+    val itinerary = mutableListOf<LatLng>()
+    repeat(numPoints) {
+      val coordinates = generateRandomCoordinates()
+      itinerary.add(coordinates)
+    }
+    return itinerary
   }
 }

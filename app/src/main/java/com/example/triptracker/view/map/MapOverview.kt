@@ -38,8 +38,10 @@ import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.MapViewModel
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.VisibleRegion
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -129,6 +131,7 @@ fun Map(
   val properties by remember { mutableStateOf(mapProperties) }
   var deviceLocation by remember { mutableStateOf(startLocation) }
   val coroutineScope = rememberCoroutineScope()
+  var visibleRegion: VisibleRegion?
 
   val cameraPositionState = rememberCameraPositionState {
     position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
@@ -136,15 +139,12 @@ fun Map(
 
   // When the camera is moving, the city name is updated in the top bar with geo decoding
   LaunchedEffect(cameraPositionState.isMoving) {
-    Log.d("CAMERA_STATE", "Camera is moving")
     mapViewModel.reverseDecode(
         cameraPositionState.position.target.latitude.toFloat(),
         cameraPositionState.position.target.longitude.toFloat())
     // fetch the new paths from the DB
-    mapViewModel.getAllPaths()
-    Log.d(
-        "LAT_LON",
-        "${cameraPositionState.position.target.latitude} and ${cameraPositionState.position.target.longitude}")
+    visibleRegion = cameraPositionState.projection?.visibleRegion
+    Log.d("Map", "Visible region: $visibleRegion")
   }
 
   // Fetch the device location when the composable is launched
@@ -170,11 +170,17 @@ fun Map(
           properties = properties,
           uiSettings = ui,
       ) {
-        mapViewModel.pathList.value?.forEach { (location, latLngList) ->
-          Polyline(points = latLngList, color = md_theme_orange, width = 15f)
+        mapViewModel.getAllPaths().forEach { (location, latLngList) ->
+          Polyline(
+              points = latLngList,
+              clickable = true,
+              color = md_theme_orange,
+              width = 15f,
+              onClick = { mapViewModel.cityNameState.value = location })
         }
       }
     }
+
     Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
       Text(
           text = mapViewModel.cityNameState.value,
