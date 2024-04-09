@@ -87,17 +87,19 @@ fun MapOverview(
       Scaffold(
           bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
               innerPadding ->
-            AllowLocationPermission(
-                onPermissionGranted = {
-                  mapProperties =
-                      MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
-                  uiSettings = MapUiSettings(myLocationButtonEnabled = true)
-                },
-                onPermissionDenied = {
-                  mapProperties =
-                      MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
-                  uiSettings = MapUiSettings(myLocationButtonEnabled = false)
-                })
+            Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+              AllowLocationPermission(
+                  onPermissionGranted = {
+                    mapProperties =
+                        MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
+                    uiSettings = MapUiSettings(myLocationButtonEnabled = true)
+                  },
+                  onPermissionDenied = {
+                    mapProperties =
+                        MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
+                    uiSettings = MapUiSettings(myLocationButtonEnabled = false)
+                  })
+            }
           }
     }
   }
