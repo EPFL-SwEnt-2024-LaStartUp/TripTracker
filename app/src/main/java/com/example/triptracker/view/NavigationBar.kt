@@ -18,24 +18,20 @@ import androidx.compose.ui.unit.dp
  */
 fun NavigationBar(navigation: Navigation) {
   NavigationBar(
-      containerColor = Color.Black, // Set the background color to black
       content = {
         val destinations = navigation.getTopLevelDestinations()
-        destinations.forEachIndexed { index, item ->
+        destinations.forEach { destination ->
           NavigationBarItem(
               icon = {
                 Image(
                     modifier = Modifier.size(24.dp),
-                    painter = painterResource(id = item.icon),
-                    contentDescription = item.route,
+                    painter = painterResource(id = destination.icon),
+                    contentDescription = destination.route,
                 )
               },
-              label = { Text(item.textId, color = Color.White) }, // Set text color to white
-              selected = navigation.getCurrentDestination().route == item.route,
-              onClick = { navigation.navigateTo(destinations[index]) })
+              label = { Text(destination.textId, color = Color.White) }, // Set text color to white
+              selected = navigation.getCurrentDestination().route == destination.route,
+              onClick = { navigation.navigateTo(destination) })
         }
-      },
-      contentColor =
-          Color.White, // When another tab is clicked, a small transition animation in white appears
-  )
+      })
 }
