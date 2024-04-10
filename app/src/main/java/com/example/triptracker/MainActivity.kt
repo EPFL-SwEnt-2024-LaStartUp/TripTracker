@@ -13,12 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.triptracker.view.HomeScreen
 import com.example.triptracker.view.LoginScreen
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
+import com.example.triptracker.view.home.HomeScreen
 import com.example.triptracker.view.map.MapOverview
 import com.example.triptracker.view.map.RecordScreen
+import com.example.triptracker.view.profile.UserProfileOverview
 import com.example.triptracker.view.theme.TripTrackerTheme
 
 class MainActivity : ComponentActivity() {
@@ -60,9 +61,7 @@ class MainActivity : ComponentActivity() {
             composable(Route.HOME) { HomeScreen(navigation) }
             composable(Route.MAPS) { MapOverview(context = context, navigation = navigation) }
             composable(Route.RECORD) { RecordScreen(context, navigation) }
-            composable(Route.PROFILE) {
-              // TODO: Call the profile composable
-            }
+            composable(Route.PROFILE) { UserProfileOverview(navigation = navigation) }
           }
         }
       }

@@ -13,7 +13,7 @@ import java.util.Date
  * @property profileImageUrl : optional URL to the user's profile image. (Defaults: null)
  */
 data class UserProfile(
-    var id: String,
+    val id: String,
     var name: String = "",
     var surname: String = "",
     var birthdate: Date = Date(),
