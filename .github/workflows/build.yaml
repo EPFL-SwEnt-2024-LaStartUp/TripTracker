@@ -6,8 +6,9 @@ env:
 
 
 on:
-  push:
-  workflow_dispatch:
+#  push:
+#  workflow_dispatch:
+  release:
 
 jobs:
   build:
@@ -77,3 +78,15 @@ jobs:
         with:
           name: ${{ env.date_today }} - ${{ env.playstore_name }} - ${{ env.repository_name }} - App bundle(s) AAB release generated
           path: ${{ env.main_project_module }}/build/outputs/bundle/release/
+
+      # Create release
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.date_today }} # You can customize the tag name
+          release_name: Release ${{ env.date_today }} # You can customize the release name
+          draft: false
+          prerelease: false
