@@ -1,4 +1,4 @@
-name: Build APK version
+name: build
 
 env:
   # The name of the main module repository
@@ -8,6 +8,7 @@ env:
   playstore_name: TripTracker
 
 on:
+#  push:
   workflow_dispatch:
 
 jobs:
