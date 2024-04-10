@@ -32,9 +32,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
-import com.example.triptracker.view.DisplayItinerary
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
+import com.example.triptracker.view.home.DisplayItinerary
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_orange
@@ -232,8 +232,7 @@ fun Map(
                 Box(modifier = Modifier.fillMaxHeight(0.3f)) {
                   DisplayItinerary(
                       itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                      navigation = navigation,
-                      pinNamesMap = mutableMapOf("1" to listOf("Test1", "Test2", "Test3")))
+                      navigation = navigation)
                 }
               }
             }
