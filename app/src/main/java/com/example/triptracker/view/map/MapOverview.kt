@@ -2,7 +2,6 @@ package com.example.triptracker.view.map
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,13 +35,18 @@ import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_light_dark
+import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.MapViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.VisibleRegion
+import com.google.maps.android.compose.AdvancedMarker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -131,16 +135,19 @@ fun Map(
   val cameraPositionState = rememberCameraPositionState {
     position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
   }
+  var visibleRegion: VisibleRegion?
 
   // When the camera is moving, the city name is updated in the top bar with geo decoding
   LaunchedEffect(cameraPositionState.isMoving) {
-    Log.d("CAMERA_STATE", "Camera is moving")
     mapViewModel.reverseDecode(
         cameraPositionState.position.target.latitude.toFloat(),
         cameraPositionState.position.target.longitude.toFloat())
-    Log.d(
-        "LAT_LON",
-        "${cameraPositionState.position.target.latitude} and ${cameraPositionState.position.target.longitude}")
+    // Get the visible region of the map
+    visibleRegion = cameraPositionState.projection?.visibleRegion
+    // Get the filtered paths based on the visible region of the map asynchronously
+    mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
+    //      Log.d("MAP_VISIBLE_REGION", visibleRegion?.latLngBounds.toString())
+    //      Log.d("MAP_FILTERED_PATHS",  mapViewModel.filteredPathList.value.toString())
   }
 
   // Fetch the device location when the composable is launched
@@ -165,8 +172,35 @@ fun Map(
           cameraPositionState = cameraPositionState,
           properties = properties,
           uiSettings = ui,
-      ) {}
+      ) {
+        // Display the path of the trips on the map only when they enter the screen
+        mapViewModel.filteredPathList.value?.forEach { (location, latLngList) ->
+          // Check if the polyline is selected
+          val isSelected = mapViewModel.selectedPolylineState.value?.id == location
+          // Display the pat polyline
+          Polyline(
+              points = latLngList,
+              clickable = true,
+              color = md_theme_orange,
+              width = if (isSelected) 25f else 15f,
+              onClick = {
+                mapViewModel.cityNameState.value = location
+                mapViewModel.selectedPolylineState.value =
+                    MapViewModel.SelectedPolyline(location, latLngList[0])
+              })
+          // Display the start marker of the polyline and a thicker path when selected
+          if (isSelected) {
+            AdvancedMarker(
+                state =
+                    MarkerState(
+                        position = mapViewModel.selectedPolylineState.value!!.startLocation),
+                title = mapViewModel.selectedPolylineState.value!!.id,
+            )
+          }
+        }
+      }
     }
+
     Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
       Text(
           text = mapViewModel.cityNameState.value,

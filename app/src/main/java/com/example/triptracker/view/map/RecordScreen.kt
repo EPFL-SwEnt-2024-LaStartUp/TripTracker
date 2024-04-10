@@ -1,6 +1,7 @@
 package com.example.triptracker.view.map
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -246,6 +247,7 @@ fun Map(
                   viewModel.stopRecording()
                   viewModel.resetRecording()
                   localLatLngList.clear()
+                  Log.d("RecordScreen", viewModel.latLongList.toString())
                 } else {
                   viewModel.startRecording()
                 }
