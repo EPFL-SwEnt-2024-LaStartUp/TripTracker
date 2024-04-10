@@ -6,9 +6,9 @@ env:
 
 
 on:
-#  push:
-#  workflow_dispatch:
-  release:
+  push:
+  workflow_dispatch:
+#  release:
 
 jobs:
   build:
