@@ -39,13 +39,10 @@ open class ItineraryRepository {
    * @param callback Function to call with the list of itineraries once they are fetched
    * @return List of itineraries
    */
-  open fun getAllItineraries(callback: (List<Itinerary>) -> Unit): List<Itinerary> {
+  open fun getAllItineraries(): List<Itinerary> {
     db.collection("itineraries")
         .get()
-        .addOnSuccessListener { result ->
-          itineraryList(result)
-          callback(_itineraryList)
-        }
+        .addOnSuccessListener { result -> itineraryList(result) }
         .addOnFailureListener { e -> Log.e(TAG, "Error getting all itineraries", e) }
     return _itineraryList
   }
