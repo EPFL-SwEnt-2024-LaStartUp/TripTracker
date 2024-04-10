@@ -14,7 +14,7 @@ class UserProfileViewModel {
 
   /** This function gets all the user's profiles from the database. */
   fun getAllUserProfilesFromDb() {
-    userProfileList.userProfileList = userProfileRepository.getAllUserProfiles()
+    userProfileList.setUserProfileList(userProfileRepository.getAllUserProfiles())
   }
 
   /**
