@@ -43,6 +43,8 @@ class UserProfileListTest {
                   birthdate = Date(),
                   pseudo = "CharlieB")))
 
+  // TODO: complete this test
+
   //    @Test
   //    fun getAllUserProfilesTest() {
   //        val userList1 = userProfileList1.getAllUserProfiles()
