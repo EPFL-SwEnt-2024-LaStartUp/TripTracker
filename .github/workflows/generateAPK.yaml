@@ -1,4 +1,4 @@
-name: Generated APK AAB (Upload - Create Artifact To Github Action)
+name: Build APK version
 
 env:
   # The name of the main module repository
