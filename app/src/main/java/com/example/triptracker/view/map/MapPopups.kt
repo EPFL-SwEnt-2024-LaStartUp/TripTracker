@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -84,7 +85,7 @@ fun Testing2() {
   // test a path item with a created pin
   val pin = Pin(78.3, 78.3, "hello", "hi", "https://www.google.com")
   val mv = MapViewModel()
-  PathItem(pin, mv)
+  Box(modifier = Modifier.fillMaxWidth().background(Color.Black)) { PathItem(pin, mv) }
 }
 
 /**
@@ -111,12 +112,11 @@ fun PathItem(pinnedPlace: Pin, mv: MapViewModel) {
               "address",
           color = Color.White)
     }
-    /*
     Icon(
-        painter = painterResource(id = R.drawable.logo),
+        painterResource(id = R.drawable.rightarrow),
+        modifier = Modifier.size(16.dp),
         contentDescription = "More info",
-        tint = Color.White
-    )*/
+        tint = Color.White)
   }
   Spacer(modifier = Modifier.height(16.dp))
 }
