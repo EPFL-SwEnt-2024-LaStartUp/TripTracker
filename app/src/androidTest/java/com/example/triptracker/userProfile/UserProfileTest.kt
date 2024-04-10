@@ -11,7 +11,6 @@ import org.junit.runner.RunWith
 class UserProfileTest {
   private val date1 = Date(2021, 1, 1)
 
-
   private val userProfile1 =
       UserProfile(
           id = "1",
