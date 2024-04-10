@@ -52,10 +52,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
+import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
-import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
@@ -259,29 +259,29 @@ fun Map(
                   val id = itineraryRepository.getUID()
                   val title = "TEST" // TODO : get title from user but not implemented yet
                   val username = "lomimi" // TODO : get username from user but not implemented yet
-                  val location = Location(
-                      deviceLocation.latitude,
-                      deviceLocation.longitude,
-                      "Device Location")
-                    // TODO : get location from user but not implemented yet (default device location)
+                  val location =
+                      Location(deviceLocation.latitude, deviceLocation.longitude, "Device Location")
+                  // TODO : get location from user but not implemented yet (default device location)
                   val flameCount = 0L
                   val startDate = viewModel.startDate.value
                   val endDate = viewModel.endDate.value
-                  val pinList = emptyList<Pin>() // TODO : get pin list from user but not implemented yet
-                  val description = "description" // TODO : get description from user but not implemented yet
+                  val pinList =
+                      emptyList<Pin>() // TODO : get pin list from user but not implemented yet
+                  val description =
+                      "description" // TODO : get description from user but not implemented yet
 
-
-                  val itinerary = Itinerary(
-                      id,
-                      title,
-                      username,
-                      location,
-                      flameCount,
-                      startDate,
-                      endDate,
-                      pinList,
-                      description,
-                      viewModel.latLongList.toList())
+                  val itinerary =
+                      Itinerary(
+                          id,
+                          title,
+                          username,
+                          location,
+                          flameCount,
+                          startDate,
+                          endDate,
+                          pinList,
+                          description,
+                          viewModel.latLongList.toList())
 
                   itineraryRepository.addNewItinerary(itinerary)
 
@@ -447,7 +447,7 @@ fun displayTime(time: Long): String {
   val seconds = TimeUnit.MILLISECONDS.toSeconds(time) % 60
   val minutes = TimeUnit.MILLISECONDS.toMinutes(time) % 60
   val hours = TimeUnit.MILLISECONDS.toHours(time)
-  if(seconds < 0 || minutes < 0 || hours < 0) {
+  if (seconds < 0 || minutes < 0 || hours < 0) {
     Log.e("RecordScreen", "Negative time")
     return "Error"
   }

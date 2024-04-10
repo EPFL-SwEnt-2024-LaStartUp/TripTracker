@@ -26,21 +26,17 @@ class RecordViewModel {
   val latLongList: List<LatLng>
     get() = _latLongList
 
-  /**
-   * Starts the recording. Sets the start time to the current time.
-   */
+  /** Starts the recording. Sets the start time to the current time. */
   fun startRecording() {
     startTime.longValue = System.currentTimeMillis()
     // get the current date
     startDate.value = java.time.LocalDate.now().toString()
   }
 
-  /**
-   * Stops the recording. Sets the end time to the current time and logs the data collected.
-   */
+  /** Stops the recording. Sets the end time to the current time and logs the data collected. */
   fun stopRecording() {
     // if the recording is paused, unpause it and terminate the recording
-    if(isPaused.value) {
+    if (isPaused.value) {
       isPaused.value = false
     }
     endTime.longValue = System.currentTimeMillis()
@@ -67,9 +63,7 @@ class RecordViewModel {
     return res
   }
 
-  /**
-  Resets the recording. Clears the start time, end time, and LatLng list.
-   */
+  /** Resets the recording. Clears the start time, end time, and LatLng list. */
   fun resetRecording() {
     startTime.longValue = 0L
     endTime.longValue = 0L
