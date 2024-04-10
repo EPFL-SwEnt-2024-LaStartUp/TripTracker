@@ -36,7 +36,6 @@ import com.example.triptracker.viewmodel.MapViewModel
 @Composable
 fun TestPathOverlaySheet() {
   // test a path overlay sheet
-
   val itinerary =
       Itinerary(
           "1",
@@ -46,16 +45,22 @@ fun TestPathOverlaySheet() {
           0,
           "start",
           "end",
-          listOf(Pin(78.3, 78.3, "hello", "hi", "https://www.google.com")),
+          listOf(
+              Pin(78.3, 78.3, "Picadilly Circus", "hi", "https://www.google.com"),
+              Pin(78.3, 78.3, "Buckingham Palace", "hi", "https://www.google.com"),
+              Pin(78.3, 78.3, "Abbey Road", "hi", "https://www.google.com")),
           "description",
           listOf())
-  val navController = rememberNavController()
-  val navigation = remember(navController) { Navigation(navController) }
-  PathOverlaySheet(itinerary, navigation)
+  PathOverlaySheet(itinerary)
 }
 
+
+/**
+ * PathOverlaySheet is a composable function that displays the all of the pins of a path
+ * @param itinerary Itinerary of that path
+ */
 @Composable
-fun PathOverlaySheet(itinerary: Itinerary, navigation: Navigation) {
+fun PathOverlaySheet(itinerary: Itinerary) {
   Box(
       modifier =
           Modifier.fillMaxWidth()
@@ -63,9 +68,6 @@ fun PathOverlaySheet(itinerary: Itinerary, navigation: Navigation) {
               .background(
                   color = md_theme_light_black,
                   shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp))
-              .clickable {
-                navigation.navController.navigate("detailsRoute")
-              } // Assuming "detailsRoute" is your navigation target
       ) {
         Column(modifier = Modifier.fillMaxWidth().padding(25.dp)) {
           Text(text = "Jack's Path", color = Color.White)
@@ -90,6 +92,11 @@ fun Testing2() {
   PathItem(pin, mv)
 }
 
+/**
+ * PathItem is a composable function that displays a single pin in the path
+ * @param pinnedPlace specific Pin to be displayed
+ * @param mv MapViewModel, used to find addresss of the pin
+ */
 @Composable
 fun PathItem(pinnedPlace: Pin, mv: MapViewModel) {
   Row(verticalAlignment = Alignment.CenterVertically) {
