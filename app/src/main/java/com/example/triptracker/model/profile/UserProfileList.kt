@@ -25,6 +25,15 @@ data class UserProfileList(private var userProfileList: List<UserProfile>) {
   }
 
   /**
+   * This function adds a user's profile to the list.
+   *
+   * @param userProfile : user's profile to add
+   */
+  fun addUserProfile(userProfile: UserProfile) {
+    userProfileList = userProfileList + userProfile
+  }
+
+  /**
    * This function returns all the user's profiles that match the query.
    *
    * @param task : String to search for in the user's profiles
