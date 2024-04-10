@@ -4,8 +4,6 @@ env:
   # The name of the main module repository
   main_project_module: app
 
-  # The name of the Play Store
-  playstore_name: TripTracker
 
 on:
   push:
@@ -27,12 +25,12 @@ jobs:
       - name: Set repository name as env variable
         run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
 
-      - name: Set Up JDK
-        uses: actions/setup-java@v3
+      - name: Setup JDK
+        uses: actions/setup-java@v4
         with:
-          distribution: 'zulu' # See 'Supported distributions' for available options
-          java-version: '17'
-          cache: 'gradle'
+          distribution: "temurin"
+          java-version: "17"
+          cache: gradle
 
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
