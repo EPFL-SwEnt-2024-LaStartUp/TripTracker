@@ -1,7 +1,6 @@
 package com.example.triptracker.view.map
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,19 +15,16 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
-import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.viewmodel.MapViewModel
 
@@ -54,9 +50,9 @@ fun TestPathOverlaySheet() {
   PathOverlaySheet(itinerary)
 }
 
-
 /**
  * PathOverlaySheet is a composable function that displays the all of the pins of a path
+ *
  * @param itinerary Itinerary of that path
  */
 @Composable
@@ -67,8 +63,7 @@ fun PathOverlaySheet(itinerary: Itinerary) {
               .padding(vertical = 10.dp)
               .background(
                   color = md_theme_light_black,
-                  shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp))
-      ) {
+                  shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp))) {
         Column(modifier = Modifier.fillMaxWidth().padding(25.dp)) {
           Text(text = "Jack's Path", color = Color.White)
           Spacer(modifier = Modifier.height(16.dp))
@@ -94,6 +89,7 @@ fun Testing2() {
 
 /**
  * PathItem is a composable function that displays a single pin in the path
+ *
  * @param pinnedPlace specific Pin to be displayed
  * @param mv MapViewModel, used to find addresss of the pin
  */
