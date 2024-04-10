@@ -35,6 +35,10 @@ jobs:
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
+      - name: Create local.properties and set API key
+        run: |
+          echo "API_KEY=\${{ secrets.API_KEY }}" > local.properties
+
       # Run Build Project
       - name: Build gradle project
         run: ./gradlew build
