@@ -83,7 +83,7 @@ fun MapOverview(
           bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
               innerPadding ->
             Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-              Map(mapViewModel, context, deviceLocation, mapProperties, uiSettings)
+              Map(mapViewModel, context, deviceLocation, mapProperties, uiSettings, navigation)
             }
           }
     }
@@ -124,7 +124,8 @@ fun Map(
     context: Context,
     startLocation: LatLng,
     mapProperties: MapProperties,
-    uiSettings: MapUiSettings
+    uiSettings: MapUiSettings,
+    navigation: Navigation
 ) {
   // Used to display the gradient with the top bar and the changing city location
   val ui by remember { mutableStateOf(uiSettings) }
@@ -176,7 +177,7 @@ fun Map(
         // Display the path of the trips on the map only when they enter the screen
         mapViewModel.filteredPathList.value?.forEach { (location, latLngList) ->
           // Check if the polyline is selected
-          val isSelected = mapViewModel.selectedPolylineState.value?.id == location
+          val isSelected = mapViewModel.selectedPolylineState.value?.itinerary?.id == location.id
           // Display the pat polyline
           Polyline(
               points = latLngList,
@@ -184,9 +185,12 @@ fun Map(
               color = md_theme_orange,
               width = if (isSelected) 25f else 15f,
               onClick = {
-                mapViewModel.cityNameState.value = location
+                mapViewModel.cityNameState.value = location.title
                 mapViewModel.selectedPolylineState.value =
                     MapViewModel.SelectedPolyline(location, latLngList[0])
+                //                  DisplayItinerary(itinerary =
+                // mapViewModel.selectedPolylineState.value!!.itinerary, navigation = navigation,
+                // pinNamesMap = mutableMapOf("TEst" to listOf("Test1", "Test2", "Test3")))
               })
           // Display the start marker of the polyline and a thicker path when selected
           if (isSelected) {
@@ -194,7 +198,7 @@ fun Map(
                 state =
                     MarkerState(
                         position = mapViewModel.selectedPolylineState.value!!.startLocation),
-                title = mapViewModel.selectedPolylineState.value!!.id,
+                title = mapViewModel.selectedPolylineState.value!!.itinerary.title,
             )
           }
         }
