@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.List
+import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
@@ -22,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -34,9 +38,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.view.Navigation
+import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.TopLevelDestination
 import com.example.triptracker.viewmodel.UserProfileViewModel
@@ -45,10 +51,11 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
 @Preview
 @Composable
 fun UserProfilePreview() {
+  val navController = rememberNavController()
+  val navigation = remember(navController) { Navigation(navController) }
   Scaffold(
-      topBar = {},
-      bottomBar = { /*Navigation Bar when it will be implemented */},
-      modifier = Modifier.fillMaxSize()) { innerPadding ->
+      topBar = {}, bottomBar = { NavigationBar(navigation) }, modifier = Modifier.fillMaxSize()) {
+          innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
           Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
 
@@ -203,9 +210,8 @@ fun UserProfileOverview(
   val url = profile.profileImageUrl
 
   Scaffold(
-      topBar = {},
-      bottomBar = { /*Navigation Bar when it will be implemented */},
-      modifier = Modifier.fillMaxSize()) { innerPadding ->
+      topBar = {}, bottomBar = { NavigationBar(navigation) }, modifier = Modifier.fillMaxSize()) {
+          innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
           Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
 
@@ -283,7 +289,8 @@ fun UserProfileOverview(
                 Button(
                     onClick = {
                       navigation.navigateTo(
-                          TopLevelDestination(Route.FAVORITES, R.drawable.favorite, "Favorites"))
+                          TopLevelDestination(
+                              Route.FAVORITES, Icons.Outlined.Favorite, "Favorites"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     modifier =
@@ -302,7 +309,7 @@ fun UserProfileOverview(
                 Button(
                     onClick = {
                       navigation.navigateTo(
-                          TopLevelDestination(Route.FRIENDS, R.drawable.friends, "Friends"))
+                          TopLevelDestination(Route.FRIENDS, Icons.Outlined.People, "Friends"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     modifier =
@@ -321,7 +328,8 @@ fun UserProfileOverview(
                 Button(
                     onClick = {
                       navigation.navigateTo(
-                          TopLevelDestination(Route.MYTRIPS, R.drawable.mytrips, "MyTrips"))
+                          TopLevelDestination(
+                              Route.MYTRIPS, Icons.Outlined.BookmarkBorder, "MyTrips"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     modifier =
@@ -340,7 +348,7 @@ fun UserProfileOverview(
                 Button(
                     onClick = {
                       navigation.navigateTo(
-                          TopLevelDestination(Route.SETTINGS, R.drawable.settings, "Settings"))
+                          TopLevelDestination(Route.SETTINGS, Icons.Outlined.Settings, "Settings"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     modifier =
