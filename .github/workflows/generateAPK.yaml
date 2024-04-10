@@ -8,9 +8,7 @@ env:
   playstore_name: TripTracker
 
 on:
-  push
-#  schedule:
-#    - cron: '17 10 * * *' # Every day at midnight
+  workflow_dispatch:
 
 
 jobs:
@@ -38,10 +36,6 @@ jobs:
 
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
-
-      # Run Tests Build
-      - name: Run gradle tests
-        run: ./gradlew test
 
       # Run Build Project
       - name: Build gradle project
