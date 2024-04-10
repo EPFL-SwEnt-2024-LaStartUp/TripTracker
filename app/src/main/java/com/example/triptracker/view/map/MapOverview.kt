@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
@@ -33,6 +34,7 @@ import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
+import com.example.triptracker.view.home.DisplayItinerary
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_orange
@@ -83,7 +85,7 @@ fun MapOverview(
           bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
               innerPadding ->
             Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-              Map(mapViewModel, context, deviceLocation, mapProperties, uiSettings)
+              Map(mapViewModel, context, deviceLocation, mapProperties, uiSettings, navigation)
             }
           }
     }
@@ -124,7 +126,8 @@ fun Map(
     context: Context,
     startLocation: LatLng,
     mapProperties: MapProperties,
-    uiSettings: MapUiSettings
+    uiSettings: MapUiSettings,
+    navigation: Navigation
 ) {
   // Used to display the gradient with the top bar and the changing city location
   val ui by remember { mutableStateOf(uiSettings) }
@@ -136,6 +139,7 @@ fun Map(
     position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
   }
   var visibleRegion: VisibleRegion?
+  var displayPopUp by remember { mutableStateOf(false) }
 
   // When the camera is moving, the city name is updated in the top bar with geo decoding
   LaunchedEffect(cameraPositionState.isMoving) {
@@ -172,11 +176,15 @@ fun Map(
           cameraPositionState = cameraPositionState,
           properties = properties,
           uiSettings = ui,
+          onMapClick = { it ->
+            displayPopUp = false
+            mapViewModel.selectedPolylineState.value = null
+          },
       ) {
         // Display the path of the trips on the map only when they enter the screen
         mapViewModel.filteredPathList.value?.forEach { (location, latLngList) ->
           // Check if the polyline is selected
-          val isSelected = mapViewModel.selectedPolylineState.value?.id == location
+          val isSelected = mapViewModel.selectedPolylineState.value?.itinerary?.id == location.id
           // Display the pat polyline
           Polyline(
               points = latLngList,
@@ -184,17 +192,18 @@ fun Map(
               color = md_theme_orange,
               width = if (isSelected) 25f else 15f,
               onClick = {
-                mapViewModel.cityNameState.value = location
                 mapViewModel.selectedPolylineState.value =
                     MapViewModel.SelectedPolyline(location, latLngList[0])
+                displayPopUp = true
               })
+
           // Display the start marker of the polyline and a thicker path when selected
           if (isSelected) {
             AdvancedMarker(
                 state =
                     MarkerState(
                         position = mapViewModel.selectedPolylineState.value!!.startLocation),
-                title = mapViewModel.selectedPolylineState.value!!.id,
+                title = mapViewModel.selectedPolylineState.value!!.itinerary.title,
             )
           }
         }
@@ -219,6 +228,13 @@ fun Map(
                   coroutineScope = coroutineScope,
                   deviceLocation = deviceLocation,
                   cameraPositionState = cameraPositionState)
+              if (displayPopUp) {
+                Box(modifier = Modifier.fillMaxHeight(0.3f)) {
+                  DisplayItinerary(
+                      itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                      navigation = navigation)
+                }
+              }
             }
           }
         }

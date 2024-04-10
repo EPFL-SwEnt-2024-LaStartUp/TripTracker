@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.geocoder.NominatimApi
+import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryList
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.google.android.gms.maps.model.LatLng
@@ -28,10 +29,10 @@ class MapViewModel : ViewModel() {
 
   private val _pathList = MutableLiveData<ItineraryList>()
 
-  val filteredPathList = MutableLiveData<Map<String, List<LatLng>>>()
+  val filteredPathList = MutableLiveData<Map<Itinerary, List<LatLng>>>()
 
   /** Data class describing a selected Polyline */
-  data class SelectedPolyline(val id: String, val startLocation: LatLng)
+  data class SelectedPolyline(val itinerary: Itinerary, val startLocation: LatLng)
 
   // Hold the selected polyline state
   val selectedPolylineState = mutableStateOf<SelectedPolyline?>(null)
@@ -77,7 +78,7 @@ class MapViewModel : ViewModel() {
       filteredPathList.postValue(
           _pathList.value
               ?.getFilteredItineraries(latLngBounds, limit)
-              ?.map { it.title to it.route }
+              ?.map { it to it.route }
               ?.toMap() ?: emptyMap())
     }
   }
