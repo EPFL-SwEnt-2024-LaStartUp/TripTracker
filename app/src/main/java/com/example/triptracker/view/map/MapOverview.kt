@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
@@ -31,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
+import com.example.triptracker.view.DisplayItinerary
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
@@ -137,6 +139,7 @@ fun Map(
     position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
   }
   var visibleRegion: VisibleRegion?
+  var displayPopUp by remember { mutableStateOf(false) }
 
   // When the camera is moving, the city name is updated in the top bar with geo decoding
   LaunchedEffect(cameraPositionState.isMoving) {
@@ -173,6 +176,10 @@ fun Map(
           cameraPositionState = cameraPositionState,
           properties = properties,
           uiSettings = ui,
+          onMapClick = { it ->
+            displayPopUp = false
+            mapViewModel.selectedPolylineState.value = null
+          },
       ) {
         // Display the path of the trips on the map only when they enter the screen
         mapViewModel.filteredPathList.value?.forEach { (location, latLngList) ->
@@ -185,13 +192,11 @@ fun Map(
               color = md_theme_orange,
               width = if (isSelected) 25f else 15f,
               onClick = {
-                mapViewModel.cityNameState.value = location.title
                 mapViewModel.selectedPolylineState.value =
                     MapViewModel.SelectedPolyline(location, latLngList[0])
-                //                  DisplayItinerary(itinerary =
-                // mapViewModel.selectedPolylineState.value!!.itinerary, navigation = navigation,
-                // pinNamesMap = mutableMapOf("TEst" to listOf("Test1", "Test2", "Test3")))
+                displayPopUp = true
               })
+
           // Display the start marker of the polyline and a thicker path when selected
           if (isSelected) {
             AdvancedMarker(
@@ -223,6 +228,14 @@ fun Map(
                   coroutineScope = coroutineScope,
                   deviceLocation = deviceLocation,
                   cameraPositionState = cameraPositionState)
+              if (displayPopUp) {
+                Box(modifier = Modifier.fillMaxHeight(0.3f)) {
+                  DisplayItinerary(
+                      itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                      navigation = navigation,
+                      pinNamesMap = mutableMapOf("1" to listOf("Test1", "Test2", "Test3")))
+                }
+              }
             }
           }
         }

@@ -40,7 +40,6 @@ class MapViewModel : ViewModel() {
   val selectedPolylineState = mutableStateOf<SelectedPolyline?>(null)
 
   init {
-    updateAllItineraries()
     viewModelScope.launch { getAllItineraries() }
   }
 
@@ -116,10 +115,6 @@ class MapViewModel : ViewModel() {
         i++
       }
     }
-  }
-
-  fun getPinNames(itinerary: Itinerary): Map<String, List<String>> {
-    return mutableMapOf(itinerary.id to repository.getPinNames(itinerary))
   }
 
   // TODO: Remove this function after the database is populated with real data
