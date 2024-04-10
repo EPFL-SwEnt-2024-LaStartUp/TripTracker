@@ -11,10 +11,12 @@ import com.google.android.gms.maps.model.LatLng
  */
 class RecordViewModel {
 
-  // Start time of the recording
+  // Start time and date of the recording
   private val startTime = mutableLongStateOf(0L)
-  // End time of the recording
+  val startDate = mutableStateOf("")
+  // End time and date of the recording
   private val endTime = mutableLongStateOf(0L)
+  val endDate = mutableStateOf("")
   // Boolean state representing whether the recording is paused
   val isPaused = mutableStateOf(false)
 
@@ -24,22 +26,38 @@ class RecordViewModel {
   val latLongList: List<LatLng>
     get() = _latLongList
 
-  /** Starts the recording. Sets the start time to the current time. */
+  /**
+   * Starts the recording. Sets the start time to the current time.
+   */
   fun startRecording() {
     startTime.longValue = System.currentTimeMillis()
+    // get the current date
+    startDate.value = java.time.LocalDate.now().toString()
   }
 
-  /** Stops the recording. Sets the end time to the current time and logs the data collected. */
+  /**
+   * Stops the recording. Sets the end time to the current time and logs the data collected.
+   */
   fun stopRecording() {
+    // if the recording is paused, unpause it and terminate the recording
+    if(isPaused.value) {
+      isPaused.value = false
+    }
     endTime.longValue = System.currentTimeMillis()
-    // TODO do something with the data
+    // get the current date
+    endDate.value = java.time.LocalDate.now().toString()
     Log.e(
         "DATA",
         "Data collected: ${_latLongList.size} points, ${getElapsedTime()} ms, ${prettyPrint(_latLongList)}")
     // clear the list
+    _latLongList.clear()
   }
 
-  // Helper function to pretty print the LatLng list
+  /**
+   * Pretty prints the list of LatLng points.
+   *
+   * @param list The list of LatLng points to pretty print.
+   */
   private fun prettyPrint(list: List<LatLng>): String {
     var res = "mutableListOf(\n"
     for (i in list) {
@@ -49,7 +67,9 @@ class RecordViewModel {
     return res
   }
 
-  /** Resets the recording. Clears the start time, end time, and LatLng list. */
+  /**
+  Resets the recording. Clears the start time, end time, and LatLng list.
+   */
   fun resetRecording() {
     startTime.longValue = 0L
     endTime.longValue = 0L
