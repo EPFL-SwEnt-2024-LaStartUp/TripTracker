@@ -59,11 +59,7 @@ open class ItineraryRepository {
   open fun getPinNames(itinerary: Itinerary): List<String> {
     val pinNames = mutableListOf<String>()
     for (pin in itinerary.pinnedPlaces) {
-      if (true) {
-        pinNames.add(pin.name)
-      } else {
-        Log.e("Error", "Expected item to be Pin, but got ${pin.javaClass.simpleName}")
-      }
+      pinNames.add(pin.name)
     }
     Log.d("PinNames", pinNames.toString())
     return pinNames
