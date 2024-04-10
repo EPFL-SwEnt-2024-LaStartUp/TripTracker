@@ -33,6 +33,12 @@ class MapViewModel : ViewModel() {
 
   val filteredPathList = MutableLiveData<Map<String, List<LatLng>>>()
 
+  /** Data class describing a selected Polyline */
+  data class SelectedPolyline(val id: String, val startLocation: LatLng)
+
+  // Hold the selected polyline state
+  val selectedPolylineState = mutableStateOf<SelectedPolyline?>(null)
+
   init {
     updateAllItineraries()
     viewModelScope.launch { getAllItineraries() }

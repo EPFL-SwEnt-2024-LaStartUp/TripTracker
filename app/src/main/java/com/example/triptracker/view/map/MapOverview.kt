@@ -40,10 +40,12 @@ import com.example.triptracker.viewmodel.MapViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.VisibleRegion
+import com.google.maps.android.compose.AdvancedMarker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 
@@ -173,12 +175,28 @@ fun Map(
       ) {
         // Display the path of the trips on the map only when they enter the screen
         mapViewModel.filteredPathList.value?.forEach { (location, latLngList) ->
+          // Check if the polyline is selected
+          val isSelected = mapViewModel.selectedPolylineState.value?.id == location
+          // Display the pat polyline
           Polyline(
               points = latLngList,
               clickable = true,
               color = md_theme_orange,
-              width = 15f,
-              onClick = { mapViewModel.cityNameState.value = location })
+              width = if (isSelected) 25f else 15f,
+              onClick = {
+                mapViewModel.cityNameState.value = location
+                mapViewModel.selectedPolylineState.value =
+                    MapViewModel.SelectedPolyline(location, latLngList[0])
+              })
+          // Display the start marker of the polyline and a thicker path when selected
+          if (isSelected) {
+            AdvancedMarker(
+                state =
+                    MarkerState(
+                        position = mapViewModel.selectedPolylineState.value!!.startLocation),
+                title = mapViewModel.selectedPolylineState.value!!.id,
+            )
+          }
         }
       }
     }
