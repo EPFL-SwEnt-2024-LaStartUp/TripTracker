@@ -62,7 +62,6 @@ class ItineraryListTest {
     val itinerary = itineraryList2.getItinerary("1")
     assert(itinerary != null)
     assertEquals("Trip to the beach", itinerary!!.title)
-
   }
 
   @Test
