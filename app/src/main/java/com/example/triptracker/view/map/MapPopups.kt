@@ -48,7 +48,7 @@ fun TestPathOverlaySheet() {
               Pin(78.3, 78.3, "Abbey Road", "hi", "https://www.google.com")),
           "description",
           listOf())
-  PathOverlaySheet(itinerary)
+  PathOverlaySheet(itinerary, MapViewModel())
 }
 
 /**
@@ -57,7 +57,7 @@ fun TestPathOverlaySheet() {
  * @param itinerary Itinerary of that path
  */
 @Composable
-fun PathOverlaySheet(itinerary: Itinerary) {
+fun PathOverlaySheet(itinerary: Itinerary, mv: MapViewModel) {
   Box(
       modifier =
           Modifier.fillMaxWidth()
@@ -77,15 +77,6 @@ fun PathOverlaySheet(itinerary: Itinerary) {
           }
         }
       }
-}
-
-@Preview
-@Composable
-fun Testing2() {
-  // test a path item with a created pin
-  val pin = Pin(78.3, 78.3, "hello", "hi", "https://www.google.com")
-  val mv = MapViewModel()
-  Box(modifier = Modifier.fillMaxWidth().background(Color.Black)) { PathItem(pin, mv) }
 }
 
 /**
