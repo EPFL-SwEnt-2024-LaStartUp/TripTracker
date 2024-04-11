@@ -1,4 +1,4 @@
-name: build
+name: Build App APK
 
 env:
   # The name of the main module repository
@@ -12,9 +12,7 @@ on:
 
   pull_request:
     types:
-      - opened
-      - synchronize
-      - reopened
+      - closed
 
 #  release:
 
