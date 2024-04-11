@@ -16,6 +16,9 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,6 +30,7 @@ import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
 import com.example.triptracker.view.theme.md_theme_light_black
+import com.example.triptracker.viewmodel.MapPopupViewModel
 import com.example.triptracker.viewmodel.MapViewModel
 
 @Preview
@@ -43,9 +47,9 @@ fun TestPathOverlaySheet() {
           "start",
           "end",
           listOf(
-              Pin(78.3, 78.3, "Picadilly Circus", "hi", "https://www.google.com"),
-              Pin(78.3, 78.3, "Buckingham Palace", "hi", "https://www.google.com"),
-              Pin(78.3, 78.3, "Abbey Road", "hi", "https://www.google.com")),
+              Pin(51.509953155490976, -0.1345062081810831, "Picadilly Circus", "hi", "https://www.google.com"),
+              Pin(51.501370650469, -0.14182562962180675, "Buckingham Palace", "hi", "https://www.google.com"),
+              Pin(51.537120465492286, -0.18335994496202418, "Abbey Road", "hi", "https://www.google.com")),
           "description",
           listOf())
   PathOverlaySheet(itinerary, MapViewModel())
@@ -60,12 +64,16 @@ fun TestPathOverlaySheet() {
 fun PathOverlaySheet(itinerary: Itinerary, mv: MapViewModel) {
   Box(
       modifier =
-          Modifier.fillMaxWidth()
-              .padding(vertical = 10.dp)
-              .background(
-                  color = md_theme_light_black,
-                  shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp))) {
-        Column(modifier = Modifier.fillMaxWidth().padding(25.dp)) {
+      Modifier
+          .fillMaxWidth()
+          .padding(vertical = 10.dp)
+          .background(
+              color = md_theme_light_black,
+              shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp)
+          )) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(25.dp)) {
           Text(text = "Jack's Path", color = Color.White)
           Spacer(modifier = Modifier.height(16.dp))
 
@@ -94,14 +102,12 @@ fun PathItem(pinnedPlace: Pin, mv: MapViewModel) {
                 id = R.drawable.ic_gps_fixed), // Replace with your actual pin icon resource
         contentDescription = "Location pin",
         tint = Color.White)
-    Column(modifier = Modifier.weight(1f).padding(start = 16.dp)) {
+    Column(modifier = Modifier
+        .weight(1f)
+        .padding(start = 16.dp)) {
       Text(text = pinnedPlace.name, color = Color.White)
       // Fetch address
-      Text(
-          text = // mv.reverseDecode(pinnedPlace.latitude.toFloat(),
-              // pinnedPlace.longitude.toFloat()
-              "address",
-          color = Color.White)
+      AddressText(mpv = MapPopupViewModel(), latitude = pinnedPlace.latitude.toFloat(), longitude = pinnedPlace.longitude.toFloat())
     }
     Icon(
         painterResource(id = R.drawable.rightarrow),
@@ -110,4 +116,16 @@ fun PathItem(pinnedPlace: Pin, mv: MapViewModel) {
         tint = Color.White)
   }
   Spacer(modifier = Modifier.height(16.dp))
+}
+
+@Composable
+fun AddressText(mpv: MapPopupViewModel, latitude: Float, longitude: Float) {
+    val address by mpv.address.observeAsState("Loading address...")
+
+    // Trigger the address fetch
+    LaunchedEffect(key1 = latitude, key2 = longitude) {
+        mpv.fetchAddressForPin(latitude, longitude)
+    }
+
+    Text(text = address, color = Color.White)
 }
