@@ -37,7 +37,7 @@ class UserProfileTest {
     assertEquals("2", userProfile2.id)
     assertEquals("", userProfile2.name)
     assertEquals("", userProfile2.surname)
-    assertEquals(Date(), userProfile2.birthdate)
+    assertEquals(date1, userProfile2.birthdate)
     assertEquals("", userProfile2.pseudo)
     assertEquals(null, userProfile2.profileImageUrl)
   }

@@ -10,6 +10,8 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class UserProfileListTest {
+  private val date1 = Date(2021, 1, 1)
+
   private val userProfileList1 = UserProfileList(listOf())
   private val userProfileList2 =
       UserProfileList(
@@ -18,12 +20,12 @@ class UserProfileListTest {
                   id = "1",
                   name = "Alice",
                   surname = "Smith",
-                  birthdate = Date(),
+                  birthdate = date1,
                   pseudo = "AliceS"),
               UserProfile(
-                  id = "2", name = "Bob", surname = "Johnson", birthdate = Date(), pseudo = "BobJ"),
+                  id = "2", name = "Bob", surname = "Johnson", birthdate = date1, pseudo = "BobJ"),
               UserProfile(
-                  id = "3", name = "Bob", surname = "Brown", birthdate = Date(), pseudo = "BobB")))
+                  id = "3", name = "Bob", surname = "Brown", birthdate = date1, pseudo = "BobB")))
 
   private val userProfileList3 =
       UserProfileList(
@@ -32,15 +34,15 @@ class UserProfileListTest {
                   id = "4",
                   name = "Alice",
                   surname = "Smith",
-                  birthdate = Date(),
+                  birthdate = date1,
                   pseudo = "AliceS"),
               UserProfile(
-                  id = "5", name = "Bob", surname = "Johnson", birthdate = Date(), pseudo = "BobJ"),
+                  id = "5", name = "Bob", surname = "Johnson", birthdate = date1, pseudo = "BobJ"),
               UserProfile(
                   id = "6",
                   name = "Charlie",
                   surname = "Brown",
-                  birthdate = Date(),
+                  birthdate = date1,
                   pseudo = "CharlieB")))
 
   // TODO: complete this test
