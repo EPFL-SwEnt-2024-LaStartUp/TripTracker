@@ -50,8 +50,11 @@ fun DisplayItinerary(
 ) {
   // Number of additional itineraries not displayed
   val pinListString = fetchPinNames(itinerary)
+  // The height of the box that contains the itinerary, fixed
   val boxHeight = 200.dp
+  // The padding around the box
   val paddingAround = 15.dp
+  // The size of the user's avatar/profile picture
   val avatarSize = 20.dp
   Box(
       modifier =
@@ -100,7 +103,6 @@ fun DisplayItinerary(
               fontFamily = FontFamily(Font(R.font.montserrat_regular)),
               fontSize = 14.sp)
           Spacer(modifier = Modifier.height(30.dp).weight(1f))
-          // Spacer(modifier = Modifier.heightIn(6.dp).weight(1f))
           Text(
               text = pinListString,
               fontSize = 14.sp,
