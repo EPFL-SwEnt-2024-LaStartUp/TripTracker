@@ -22,7 +22,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: buildjet-64vcpu-ubuntu-2004
 
     steps:
       - uses: actions/checkout@v3
