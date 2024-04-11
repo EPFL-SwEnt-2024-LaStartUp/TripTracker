@@ -113,47 +113,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
           asset_path: ./app/build/outputs/apk/debug/app-debug.apk
-          asset_name: app-debug.apk
+          asset_name: TripTracker.apk
           asset_content_type: application/zip
-
-#      # Create release
-#      - name: Create Release
-#        id: create_release
-#        uses: actions/create-release@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          tag_name: ${{ env.date_today }} # You can customize the tag name
-#          release_name: Release ${{ env.date_today }} # You can customize the release name
-#          draft: false
-#          prerelease: false
-#
-#      - name: Upload release assets
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_path: ${{ env.main_project_module }}/build/outputs/apk/debug/
-#          asset_name: Debug-APK-${{ env.date_today }}.apk
-#          asset_content_type: application/vnd.android.package-archive
-#
-#      - name: Upload release assets
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_path: ${{ env.main_project_module }}/build/outputs/apk/release/
-#          asset_name: Release-APK-${{ env.date_today }}.apk
-#          asset_content_type: application/vnd.android.package-archive
-#
-#      - name: Upload release assets
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_path: ${{ env.main_project_module }}/build/outputs/bundle/release/
-#          asset_name: Release-AAB-${{ env.date_today }}.aab
-#          asset_content_type: application/vnd.android.package-archive
