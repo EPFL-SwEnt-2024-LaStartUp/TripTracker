@@ -33,8 +33,20 @@ class RecordViewModel {
   fun stopRecording() {
     endTime.longValue = System.currentTimeMillis()
     // TODO do something with the data
-    Log.e("DATA", "Data collected: ${_latLongList.size} points, ${getElapsedTime()} ms")
+    Log.e(
+        "DATA",
+        "Data collected: ${_latLongList.size} points, ${getElapsedTime()} ms, ${prettyPrint(_latLongList)}")
     // clear the list
+  }
+
+  // Helper function to pretty print the LatLng list
+  private fun prettyPrint(list: List<LatLng>): String {
+    var res = "mutableListOf(\n"
+    for (i in list) {
+      res += "LatLng(${i.latitude}, ${i.longitude})," + "\n"
+    }
+    res += ")"
+    return res
   }
 
   /** Resets the recording. Clears the start time, end time, and LatLng list. */

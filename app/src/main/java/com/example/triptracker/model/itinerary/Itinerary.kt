@@ -2,7 +2,7 @@ package com.example.triptracker.model.itinerary
 
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
-import com.google.type.LatLng
+import com.google.android.gms.maps.model.LatLng
 
 /**
  * This class represents the Itinerary object which contains the details of the trip

@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.List
+import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
@@ -86,7 +89,7 @@ fun UserProfileOverview(
             Column() {
               AsyncImage(
                   model =
-                      "https://images.pexels.com/photos/36717/amazing-animal-beautiful-beautifull.jpg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+                      "https://img-19.commentcamarche.net/wzKKufHO7dLH-WPFdXJHEmOmi7E=/1500x/smart/2d8c2b30aee345008ee860087f8bcdc9/ccmcms-commentcamarche/36120212.jpg",
                   contentDescription = "Profile picture",
                   placeholder = painterResource(id = R.drawable.blankprofile),
                   modifier =
@@ -243,7 +246,8 @@ fun UserProfileOverview(
                 Button(
                     onClick = {
                       navigation.navigateTo(
-                          TopLevelDestination(Route.FAVORITES, R.drawable.favorite, "Favorites"))
+                          TopLevelDestination(
+                              Route.FAVORITES, Icons.Outlined.Favorite, "Favorites"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
                     modifier =
@@ -277,7 +281,7 @@ fun UserProfileOverview(
                 Button(
                     onClick = {
                       navigation.navigateTo(
-                          TopLevelDestination(Route.FRIENDS, R.drawable.friends, "Friends"))
+                          TopLevelDestination(Route.FRIENDS, Icons.Outlined.People, "Friends"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
                     modifier =
@@ -311,7 +315,8 @@ fun UserProfileOverview(
                 Button(
                     onClick = {
                       navigation.navigateTo(
-                          TopLevelDestination(Route.MYTRIPS, R.drawable.mytrips, "MyTrips"))
+                          TopLevelDestination(
+                              Route.MYTRIPS, Icons.Outlined.BookmarkBorder, "MyTrips"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
                     modifier =
@@ -345,7 +350,7 @@ fun UserProfileOverview(
                 Button(
                     onClick = {
                       navigation.navigateTo(
-                          TopLevelDestination(Route.SETTINGS, R.drawable.settings, "Settings"))
+                          TopLevelDestination(Route.SETTINGS, Icons.Outlined.Settings, "Settings"))
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
                     modifier =
