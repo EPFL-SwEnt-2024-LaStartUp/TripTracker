@@ -71,7 +71,7 @@ fun PathOverlaySheet(itinerary: Itinerary, mv: MapViewModel) {
 
           LazyColumn {
             items(itinerary.pinnedPlaces) { pin ->
-              PathItem(pin, MapViewModel())
+              PathItem(pin, mv)
               Divider(thickness = 1.dp)
             }
           }
