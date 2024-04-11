@@ -100,8 +100,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: AppRelease
-          release_name: Automatic App Release
+          tag_name: AppRelease${{ env.date_time }}
+          release_name: App Release${{ env.date_time }}
           draft: false
           prerelease: false
 
