@@ -6,7 +6,15 @@ env:
 
 
 on:
-  push
+  push:
+    branches:
+      - main
+
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 #  release:
 
@@ -92,8 +100,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: newtag
-          release_name: Automatic Release
+          tag_name: AppRelease
+          release_name: Automatic App Release
           draft: false
           prerelease: false
 
