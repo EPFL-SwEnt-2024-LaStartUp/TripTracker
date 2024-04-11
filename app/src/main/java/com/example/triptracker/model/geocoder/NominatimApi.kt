@@ -129,4 +129,61 @@ class NominatimApi {
           }
         })
   }
+
+  /**
+   * Function to reverse decode the address.
+   *
+   * @param lat : latitude of the location
+   * @param lon : longitude of the location
+   * @param callback : function to call when the location is decoded into an address
+   */
+  fun reverseDecodeAddress(lat: Float, lon: Float, callback: (String) -> Unit) {
+    // Generate the URL
+    val url = getReverseUrl(lat, lon)
+    val request = Request.Builder().url(url).build()
+    val call = httpClient.newCall(request)
+
+    // Execute the request
+    call.enqueue(
+        object : Callback {
+          override fun onFailure(call: Call, e: IOException) {
+            Log.d("API RESPONSE", LocationErrors.FAIL)
+            callback(LocationErrors.UNKNOWN)
+          }
+
+          override fun onResponse(call: Call, response: Response) {
+            val result = response.body?.string()
+            if (result == LocationErrors.ERROR || result == "") {
+              callback(LocationErrors.UNKNOWN)
+              return
+            }
+            // Parse the response in JSON
+            val json = result?.let { JSONObject(it) }
+
+            // Attempt to get the address from the JSON
+            val addressJson = json?.getJSONObject("address")
+            if (addressJson == null) {
+              callback(LocationErrors.UNKNOWN)
+              return
+            } else {
+              // Extract address components
+              val houseNumber = addressJson.optString("house_number", "")
+              val road = addressJson.optString("road", "")
+              val postcode = addressJson.optString("postcode", "")
+              val city =
+                  addressJson.optString(
+                      "city", addressJson.optString("town", addressJson.optString("village", "")))
+              val country = addressJson.optString("country", "")
+
+              // Format the address
+              val formattedAddress =
+                  listOf(houseNumber, road, postcode, city, country)
+                      .filter { it.isNotEmpty() }
+                      .joinToString(separator = ", ")
+
+              callback(formattedAddress)
+            }
+          }
+        })
+  }
 }
