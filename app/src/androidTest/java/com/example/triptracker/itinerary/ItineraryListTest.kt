@@ -4,6 +4,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryList
 import com.example.triptracker.model.location.Location
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,7 +31,7 @@ class ItineraryListTest {
                   id = "2",
                   title = "Trip to the mountains",
                   username = "Bob",
-                  location = Location(0.0, 0.0, "Mountains"),
+                  location = Location(0.2, 0.2, "Mountains"),
                   flameCount = 123,
                   startDateAndTime = "2021-01-01",
                   endDateAndTime = "2021-01-02",
@@ -47,16 +49,80 @@ class ItineraryListTest {
   }
 
   @Test
+  fun setItineraryListTest() {
+    val itineraryList = ItineraryList(listOf())
+    itineraryList.setItineraryList(
+        listOf(
+            Itinerary(
+                id = "1",
+                title = "Trip to the beach",
+                username = "Alice",
+                location = Location(0.0, 0.0, "Beach"),
+                flameCount = 234,
+                startDateAndTime = "2021-01-01",
+                endDateAndTime = "2021-01-02",
+                pinnedPlaces = listOf(),
+                description = "A trip to the beach with friends",
+                route = listOf())))
+    assertEquals(1, itineraryList.size())
+    assertEquals("Trip to the beach", itineraryList.getAllItineraries()[0].title)
+    assertEquals("Alice", itineraryList.getAllItineraries()[0].username)
+    assertEquals(234, itineraryList.getAllItineraries()[0].flameCount)
+    assertEquals("2021-01-01", itineraryList.getAllItineraries()[0].startDateAndTime)
+    assertEquals("2021-01-02", itineraryList.getAllItineraries()[0].endDateAndTime)
+    assertEquals("Beach", itineraryList.getAllItineraries()[0].location.name)
+    assertEquals(
+        "A trip to the beach with friends", itineraryList.getAllItineraries()[0].description)
+    assertEquals(0, itineraryList.getAllItineraries()[0].route.size)
+    assertEquals(0, itineraryList.getAllItineraries()[0].pinnedPlaces.size)
+
+    itineraryList.setItineraryList(listOf<Itinerary>())
+    assertEquals(0, itineraryList.size())
+  }
+
+  @Test
+  fun addItineraryTest() {
+    val itineraryList = ItineraryList(listOf())
+    itineraryList.addItinerary(
+        Itinerary(
+            id = "1",
+            title = "Trip to the beach",
+            username = "Alice",
+            location = Location(0.0, 0.0, "Beach"),
+            flameCount = 234,
+            startDateAndTime = "2021-01-01",
+            endDateAndTime = "2021-01-02",
+            pinnedPlaces = listOf(),
+            description = "A trip to the beach with friends",
+            route = listOf()))
+    assertEquals(1, itineraryList.size())
+    assertEquals("Trip to the beach", itineraryList.getAllItineraries()[0].title)
+    assertEquals("Alice", itineraryList.getAllItineraries()[0].username)
+    assertEquals(234, itineraryList.getAllItineraries()[0].flameCount)
+    assertEquals("2021-01-01", itineraryList.getAllItineraries()[0].startDateAndTime)
+    assertEquals("2021-01-02", itineraryList.getAllItineraries()[0].endDateAndTime)
+    assertEquals("Beach", itineraryList.getAllItineraries()[0].location.name)
+    assertEquals(
+        "A trip to the beach with friends", itineraryList.getAllItineraries()[0].description)
+    assertEquals(0, itineraryList.getAllItineraries()[0].route.size)
+    assertEquals(0, itineraryList.getAllItineraries()[0].pinnedPlaces.size)
+  }
+
+  @Test
   fun getFilteredItinerariesByTitleTest() {
     val filteredList2 = itineraryList2.getFilteredItineraries("mountains")
     assertEquals(1, filteredList2.size)
     assertEquals("Trip to the mountains", filteredList2[0].title)
   }
 
-  //    @Test
-  //    fun getFilteredItinerariesByLocationTest() {
-  //        // TODO: implement this test
-  //    }
+  @Test
+  fun getFilteredItinerariesByLocationTest() {
+    val filteredList2 =
+        itineraryList2.getFilteredItineraries(LatLngBounds(LatLng(-0.1, -0.1), LatLng(0.1, 0.1)), 1)
+    assertEquals(1, filteredList2.size)
+    assertEquals("Trip to the beach", filteredList2[0].title)
+  }
+
   @Test
   fun getItineraryTest() {
     val itinerary = itineraryList2.getItinerary("1")

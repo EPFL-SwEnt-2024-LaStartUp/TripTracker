@@ -38,8 +38,8 @@ class HomeViewModel : ViewModel() {
 
   /** Fetches all itineraries from the repository and stores them in the itineraryList LiveData */
   private fun fetchItineraries() {
-    itineraryInstance.itineraryList = repository.getAllItineraries()
-    _itineraryList.value = itineraryInstance.itineraryList
+    itineraryInstance.setItineraryList(repository.getAllItineraries())
+    _itineraryList.value = itineraryInstance.getAllItineraries()
   }
 
   // Filtered Itinerary list LiveData based on search query
