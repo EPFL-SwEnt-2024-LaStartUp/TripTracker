@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
@@ -34,6 +33,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -126,7 +126,10 @@ fun SearchBar(
   var isActive by remember(searchText) { mutableStateOf(searchText.isNotEmpty()) }
 
   androidx.compose.material3.SearchBar(
-      modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("SearchItinerary"),
+      modifier =
+          Modifier.fillMaxWidth()
+              .padding(horizontal = 30.dp, vertical = 5.dp)
+              .testTag("SearchItinerary"),
       query = searchText,
       onQueryChange = { newText ->
         searchText = newText
@@ -146,14 +149,17 @@ fun SearchBar(
         }
       },
       placeholder = {
-        Text(
-            "Search for an itinerary",
-            modifier = Modifier.width(200.dp),
-            fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 0.15.sp,
-            color = md_theme_grey)
+        Row {
+          Text(
+              "Search for an itinerary",
+              modifier = Modifier.weight(1f).padding(start = 10.dp),
+              textAlign = TextAlign.Center,
+              fontFamily = FontFamily(Font(R.font.montserrat_bold)),
+              fontSize = 21.sp,
+              fontWeight = FontWeight.Medium,
+              letterSpacing = 0.15.sp,
+              color = md_theme_grey)
+        }
       },
       leadingIcon = {
         if (isActive) {
@@ -205,8 +211,7 @@ fun SearchBar(
             onItineraryClick = { id ->
               // Hard coded for the moment
               // TODO: Navigate to the itinerary details screen (2nd screen Figma)
-              val map = navigation.getTopLevelDestinations()[1]
-              navigation.navigateTo(map)
+              // for now does nothing
             })
       }
     }
