@@ -94,14 +94,17 @@ jobs:
           name: app
           path: app/build/outputs/apk/debug/app-debug.apk
 
+      - name: Set current date and time as environment variables
+        run: echo "date_time=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: AppRelease${{ env.date_time }}
-          release_name: App Release${{ env.date_time }}
+          tag_name: AppRelease-${{ env.date_time }}
+          release_name: App Release - ${{ env.date_time }}
           draft: false
           prerelease: false
 
