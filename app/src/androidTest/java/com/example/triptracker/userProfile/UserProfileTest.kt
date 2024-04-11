@@ -20,7 +20,14 @@ class UserProfileTest {
           pseudo = "AliceS",
           profileImageUrl = "stupid-image-url.com")
 
-  private val userProfile2 = UserProfile(id = "2")
+  private val userProfile2 =
+      UserProfile(
+          id = "2",
+          name = "Bob",
+          surname = "Johnson",
+          birthdate = date1,
+          pseudo = "BobJ",
+          profileImageUrl = null)
 
   @Test
   fun testUserProfile1() {
@@ -35,26 +42,10 @@ class UserProfileTest {
   @Test
   fun testUserProfile2() {
     assertEquals("2", userProfile2.id)
-    assertEquals("", userProfile2.name)
-    assertEquals("", userProfile2.surname)
-    assertEquals(date1, userProfile2.birthdate)
-    assertEquals("", userProfile2.pseudo)
-    assertEquals(null, userProfile2.profileImageUrl)
-  }
-
-  @Test
-  fun modifyUserProfile() {
-    userProfile2.name = "Bob"
-    userProfile2.surname = "Johnson"
-    userProfile2.birthdate = date1
-    userProfile2.pseudo = "BobJ"
-    userProfile2.profileImageUrl = "another-stupid-image-url.com"
-
-    assertEquals("2", userProfile2.id)
     assertEquals("Bob", userProfile2.name)
     assertEquals("Johnson", userProfile2.surname)
     assertEquals(date1, userProfile2.birthdate)
     assertEquals("BobJ", userProfile2.pseudo)
-    assertEquals("another-stupid-image-url.com", userProfile2.profileImageUrl)
+    assertEquals(null, userProfile2.profileImageUrl)
   }
 }
