@@ -18,7 +18,6 @@ on:
 
 #  release:
 
-
 jobs:
   build:
 
@@ -61,10 +60,10 @@ jobs:
       - name: Build apk release project (APK) module
         run: ./gradlew assemble
 
-      # Create Bundle AAB Release
-      # Noted for main module build [main_project_module]:bundleRelease
-      - name: Build app bundle release (AAB) module
-        run: ./gradlew ${{ env.main_project_module }}:bundleRelease
+#      # Create Bundle AAB Release
+#      # Noted for main module build [main_project_module]:bundleRelease
+#      - name: Build app bundle release (AAB) module
+#        run: ./gradlew ${{ env.main_project_module }}:bundleRelease
 
       # Upload Artifact Build
       # Noted For Output [main_project_module]/build/outputs/apk/debug/
