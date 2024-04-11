@@ -41,6 +41,10 @@ Other data to save are :
 - Security/privacy: if profile or path is not public, exclude data from the searches 
 - When the path record is activated, enters power efficiency mode for low energy consumption, and the app can be left while still working in the background
 
+## Architecture diagram
+
+![architecture_diagram](https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/assets/73248361/2dec937f-0307-4093-877c-15a6ccb2796c)
+
 ---
 
 
