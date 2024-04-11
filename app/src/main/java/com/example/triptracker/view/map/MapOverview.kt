@@ -68,18 +68,25 @@ fun MapOverview(
 ) {
   // The device location is set to EPFL by default
   var deviceLocation = DEFAULT_LOCATION
-  var mapProperties =
-      MapProperties(
-          mapType = MapType.NORMAL, isMyLocationEnabled = checkForLocationPermission(context))
-  var uiSettings = MapUiSettings(myLocationButtonEnabled = checkForLocationPermission(context))
+  var mapProperties by remember {
+    mutableStateOf(
+        MapProperties(
+            mapType = MapType.NORMAL, isMyLocationEnabled = checkForLocationPermission(context)))
+  }
+
+  var uiSettings by remember {
+    mutableStateOf(MapUiSettings(myLocationButtonEnabled = checkForLocationPermission(context)))
+  }
 
   getCurrentLocation(context = context, onLocationFetched = { deviceLocation = it })
+
+  var loadMapScreen by remember { mutableStateOf(checkForLocationPermission(context)) }
 
   // Check if the location permission is granted if not re-ask for it. If the result is still
   // negative then disable the location button and center the view on EPFL
   // else enable the location button and center the view on the user's location and show real time
   // location
-  when (checkForLocationPermission(context = context)) {
+  when (loadMapScreen) {
     true -> {
       Scaffold(
           bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
@@ -90,23 +97,17 @@ fun MapOverview(
           }
     }
     false -> {
-      Scaffold(
-          bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
-              innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-              AllowLocationPermission(
-                  onPermissionGranted = {
-                    mapProperties =
-                        MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
-                    uiSettings = MapUiSettings(myLocationButtonEnabled = true)
-                  },
-                  onPermissionDenied = {
-                    mapProperties =
-                        MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
-                    uiSettings = MapUiSettings(myLocationButtonEnabled = false)
-                  })
-            }
-          }
+      AllowLocationPermission(
+          onPermissionGranted = {
+            mapProperties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
+            uiSettings = MapUiSettings(myLocationButtonEnabled = true)
+            loadMapScreen = true
+          },
+          onPermissionDenied = {
+            mapProperties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
+            uiSettings = MapUiSettings(myLocationButtonEnabled = false)
+            loadMapScreen = true
+          })
     }
   }
 }
@@ -222,18 +223,18 @@ fun Map(
     Row(
         modifier = Modifier.align(Alignment.BottomStart),
         horizontalArrangement = Arrangement.Start) {
-          if (ui.myLocationButtonEnabled && properties.isMyLocationEnabled) {
-            Box(modifier = Modifier.padding(horizontal = 35.dp, vertical = 65.dp)) {
+          Box(modifier = Modifier.padding(horizontal = 35.dp, vertical = 65.dp)) {
+            if (ui.myLocationButtonEnabled && properties.isMyLocationEnabled) {
               DisplayCenterLocationButton(
                   coroutineScope = coroutineScope,
                   deviceLocation = deviceLocation,
                   cameraPositionState = cameraPositionState)
-              if (displayPopUp) {
-                Box(modifier = Modifier.fillMaxHeight(0.3f)) {
-                  DisplayItinerary(
-                      itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                      navigation = navigation)
-                }
+            }
+            if (displayPopUp) {
+              Box(modifier = Modifier.fillMaxHeight(0.3f)) {
+                DisplayItinerary(
+                    itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                    navigation = navigation)
               }
             }
           }
