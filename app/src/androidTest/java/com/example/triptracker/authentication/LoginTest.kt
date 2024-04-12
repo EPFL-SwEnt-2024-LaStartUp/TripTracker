@@ -2,7 +2,6 @@ package com.example.triptracker.authentication
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.rule.IntentsTestRule
@@ -49,21 +48,6 @@ class LoginTest : TestCase() {
 
       // assert that an Intent resolving to Google Mobile Services has been sent (for sign-in)
       Intents.intended(IntentMatchers.toPackage("com.google.android.gms"))
-    }
-  }
-
-  // Write a test to see if the images are correctly displayed
-  @Test
-  fun imagesAreCorrectlyDisplayed() {
-    ComposeScreen.onComposeScreen<LoginScreen>(composeTestRule) {
-      // Test first image
-      // Test to check if the first image is displayed
-      composeTestRule.onNodeWithContentDescription("image logo").assertIsDisplayed()
-
-      // Test to check if the second image is displayed
-      composeTestRule
-          .onNodeWithContentDescription("image text logo", useUnmergedTree = true)
-          .assertIsDisplayed()
     }
   }
 }

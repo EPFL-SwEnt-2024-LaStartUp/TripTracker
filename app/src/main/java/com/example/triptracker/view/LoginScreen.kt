@@ -137,10 +137,6 @@ fun Login(
         contentDescription = "image logo",
         contentScale = ContentScale.FillBounds)
     Spacer(modifier = Modifier.height(40.dp))
-    Image(
-        modifier = Modifier.width(189.dp).height(189.dp),
-        painter = painterResource(id = R.drawable.triptracker_text),
-        contentDescription = "image text logo")
     Text(
         text = "Welcome",
         modifier = Modifier.testTag("LoginTitle"),
