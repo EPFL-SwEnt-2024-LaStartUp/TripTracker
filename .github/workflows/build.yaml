@@ -59,7 +59,7 @@ jobs:
         run: |
           echo "${{ secrets.ENCODED_STRING }}" | base64 -d > $SIGNING_KEY_STORE_PATH
 
-      - name: Build Release apk
+      - name: Build Signed Release APK
         env:
           SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
@@ -67,12 +67,12 @@ jobs:
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
         run: ./gradlew assembleRelease
 
-      - name: Upload Release Build to Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: release-artifacts
-          paths: |
-            app/build/outputs/apk/release/
+#      - name: Upload Release Build to Artifacts
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: release-artifacts
+#          paths: |
+#            app/build/outputs/apk/release/
 
 #      - name: Create Github Release
 #        uses: actions/create-release@v1
@@ -82,21 +82,21 @@ jobs:
 #          files: |
 #            app/build/outputs/apk/release/app-release.apk
 
-      # Run Build Project
-      - name: Build gradle project
-        run: ./gradlew build
-
-      # Create APK Debug
-      - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
-        run: ./gradlew assembleDebug
-
-      # Create APK Release
-      - name: Build apk release project (APK) module
-        run: ./gradlew assemble
+#      # Run Build Project
+#      - name: Build gradle project
+#        run: ./gradlew build
+#
+#      # Create APK Debug
+#      - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
+#        run: ./gradlew assembleDebug
+#
+#      # Create APK Release
+#      - name: Build apk release project (APK) module
+#        run: ./gradlew assemble
 
       # Upload Artifact Build
-      # Noted For Output [main_project_module]/build/outputs/apk/debug/
-      - name: Upload APK Debug
+      # Noted For Output [main_project_module]/build/outputs/apk/release/
+      - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
           name: APK(s) debug generated
