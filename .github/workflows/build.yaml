@@ -66,14 +66,14 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
         run: |
-          ./gradlew assembleRelease
+          ./gradlew release
           ls -R ${{ env.main_project_module }}/build/outputs/apk/release/
 
       # Upload Artifact Build
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
-          name: APK(s) debug generated
+          name: APK release
           path: ${{ env.main_project_module }}/build/outputs/apk/release/app-release-unsigned.apk
 
 
