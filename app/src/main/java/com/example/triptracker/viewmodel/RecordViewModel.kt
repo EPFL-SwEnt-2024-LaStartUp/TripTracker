@@ -3,18 +3,25 @@ package com.example.triptracker.viewmodel
 import android.util.Log
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.repository.ItineraryRepository
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.launch
 
 /**
  * ViewModel for recording trips. This ViewModel is responsible for managing the state of a trip
  * recording, including start time, end time, pause status, and the list of LatLng points.
  */
-class RecordViewModel {
+class RecordViewModel : ViewModel() {
 
-  // Start time of the recording
+  // Start time and date of the recording
   private val startTime = mutableLongStateOf(0L)
-  // End time of the recording
+  val startDate = mutableStateOf("")
+  // End time and date of the recording
   private val endTime = mutableLongStateOf(0L)
+  val endDate = mutableStateOf("")
   // Boolean state representing whether the recording is paused
   val isPaused = mutableStateOf(false)
 
@@ -26,20 +33,33 @@ class RecordViewModel {
 
   /** Starts the recording. Sets the start time to the current time. */
   fun startRecording() {
+    // reset the recording to clear any previous data
+    resetRecording()
     startTime.longValue = System.currentTimeMillis()
+    // get the current date
+    startDate.value = java.time.LocalDate.now().toString()
   }
 
   /** Stops the recording. Sets the end time to the current time and logs the data collected. */
   fun stopRecording() {
+    // if the recording is paused, unpause it and terminate the recording
+    if (isPaused.value) {
+      isPaused.value = false
+    }
     endTime.longValue = System.currentTimeMillis()
-    // TODO do something with the data
+    // get the current date
+    endDate.value = java.time.LocalDate.now().toString()
     Log.e(
         "DATA",
         "Data collected: ${_latLongList.size} points, ${getElapsedTime()} ms, ${prettyPrint(_latLongList)}")
     // clear the list
   }
 
-  // Helper function to pretty print the LatLng list
+  /**
+   * Pretty prints the list of LatLng points.
+   *
+   * @param list The list of LatLng points to pretty print.
+   */
   private fun prettyPrint(list: List<LatLng>): String {
     var res = "mutableListOf(\n"
     for (i in list) {
@@ -105,5 +125,21 @@ class RecordViewModel {
    */
   fun addLatLng(latLng: LatLng) {
     _latLongList.add(latLng)
+  }
+
+  /**
+   * Adds new itinerary to the database.
+   *
+   * @param itinerary Itinerary object to add to the database
+   * @param itineraryRepository ItineraryRepository object to interact with the database
+   */
+  fun addNewItinerary(itinerary: Itinerary, itineraryRepository: ItineraryRepository) {
+    viewModelScope.launch {
+      try {
+        itineraryRepository.addNewItinerary(itinerary)
+      } catch (e: Exception) {
+        // Handle the exception, e.g. show a message to the user
+      }
+    }
   }
 }
