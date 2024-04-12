@@ -183,7 +183,7 @@ fun UserProfileOverview(
                     modifier = Modifier.align(Alignment.TopStart))
                 ProfileButton(
                     label = "Friends",
-                    icon = Icons.Outlined.Person,
+                    icon = Icons.Outlined.People,
                     onClick = {
                       navigation.navigateTo(
                           TopLevelDestination(Route.FRIENDS, Icons.Outlined.People, "Friends"))
@@ -191,7 +191,7 @@ fun UserProfileOverview(
                     modifier = Modifier.align(Alignment.TopEnd))
                 ProfileButton(
                     label = "MyTrips",
-                    icon = Icons.Outlined.List,
+                    icon = Icons.Outlined.BookmarkBorder,
                     onClick = {
                       navigation.navigateTo(
                           TopLevelDestination(
