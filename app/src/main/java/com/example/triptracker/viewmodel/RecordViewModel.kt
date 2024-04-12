@@ -73,6 +73,8 @@ class RecordViewModel : ViewModel() {
   fun resetRecording() {
     startTime.longValue = 0L
     endTime.longValue = 0L
+    startDate.value = ""
+    endDate.value = ""
     _latLongList.clear()
   }
 
@@ -99,7 +101,7 @@ class RecordViewModel : ViewModel() {
    * @return Boolean indicating whether the recording is ongoing.
    */
   fun isRecording(): Boolean {
-    return startTime.longValue != 0L
+    return startTime.longValue != 0L && endTime.longValue == 0L
   }
 
   /**
