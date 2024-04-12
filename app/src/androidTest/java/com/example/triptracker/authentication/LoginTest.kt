@@ -17,14 +17,12 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class LoginTest : TestCase() {
-  @get:Rule
-  val composeTestRule = createAndroidComposeRule<MainActivity>()
+  @get:Rule val composeTestRule = createAndroidComposeRule<MainActivity>()
 
   // The IntentsTestRule simply calls Intents.init() before the @Test block
   // and Intents.release() after the @Test block is completed. IntentsTestRule
   // is deprecated, but it was MUCH faster than using IntentsRule in our tests
-  @get:Rule
-  val intentsTestRule = IntentsTestRule(MainActivity::class.java)
+  @get:Rule val intentsTestRule = IntentsTestRule(MainActivity::class.java)
 
   @Test
   fun titleAndButtonAreCorrectlyDisplayed() {
@@ -54,21 +52,18 @@ class LoginTest : TestCase() {
     }
   }
 
-
-  //Write a test to see if the images are correctly displayed
+  // Write a test to see if the images are correctly displayed
   @Test
   fun imagesAreCorrectlyDisplayed() {
     ComposeScreen.onComposeScreen<LoginScreen>(composeTestRule) {
       // Test first image
       // Test to check if the first image is displayed
-      composeTestRule
-        .onNodeWithContentDescription("image logo")
-        .assertIsDisplayed()
+      composeTestRule.onNodeWithContentDescription("image logo").assertIsDisplayed()
 
       // Test to check if the second image is displayed
       composeTestRule
-        .onNodeWithContentDescription("image text logo", useUnmergedTree = true)
-        .assertIsDisplayed()
+          .onNodeWithContentDescription("image text logo", useUnmergedTree = true)
+          .assertIsDisplayed()
     }
   }
 }
