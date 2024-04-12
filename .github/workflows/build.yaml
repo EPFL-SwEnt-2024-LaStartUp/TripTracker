@@ -100,7 +100,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: APK(s) debug generated
-          path: ${{ env.main_project_module }}/build/outputs/apk/release/app-release.apk
+          path: ${{ env.main_project_module }}/build/outputs/apk/debug/app-debug.apk
 
 #      # Noted For Output [main_project_module]/build/outputs/apk/release/
 #      - name: Upload APK Release
@@ -116,12 +116,12 @@ jobs:
 #          name: ${{ env.date_today }} - ${{ env.playstore_name }} - ${{ env.repository_name }} - App bundle(s) AAB release generated
 #          path: ${{ env.main_project_module }}/build/outputs/bundle/release/
 
-      # Upload APK to Github Release
-      - name: Upload APK to Github Artifacts
-        uses: actions/upload-artifact@v1
-        with:
-          name: app
-          path: ${{ env.main_project_module }}/build/outputs/apk/release/app-release.apk
+#      # Upload APK to Github Release
+#      - name: Upload APK to Github Artifacts
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: app
+#          path: ${{ env.main_project_module }}/build/outputs/apk/release/app-release.apk
 
       # Save time to environment variable
       - name: Set current date and time as environment variables
@@ -147,6 +147,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./app/build/outputs/apk/release/app-release.apk
+          asset_path: ./app/build/outputs/apk/debug/app-debug.apk
           asset_name: TripTracker.apk
           asset_content_type: application/zip
