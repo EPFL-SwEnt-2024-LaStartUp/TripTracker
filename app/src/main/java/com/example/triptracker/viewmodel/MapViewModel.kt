@@ -1,6 +1,5 @@
 package com.example.triptracker.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.geocoder.NominatimApi
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryList
-import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -31,16 +29,15 @@ class MapViewModel : ViewModel() {
 
   private val _pathList = MutableLiveData<ItineraryList>()
 
-  val filteredPathList = MutableLiveData<Map<String, List<LatLng>>>()
+  val filteredPathList = MutableLiveData<Map<Itinerary, List<LatLng>>>()
 
   /** Data class describing a selected Polyline */
-  data class SelectedPolyline(val id: String, val startLocation: LatLng)
+  data class SelectedPolyline(val itinerary: Itinerary, val startLocation: LatLng)
 
   // Hold the selected polyline state
   val selectedPolylineState = mutableStateOf<SelectedPolyline?>(null)
 
   init {
-    updateAllItineraries()
     viewModelScope.launch { getAllItineraries() }
   }
 
@@ -57,7 +54,7 @@ class MapViewModel : ViewModel() {
 
   /** Get all itineraries from the database and update the pathList */
   private fun getAllItineraries() {
-    repository.getAllItineraries { itineraries -> _pathList.postValue(ItineraryList(itineraries)) }
+    _pathList.postValue(ItineraryList(repository.getAllItineraries()))
   }
 
   /**
@@ -81,7 +78,7 @@ class MapViewModel : ViewModel() {
       filteredPathList.postValue(
           _pathList.value
               ?.getFilteredItineraries(latLngBounds, limit)
-              ?.map { it.title to it.route }
+              ?.map { it to it.route }
               ?.toMap() ?: emptyMap())
     }
   }
@@ -90,7 +87,8 @@ class MapViewModel : ViewModel() {
    * This function is used to update all the itineraries in the database with random routes. This is
    * temporary code
    */
-  // TODO: Remove this function after the database is populated with real data
+  // TODO: REMOVE this function after the database is populated with real data
+  /*
   private fun updateAllItineraries() {
     repository.getAllItineraries { itineraries ->
       var i = 0
@@ -117,6 +115,8 @@ class MapViewModel : ViewModel() {
       }
     }
   }
+
+   */
 
   // TODO: Remove this function after the database is populated with real data
   private fun generateRandomCoordinates(): LatLng {
