@@ -75,13 +75,13 @@ jobs:
           paths: |
             app/build/outputs/apk/release/
 
-      - name: Create Github Release
-        uses: soft-props/action-gh-release@v1
-        with:
-          generate_release_notes: true
-          release: true
-          files: |
-            app/build/outputs/apk/release/app-release.apk
+#      - name: Create Github Release
+#        uses: actions/create-release@v1
+#        with:
+#          generate_release_notes: false
+#          release: true
+#          files: |
+#            app/build/outputs/apk/release/app-release.apk
 
       # Run Build Project
       - name: Build gradle project
