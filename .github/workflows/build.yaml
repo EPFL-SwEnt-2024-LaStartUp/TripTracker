@@ -51,30 +51,10 @@ jobs:
         run: |
           echo "API_KEY=\${{ secrets.API_KEY }}" > local.properties
 
-      - name: Decode Keystore
-        env:
-          ENCODED_STRING: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
-          SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
-
-        run: |
-          echo "${{ secrets.ENCODED_STRING }}" | base64 -d > $SIGNING_KEY_STORE_PATH
-
-      - name: Build Signed Release APK
-        env:
-          SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+      - name: Build APK
         run: |
           ./gradlew build assemble
           ls -R ${{ env.main_project_module }}/build/outputs/apk/
-
-      # Upload Artifact Build
-      - name: Upload APK
-        uses: actions/upload-artifact@v3
-        with:
-          name: APK release
-          path: ${{ env.main_project_module }}/build/outputs/apk/release/app-release-unsigned.apk
 
       - uses: r0adkll/sign-android-release@v1
         name: Sign app APK
@@ -121,6 +101,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ${{ env.main_project_module }}/build/outputs/apk/release/app-release-unsigned.apk
+          asset_path: ${{steps.sign_app.outputs.signedReleaseFile}}
           asset_name: TripTracker.apk
           asset_content_type: application/zip
