@@ -170,11 +170,16 @@ fun Map(
     position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
   }
 
+  val mapIsLoaded = remember { mutableStateOf(false) }
+
   // Animate camera to device location
   LaunchedEffect(key1 = deviceLocation) {
-    coroutineScope.launch {
-      cameraPositionState.animate(
-          CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(deviceLocation, 17f)))
+    if (mapIsLoaded.value) {
+      coroutineScope.launch {
+        cameraPositionState.animate(
+            CameraUpdateFactory.newCameraPosition(
+                CameraPosition.fromLatLngZoom(deviceLocation, 17f)))
+      }
     }
   }
 
@@ -212,6 +217,16 @@ fun Map(
           cameraPositionState = cameraPositionState,
           properties = properties,
           uiSettings = ui,
+          onMapLoaded = {
+            // The map is loaded, can use CameraUpdateFactory to animate the camera to the device
+            // location
+            coroutineScope.launch {
+              mapIsLoaded.value = true
+              cameraPositionState.animate(
+                  CameraUpdateFactory.newCameraPosition(
+                      CameraPosition.fromLatLngZoom(deviceLocation, 17f)))
+            }
+          },
       ) {
         Polyline(
             points = localLatLngList.toList(),
