@@ -1,7 +1,6 @@
 package com.example.triptracker.view.map
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -49,6 +48,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
+import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.location.Location
+import com.example.triptracker.model.location.Pin
+import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
@@ -150,12 +153,17 @@ fun Map(
 ) {
   // Mutable state for the device location and the local LatLng list
   var deviceLocation by remember { mutableStateOf(startLocation) }
+
+  // Have a local list of LatLng points to display the route is the only way to display the route
   val localLatLngList = remember { mutableStateListOf<LatLng>() }
   val ui by remember { mutableStateOf(uiSettings) }
   val properties by remember { mutableStateOf(mapProperties) }
 
   // Coroutine scope for the animations
   val coroutineScope = rememberCoroutineScope()
+
+  // Firebase Repository
+  val itineraryRepository = ItineraryRepository()
 
   // Remember camera position state
   val cameraPositionState = rememberCameraPositionState {
@@ -245,9 +253,39 @@ fun Map(
               onClick = {
                 if (viewModel.isRecording()) {
                   viewModel.stopRecording()
+
+                  // Add itinerary to database
+                  val id = itineraryRepository.getUID()
+                  val title = "TEST" // TODO : get title from user but not implemented yet
+                  val username = "lomimi" // TODO : get username from user but not implemented yet
+                  val location =
+                      Location(deviceLocation.latitude, deviceLocation.longitude, "Device Location")
+                  // TODO : get location from user but not implemented yet (default device location)
+                  val flameCount = 0L
+                  val startDate = viewModel.startDate.value
+                  val endDate = viewModel.endDate.value
+                  val pinList =
+                      emptyList<Pin>() // TODO : get pin list from user but not implemented yet
+                  val description =
+                      "description" // TODO : get description from user but not implemented yet
+
+                  val itinerary =
+                      Itinerary(
+                          id,
+                          title,
+                          username,
+                          location,
+                          flameCount,
+                          startDate,
+                          endDate,
+                          pinList,
+                          description,
+                          viewModel.latLongList.toList())
+
+                  viewModel.addNewItinerary(itinerary, itineraryRepository)
+
                   viewModel.resetRecording()
                   localLatLngList.clear()
-                  Log.d("RecordScreen", viewModel.latLongList.toString())
                 } else {
                   viewModel.startRecording()
                 }
@@ -408,7 +446,6 @@ fun displayTime(time: Long): String {
   val seconds = TimeUnit.MILLISECONDS.toSeconds(time) % 60
   val minutes = TimeUnit.MILLISECONDS.toMinutes(time) % 60
   val hours = TimeUnit.MILLISECONDS.toHours(time)
-
   return String.format("%02d:%02d:%02d", hours, minutes, seconds)
 }
 
