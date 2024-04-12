@@ -4,10 +4,10 @@ import android.util.Log
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
-import com.google.type.LatLng
 
 /**
  * Repository for the Itinerary class This class is responsible for handling the data operations for
@@ -39,13 +39,10 @@ open class ItineraryRepository {
    * @param callback Function to call with the list of itineraries once they are fetched
    * @return List of itineraries
    */
-  open fun getAllItineraries(callback: (List<Itinerary>) -> Unit): List<Itinerary> {
+  open fun getAllItineraries(): List<Itinerary> {
     db.collection("itineraries")
         .get()
-        .addOnSuccessListener { result ->
-          itineraryList(result)
-          callback(_itineraryList)
-        }
+        .addOnSuccessListener { result -> itineraryList(result) }
         .addOnFailureListener { e -> Log.e(TAG, "Error getting all itineraries", e) }
     return _itineraryList
   }
@@ -59,11 +56,7 @@ open class ItineraryRepository {
   open fun getPinNames(itinerary: Itinerary): List<String> {
     val pinNames = mutableListOf<String>()
     for (pin in itinerary.pinnedPlaces) {
-      if (pin is Pin) {
-        pinNames.add(pin.name)
-      } else {
-        Log.e("Error", "Expected item to be Pin, but got ${pin.javaClass.simpleName}")
-      }
+      pinNames.add(pin.name)
     }
     Log.d("PinNames", pinNames.toString())
     return pinNames
@@ -145,11 +138,7 @@ open class ItineraryRepository {
                       "image-url" to pin.image_url)
                 },
             "description" to itinerary.description,
-            "route" to
-                convertLatLngToMap(
-                    itinerary.route) // Assuming convertLatLngToMap is adapted for your LatLng
-            // implementation
-            )
+            "route" to convertLatLngToMap(itinerary.route))
     db.collection("itineraries")
         .document(itinerary.id)
         .set(itineraryData)
@@ -227,11 +216,11 @@ open class ItineraryRepository {
    * @param routeData List of maps with latitude and longitude keys
    * @return List of LatLng objects
    */
-  fun convertMapToLatLng(routeData: List<Map<String, Any>>): List<LatLng> =
-      routeData.map { data ->
-        LatLng.newBuilder()
-            .setLatitude(data["latitude"] as? Double ?: 0.0)
-            .setLongitude(data["longitude"] as? Double ?: 0.0)
-            .build()
-      }
+  private fun convertMapToLatLng(routeData: List<Map<String, Any>>): List<LatLng> {
+    var route: List<LatLng> = emptyList()
+    routeData.map { data ->
+      route = route.plus(LatLng(data["latitude"] as Double, data["longitude"] as Double))
+    }
+    return route
+  }
 }

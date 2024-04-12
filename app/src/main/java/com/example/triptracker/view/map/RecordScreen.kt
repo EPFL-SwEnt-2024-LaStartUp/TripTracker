@@ -1,6 +1,7 @@
 package com.example.triptracker.view.map
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -90,16 +91,22 @@ fun RecordScreen(
   var deviceLocation = DEFAULT_LOCATION
 
   // Default map properties and UI settings
-  var mapProperties =
-      MapProperties(
-          mapType = MapType.NORMAL, isMyLocationEnabled = checkForLocationPermission(context))
-  var uiSettings = MapUiSettings(myLocationButtonEnabled = checkForLocationPermission(context))
+  var mapProperties by remember {
+    mutableStateOf(
+        MapProperties(
+            mapType = MapType.NORMAL, isMyLocationEnabled = checkForLocationPermission(context)))
+  }
+
+  var uiSettings by remember {
+    mutableStateOf(MapUiSettings(myLocationButtonEnabled = checkForLocationPermission(context)))
+  }
 
   // Get current device location
   getCurrentLocation(context = context, onLocationFetched = { deviceLocation = it })
 
+  var loadMapScreen by remember { mutableStateOf(checkForLocationPermission(context)) }
   // Check for location permission
-  when (checkForLocationPermission(context = context)) {
+  when (loadMapScreen) {
     true -> {
       Scaffold(
           bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("RecordScreen")) {
@@ -110,23 +117,17 @@ fun RecordScreen(
           }
     }
     false -> {
-      Scaffold(
-          bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("RecordScreen")) {
-              innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-              AllowLocationPermission(
-                  onPermissionGranted = {
-                    mapProperties =
-                        MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
-                    uiSettings = MapUiSettings(myLocationButtonEnabled = true)
-                  },
-                  onPermissionDenied = {
-                    mapProperties =
-                        MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
-                    uiSettings = MapUiSettings(myLocationButtonEnabled = false)
-                  })
-            }
-          }
+      AllowLocationPermission(
+          onPermissionGranted = {
+            mapProperties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
+            uiSettings = MapUiSettings(myLocationButtonEnabled = true)
+            loadMapScreen = true
+          },
+          onPermissionDenied = {
+            mapProperties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
+            uiSettings = MapUiSettings(myLocationButtonEnabled = false)
+            loadMapScreen = true
+          })
     }
   }
 }
@@ -246,6 +247,7 @@ fun Map(
                   viewModel.stopRecording()
                   viewModel.resetRecording()
                   localLatLngList.clear()
+                  Log.d("RecordScreen", viewModel.latLongList.toString())
                 } else {
                   viewModel.startRecording()
                 }

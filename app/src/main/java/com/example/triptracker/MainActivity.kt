@@ -7,24 +7,22 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.triptracker.view.HomeScreen
+import com.example.triptracker.navigation.LaunchPermissionRequest
 import com.example.triptracker.view.LoginScreen
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
+import com.example.triptracker.view.home.HomeScreen
 import com.example.triptracker.view.map.MapOverview
 import com.example.triptracker.view.map.RecordScreen
+import com.example.triptracker.view.profile.UserProfileOverview
 import com.example.triptracker.view.theme.TripTrackerTheme
 
 class MainActivity : ComponentActivity() {
-
-  // Private boolean that tracks the logging status -- TODO remove it
-  private var isLoggedIn = mutableStateOf(false)
 
   init {
     instance = this
@@ -49,7 +47,9 @@ class MainActivity : ComponentActivity() {
           // Instance of NavController
           val navController = rememberNavController()
           val navigation = remember(navController) { Navigation(navController) }
-          val context: Context = MainActivity.applicationContext()
+          val context: Context = applicationContext()
+
+          LaunchPermissionRequest(context)
 
           // List of destinations for in app navigation
           NavHost(
@@ -60,9 +60,7 @@ class MainActivity : ComponentActivity() {
             composable(Route.HOME) { HomeScreen(navigation) }
             composable(Route.MAPS) { MapOverview(context = context, navigation = navigation) }
             composable(Route.RECORD) { RecordScreen(context, navigation) }
-            composable(Route.PROFILE) {
-              // TODO: Call the profile composable
-            }
+            composable(Route.PROFILE) { UserProfileOverview(navigation = navigation) }
           }
         }
       }

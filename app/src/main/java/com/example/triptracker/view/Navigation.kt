@@ -1,8 +1,13 @@
 package com.example.triptracker.view
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material.icons.outlined.RadioButtonChecked
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.example.triptracker.R
 
 /** Destinations used in the app. */
 object Route {
@@ -25,16 +30,16 @@ object Route {
 }
 
 /** Models of the top level destinations for the bottom navigation bar. */
-data class TopLevelDestination(val route: String, val icon: Int, val textId: String)
+data class TopLevelDestination(val route: String, val icon: ImageVector, val textId: String)
 
 /** Destinations that are displayed at the bottom of the screen. */
 private val TOP_LEVEL_DESTINATIONS =
     listOf(
         // TopLevelDestination(Route.LOGIN, Icons.Default.List, "Login"),
-        TopLevelDestination(Route.HOME, R.drawable.icon_home, "Home"),
-        TopLevelDestination(Route.MAPS, R.drawable.icon_map, "Maps"),
-        TopLevelDestination(Route.RECORD, R.drawable.icon_record, "Record"),
-        TopLevelDestination(Route.PROFILE, R.drawable.icon_profile, "Profile"),
+        TopLevelDestination(Route.HOME, Icons.Outlined.Home, "Home"),
+        TopLevelDestination(Route.MAPS, Icons.Outlined.Place, "Maps"),
+        TopLevelDestination(Route.RECORD, Icons.Outlined.RadioButtonChecked, "Record"),
+        TopLevelDestination(Route.PROFILE, Icons.Outlined.Person, "Profile"),
     )
 
 /**

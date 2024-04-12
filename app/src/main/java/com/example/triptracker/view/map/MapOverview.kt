@@ -2,11 +2,11 @@ package com.example.triptracker.view.map
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
@@ -34,15 +34,21 @@ import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
+import com.example.triptracker.view.home.DisplayItinerary
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_light_dark
+import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.MapViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.VisibleRegion
+import com.google.maps.android.compose.AdvancedMarker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -62,45 +68,46 @@ fun MapOverview(
 ) {
   // The device location is set to EPFL by default
   var deviceLocation = DEFAULT_LOCATION
-  var mapProperties =
-      MapProperties(
-          mapType = MapType.NORMAL, isMyLocationEnabled = checkForLocationPermission(context))
-  var uiSettings = MapUiSettings(myLocationButtonEnabled = checkForLocationPermission(context))
+  var mapProperties by remember {
+    mutableStateOf(
+        MapProperties(
+            mapType = MapType.NORMAL, isMyLocationEnabled = checkForLocationPermission(context)))
+  }
+
+  var uiSettings by remember {
+    mutableStateOf(MapUiSettings(myLocationButtonEnabled = checkForLocationPermission(context)))
+  }
 
   getCurrentLocation(context = context, onLocationFetched = { deviceLocation = it })
+
+  var loadMapScreen by remember { mutableStateOf(checkForLocationPermission(context)) }
 
   // Check if the location permission is granted if not re-ask for it. If the result is still
   // negative then disable the location button and center the view on EPFL
   // else enable the location button and center the view on the user's location and show real time
   // location
-  when (checkForLocationPermission(context = context)) {
+  when (loadMapScreen) {
     true -> {
       Scaffold(
           bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
               innerPadding ->
             Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-              Map(mapViewModel, context, deviceLocation, mapProperties, uiSettings)
+              Map(mapViewModel, context, deviceLocation, mapProperties, uiSettings, navigation)
             }
           }
     }
     false -> {
-      Scaffold(
-          bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
-              innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-              AllowLocationPermission(
-                  onPermissionGranted = {
-                    mapProperties =
-                        MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
-                    uiSettings = MapUiSettings(myLocationButtonEnabled = true)
-                  },
-                  onPermissionDenied = {
-                    mapProperties =
-                        MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
-                    uiSettings = MapUiSettings(myLocationButtonEnabled = false)
-                  })
-            }
-          }
+      AllowLocationPermission(
+          onPermissionGranted = {
+            mapProperties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true)
+            uiSettings = MapUiSettings(myLocationButtonEnabled = true)
+            loadMapScreen = true
+          },
+          onPermissionDenied = {
+            mapProperties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false)
+            uiSettings = MapUiSettings(myLocationButtonEnabled = false)
+            loadMapScreen = true
+          })
     }
   }
 }
@@ -120,7 +127,8 @@ fun Map(
     context: Context,
     startLocation: LatLng,
     mapProperties: MapProperties,
-    uiSettings: MapUiSettings
+    uiSettings: MapUiSettings,
+    navigation: Navigation
 ) {
   // Used to display the gradient with the top bar and the changing city location
   val ui by remember { mutableStateOf(uiSettings) }
@@ -131,16 +139,20 @@ fun Map(
   val cameraPositionState = rememberCameraPositionState {
     position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
   }
+  var visibleRegion: VisibleRegion?
+  var displayPopUp by remember { mutableStateOf(false) }
 
   // When the camera is moving, the city name is updated in the top bar with geo decoding
   LaunchedEffect(cameraPositionState.isMoving) {
-    Log.d("CAMERA_STATE", "Camera is moving")
     mapViewModel.reverseDecode(
         cameraPositionState.position.target.latitude.toFloat(),
         cameraPositionState.position.target.longitude.toFloat())
-    Log.d(
-        "LAT_LON",
-        "${cameraPositionState.position.target.latitude} and ${cameraPositionState.position.target.longitude}")
+    // Get the visible region of the map
+    visibleRegion = cameraPositionState.projection?.visibleRegion
+    // Get the filtered paths based on the visible region of the map asynchronously
+    mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
+    //      Log.d("MAP_VISIBLE_REGION", visibleRegion?.latLngBounds.toString())
+    //      Log.d("MAP_FILTERED_PATHS",  mapViewModel.filteredPathList.value.toString())
   }
 
   // Fetch the device location when the composable is launched
@@ -165,8 +177,40 @@ fun Map(
           cameraPositionState = cameraPositionState,
           properties = properties,
           uiSettings = ui,
-      ) {}
+          onMapClick = { it ->
+            displayPopUp = false
+            mapViewModel.selectedPolylineState.value = null
+          },
+      ) {
+        // Display the path of the trips on the map only when they enter the screen
+        mapViewModel.filteredPathList.value?.forEach { (location, latLngList) ->
+          // Check if the polyline is selected
+          val isSelected = mapViewModel.selectedPolylineState.value?.itinerary?.id == location.id
+          // Display the pat polyline
+          Polyline(
+              points = latLngList,
+              clickable = true,
+              color = md_theme_orange,
+              width = if (isSelected) 25f else 15f,
+              onClick = {
+                mapViewModel.selectedPolylineState.value =
+                    MapViewModel.SelectedPolyline(location, latLngList[0])
+                displayPopUp = true
+              })
+
+          // Display the start marker of the polyline and a thicker path when selected
+          if (isSelected) {
+            AdvancedMarker(
+                state =
+                    MarkerState(
+                        position = mapViewModel.selectedPolylineState.value!!.startLocation),
+                title = mapViewModel.selectedPolylineState.value!!.itinerary.title,
+            )
+          }
+        }
+      }
     }
+
     Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
       Text(
           text = mapViewModel.cityNameState.value,
@@ -179,12 +223,19 @@ fun Map(
     Row(
         modifier = Modifier.align(Alignment.BottomStart),
         horizontalArrangement = Arrangement.Start) {
-          if (ui.myLocationButtonEnabled && properties.isMyLocationEnabled) {
-            Box(modifier = Modifier.padding(horizontal = 35.dp, vertical = 65.dp)) {
+          Box(modifier = Modifier.padding(horizontal = 35.dp, vertical = 65.dp)) {
+            if (ui.myLocationButtonEnabled && properties.isMyLocationEnabled) {
               DisplayCenterLocationButton(
                   coroutineScope = coroutineScope,
                   deviceLocation = deviceLocation,
                   cameraPositionState = cameraPositionState)
+            }
+            if (displayPopUp) {
+              Box(modifier = Modifier.fillMaxHeight(0.3f)) {
+                DisplayItinerary(
+                    itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                    navigation = navigation)
+              }
             }
           }
         }
