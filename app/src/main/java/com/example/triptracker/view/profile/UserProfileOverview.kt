@@ -30,6 +30,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -121,29 +122,11 @@ fun UserProfileOverview(
                   modifier = Modifier.width(250.dp).height(37.dp))
               Text(
                   text = "Interests",
-                  style =
-                      TextStyle(
-                          fontSize = 14.sp,
-                          lineHeight = 16.sp,
-                          fontFamily = FontFamily(Font(R.font.montserrat)),
-                          fontWeight = FontWeight(400),
-                          color = md_theme_light_dark,
-                          textAlign = TextAlign.Right,
-                          letterSpacing = 0.5.sp,
-                      ),
+                  style = AppTypography.secondaryTitleStyle,
                   modifier = Modifier.align(Alignment.End))
               Text(
                   text = "Hiking, Photography",
-                  style =
-                      TextStyle(
-                          fontSize = 12.sp,
-                          lineHeight = 16.sp,
-                          fontFamily = FontFamily(Font(R.font.montserrat)),
-                          fontWeight = FontWeight(400),
-                          color = md_theme_dark_gray,
-                          textAlign = TextAlign.Right,
-                          letterSpacing = 0.5.sp,
-                      ),
+                  style = AppTypography.secondaryContentStyle,
                   modifier = Modifier.align(Alignment.End))
 
               /*add more informations later if UserProfile is udpated*/
@@ -156,232 +139,157 @@ fun UserProfileOverview(
                   Text(
                       text = "NBR",
                       modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style =
-                          TextStyle(
-                              fontSize = 24.sp,
-                              lineHeight = 16.sp,
-                              fontFamily = FontFamily(Font(R.font.montserrat)),
-                              fontWeight = FontWeight(700),
-                              color = md_theme_light_dark,
-                              textAlign = TextAlign.Center,
-                              letterSpacing = 0.5.sp,
-                          ))
+                      style = AppTypography.bigNumberStyle)
                   Text(
                       text = "Trips",
                       modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style =
-                          TextStyle(
-                              fontSize = 12.sp,
-                              lineHeight = 16.sp,
-                              fontFamily = FontFamily(Font(R.font.montserrat)),
-                              fontWeight = FontWeight(300),
-                              color = md_theme_dark_gray,
-                              textAlign = TextAlign.Center,
-                              letterSpacing = 0.5.sp,
-                          ))
+                      style = AppTypography.categoryTextStyle)
                 }
             Column(
                 modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 30.dp)) {
                   Text(
                       text = "NBR",
                       modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style =
-                          TextStyle(
-                              fontSize = 24.sp,
-                              lineHeight = 16.sp,
-                              fontFamily = FontFamily(Font(R.font.montserrat)),
-                              fontWeight = FontWeight(700),
-                              color = md_theme_light_dark,
-                              textAlign = TextAlign.Center,
-                              letterSpacing = 0.5.sp,
-                          ))
+                      style = AppTypography.bigNumberStyle)
                   Text(
                       text = "Followers",
                       modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style =
-                          TextStyle(
-                              fontSize = 12.sp,
-                              lineHeight = 16.sp,
-                              fontFamily = FontFamily(Font(R.font.montserrat)),
-                              fontWeight = FontWeight(300),
-                              color = md_theme_dark_gray,
-                              textAlign = TextAlign.Center,
-                              letterSpacing = 0.5.sp,
-                          ))
+                      style = AppTypography.categoryTextStyle)
                 }
             Column(
                 modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 30.dp)) {
                   Text(
                       text = "NBR",
                       modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style =
-                          TextStyle(
-                              fontSize = 24.sp,
-                              lineHeight = 16.sp,
-                              fontFamily = FontFamily(Font(R.font.montserrat)),
-                              fontWeight = FontWeight(700),
-                              color = md_theme_light_dark,
-                              textAlign = TextAlign.Center,
-                              letterSpacing = 0.5.sp,
-                          ))
+                      style = AppTypography.bigNumberStyle)
                   Text(
                       text = "Following",
                       modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style =
-                          TextStyle(
-                              fontSize = 12.sp,
-                              lineHeight = 16.sp,
-                              fontFamily = FontFamily(Font(R.font.montserrat)),
-                              fontWeight = FontWeight(300),
-                              color = md_theme_dark_gray,
-                              textAlign = TextAlign.Center,
-                              letterSpacing = 0.5.sp,
-                          ))
+                      style = AppTypography.categoryTextStyle)
                 }
           }
           // Favourites, Friends, Settings and MyTrips tiles
           Box(
               modifier =
                   Modifier.height(300.dp).width(350.dp).align(Alignment.CenterHorizontally)) {
-                Button(
+                ProfileButton(
+                    label = "Favourites",
+                    icon = Icons.Outlined.FavoriteBorder,
                     onClick = {
                       navigation.navigateTo(
                           TopLevelDestination(
                               Route.FAVORITES, Icons.Outlined.Favorite, "Favorites"))
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
-                    modifier =
-                        Modifier.align(Alignment.TopStart)
-                            .height(130.dp)
-                            .width(160.dp)
-                            .background(
-                                color = md_theme_light_dark,
-                                shape = RoundedCornerShape(size = 16.dp))) {
-                      Column(modifier = Modifier.width(150.dp)) {
-                        Icon(
-                            Icons.Outlined.FavoriteBorder,
-                            contentDescription = "Favorite icon",
-                            tint = md_theme_orange,
-                            modifier = Modifier.size(40.dp))
-
-                        Text(
-                            text = "Favourites",
-                            style =
-                                TextStyle(
-                                    fontSize = 20.sp,
-                                    lineHeight = 16.sp,
-                                    fontFamily = FontFamily(Font(R.font.montserrat)),
-                                    fontWeight = FontWeight(600),
-                                    color = md_theme_dark_gray,
-                                    letterSpacing = 0.5.sp,
-                                ),
-                            modifier = Modifier.padding(vertical = 15.dp))
-                      }
-                    }
-                Button(
+                    modifier = Modifier.align(Alignment.TopStart))
+                ProfileButton(
+                    label = "Friends",
+                    icon = Icons.Outlined.Person,
                     onClick = {
                       navigation.navigateTo(
                           TopLevelDestination(Route.FRIENDS, Icons.Outlined.People, "Friends"))
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
-                    modifier =
-                        Modifier.align(Alignment.TopEnd)
-                            .height(130.dp)
-                            .width(160.dp)
-                            .background(
-                                color = md_theme_light_dark,
-                                shape = RoundedCornerShape(size = 16.dp))) {
-                      Column(modifier = Modifier.width(150.dp)) {
-                        Icon(
-                            Icons.Outlined.Person,
-                            contentDescription = "Friends icon",
-                            tint = md_theme_orange,
-                            modifier = Modifier.size(40.dp))
-
-                        Text(
-                            text = "Friends",
-                            style =
-                                TextStyle(
-                                    fontSize = 20.sp,
-                                    lineHeight = 16.sp,
-                                    fontFamily = FontFamily(Font(R.font.montserrat)),
-                                    fontWeight = FontWeight(600),
-                                    color = md_theme_dark_gray,
-                                    letterSpacing = 0.5.sp,
-                                ),
-                            modifier = Modifier.padding(vertical = 15.dp))
-                      }
-                    }
-                Button(
+                    modifier = Modifier.align(Alignment.TopEnd))
+                ProfileButton(
+                    label = "MyTrips",
+                    icon = Icons.Outlined.List,
                     onClick = {
                       navigation.navigateTo(
                           TopLevelDestination(
                               Route.MYTRIPS, Icons.Outlined.BookmarkBorder, "MyTrips"))
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
-                    modifier =
-                        Modifier.align(Alignment.BottomStart)
-                            .height(130.dp)
-                            .width(160.dp)
-                            .background(
-                                color = md_theme_light_dark,
-                                shape = RoundedCornerShape(size = 16.dp))) {
-                      Column(modifier = Modifier.width(150.dp)) {
-                        Icon(
-                            Icons.Outlined.List,
-                            contentDescription = "MyTrips Icon",
-                            tint = md_theme_orange,
-                            modifier = Modifier.size(40.dp))
-
-                        Text(
-                            text = "MyTrips",
-                            style =
-                                TextStyle(
-                                    fontSize = 20.sp,
-                                    lineHeight = 16.sp,
-                                    fontFamily = FontFamily(Font(R.font.montserrat)),
-                                    fontWeight = FontWeight(600),
-                                    color = md_theme_dark_gray,
-                                    letterSpacing = 0.5.sp,
-                                ),
-                            modifier = Modifier.padding(vertical = 15.dp))
-                      }
-                    }
-                Button(
+                    modifier = Modifier.align(Alignment.BottomStart))
+                ProfileButton(
+                    label = "Settings",
+                    icon = Icons.Outlined.Settings,
                     onClick = {
                       navigation.navigateTo(
                           TopLevelDestination(Route.SETTINGS, Icons.Outlined.Settings, "Settings"))
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
-                    modifier =
-                        Modifier.align(Alignment.BottomEnd)
-                            .height(130.dp)
-                            .width(160.dp)
-                            .background(
-                                color = md_theme_light_dark,
-                                shape = RoundedCornerShape(size = 16.dp))) {
-                      Column(modifier = Modifier.width(150.dp)) {
-                        Icon(
-                            Icons.Outlined.Settings,
-                            contentDescription = "Settings",
-                            tint = md_theme_orange,
-                            modifier = Modifier.size(40.dp))
-
-                        Text(
-                            text = "Settings",
-                            style =
-                                TextStyle(
-                                    fontSize = 20.sp,
-                                    lineHeight = 16.sp,
-                                    fontFamily = FontFamily(Font(R.font.montserrat)),
-                                    fontWeight = FontWeight(600),
-                                    color = md_theme_dark_gray,
-                                    letterSpacing = 0.5.sp,
-                                ),
-                            modifier = Modifier.padding(vertical = 15.dp))
-                      }
-                    }
+                    modifier = Modifier.align(Alignment.BottomEnd))
               }
+        }
+      }
+}
+
+object AppTypography {
+  val bigNumberStyle =
+      TextStyle(
+          fontSize = 24.sp,
+          lineHeight = 16.sp,
+          fontFamily = FontFamily(Font(R.font.montserrat)),
+          fontWeight = FontWeight.Bold,
+          color = md_theme_light_dark,
+          textAlign = TextAlign.Center,
+          letterSpacing = 0.5.sp)
+
+  val categoryTextStyle =
+      TextStyle(
+          fontSize = 12.sp,
+          lineHeight = 16.sp,
+          fontFamily = FontFamily(Font(R.font.montserrat)),
+          fontWeight = FontWeight.Light,
+          color = md_theme_dark_gray,
+          textAlign = TextAlign.Center,
+          letterSpacing = 0.5.sp)
+
+  val buttonTextStyle =
+      TextStyle(
+          fontSize = 20.sp,
+          lineHeight = 16.sp,
+          fontFamily = FontFamily(Font(R.font.montserrat)),
+          fontWeight = FontWeight.SemiBold,
+          color = md_theme_dark_gray,
+          letterSpacing = 0.5.sp)
+
+  val secondaryTitleStyle =
+      TextStyle(
+          fontSize = 14.sp,
+          lineHeight = 16.sp,
+          fontFamily = FontFamily(Font(R.font.montserrat)),
+          fontWeight = FontWeight(400),
+          color = md_theme_light_dark,
+          textAlign = TextAlign.Right,
+          letterSpacing = 0.5.sp,
+      )
+
+  val secondaryContentStyle =
+      TextStyle(
+          fontSize = 12.sp,
+          lineHeight = 16.sp,
+          fontFamily = FontFamily(Font(R.font.montserrat)),
+          fontWeight = FontWeight(400),
+          color = md_theme_dark_gray,
+          textAlign = TextAlign.Right,
+          letterSpacing = 0.5.sp,
+      )
+}
+
+@Composable
+fun ProfileButton(
+    label: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+  Button(
+      onClick = onClick,
+      colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
+      modifier =
+          modifier
+              .height(130.dp)
+              .width(160.dp)
+              .background(color = md_theme_light_dark, shape = RoundedCornerShape(16.dp))) {
+        Column(modifier = Modifier.width(150.dp)) {
+          Icon(
+              icon,
+              contentDescription = "$label icon",
+              tint = md_theme_orange,
+              modifier = Modifier.size(40.dp))
+
+          Text(
+              text = label,
+              style = AppTypography.buttonTextStyle,
+              modifier = Modifier.padding(vertical = 15.dp))
         }
       }
 }
