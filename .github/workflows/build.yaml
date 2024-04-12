@@ -6,6 +6,8 @@ env:
 
 
 on:
+  workflow_dispatch:
+
   push:
     branches:
       - main
@@ -46,46 +48,31 @@ jobs:
         run: |
           echo "API_KEY=\${{ secrets.API_KEY }}" > local.properties
 
-      # Run Build Project
-      - name: Build gradle project
-        run: ./gradlew build
+      - name: Build APK
+        run: |
+          ./gradlew build assemble
+          ls -R ${{ env.main_project_module }}/build/outputs/apk/
 
-      # Create APK Debug
-      - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
-        run: ./gradlew assembleDebug
-
-      # Create APK Release
-      - name: Build apk release project (APK) module
-        run: ./gradlew assemble
-
-      # Upload Artifact Build
-      # Noted For Output [main_project_module]/build/outputs/apk/debug/
-      - name: Upload APK Debug
-        uses: actions/upload-artifact@v3
+      - uses: r0adkll/sign-android-release@v1
+        name: Sign app APK
+        # ID used to access action output
+        id: sign_app
         with:
-          name: APK(s) debug generated
-          path: ${{ env.main_project_module }}/build/outputs/apk/debug/
+          releaseDirectory: ${{ env.main_project_module }}/build/outputs/apk/release/
+          signingKeyBase64: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
+          alias: ${{ secrets.SIGNING_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        env:
+          # override default build-tools version (33.0.0) -- optional
+          BUILD_TOOLS_VERSION: "34.0.0"
 
-      # Noted For Output [main_project_module]/build/outputs/apk/release/
-      - name: Upload APK Release
-        uses: actions/upload-artifact@v3
+      # Example use of `signedReleaseFile` output -- not needed
+      - uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.date_today }} - ${{ env.playstore_name }} - ${{ env.repository_name }} - APK(s) release generated
-          path: ${{ env.main_project_module }}/build/outputs/apk/release/
+          name: Signed app bundle
+          path: ${{steps.sign_app.outputs.signedReleaseFile}}
 
-      # Noted For Output [main_project_module]/build/outputs/bundle/release/
-      - name: Upload AAB (App Bundle) Release
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.date_today }} - ${{ env.playstore_name }} - ${{ env.repository_name }} - App bundle(s) AAB release generated
-          path: ${{ env.main_project_module }}/build/outputs/bundle/release/
-
-      # Upload APK to Github Release
-      - name: Upload APK to Github Artifacts
-        uses: actions/upload-artifact@v1
-        with:
-          name: app
-          path: app/build/outputs/apk/debug/app-debug.apk
 
       # Save time to environment variable
       - name: Set current date and time as environment variables
@@ -111,6 +98,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./app/build/outputs/apk/debug/app-debug.apk
+          asset_path: ${{steps.sign_app.outputs.signedReleaseFile}}
           asset_name: TripTracker.apk
           asset_content_type: application/zip
