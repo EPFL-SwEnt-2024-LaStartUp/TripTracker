@@ -3,13 +3,18 @@ package com.example.triptracker.viewmodel
 import android.util.Log
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.repository.ItineraryRepository
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.launch
 
 /**
  * ViewModel for recording trips. This ViewModel is responsible for managing the state of a trip
  * recording, including start time, end time, pause status, and the list of LatLng points.
  */
-class RecordViewModel {
+class RecordViewModel : ViewModel() {
 
   // Start time and date of the recording
   private val startTime = mutableLongStateOf(0L)
@@ -28,6 +33,8 @@ class RecordViewModel {
 
   /** Starts the recording. Sets the start time to the current time. */
   fun startRecording() {
+    // reset the recording to clear any previous data
+    resetRecording()
     startTime.longValue = System.currentTimeMillis()
     // get the current date
     startDate.value = java.time.LocalDate.now().toString()
@@ -46,7 +53,6 @@ class RecordViewModel {
         "DATA",
         "Data collected: ${_latLongList.size} points, ${getElapsedTime()} ms, ${prettyPrint(_latLongList)}")
     // clear the list
-    _latLongList.clear()
   }
 
   /**
@@ -119,5 +125,21 @@ class RecordViewModel {
    */
   fun addLatLng(latLng: LatLng) {
     _latLongList.add(latLng)
+  }
+
+  /**
+   * Adds new itinerary to the database.
+   *
+   * @param itinerary Itinerary object to add to the database
+   * @param itineraryRepository ItineraryRepository object to interact with the database
+   */
+  fun addNewItinerary(itinerary: Itinerary, itineraryRepository: ItineraryRepository) {
+    viewModelScope.launch {
+      try {
+        itineraryRepository.addNewItinerary(itinerary)
+      } catch (e: Exception) {
+        // Handle the exception, e.g. show a message to the user
+      }
+    }
   }
 }

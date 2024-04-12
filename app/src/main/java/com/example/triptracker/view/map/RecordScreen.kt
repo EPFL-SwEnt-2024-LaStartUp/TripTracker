@@ -1,7 +1,6 @@
 package com.example.triptracker.view.map
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -283,7 +282,7 @@ fun Map(
                           description,
                           viewModel.latLongList.toList())
 
-                  itineraryRepository.addNewItinerary(itinerary)
+                  viewModel.addNewItinerary(itinerary, itineraryRepository)
 
                   viewModel.resetRecording()
                   localLatLngList.clear()
@@ -447,10 +446,6 @@ fun displayTime(time: Long): String {
   val seconds = TimeUnit.MILLISECONDS.toSeconds(time) % 60
   val minutes = TimeUnit.MILLISECONDS.toMinutes(time) % 60
   val hours = TimeUnit.MILLISECONDS.toHours(time)
-  if (seconds < 0 || minutes < 0 || hours < 0) {
-    Log.e("RecordScreen", "Negative time")
-    return "Error"
-  }
   return String.format("%02d:%02d:%02d", hours, minutes, seconds)
 }
 
