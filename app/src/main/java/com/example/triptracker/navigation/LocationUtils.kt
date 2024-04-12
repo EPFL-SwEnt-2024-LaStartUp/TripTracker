@@ -85,7 +85,6 @@ fun AllowLocationPermission(onPermissionGranted: () -> Unit, onPermissionDenied:
                           Manifest.permission.ACCESS_COARSE_LOCATION,
                       ))
                   openAlertDialog.value = false
-                  onPermissionGranted()
                 }) {
                   Text("Allow")
                 }
