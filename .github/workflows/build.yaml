@@ -67,14 +67,14 @@ jobs:
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
         run: |
           ./gradlew assembleRelease
-          ls -R ${{ env.main_project_module }}/build/outputs/apk/
+          ls ${{ env.main_project_module }}/build/outputs/apk/release/
 
       # Upload Artifact Build
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
           name: APK(s) debug generated
-          path: ${{ env.main_project_module }}/outputs/apk/release/app-release-unsigned.apk
+          path: ${{ env.main_project_module }}/build/outputs/apk/release/app-release-unsigned.apk
 
 
       # Save time to environment variable
@@ -101,6 +101,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ${{ env.main_project_module }}/outputs/apk/release/app-release-unsigned.apk
+          asset_path: ${{ env.main_project_module }}/build/outputs/apk/release/app-release-unsigned.apk
           asset_name: TripTracker.apk
           asset_content_type: application/zip
