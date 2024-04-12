@@ -74,6 +74,7 @@ jobs:
           name: APK(s) debug generated
           path: ${{ env.main_project_module }}/build/outputs/apk/debug/app-debug.apk
 
+
 #      # Save time to environment variable
 #      - name: Set current date and time as environment variables
 #        run: echo "date_time=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
