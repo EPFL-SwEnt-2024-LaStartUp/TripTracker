@@ -133,8 +133,8 @@ fun Login(
     Spacer(modifier = Modifier.height(152.dp))
     Image(
         modifier = Modifier.width(189.dp).height(189.dp),
-        painter = painterResource(id = R.drawable.logo),
-        contentDescription = "image description",
+        painter = painterResource(id = R.drawable.logo_no_background),
+        contentDescription = "image logo",
         contentScale = ContentScale.FillBounds)
     Spacer(modifier = Modifier.height(40.dp))
     Text(
