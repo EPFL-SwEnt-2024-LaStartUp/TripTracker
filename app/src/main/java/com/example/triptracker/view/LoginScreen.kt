@@ -130,19 +130,13 @@ fun Login(
       verticalArrangement = Arrangement.Top,
       horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    Spacer(modifier = Modifier.height(60.dp))
+    Spacer(modifier = Modifier.height(152.dp))
     Image(
-        modifier = Modifier.width(250.dp).height(250.dp),
+        modifier = Modifier.width(189.dp).height(189.dp),
         painter = painterResource(id = R.drawable.logo_no_background),
         contentDescription = "image description",
         contentScale = ContentScale.FillBounds)
-    Spacer(modifier = Modifier.height(30.dp))
-    Image(
-        modifier = Modifier.width(190.dp),
-        painter = painterResource(id = R.drawable.triptracker_text),
-        contentDescription = "image description",
-    )
-    Spacer(modifier = Modifier.height(110.dp))
+    Spacer(modifier = Modifier.height(40.dp))
     Text(
         text = "Welcome",
         modifier = Modifier.testTag("LoginTitle"),
@@ -154,7 +148,7 @@ fun Login(
                 fontWeight = FontWeight(400),
                 textAlign = TextAlign.Center,
             ))
-    Spacer(modifier = Modifier.height(130.dp))
+    Spacer(modifier = Modifier.height(120.dp))
     Button(
         onClick = {
           val signInIntent = authenticator.createSignInIntent(context)
