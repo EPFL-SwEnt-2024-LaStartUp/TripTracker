@@ -67,61 +67,12 @@ jobs:
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
         run: ./gradlew assembleRelease
 
-#      - name: Upload Release Build to Artifacts
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: release-artifacts
-#          paths: |
-#            app/build/outputs/apk/release/
-
-#      - name: Create Github Release
-#        uses: actions/create-release@v1
-#        with:
-#          generate_release_notes: false
-#          release: true
-#          files: |
-#            app/build/outputs/apk/release/app-release.apk
-
-#      # Run Build Project
-#      - name: Build gradle project
-#        run: ./gradlew build
-#
-#      # Create APK Debug
-#      - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
-#        run: ./gradlew assembleDebug
-#
-#      # Create APK Release
-#      - name: Build apk release project (APK) module
-#        run: ./gradlew assemble
-
       # Upload Artifact Build
-      # Noted For Output [main_project_module]/build/outputs/apk/release/
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
           name: APK(s) debug generated
           path: ${{ env.main_project_module }}/build/outputs/apk/debug/app-debug.apk
-
-#      # Noted For Output [main_project_module]/build/outputs/apk/release/
-#      - name: Upload APK Release
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: ${{ env.date_today }} - ${{ env.playstore_name }} - ${{ env.repository_name }} - APK(s) release generated
-#          path: ${{ env.main_project_module }}/build/outputs/apk/release/
-#
-#      # Noted For Output [main_project_module]/build/outputs/bundle/release/
-#      - name: Upload AAB (App Bundle) Release
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: ${{ env.date_today }} - ${{ env.playstore_name }} - ${{ env.repository_name }} - App bundle(s) AAB release generated
-#          path: ${{ env.main_project_module }}/build/outputs/bundle/release/
-
-#      # Upload APK to Github Release
-#      - name: Upload APK to Github Artifacts
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: app
-#          path: ${{ env.main_project_module }}/build/outputs/apk/release/app-release.apk
 
       # Save time to environment variable
       - name: Set current date and time as environment variables
@@ -147,6 +98,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./app/build/outputs/apk/debug/app-debug.apk
+          asset_path: ${{ env.main_project_module }}/build/outputs/apk/debug/app-debug.apk
           asset_name: TripTracker.apk
           asset_content_type: application/zip
