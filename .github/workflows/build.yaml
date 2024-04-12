@@ -65,7 +65,10 @@ jobs:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
-        run: ./gradlew assembleRelease
+        run: |
+          ./gradlew assembleRelease
+        # Print the directory contents to see where the APKs are located
+          ls -R ${{ env.main_project_module }}/build/outputs/apk/
 
       # Upload Artifact Build
       - name: Upload APK
