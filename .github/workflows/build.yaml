@@ -67,7 +67,7 @@ jobs:
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
         run: |
           ./gradlew assembleRelease
-          ls ${{ env.main_project_module }}/build/outputs/apk/release/
+          ls -R ${{ env.main_project_module }}/build/outputs/apk/
 
       # Upload Artifact Build
       - name: Upload APK
