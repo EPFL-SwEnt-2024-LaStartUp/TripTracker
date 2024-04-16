@@ -60,7 +60,7 @@ fun PathOverlaySheet(itinerary: Itinerary, mv: MapViewModel) {
 
           LazyColumn {
             items(itinerary.pinnedPlaces) { pin ->
-              PathItem(pin, mv)
+              PathItem(pin)
               Divider(thickness = 1.dp)
             }
           }
@@ -75,7 +75,7 @@ fun PathOverlaySheet(itinerary: Itinerary, mv: MapViewModel) {
  * @param mv MapViewModel, used to find addresss of the pin
  */
 @Composable
-fun PathItem(pinnedPlace: Pin, mv: MapViewModel) {
+fun PathItem(pinnedPlace: Pin) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Icon(
         painter =
