@@ -3,9 +3,7 @@ package com.example.triptracker
 import com.example.triptracker.model.geocoder.NominatimApi
 import org.junit.Test
 
-
 class NominatimGeocoderTest {
-
 
   @Test
   fun testDecode() {
