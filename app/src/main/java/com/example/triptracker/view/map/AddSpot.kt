@@ -438,5 +438,6 @@ fun InsertPictures(
 @Preview
 @Composable
 fun AddSpotPreview() {
-  AddSpot(RecordViewModel(), LatLng(46.519879, 6.560632))
+//  AddSpot(RecordViewModel(), LatLng(46.519053, 6.568287))
+    AddSpot(RecordViewModel(), LatLng(46.519879, 6.560632))
 }
