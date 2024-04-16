@@ -22,6 +22,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,27 +34,6 @@ import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.viewmodel.MapPopupViewModel
 import com.example.triptracker.viewmodel.MapViewModel
 
-@Preview
-@Composable
-fun TestPathOverlaySheet() {
-  // test a path overlay sheet
-  val itinerary =
-      Itinerary(
-          "1",
-          "Jack's Path",
-          "Jack",
-          Location(34.5, 34.5, "jo"),
-          0,
-          "start",
-          "end",
-          listOf(
-              Pin(51.509953155490976, -0.1345062081810831, "Picadilly Circus", "hi", "https://www.google.com"),
-              Pin(51.501370650469, -0.14182562962180675, "Buckingham Palace", "hi", "https://www.google.com"),
-              Pin(51.537120465492286, -0.18335994496202418, "Abbey Road", "hi", "https://www.google.com")),
-          "description",
-          listOf())
-  PathOverlaySheet(itinerary, MapViewModel())
-}
 
 /**
  * PathOverlaySheet is a composable function that displays the all of the pins of a path
@@ -73,6 +53,7 @@ fun PathOverlaySheet(itinerary: Itinerary, mv: MapViewModel) {
           )) {
         Column(modifier = Modifier
             .fillMaxWidth()
+            .testTag("PathOverlaySheet")
             .padding(25.dp)) {
           Text(text = itinerary.username + "'s path", color = Color.White)
           Spacer(modifier = Modifier.height(16.dp))
@@ -104,6 +85,7 @@ fun PathItem(pinnedPlace: Pin, mv: MapViewModel) {
         tint = Color.White)
     Column(modifier = Modifier
         .weight(1f)
+        .testTag("PathItem")
         .padding(start = 16.dp)) {
       Text(text = pinnedPlace.name, color = Color.White)
       // Fetch address
