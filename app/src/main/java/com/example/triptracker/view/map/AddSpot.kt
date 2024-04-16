@@ -165,77 +165,76 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(top = 30.dp).testTag("SpotLocation"),
                     horizontalArrangement = Arrangement.Center) {
-                      Box(modifier = Modifier.testTag("LocationBox")) {
-                        TextField(
-                            enabled = recordViewModel.namePOI.value.isEmpty(),
-                            modifier =
-                                Modifier.padding(horizontal = 20.dp)
-                                    .fillMaxWidth()
-                                    .testTag("LocationText"),
-                            value =
-                                if (recordViewModel.namePOI.value.isEmpty() || !isError) location
-                                else recordViewModel.namePOI.value,
-                            onValueChange = {
-                              location = it
-                              recordViewModel.getSuggestion(it) { latLng -> pos = latLng }
-                              Log.d("Suggestion", pos.toString())
-                              expanded.value = true
-                            },
-                            label = {
-                              Text("Point of Interest name", color = md_theme_light_onPrimary)
-                            },
-                            leadingIcon = {
-                              Icon(
-                                  Icons.Outlined.Map,
-                                  contentDescription = "Location",
-                                  tint = md_theme_orange)
-                            },
-                            colors =
-                                TextFieldDefaults.textFieldColors(
-                                    unfocusedLabelColor = md_theme_light_onPrimary,
-                                    focusedLabelColor = md_theme_orange,
-                                    cursorColor = md_theme_orange,
-                                    backgroundColor =
-                                        if (!isError) md_theme_dark_gray else md_theme_dark_error,
-                                    focusedIndicatorColor = md_theme_orange,
-                                ),
-                            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-                            minLines = 1,
-                            maxLines = 1,
-                            isError = isError,
-                            placeholder = { if (isError) Text(placeHolderError) else Text("") },
-                        )
+                      TextField(
+                          enabled = recordViewModel.namePOI.value.isEmpty(),
+                          modifier =
+                              Modifier.padding(horizontal = 20.dp)
+                                  .fillMaxWidth()
+                                  .testTag("LocationText"),
+                          value =
+                              if (recordViewModel.namePOI.value.isEmpty() || !isError) location
+                              else recordViewModel.namePOI.value,
+                          onValueChange = {
+                            location = it
+                            recordViewModel.getSuggestion(it) { latLng -> pos = latLng }
+                            Log.d("Suggestion", pos.toString())
+                            expanded.value = true
+                          },
+                          label = {
+                            Text("Point of Interest name", color = md_theme_light_onPrimary)
+                          },
+                          leadingIcon = {
+                            Icon(
+                                Icons.Outlined.Map,
+                                contentDescription = "Location",
+                                tint = md_theme_orange)
+                          },
+                          colors =
+                              TextFieldDefaults.textFieldColors(
+                                  unfocusedLabelColor = md_theme_light_onPrimary,
+                                  focusedLabelColor = md_theme_orange,
+                                  cursorColor = md_theme_orange,
+                                  backgroundColor =
+                                      if (!isError) md_theme_dark_gray else md_theme_dark_error,
+                                  focusedIndicatorColor = md_theme_orange,
+                              ),
+                          shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                          minLines = 1,
+                          maxLines = 1,
+                          isError = isError,
+                          placeholder = { if (isError) Text(placeHolderError) else Text("") },
+                      )
 
-                        DropdownMenu(
-                            expanded = expanded.value,
-                            onDismissRequest = { expanded.value = false },
-                            modifier = Modifier.fillMaxWidth()
-                            //                                .align(Alignment.CenterVertically)
-                            ,
-                            properties = PopupProperties(focusable = false),
-                        ) {
-                          DropdownMenuItem(
-                              modifier = Modifier.fillMaxWidth().testTag("LocationDropDown"),
-                              onClick = {
-                                if (compareDistance(position, pos, 500.0)) {
-                                  position = pos
-                                  location = recordViewModel.displayNameDropDown.value
-                                  recordViewModel.namePOI.value =
-                                      recordViewModel.displayNameDropDown.value
-                                  isError = false
-                                } else {
-                                  isError = true
-                                  location = ""
-                                  recordViewModel.namePOI.value = ""
-                                }
-
-                                expanded.value = false
-                              }) {
-                                Text(
-                                    text = recordViewModel.displayNameDropDown.value,
-                                    modifier = Modifier)
+                      DropdownMenu(
+                          expanded = expanded.value,
+                          onDismissRequest = { expanded.value = false },
+                          modifier =
+                              Modifier.fillMaxWidth()
+                                  .align(Alignment.CenterVertically)
+                                  .testTag("LocationDropDown"),
+                          properties = PopupProperties(focusable = false),
+                      ) {
+                        DropdownMenuItem(
+                            modifier = Modifier.fillMaxWidth().testTag("LocationDropDown"),
+                            onClick = {
+                              if (compareDistance(position, pos, 500.0)) {
+                                position = pos
+                                location = recordViewModel.displayNameDropDown.value
+                                recordViewModel.namePOI.value =
+                                    recordViewModel.displayNameDropDown.value
+                                isError = false
+                              } else {
+                                isError = true
+                                location = ""
+                                recordViewModel.namePOI.value = ""
                               }
-                        }
+
+                              expanded.value = false
+                            }) {
+                              Text(
+                                  text = recordViewModel.displayNameDropDown.value,
+                                  modifier = Modifier.testTag("LocationDropDown"))
+                            }
                       }
                     }
 
