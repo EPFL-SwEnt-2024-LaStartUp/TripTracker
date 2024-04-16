@@ -62,22 +62,22 @@ class AddSpotTest {
     Intents.release()
   }
 
-  //  @Test
-  //  fun dropDownTest() {
-  //    ComposeScreen.onComposeScreen<AddSpotScreen>(composeTestRule) {
-  //      locationRow { assertIsDisplayed() }
-  //      locationText {
-  //        assertIsDisplayed()
-  //
-  //        performTextClearance()
-  //
-  //        performTextInput("statue")
-  //      }
-  //
-  //      inputLocationProposal {
-  //        assertIsDisplayed()
-  //        performClick()
-  //      }
-  //    }
-  //  }
+  @Test
+  fun dropDownTest() {
+    ComposeScreen.onComposeScreen<AddSpotScreen>(composeTestRule) {
+      locationRow { assertIsDisplayed() }
+      locationText {
+        assertIsDisplayed()
+
+        performTextClearance()
+
+        performTextInput("statue")
+      }
+
+      //        inputLocationProposal {
+      //          assertIsDisplayed()
+      //          performClick()
+      //        }
+    }
+  }
 }
