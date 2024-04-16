@@ -240,6 +240,11 @@ dependencies {
 
     // ----------       Icons     ------------
     implementation("androidx.compose.material:material-icons-extended:1.6.0-alpha05")
+
+    // ----------       Image picker     ------------
+    implementation("androidx.activity:activity:1.8.2")
+    implementation("androidx.activity:activity-compose:1.8.2")
+    implementation("androidx.activity:activity-ktx:1.8.2")
 }
 
 tasks.withType<Test> {
