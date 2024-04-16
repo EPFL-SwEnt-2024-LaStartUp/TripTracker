@@ -152,7 +152,7 @@ open class ItineraryRepository {
    * @param itinerary Itinerary object to add Serialize the Itinerary object to a map and add it to
    *   the database
    */
-  fun addNewItinerary(itinerary: Itinerary) {
+  suspend fun addNewItinerary(itinerary: Itinerary) {
     val itineraryData =
         hashMapOf<String, Any>(
             "id" to itinerary.id,
