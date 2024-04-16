@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.IconButton
@@ -35,6 +34,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -85,6 +85,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
           Log.d("PhotoPicker", "No media selected")
         }
       }
+  LaunchedEffect(Unit) { recordViewModel.getPOI(latLng) }
 
   when (boxDisplayed) {
     true ->
@@ -126,7 +127,9 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
                             Text("Name of the spot", color = md_theme_light_onPrimary)
                           },
                           onValueChange = { location = it },
-                          label = { Text("Name of the spot", color = md_theme_light_onPrimary) },
+                          label = {
+                            Text(recordViewModel.namePOI.value, color = md_theme_light_onPrimary)
+                          },
                           leadingIcon = {
                             Icon(
                                 Icons.Outlined.Map,
@@ -321,5 +324,5 @@ fun InsertPictures(
 @Preview
 @Composable
 fun AddSpotPreview() {
-  AddSpot(RecordViewModel(), LatLng(46.5249808, 6.5750806))
+  AddSpot(RecordViewModel(), LatLng(46.5191, 6.5668))
 }
