@@ -74,7 +74,7 @@ fun PathOverlaySheet(itinerary: Itinerary, mv: MapViewModel) {
         Column(modifier = Modifier
             .fillMaxWidth()
             .padding(25.dp)) {
-          Text(text = "Jack's Path", color = Color.White)
+          Text(text = itinerary.username + "'s path", color = Color.White)
           Spacer(modifier = Modifier.height(16.dp))
 
           LazyColumn {
