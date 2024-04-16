@@ -8,6 +8,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -26,6 +28,8 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
@@ -179,7 +183,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
                     }
 
                 Row(
-                    modifier = Modifier.height(150.dp),
+                    modifier = Modifier.fillMaxWidth().height(300.dp),
                     horizontalArrangement = Arrangement.Center) {
                       InsertPictures(pickMultipleMedia = pickMultipleMedia, selectedPictures)
                     }
@@ -187,12 +191,12 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
                 Row(
                     modifier = Modifier.fillMaxWidth().fillMaxHeight(),
                     horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically) {
+                    verticalAlignment = Alignment.Bottom) {
                       FilledTonalButton(
                           onClick = {
                             // TODO
                           },
-                          modifier = Modifier.padding(50.dp).fillMaxWidth(0.6f).fillMaxHeight(0.1f),
+                          modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp),
                           colors =
                               ButtonDefaults.filledTonalButtonColors(
                                   containerColor = md_theme_orange, contentColor = Color.White),
@@ -218,18 +222,6 @@ fun InsertPictures(
     selectedPictures: List<Uri?>
 ) {
   when (selectedPictures.isNotEmpty()) {
-    true -> {
-      Text(
-          text = "Selected Pictures",
-          color = md_theme_orange,
-          fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-          fontWeight = FontWeight.Normal,
-          fontSize = 20.sp,
-          modifier = Modifier.padding(10.dp))
-      selectedPictures.forEach { picture ->
-        AsyncImage(model = picture, contentDescription = "Image", modifier = Modifier.size(100.dp))
-      }
-    }
     false -> {
       val stroke =
           Stroke(width = 4f, pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f))
@@ -251,13 +243,77 @@ fun InsertPictures(
                             ActivityResultContracts.PickVisualMedia.ImageAndVideo))
                   },
       ) {
-        Row(
+        Column(
             modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center) {
-              Text(text = "Add new item", color = md_theme_light_onPrimary)
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+              Row(
+                  modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp),
+                  horizontalArrangement = Arrangement.Center,
+                  verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Outlined.Image,
+                        contentDescription = "Add Picture",
+                        tint = md_theme_orange)
+                  }
+
+              Row(
+                  modifier = Modifier.fillMaxWidth(),
+                  verticalAlignment = Alignment.CenterVertically,
+                  horizontalArrangement = Arrangement.Center) {
+                    Text(
+                        text = "Add new pictures (max. 5)",
+                        color = md_theme_light_onPrimary,
+                        fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 20.sp,
+                    )
+                  }
             }
       }
+    }
+    true -> {
+      Column(
+          modifier = Modifier.fillMaxSize(),
+          verticalArrangement = Arrangement.Top,
+          horizontalAlignment = Alignment.CenterHorizontally) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()) {
+                  Text(
+                      text = "Selected Pictures",
+                      color = md_theme_orange,
+                      fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                      fontWeight = FontWeight.Normal,
+                      fontSize = 20.sp,
+                      modifier = Modifier.padding(10.dp))
+                  Icon(
+                      imageVector = Icons.Outlined.Edit,
+                      contentDescription = "Edit",
+                      tint = md_theme_orange,
+                      modifier =
+                          Modifier.clickable {
+                            pickMultipleMedia.launch(
+                                PickVisualMediaRequest(
+                                    ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                          })
+                }
+
+            val scrollState = rememberScrollState()
+
+            Row(
+                modifier = Modifier.fillMaxWidth().horizontalScroll(scrollState),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically) {
+                  selectedPictures.forEach { picture ->
+                    AsyncImage(
+                        model = picture,
+                        contentDescription = "Image",
+                        modifier = Modifier.height(300.dp).padding(horizontal = 2.dp))
+                  }
+                }
+          }
     }
   }
 }
