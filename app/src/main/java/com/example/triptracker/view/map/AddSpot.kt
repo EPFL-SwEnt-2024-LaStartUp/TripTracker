@@ -277,7 +277,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
 
                 // Insert pictures (max 5)
                 Row(
-                    modifier = Modifier.fillMaxWidth().height(300.dp).testTag("SpotPictures"),
+                    modifier = Modifier.fillMaxWidth().height(250.dp).testTag("SpotPictures"),
                     horizontalArrangement = Arrangement.Center) {
                       InsertPictures(pickMultipleMedia = pickMultipleMedia, selectedPictures)
                     }
