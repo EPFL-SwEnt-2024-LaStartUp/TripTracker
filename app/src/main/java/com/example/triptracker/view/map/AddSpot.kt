@@ -69,14 +69,31 @@ import com.example.triptracker.viewmodel.RecordViewModel
 import com.google.android.gms.maps.model.LatLng
 
 @Composable
+/**
+ * AddSpot is a composable function that allows the user to add a new spot to the path. This will
+ * only be shown when pressing + in the record screen
+ *
+ * @param recordViewModel: RecordViewModel
+ * @param latLng: LatLng at where the spot is going to be added
+ */
 fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
 
+  // Variables to store the state of the add spot box
   var boxDisplayed by remember { mutableStateOf(true) }
+
+  // Variables to store the state of the location string of the spot
   var location by remember { mutableStateOf("") }
+
+  // Variables to store the state of the description of the spot
   var description by remember { mutableStateOf("") }
+
+  // Variables to store the state of the position of the spot in form of latlng
   var position by remember { mutableStateOf(latLng) }
+
+  // Variables to store the state of the selected pictures
   var selectedPictures by remember { mutableStateOf<List<Uri?>>(emptyList()) }
 
+  // Launcher for the pick multiple media activity
   val pickMultipleMedia =
       rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) {
           pictures ->
@@ -89,6 +106,8 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
           Log.d("PhotoPicker", "No media selected")
         }
       }
+
+  // Get the point of interest of the current location if it exists
   LaunchedEffect(Unit) { recordViewModel.getPOI(latLng) }
 
   when (boxDisplayed) {
@@ -99,6 +118,8 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
                     .padding(15.dp)
                     .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))) {
               Column(modifier = Modifier.matchParentSize()) {
+
+                // Close button
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                   IconButton(
                       modifier = Modifier.padding(10.dp), onClick = { boxDisplayed = false }) {
@@ -109,6 +130,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
                       }
                 }
 
+                // Title
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center) {
@@ -123,6 +145,12 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
 
                 val expanded = remember { mutableStateOf(false) }
 
+                /*
+                TextField to input the name of the point of interest
+                Enabled when no POI was found automatically with nominatim
+                When enabled it will help completion of the POI with help of nominatim api
+                If the users selects a suggestion that is too far away from the current position (>100m) it will not be accepted and a new input will be asked
+                */
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(top = 30.dp),
                     horizontalArrangement = Arrangement.Center) {
@@ -178,6 +206,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
                       }
                     }
 
+                // Description text box to fill some information about the spot
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center) {
@@ -214,19 +243,21 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
                       )
                     }
 
+                // Insert pictures (max 5)
                 Row(
                     modifier = Modifier.fillMaxWidth().height(300.dp),
                     horizontalArrangement = Arrangement.Center) {
                       InsertPictures(pickMultipleMedia = pickMultipleMedia, selectedPictures)
                     }
 
+                // Save button that will upload the data to the DB once completed
                 Row(
                     modifier = Modifier.fillMaxWidth().fillMaxHeight(),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.Bottom) {
                       FilledTonalButton(
                           onClick = {
-                            // TODO save all the data on the DB
+                            // TODO save all the data on the DB ONLY WHEN everything is filled up
                             Pin(
                                 latitude = position.latitude,
                                 longitude = position.longitude,
@@ -258,12 +289,21 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
 }
 
 @Composable
+/**
+ * InsertPictures is a composable function that allows the user to insert pictures to the spot
+ *
+ * @param pickMultipleMedia: ManagedActivityResultLauncher<PickVisualMediaRequest, List<Uri>>
+ *   launcher for the activity
+ * @param selectedPictures: List<Uri?> selected items will be written here
+ */
 fun InsertPictures(
     pickMultipleMedia:
         ManagedActivityResultLauncher<PickVisualMediaRequest, List<@JvmSuppressWildcards Uri>>,
     selectedPictures: List<Uri?>
 ) {
   when (selectedPictures.isNotEmpty()) {
+    // when no selection was done show a clickable dashed box that will allow the user to select
+    // pictures
     false -> {
       val stroke =
           Stroke(width = 4f, pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f))
@@ -314,6 +354,8 @@ fun InsertPictures(
             }
       }
     }
+    // when selection was done show the selected pictures in a scrollable row
+    // Add an edit button to allow the user to change the selection
     true -> {
       Column(
           modifier = Modifier.fillMaxSize(),
