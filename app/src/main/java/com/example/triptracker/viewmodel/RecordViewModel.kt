@@ -38,6 +38,9 @@ class RecordViewModel : ViewModel() {
   // Point of interest name
   val namePOI = mutableStateOf("")
 
+  // Dropdown menu for POI name
+  val displayNameDropDown = mutableStateOf("")
+
   /** Starts the recording. Sets the start time to the current time. */
   fun startRecording() {
     // reset the recording to clear any previous data
@@ -155,7 +158,16 @@ class RecordViewModel : ViewModel() {
   fun getPOI(latLng: LatLng) {
     geocoder.getPOI(latLng.latitude.toFloat(), latLng.longitude.toFloat()) { name ->
       namePOI.value = name
-      Log.e("POI", name)
     }
+  }
+
+  fun getSuggestion(query: String): LatLng {
+    var latLng = LatLng(0.0, 0.0)
+    geocoder.decode(query) { location ->
+      displayNameDropDown.value = location.name
+      Log.d("API RESPONSE", location.name)
+      latLng = LatLng(location.latitude, location.longitude)
+    }
+    return latLng
   }
 }

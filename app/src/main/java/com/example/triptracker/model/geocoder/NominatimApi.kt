@@ -1,6 +1,7 @@
 package com.example.triptracker.model.geocoder
 
 import android.util.Log
+import com.example.triptracker.model.location.Location
 import java.io.IOException
 import okhttp3.Call
 import okhttp3.Callback
@@ -55,6 +56,40 @@ class NominatimApi {
    */
   private fun getSearchUrl(query: String): String {
     return "$searchURL$query$format"
+  }
+
+  fun decode(query: String, callback: (Location) -> Unit) {
+    val url = getSearchUrl(query)
+    val request = Request.Builder().url(url).build()
+    val call = httpClient.newCall(request)
+
+    call.enqueue(
+        object : Callback {
+          override fun onFailure(call: Call, e: IOException) {
+            callback(Location(0.0, 0.0, ""))
+          }
+
+          override fun onResponse(call: Call, response: Response) {
+            val result = response.body?.string()
+            val cleaned = result?.drop(1)?.dropLast(1)
+            if (cleaned == "") {
+              callback(Location(0.0, 0.0, ""))
+              return
+            }
+            val json = cleaned?.let { JSONObject(it) }
+
+            val lat = json?.get("lat").toString().toDoubleOrNull()
+            val lon = json?.get("lon").toString().toDoubleOrNull()
+            val display = json?.get("name").toString()
+            if (display == "" || lat == null || lon == null) {
+              callback(Location(0.0, 0.0, ""))
+              return
+            }
+            Log.d("API RESPONSE", result ?: "")
+            val location = Location(name = display, latitude = lat, longitude = lon)
+            callback(location)
+          }
+        })
   }
 
   /**
