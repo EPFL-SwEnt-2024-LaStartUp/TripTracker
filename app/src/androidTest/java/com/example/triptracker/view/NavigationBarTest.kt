@@ -9,6 +9,7 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import io.mockk.confirmVerified
@@ -45,14 +46,17 @@ class NavigationBarTest {
 
     every { navigation.navigateTo(any()) } returns Unit
 
-      composeTestRule.setContent {
-          NavigationBar(navigation = navigation)
-      }
+    composeTestRule.setContent { NavigationBar(navigation = navigation) }
   }
 
   @Test
   fun testNavigationBarRetrievesScreens() {
     verify { navigation.getTopLevelDestinations() }
+  }
+
+  @Test
+  fun testNavigationBarRetrievesCurrentDestination() {
+    verify { navigation.getCurrentDestination() }
   }
 
   @Test
@@ -71,6 +75,34 @@ class NavigationBarTest {
     composeTestRule.onNodeWithText("Profile").assertHasClickAction()
   }
 
-  // TODO test redirection on button clicked once problem with mockK resolved
+  @Test
+  fun testNavigationBarNavigatesToAnyWorks() {
+    composeTestRule.onNodeWithText("Profile").performClick()
+    verify {
+      navigation.navigateTo(TopLevelDestination(Route.PROFILE, Icons.Outlined.Person, "Profile"))
+    }
+  }
 
+  @Test
+  fun testNavigationBarCompleteBehaviorWorks() {
+    verify { navigation.getTopLevelDestinations() }
+
+    composeTestRule.onNodeWithText("Profile").performClick()
+    verify {
+      navigation.navigateTo(TopLevelDestination(Route.PROFILE, Icons.Outlined.Person, "Profile"))
+    }
+    verify { navigation.getCurrentDestination() }
+    verify { navigation.getCurrentDestination() }
+    verify { navigation.getCurrentDestination() }
+    verify { navigation.getCurrentDestination() }
+
+    composeTestRule.onNodeWithText("Home").performClick()
+    verify { navigation.navigateTo(TopLevelDestination(Route.HOME, Icons.Outlined.Home, "Home")) }
+    verify { navigation.getCurrentDestination() }
+    verify { navigation.getCurrentDestination() }
+    verify { navigation.getCurrentDestination() }
+    verify { navigation.getCurrentDestination() }
+
+    confirmVerified(navigation)
+  }
 }
