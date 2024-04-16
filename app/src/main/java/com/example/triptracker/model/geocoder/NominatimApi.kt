@@ -73,7 +73,7 @@ class NominatimApi {
    *
    * @param lat : latitude of the location
    * @param lon : longitude of the location
-   * @param callback : function to call when the location is decoded into a city
+   * @param callback : function to call when the location is decoded into a json object
    */
   private fun reverseDecode(lat: Float, lon: Float, callback: (JSONObject?) -> Unit) {
 
@@ -106,6 +106,13 @@ class NominatimApi {
         })
   }
 
+  /**
+   * Function to get the city from the location.
+   *
+   * @param lat : latitude of the location
+   * @param lon : longitude of the location
+   * @param callback : function to call when the city is decoded
+   */
   fun getCity(lat: Float, lon: Float, callback: (String) -> Unit) {
     reverseDecode(lat, lon) { json ->
       if (json.toString() == LocationErrors.ERROR) {
@@ -138,6 +145,13 @@ class NominatimApi {
     }
   }
 
+  /**
+   * Function to get the point of interest from the location.
+   *
+   * @param lat : latitude of the location
+   * @param lon : longitude of the location
+   * @param callback : function to call when the point of interest is decoded
+   */
   fun getPOI(lat: Float, lon: Float, callback: (String) -> Unit) {
     reverseDecode(lat, lon) { json ->
       if (json.toString() == LocationErrors.ERROR) {

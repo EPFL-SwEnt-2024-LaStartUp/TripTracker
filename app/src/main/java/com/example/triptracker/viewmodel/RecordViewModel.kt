@@ -32,8 +32,10 @@ class RecordViewModel : ViewModel() {
   val latLongList: List<LatLng>
     get() = _latLongList
 
+  // Geocoder object to interact with the Nominatim API
   val geocoder = NominatimApi()
 
+  // Point of interest name
   val namePOI = mutableStateOf("")
 
   /** Starts the recording. Sets the start time to the current time. */
