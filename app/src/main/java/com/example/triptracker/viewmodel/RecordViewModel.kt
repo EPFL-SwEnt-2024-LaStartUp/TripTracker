@@ -155,19 +155,22 @@ class RecordViewModel : ViewModel() {
     }
   }
 
+  /** Gets the point of interest (POI) name at the given LatLng point. */
   fun getPOI(latLng: LatLng) {
     geocoder.getPOI(latLng.latitude.toFloat(), latLng.longitude.toFloat()) { name ->
       namePOI.value = name
     }
   }
 
-  fun getSuggestion(query: String): LatLng {
-    var latLng = LatLng(0.0, 0.0)
+  /**
+   * Gets the suggestion name at the given LatLng point and returns the LAT/LNG of the proposed
+   * location
+   */
+  fun getSuggestion(query: String, callback: (LatLng) -> Unit) {
     geocoder.decode(query) { location ->
       displayNameDropDown.value = location.name
       Log.d("API RESPONSE", location.name)
-      latLng = LatLng(location.latitude, location.longitude)
+      callback(LatLng(location.latitude, location.longitude))
     }
-    return latLng
   }
 }

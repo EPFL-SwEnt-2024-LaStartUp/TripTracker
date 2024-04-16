@@ -22,6 +22,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.maps.android.ktx.utils.sphericalDistance
 
 /**
  * Utils function that checks if the location permission is granted. Need both fine and coarse
@@ -167,4 +168,16 @@ fun getCurrentLocation(
           Log.d("MAP-EXCEPTION", exception.message.toString())
         }
   }
+}
+
+/**
+ * Function that compares the distance between two LatLng points and returns true if the distance
+ *
+ * @param latLng1 The first LatLng point
+ * @param latLng2 The second LatLng point
+ * @param distance The distance to compare
+ */
+fun compareDistance(latLng1: LatLng, latLng2: LatLng, distance: Double): Boolean {
+  Log.d("MAP-DISTANCE", latLng1.sphericalDistance(latLng2).toString())
+  return latLng1.sphericalDistance(latLng2) <= distance
 }

@@ -60,7 +60,9 @@ import androidx.compose.ui.window.PopupProperties
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.location.Pin
+import com.example.triptracker.navigation.compareDistance
 import com.example.triptracker.view.theme.Montserrat
+import com.example.triptracker.view.theme.md_theme_dark_error
 import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
@@ -90,6 +92,9 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
   // Variables to store the state of the position of the spot in form of latlng
   var position by remember { mutableStateOf(latLng) }
 
+  // Variable to store the state of the error
+  var isError by remember { mutableStateOf(false) }
+
   // Variables to store the state of the selected pictures
   var selectedPictures by remember { mutableStateOf<List<Uri?>>(emptyList()) }
 
@@ -114,9 +119,10 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
     true ->
         Box(
             modifier =
-                Modifier.fillMaxSize()
-                    .padding(15.dp)
-                    .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))) {
+            Modifier
+                .fillMaxSize()
+                .padding(15.dp)
+                .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))) {
               Column(modifier = Modifier.matchParentSize()) {
 
                 // Close button
@@ -144,27 +150,37 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
                     }
 
                 val expanded = remember { mutableStateOf(false) }
+                var pos by remember { mutableStateOf(LatLng(0.0, 0.0)) }
+                  var placeHolderError by remember {
+                    mutableStateOf("Please enter a valid location")
+                  }
 
                 /*
                 TextField to input the name of the point of interest
                 Enabled when no POI was found automatically with nominatim
                 When enabled it will help completion of the POI with help of nominatim api
-                If the users selects a suggestion that is too far away from the current position (>100m) it will not be accepted and a new input will be asked
+                If the users selects a suggestion that is too far away from the current position (>500m) it will not be accepted and a new input will be asked
+                If a place in this range was provided then it is locked on and the LATLNG of the point is updated
                 */
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 30.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 30.dp),
                     horizontalArrangement = Arrangement.Center) {
                       TextField(
                           enabled = recordViewModel.namePOI.value.isEmpty(),
-                          modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
-                          value = recordViewModel.namePOI.value.ifEmpty { location },
+                          modifier = Modifier
+                              .padding(horizontal = 20.dp)
+                              .fillMaxWidth(),
+                          value =
+                              if (recordViewModel.namePOI.value.isEmpty() || !isError) location
+                              else recordViewModel.namePOI.value,
                           onValueChange = {
                             location = it
-                            if (location.length > 3) {
-                              position = recordViewModel.getSuggestion(it)
-                              expanded.value =
-                                  recordViewModel.displayNameDropDown.value.isNotEmpty()
-                            }
+                            recordViewModel.getSuggestion(it) { latLng -> pos = latLng }
+                            Log.d("Suggestion", pos.toString())
+
+                            expanded.value = recordViewModel.displayNameDropDown.value.isNotEmpty()
                           },
                           label = {
                             Text("Point of Interest name", color = md_theme_light_onPrimary)
@@ -180,26 +196,41 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
                                   unfocusedLabelColor = md_theme_light_onPrimary,
                                   focusedLabelColor = md_theme_orange,
                                   cursorColor = md_theme_orange,
-                                  backgroundColor = md_theme_dark_gray,
+                                  backgroundColor =
+                                      if (!isError) md_theme_dark_gray else md_theme_dark_error,
                                   focusedIndicatorColor = md_theme_orange,
                               ),
                           shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                           minLines = 1,
-                          maxLines = 1)
+                          maxLines = 1,
+                          isError = isError,
+                          placeholder = {if (isError) Text(placeHolderError) else Text("")},
+                          )
 
                       DropdownMenu(
                           expanded = expanded.value,
                           onDismissRequest = { expanded.value = false },
-                          modifier = Modifier.fillMaxWidth().align(Alignment.CenterVertically),
+                          modifier = Modifier
+                              .fillMaxWidth()
+                              .align(Alignment.CenterVertically),
                           properties = PopupProperties(focusable = false),
                       ) {
                         DropdownMenuItem(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
+                              if (compareDistance(position, pos, 500.0)) {
+                                position = pos
+                                location = recordViewModel.displayNameDropDown.value
+                                recordViewModel.namePOI.value =
+                                    recordViewModel.displayNameDropDown.value
+                                isError = false
+                              } else {
+                                isError = true
+                                location = ""
+                                recordViewModel.namePOI.value = ""
+                              }
+
                               expanded.value = false
-                              location = recordViewModel.displayNameDropDown.value
-                              recordViewModel.namePOI.value =
-                                  recordViewModel.displayNameDropDown.value
                             }) {
                               Text(text = recordViewModel.displayNameDropDown.value)
                             }
@@ -212,9 +243,10 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
                     horizontalArrangement = Arrangement.Center) {
                       TextField(
                           modifier =
-                              Modifier.padding(horizontal = 20.dp, vertical = 20.dp)
-                                  .fillMaxWidth()
-                                  .onFocusChanged {},
+                          Modifier
+                              .padding(horizontal = 20.dp, vertical = 20.dp)
+                              .fillMaxWidth()
+                              .onFocusChanged {},
                           value = description,
                           placeholder = {
                             Text(
@@ -245,14 +277,18 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
 
                 // Insert pictures (max 5)
                 Row(
-                    modifier = Modifier.fillMaxWidth().height(300.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp),
                     horizontalArrangement = Arrangement.Center) {
                       InsertPictures(pickMultipleMedia = pickMultipleMedia, selectedPictures)
                     }
 
                 // Save button that will upload the data to the DB once completed
                 Row(
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.Bottom) {
                       FilledTonalButton(
@@ -310,27 +346,33 @@ fun InsertPictures(
 
       Box(
           modifier =
-              Modifier.fillMaxSize()
-                  .padding(horizontal = 20.dp, vertical = 5.dp)
-                  .drawBehind {
-                    drawRoundRect(
-                        color = md_theme_orange,
-                        style = stroke,
-                        cornerRadius = CornerRadius(16.dp.toPx()))
-                  }
-                  .clip(RoundedCornerShape(16.dp))
-                  .clickable {
-                    pickMultipleMedia.launch(
-                        PickVisualMediaRequest(
-                            ActivityResultContracts.PickVisualMedia.ImageAndVideo))
-                  },
+          Modifier
+              .fillMaxSize()
+              .padding(horizontal = 20.dp, vertical = 5.dp)
+              .drawBehind {
+                  drawRoundRect(
+                      color = md_theme_orange,
+                      style = stroke,
+                      cornerRadius = CornerRadius(16.dp.toPx())
+                  )
+              }
+              .clip(RoundedCornerShape(16.dp))
+              .clickable {
+                  pickMultipleMedia.launch(
+                      PickVisualMediaRequest(
+                          ActivityResultContracts.PickVisualMedia.ImageAndVideo
+                      )
+                  )
+              },
       ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally) {
               Row(
-                  modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp),
+                  modifier = Modifier
+                      .fillMaxWidth()
+                      .padding(bottom = 5.dp),
                   horizontalArrangement = Arrangement.Center,
                   verticalAlignment = Alignment.CenterVertically) {
                     Icon(
@@ -387,14 +429,18 @@ fun InsertPictures(
             val scrollState = rememberScrollState()
 
             Row(
-                modifier = Modifier.fillMaxWidth().horizontalScroll(scrollState),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(scrollState),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically) {
                   selectedPictures.forEach { picture ->
                     AsyncImage(
                         model = picture,
                         contentDescription = "Image",
-                        modifier = Modifier.height(300.dp).padding(horizontal = 2.dp))
+                        modifier = Modifier
+                            .height(300.dp)
+                            .padding(horizontal = 2.dp))
                   }
                 }
           }
@@ -405,5 +451,5 @@ fun InsertPictures(
 @Preview
 @Composable
 fun AddSpotPreview() {
-  AddSpot(RecordViewModel(), LatLng(46.5191, 6.5668))
+  AddSpot(RecordViewModel(), LatLng(46.519879, 6.560632))
 }

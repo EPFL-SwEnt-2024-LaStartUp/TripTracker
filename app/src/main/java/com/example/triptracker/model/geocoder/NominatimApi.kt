@@ -80,7 +80,7 @@ class NominatimApi {
 
             val lat = json?.get("lat").toString().toDoubleOrNull()
             val lon = json?.get("lon").toString().toDoubleOrNull()
-            val display = json?.get("name").toString()
+            val display = json?.get("display_name").toString()
             if (display == "" || lat == null || lon == null) {
               callback(Location(0.0, 0.0, ""))
               return
