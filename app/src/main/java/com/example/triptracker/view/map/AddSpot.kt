@@ -152,7 +152,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
 
                 val expanded = remember { mutableStateOf(false) }
                 var pos by remember { mutableStateOf(LatLng(0.0, 0.0)) }
-                var placeHolderError by remember { mutableStateOf("Please enter a valid location") }
+                val placeHolderError by remember { mutableStateOf("Please enter a valid location") }
 
                 /*
                 TextField to input the name of the point of interest
@@ -296,8 +296,9 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
                                 name = location,
                                 description = description,
                                 image_url =
-                                    selectedPictures[0]
-                                        .toString() // TODO CHANGE THIS LATER TO A LIST IN THE DB
+                                    if (selectedPictures.isNotEmpty())
+                                        selectedPictures[0].toString()
+                                    else "" // TODO CHANGE THIS LATER TO A LIST IN THE DB
                                 )
                             boxDisplayed = false
                           },
