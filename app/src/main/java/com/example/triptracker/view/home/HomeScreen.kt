@@ -81,7 +81,7 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
           null -> {
             Text(
                 text = "You do not have any itineraries yet.",
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(16.dp).testTag("NoItinerariesText"),
                 fontSize = 18.sp)
           }
           else -> {
@@ -127,9 +127,7 @@ fun SearchBar(
 
   androidx.compose.material3.SearchBar(
       modifier =
-          Modifier.fillMaxWidth()
-              .padding(horizontal = 30.dp, vertical = 5.dp)
-              .testTag("SearchItinerary"),
+          Modifier.fillMaxWidth().padding(horizontal = 30.dp, vertical = 5.dp).testTag("searchBar"),
       query = searchText,
       onQueryChange = { newText ->
         searchText = newText
@@ -152,7 +150,7 @@ fun SearchBar(
         Row {
           Text(
               "Search for an itinerary",
-              modifier = Modifier.weight(1f).padding(start = 10.dp),
+              modifier = Modifier.weight(1f).padding(start = 10.dp).testTag("searchBarText"),
               textAlign = TextAlign.Center,
               fontFamily = FontFamily(Font(R.font.montserrat_bold)),
               fontSize = 21.sp,
