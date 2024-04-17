@@ -99,5 +99,5 @@ fun AddressText(mpv: MapPopupViewModel, latitude: Float, longitude: Float) {
   // Trigger the address fetch
   LaunchedEffect(key1 = latitude, key2 = longitude) { mpv.fetchAddressForPin(latitude, longitude) }
 
-  Text(text = address, color = Color.White)
+  Text(text = address, color = Color.White, modifier = Modifier.testTag("AddressText"))
 }
