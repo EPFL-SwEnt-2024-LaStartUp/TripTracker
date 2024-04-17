@@ -71,6 +71,8 @@ class NominatimApi {
 
           override fun onResponse(call: Call, response: Response) {
             val result = response.body?.string()
+            // In this case the return value of nominatim is a json array with one element so we
+            // remove the first and last character to get a json element
             val cleaned = result?.drop(1)?.dropLast(1)
             if (cleaned == "") {
               callback(Location(0.0, 0.0, ""))

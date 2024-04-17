@@ -171,7 +171,8 @@ fun getCurrentLocation(
 }
 
 /**
- * Function that compares the distance between two LatLng points and returns true if the distance
+ * Function that compares the distance between two LatLng points and returns true if the distance is
+ * less than or equal to the given distance in meters.
  *
  * @param latLng1 The first LatLng point
  * @param latLng2 The second LatLng point

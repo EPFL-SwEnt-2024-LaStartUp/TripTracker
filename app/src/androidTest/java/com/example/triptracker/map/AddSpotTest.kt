@@ -45,6 +45,8 @@ class AddSpotTest {
 
       pictures { assertIsDisplayed() }
 
+      // Tests that are not passing on the CI but that are good examples to keep
+
       //      saveButton { assertIsDisplayed() }
     }
   }
@@ -53,6 +55,8 @@ class AddSpotTest {
   fun addPicturesTest() {
     Intents.init()
     val imageUri = Uri.parse("content://media/external/images/media/1")
+    // Creates an intent and mock the answer. Since the picture picker is not inside our project but
+    // is another activity launched by the phone this implies that the intent is not internal
     intending(not(isInternal()))
         .respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, Intent().setData(imageUri)))
     ComposeScreen.onComposeScreen<AddSpotScreen>(composeTestRule) {
@@ -73,6 +77,8 @@ class AddSpotTest {
 
         performTextInput("statue")
       }
+
+      // Tests that are not passing on the CI but that are good examples to keep
 
       //        inputLocationProposal {
       //          assertIsDisplayed()

@@ -1,6 +1,7 @@
 package com.example.triptracker
 
 import com.example.triptracker.model.geocoder.NominatimApi
+import com.example.triptracker.view.map.DEFAULT_LOCATION
 import org.junit.Test
 
 class NominatimGeocoderTest {
@@ -9,8 +10,8 @@ class NominatimGeocoderTest {
   fun testDecode() {
     val geocoder = NominatimApi()
     geocoder.decode("EPFL") { location ->
-      assert(location.latitude == 46.519879)
-      assert(location.longitude == 6.560632)
+      assert(location.latitude == DEFAULT_LOCATION.latitude)
+      assert(location.longitude == DEFAULT_LOCATION.longitude)
     }
 
     geocoder.decode("unknown") { location ->
