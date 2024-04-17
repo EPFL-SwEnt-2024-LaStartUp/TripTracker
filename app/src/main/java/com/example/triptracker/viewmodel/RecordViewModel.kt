@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.triptracker.model.geocoder.NominatimApi
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.google.android.gms.maps.model.LatLng
@@ -30,6 +31,15 @@ class RecordViewModel : ViewModel() {
   // Public immutable list of LatLng points
   val latLongList: List<LatLng>
     get() = _latLongList
+
+  // Geocoder object to interact with the Nominatim API
+  val geocoder = NominatimApi()
+
+  // Point of interest name
+  val namePOI = mutableStateOf("")
+
+  // Dropdown menu for POI name
+  val displayNameDropDown = mutableStateOf("")
 
   /** Starts the recording. Sets the start time to the current time. */
   fun startRecording() {
@@ -142,6 +152,25 @@ class RecordViewModel : ViewModel() {
       } catch (e: Exception) {
         // Handle the exception, e.g. show a message to the user
       }
+    }
+  }
+
+  /** Gets the point of interest (POI) name at the given LatLng point. */
+  fun getPOI(latLng: LatLng) {
+    geocoder.getPOI(latLng.latitude.toFloat(), latLng.longitude.toFloat()) { name ->
+      namePOI.value = name
+    }
+  }
+
+  /**
+   * Gets the suggestion name at the given LatLng point and returns the LAT/LNG of the proposed
+   * location
+   */
+  fun getSuggestion(query: String, callback: (LatLng) -> Unit) {
+    geocoder.decode(query) { location ->
+      displayNameDropDown.value = location.name
+      Log.d("API RESPONSE", location.name)
+      callback(LatLng(location.latitude, location.longitude))
     }
   }
 }
