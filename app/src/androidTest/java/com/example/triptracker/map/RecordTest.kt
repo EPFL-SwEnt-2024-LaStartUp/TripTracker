@@ -3,8 +3,8 @@ package com.example.triptracker.map
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class RecordTest {
+//@RunWith(AndroidJUnit4::class)
+//class RecordTest {
 
   //  @get:Rule val composeTestRule = createAndroidComposeRule<MainActivity>()
   //
@@ -29,4 +29,4 @@ class RecordTest {
   //      // composeTestRule.onNodeWithText("Start Recording").assertExists()
   //    }
   //  }
-}
+//}
