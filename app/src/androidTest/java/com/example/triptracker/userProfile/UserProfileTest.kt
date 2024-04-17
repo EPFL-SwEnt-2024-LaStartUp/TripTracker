@@ -13,39 +13,65 @@ class UserProfileTest {
 
   private val userProfile1 =
       UserProfile(
-          id = "1",
+          mail = "1",
           name = "Alice",
           surname = "Smith",
           birthdate = date1,
           pseudo = "AliceS",
-          profileImageUrl = "stupid-image-url.com")
+          profileImageUrl = "stupid-image-url.com",
+          following = emptyList(),
+          followers = emptyList())
 
   private val userProfile2 =
       UserProfile(
-          id = "2",
+          mail = "2",
           name = "Bob",
           surname = "Johnson",
           birthdate = date1,
           pseudo = "BobJ",
-          profileImageUrl = null)
+          profileImageUrl = null,
+      )
+
+  private val userProfile3 =
+      UserProfile(
+          mail = "3",
+          birthdate = date1,
+          pseudo = "CharlieB",
+      )
 
   @Test
   fun testUserProfile1() {
-    assertEquals("1", userProfile1.id)
+    assertEquals("1", userProfile1.mail)
     assertEquals("Alice", userProfile1.name)
     assertEquals("Smith", userProfile1.surname)
     assertEquals(date1, userProfile1.birthdate)
     assertEquals("AliceS", userProfile1.pseudo)
     assertEquals("stupid-image-url.com", userProfile1.profileImageUrl)
+    assertEquals(emptyList<UserProfile>(), userProfile1.following)
+    assertEquals(emptyList<UserProfile>(), userProfile1.followers)
   }
 
   @Test
   fun testUserProfile2() {
-    assertEquals("2", userProfile2.id)
+    assertEquals("2", userProfile2.mail)
     assertEquals("Bob", userProfile2.name)
     assertEquals("Johnson", userProfile2.surname)
     assertEquals(date1, userProfile2.birthdate)
     assertEquals("BobJ", userProfile2.pseudo)
     assertEquals(null, userProfile2.profileImageUrl)
+    assertEquals(emptyList<UserProfile>(), userProfile2.following)
+    assertEquals(emptyList<UserProfile>(), userProfile2.followers)
+  }
+
+  @Test
+  fun testUserProfile3() {
+    assertEquals("3", userProfile3.mail)
+    assertEquals("", userProfile3.name)
+    assertEquals("", userProfile3.surname)
+    assertEquals(date1, userProfile3.birthdate)
+    assertEquals("CharlieB", userProfile3.pseudo)
+    assertEquals(null, userProfile3.profileImageUrl)
+    assertEquals(emptyList<UserProfile>(), userProfile3.following)
+    assertEquals(emptyList<UserProfile>(), userProfile3.followers)
   }
 }
