@@ -79,7 +79,11 @@ fun DisplayItinerary(
                 model =
                     "https://blueprintdigital.com/wp-content/uploads/2014/11/stock-photo-happy-man-giving-okay-sign-portrait-on-white-background-141327337.jpg",
                 contentDescription = "User Avatar",
-                modifier = Modifier.size(avatarSize).clip(CircleShape).testTag("ProfilePic").clickable { /* TODO bring user to profile page */ })
+                modifier =
+                    Modifier.size(avatarSize)
+                        .clip(CircleShape)
+                        .testTag("ProfilePic")
+                        .clickable { /* TODO bring user to profile page */})
             Spacer(modifier = Modifier.width(15.dp))
             Text(
                 text = itinerary.username,

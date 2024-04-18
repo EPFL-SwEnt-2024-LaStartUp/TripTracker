@@ -1,17 +1,27 @@
 package com.example.triptracker.screens.home
 
 import android.util.Log
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.lifecycle.MutableLiveData
+import androidx.test.espresso.action.ViewActions.pressKey
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.view.Navigation
+import com.example.triptracker.view.Route
+import com.example.triptracker.view.TopLevelDestination
 import com.example.triptracker.view.home.HomeScreen
 import com.example.triptracker.viewmodel.HomeViewModel
 import com.google.android.gms.maps.model.LatLng
@@ -73,9 +83,10 @@ class HomeTest {
     // Ensure the LiveData is prepared before use
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
-    every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
-    every { mockViewModel.searchQuery } returns MutableLiveData("")
-    every { mockViewModel.searchQuery.value } returns ""
+    Log.d("ItineraryList", mockViewModel.itineraryList.value.toString())
+    every { mockViewModel.filteredItineraryList } returns MutableLiveData(listOf(mockItineraries[0]))
+    every { mockNav.getTopLevelDestinations()[0] } returns
+        TopLevelDestination(Route.HOME, Icons.Outlined.Home, "Home")
 
     // Setting up the test composition
     composeTestRule.setContent { HomeScreen(navigation = mockNav, homeViewModel = mockViewModel) }
@@ -110,30 +121,57 @@ class HomeTest {
   }
 
   @Test
+  fun testSearchBarDisplaysComponentsCorrectly() {
+    // Mock dependencies
+    // Check all components are displayed correctly
+    composeTestRule.onNodeWithTag("searchBar", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithContentDescription("Menu", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("searchBarText", useUnmergedTree = true).assertIsDisplayed()
+  }
+
+  @Test
   fun searchFiltersItinerariesCorrectly() {
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
       searchBar {
         assertIsDisplayed()
         assertTextEquals("Search for an itinerary")
 
-        performTextClearance()
+        performClick()
 
-        performTextInput("statue")
+        performTextInput("NYC")
       }
     }
   }
 
   @Test
   fun navigationToDetailScreenOnItineraryClick() {
-    ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
-      itinerary { performClick() }
-    }
+    ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) { itinerary { performClick() } }
   }
 
   @Test
   fun profileIconClickOpensProfileScreen() {
+    ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) { profilePic { performClick() } }
+  }
+
+  @Test
+  fun searchFilterTest() {
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
-      profilePic { performClick() }
+      val noMatchQuery = "This does not match any title"
+
+      searchBar {
+        assertIsDisplayed()
+        composeTestRule.onNodeWithTag("searchBarText", useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule
+            .onNodeWithTag("searchBarText", useUnmergedTree = true)
+            .assertTextEquals("Search for an itinerary")
+        performClick()
+        // Check that "No results found" is displayed press a 10 times
+        pressKey(84) // letter t
+        //composeTestRule.onNodeWithTag("ItineraryItem", useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("BackButton", useUnmergedTree = true).performClick()
+        performClick()
+        composeTestRule.onNodeWithTag("ClearButton", useUnmergedTree = true).performClick()
+      }
     }
   }
 }
