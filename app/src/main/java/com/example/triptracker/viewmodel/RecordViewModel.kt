@@ -41,6 +41,9 @@ class RecordViewModel : ViewModel() {
   // Dropdown menu for POI name
   val displayNameDropDown = mutableStateOf("")
 
+  // AddSpotWindow
+  var addSpotClicked = mutableStateOf(false)
+
   /** Starts the recording. Sets the start time to the current time. */
   fun startRecording() {
     // reset the recording to clear any previous data
