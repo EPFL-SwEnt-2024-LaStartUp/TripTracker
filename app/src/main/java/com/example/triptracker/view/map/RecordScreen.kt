@@ -2,6 +2,8 @@ package com.example.triptracker.view.map
 
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,6 +29,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,10 +44,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -60,6 +67,7 @@ import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
+import com.example.triptracker.view.theme.md_theme_light_error
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.RecordViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -172,6 +180,12 @@ fun Map(
 
   val mapIsLoaded = remember { mutableStateOf(false) }
 
+  val animatedBlur by
+      animateDpAsState(
+          targetValue = if (viewModel.isInDescription()) 10.dp else 0.dp,
+          animationSpec = tween(durationMillis = 500),
+          label = "")
+
   // Animate camera to device location
   LaunchedEffect(key1 = deviceLocation) {
     if (mapIsLoaded.value) {
@@ -207,32 +221,43 @@ fun Map(
   // Display the map
   Box {
     Box(modifier = Modifier.fillMaxSize()) {
-      GoogleMap(
-          modifier =
-              Modifier.matchParentSize()
-                  .background(
-                      brush =
-                          Brush.verticalGradient(
-                              colors = listOf(Color.Transparent, md_theme_light_dark))),
-          cameraPositionState = cameraPositionState,
-          properties = properties,
-          uiSettings = ui,
-          onMapLoaded = {
-            // The map is loaded, can use CameraUpdateFactory to animate the camera to the device
-            // location
-            coroutineScope.launch {
-              mapIsLoaded.value = true
-              cameraPositionState.animate(
-                  CameraUpdateFactory.newCameraPosition(
-                      CameraPosition.fromLatLngZoom(deviceLocation, 17f)))
-            }
-          },
-      ) {
-        Polyline(
-            points = localLatLngList.toList(),
-            color = md_theme_orange,
-            width = 15f,
-        )
+      if (viewModel.isInDescription()) {
+        // Display white background
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+          Box(modifier = Modifier.size(100.dp).background(Color.White))
+        }
+      } else {
+        GoogleMap(
+            modifier =
+                Modifier.matchParentSize()
+                    .background(
+                        brush =
+                            Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, md_theme_light_dark)))
+                    .blur(animatedBlur),
+            cameraPositionState = cameraPositionState,
+            properties = properties,
+            uiSettings = ui,
+            onMapLoaded = {
+              // The map is loaded, can use CameraUpdateFactory to animate the camera to the device
+              // location
+              coroutineScope.launch {
+                mapIsLoaded.value = true
+                cameraPositionState.animate(
+                    CameraUpdateFactory.newCameraPosition(
+                        CameraPosition.fromLatLngZoom(deviceLocation, 17f)))
+              }
+            },
+        ) {
+          Polyline(
+              points = localLatLngList.toList(),
+              color = md_theme_orange,
+              width = 15f,
+          )
+        }
       }
     }
 
@@ -248,76 +273,241 @@ fun Map(
     }
 
     // Display start window
-    StartWindow(viewModel = viewModel)
+    if (!viewModel.isInDescription()) {
+      StartWindow(viewModel = viewModel)
 
-    // Button to center on device location
-    Row(
-        modifier = Modifier.align(Alignment.BottomCenter),
-        horizontalArrangement = Arrangement.Center) {
-          if (ui.myLocationButtonEnabled && properties.isMyLocationEnabled) {
-            Box(modifier = Modifier.padding(horizontal = 0.dp, vertical = 60.dp)) {
-              DisplayCenterLocationButton(
-                  coroutineScope = coroutineScope,
-                  deviceLocation = deviceLocation,
-                  cameraPositionState = cameraPositionState)
+      // Button to center on device location
+      Row(
+          modifier = Modifier.align(Alignment.BottomCenter),
+          horizontalArrangement = Arrangement.Center) {
+            if (ui.myLocationButtonEnabled && properties.isMyLocationEnabled) {
+              Box(modifier = Modifier.padding(horizontal = 0.dp, vertical = 60.dp)) {
+                DisplayCenterLocationButton(
+                    coroutineScope = coroutineScope,
+                    deviceLocation = deviceLocation,
+                    cameraPositionState = cameraPositionState)
+              }
             }
+
+            // Button to start/stop recording
+            FilledTonalButton(
+                onClick = {
+                  if (viewModel.isRecording()) {
+                    viewModel.stopRecording()
+                    viewModel.startDescription()
+                  } else {
+                    viewModel.startRecording()
+                  }
+                },
+                modifier = Modifier.padding(50.dp).fillMaxWidth(0.6f).fillMaxHeight(0.1f),
+                colors =
+                    ButtonDefaults.filledTonalButtonColors(
+                        containerColor = md_theme_orange, contentColor = Color.White),
+            ) {
+              Text(
+                  text = if (viewModel.isRecording()) "Stop" else "Start",
+                  fontSize = 24.sp,
+                  fontFamily = Montserrat,
+                  fontWeight = FontWeight.SemiBold,
+                  color = Color.White)
+            }
+            Spacer(modifier = Modifier.width(50.dp))
           }
+    }
 
-          // Button to start/stop recording
-          FilledTonalButton(
-              onClick = {
-                if (viewModel.isRecording()) {
-                  viewModel.stopRecording()
+    var isTitleEmpty by remember { mutableStateOf(false) }
+    var isDescriptionEmpty by remember { mutableStateOf(false) }
 
-                  // Add itinerary to database
-                  val id = itineraryRepository.getUID()
-                  val title = "TEST" // TODO : get title from user but not implemented yet
-                  val username = "lomimi" // TODO : get username from user but not implemented yet
-                  val location =
-                      Location(deviceLocation.latitude, deviceLocation.longitude, "Device Location")
-                  // TODO : get location from user but not implemented yet (default device location)
-                  val flameCount = 0L
-                  val startDate = viewModel.startDate.value
-                  val endDate = viewModel.endDate.value
-                  val pinList =
-                      emptyList<Pin>() // TODO : get pin list from user but not implemented yet
-                  val description =
-                      "description" // TODO : get description from user but not implemented yet
+    // Display description window
+    AnimatedVisibility(
+        visible = viewModel.isInDescription(),
+        enter = fadeIn() + expandVertically(expandFrom = Alignment.Bottom),
+        exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)) {
+          // Display the description window
+          Box(
+              modifier =
+                  Modifier.fillMaxHeight()
+                      .fillMaxWidth()
+                      .padding(top = 80.dp, bottom = 80.dp, start = 25.dp, end = 25.dp)
+                      .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp)),
+              contentAlignment = Alignment.TopCenter) {
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.SpaceEvenly) {
+                      Text(
+                          text = "Congrats on the trip !",
+                          fontSize = 36.sp,
+                          fontFamily = Montserrat,
+                          fontWeight = FontWeight.Bold,
+                          color = Color.White,
+                          modifier = Modifier.padding(top = 50.dp, start = 30.dp, end = 30.dp),
+                      )
+                      // add a text field for the title
+                      Text(
+                          text = "Add a title",
+                          fontSize = 14.sp,
+                          fontFamily = Montserrat,
+                          fontWeight = FontWeight.Normal,
+                          color = md_theme_grey,
+                          modifier = Modifier.padding(top = 50.dp, start = 30.dp, end = 30.dp),
+                      )
+                      Spacer(modifier = Modifier.height(5.dp))
+                      // add a text field for the description
+                      OutlinedTextField(
+                          value = viewModel.description.value,
+                          onValueChange = {
+                            viewModel.description.value = it
+                            isDescriptionEmpty = it.isEmpty() // Update empty state
+                          },
+                          label = {
+                            Text(
+                                text = "Title",
+                                fontSize = 14.sp,
+                                fontFamily = Montserrat,
+                                fontWeight = FontWeight.Normal,
+                            )
+                          },
+                          modifier =
+                              Modifier.fillMaxWidth(1f)
+                                  .padding(top = 5.dp, bottom = 5.dp, start = 30.dp, end = 30.dp),
+                          textStyle =
+                              TextStyle(
+                                  color = Color.White,
+                                  fontSize = 16.sp,
+                                  fontFamily = Montserrat,
+                                  fontWeight = FontWeight.Normal),
+                          colors =
+                              OutlinedTextFieldDefaults.colors(
+                                  unfocusedTextColor = Color.White,
+                                  unfocusedBorderColor =
+                                      if (isTitleEmpty) md_theme_light_error else md_theme_grey,
+                                  unfocusedLabelColor =
+                                      if (isTitleEmpty) md_theme_light_error else md_theme_grey,
+                                  cursorColor = Color.White,
+                                  focusedBorderColor = Color.White,
+                                  focusedLabelColor = Color.White,
+                              ))
 
-                  val itinerary =
-                      Itinerary(
-                          id,
-                          title,
-                          username,
-                          location,
-                          flameCount,
-                          startDate,
-                          endDate,
-                          pinList,
-                          description,
-                          viewModel.latLongList.toList())
+                      // add a text field for the description
+                      Text(
+                          text = "Add a description",
+                          fontSize = 14.sp,
+                          fontFamily = Montserrat,
+                          fontWeight = FontWeight.Normal,
+                          color = md_theme_grey,
+                          modifier = Modifier.padding(top = 20.dp, start = 30.dp, end = 30.dp),
+                      )
+                      Spacer(modifier = Modifier.height(5.dp))
+                      // add a text field for the description
+                      OutlinedTextField(
+                          value = viewModel.title.value,
+                          onValueChange = {
+                            viewModel.title.value = it
+                            isTitleEmpty = it.isEmpty() // Update empty state
+                          },
+                          label = {
+                            Text(
+                                text = "Description",
+                                fontSize = 14.sp,
+                                fontFamily = Montserrat,
+                                fontWeight = FontWeight.Normal,
+                            )
+                          },
+                          modifier =
+                              Modifier.fillMaxWidth(1f)
+                                  .padding(top = 5.dp, bottom = 5.dp, start = 30.dp, end = 30.dp)
+                                  .height(100.dp)
+                                  .fillMaxWidth(),
+                          textStyle =
+                              TextStyle(
+                                  color = Color.White,
+                                  fontSize = 16.sp,
+                                  fontFamily = Montserrat,
+                                  fontWeight = FontWeight.Normal,
+                                  lineHeight = 10.sp),
+                          colors =
+                              OutlinedTextFieldDefaults.colors(
+                                  unfocusedTextColor = Color.White,
+                                  unfocusedBorderColor =
+                                      if (isTitleEmpty) md_theme_light_error else md_theme_grey,
+                                  unfocusedLabelColor =
+                                      if (isTitleEmpty) md_theme_light_error else md_theme_grey,
+                                  cursorColor = Color.White,
+                                  focusedBorderColor = Color.White,
+                                  focusedLabelColor = Color.White,
+                              ))
 
-                  viewModel.addNewItinerary(itinerary, itineraryRepository)
+                      Row(
+                          modifier = Modifier.fillMaxWidth().padding(top = 30.dp),
+                          horizontalArrangement = Arrangement.Center) {
+                            Spacer(modifier = Modifier.width(20.dp))
+                            // add a button to save the description
+                            FilledTonalButton(
+                                onClick = {
+                                  if (viewModel.title.value.isEmpty()) {
+                                    isTitleEmpty = true
+                                  }
+                                  if (viewModel.description.value.isEmpty()) {
+                                    isDescriptionEmpty = true
+                                  }
+                                  if (!isTitleEmpty && !isDescriptionEmpty) {
+                                    // Add itinerary to database
+                                    val id = itineraryRepository.getUID()
+                                    val title = viewModel.title.value
+                                    val username =
+                                        "lomimi" // TODO : get username from user but not
+                                                 // implemented yet
+                                    val location =
+                                        Location(
+                                            deviceLocation.latitude,
+                                            deviceLocation.longitude,
+                                            "Device Location")
+                                    // TODO : get location from user but not implemented yet
+                                    // (default device location)
+                                    val flameCount = 0L
+                                    val startDate = viewModel.startDate.value
+                                    val endDate = viewModel.endDate.value
+                                    val pinList =
+                                        emptyList<
+                                            Pin>() // TODO : get pin list from user but not
+                                                   // implemented yet
+                                    val description = viewModel.description.value
+                                    val itinerary =
+                                        Itinerary(
+                                            id,
+                                            title,
+                                            username,
+                                            location,
+                                            flameCount,
+                                            startDate,
+                                            endDate,
+                                            pinList,
+                                            description,
+                                            viewModel.latLongList.toList())
 
-                  viewModel.resetRecording()
-                  localLatLngList.clear()
-                } else {
-                  viewModel.startRecording()
-                }
-              },
-              modifier = Modifier.padding(50.dp).fillMaxWidth(0.6f).fillMaxHeight(0.1f),
-              colors =
-                  ButtonDefaults.filledTonalButtonColors(
-                      containerColor = md_theme_orange, contentColor = Color.White),
-          ) {
-            Text(
-                text = if (viewModel.isRecording()) "Stop" else "Start",
-                fontSize = 24.sp,
-                fontFamily = Montserrat,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.White)
-          }
-          Spacer(modifier = Modifier.width(50.dp))
+                                    viewModel.addNewItinerary(itinerary, itineraryRepository)
+                                    viewModel.stopDescription()
+                                    viewModel.resetRecording()
+                                    localLatLngList.clear()
+                                  }
+                                },
+                                modifier = Modifier.size(150.dp, 70.dp),
+                                colors =
+                                    ButtonDefaults.filledTonalButtonColors(
+                                        containerColor = md_theme_orange,
+                                        contentColor = Color.White),
+                            ) {
+                              Text(
+                                  text = "Save",
+                                  fontSize = 24.sp,
+                                  fontFamily = Montserrat,
+                                  fontWeight = FontWeight.SemiBold,
+                                  color = Color.White)
+                            }
+                            Spacer(modifier = Modifier.width(20.dp))
+                          }
+                    }
+              }
         }
   }
 }
