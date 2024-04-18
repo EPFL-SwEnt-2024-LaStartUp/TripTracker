@@ -454,9 +454,8 @@ fun Map(
                                     // Add itinerary to database
                                     val id = itineraryRepository.getUID()
                                     val title = viewModel.title.value
-                                    val username =
-                                        "lomimi" // TODO : get username from user but not
-                                                 // implemented yet
+                                    val username = "lomimi" // TODO : get username from user but not
+                                    // implemented yet
                                     val location =
                                         Location(
                                             deviceLocation.latitude,
@@ -468,9 +467,8 @@ fun Map(
                                     val startDate = viewModel.startDate.value
                                     val endDate = viewModel.endDate.value
                                     val pinList =
-                                        emptyList<
-                                            Pin>() // TODO : get pin list from user but not
-                                                   // implemented yet
+                                        emptyList<Pin>() // TODO : get pin list from user but not
+                                    // implemented yet
                                     val description = viewModel.description.value
                                     val itinerary =
                                         Itinerary(
