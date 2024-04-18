@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -64,9 +65,9 @@ fun UserProfileFollowers(
                     colors =
                         ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent, contentColor = md_theme_light_dark),
-                ) {
-                  Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
-                }
+                    modifier = Modifier.testTag("GoBackButton")) {
+                      Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
+                    }
               }
               Column(
                   modifier = Modifier.fillMaxWidth().padding(top = 25.dp),
@@ -85,13 +86,17 @@ fun UserProfileFollowers(
                         ),
                     // modifier = Modifier.weight(1f)
                     // .padding(horizontal = 16.dp)
-                    modifier = Modifier.width(250.dp).height(37.dp).padding(5.dp))
+                    modifier =
+                        Modifier.width(250.dp)
+                            .height(37.dp)
+                            .padding(5.dp)
+                            .testTag("FollowersTitle"))
                 Box(modifier = Modifier.size(60.dp))
               }
             }
       },
       bottomBar = { NavigationBar(navigation) },
-      modifier = Modifier.fillMaxSize()) { innerPadding ->
+      modifier = Modifier.fillMaxSize().testTag("FollowersScreen")) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
           // Display the list of following
           FriendListView(userProfileViewModel, userProfile, followers, false, innerPadding)
