@@ -114,7 +114,7 @@ class RecordViewModel : ViewModel() {
    * @return Boolean indicating whether the recording is ongoing.
    */
   fun isRecording(): Boolean {
-    return startTime.longValue != 0L && endTime.longValue == 0L
+    return startTime.longValue != 0L && endDate.value == "" && startDate.value != ""
   }
 
   /**
