@@ -2,6 +2,8 @@ package com.example.triptracker.model.repository
 
 import android.util.Log
 import com.example.triptracker.model.profile.UserProfile
+import com.google.firebase.firestore.firestore
+import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import java.util.Date
@@ -11,7 +13,7 @@ import java.util.Date
  * for the UserProfile class It interacts with the Firebase Firestore to save, update, delete and
  * retrieve the user's profiles data
  */
-open class UserProfileRepository(private val db: FirebaseFirestore) {
+open class UserProfileRepository(private val db: FirebaseFirestore = Firebase.firestore) {
 
   // Initialise the Firebase Firestore
   // val db = Firebase.firestore
@@ -47,6 +49,16 @@ open class UserProfileRepository(private val db: FirebaseFirestore) {
     Log.d("UserProfileRepository", _userProfileList.toString())
     return _userProfileList
   }
+
+  //    /**
+  //     * This function returns the user profile corresponding to the mail
+  //     *
+  //     * @param mail : mail of the user profile to return
+  //     * @return user profile corresponding to the mail
+  //     */
+  //    fun getUserProfile(mail: String): UserProfile? {
+  //
+  //    }
 
   /**
    * This function converts the QuerySnapshot to a list of user's profiles.

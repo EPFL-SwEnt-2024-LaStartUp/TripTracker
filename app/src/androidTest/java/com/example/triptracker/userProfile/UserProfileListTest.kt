@@ -17,29 +17,37 @@ class UserProfileListTest {
       UserProfileList(
           listOf(
               UserProfile(
-                  id = "1",
+                  mail = "1",
                   name = "Alice",
                   surname = "Smith",
                   birthdate = date1,
                   pseudo = "AliceS"),
               UserProfile(
-                  id = "2", name = "Bob", surname = "Johnson", birthdate = date1, pseudo = "BobJ"),
+                  mail = "2",
+                  name = "Bob",
+                  surname = "Johnson",
+                  birthdate = date1,
+                  pseudo = "BobJ"),
               UserProfile(
-                  id = "3", name = "Bob", surname = "Brown", birthdate = date1, pseudo = "BobB")))
+                  mail = "3", name = "Bob", surname = "Brown", birthdate = date1, pseudo = "BobB")))
 
   private val userProfileList3 =
       UserProfileList(
           listOf(
               UserProfile(
-                  id = "4",
+                  mail = "4",
                   name = "Alice",
                   surname = "Smith",
                   birthdate = date1,
                   pseudo = "AliceS"),
               UserProfile(
-                  id = "5", name = "Bob", surname = "Johnson", birthdate = date1, pseudo = "BobJ"),
+                  mail = "5",
+                  name = "Bob",
+                  surname = "Johnson",
+                  birthdate = date1,
+                  pseudo = "BobJ"),
               UserProfile(
-                  id = "6",
+                  mail = "6",
                   name = "Charlie",
                   surname = "Brown",
                   birthdate = date1,
@@ -83,13 +91,13 @@ class UserProfileListTest {
     //        assertEquals(null, userProfile1)
 
     val userProfile2 = userProfileList2.getUserProfile("1")
-    assertEquals("1", userProfile2.id)
+    assertEquals("1", userProfile2.mail)
 
     val userProfile3 = userProfileList2.getUserProfile("2")
-    assertEquals("2", userProfile3.id)
+    assertEquals("2", userProfile3.mail)
 
     val userProfile4 = userProfileList2.getUserProfile("3")
-    assertEquals("3", userProfile4.id)
+    assertEquals("3", userProfile4.mail)
 
     //        val userProfile5 = userProfileList2.getUserProfile("4")
     //        assertEquals(null, userProfile5)
