@@ -54,7 +54,7 @@ data class UserProfileList(private var userProfileList: List<UserProfile>) {
    * @return User's profile that matches the Uid
    */
   fun getUserProfile(taskUid: String): UserProfile {
-    return userProfileList.find { it.id == taskUid }!!
+    return userProfileList.find { it.mail == taskUid }!!
   }
 
   /**
