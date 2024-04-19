@@ -276,7 +276,6 @@ fun Map(
     if (!viewModel.isInDescription()) {
       StartWindow(viewModel = viewModel)
 
-      // Button to center on device location
       if (!viewModel.addSpotClicked.value) {
         // Button to center on device location
         Row(
@@ -313,204 +312,203 @@ fun Map(
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White)
               }
-              Spacer(modifier = Modifier.width(50.dp))
             }
+        Spacer(modifier = Modifier.width(50.dp))
       }
-
-      var isTitleEmpty by remember { mutableStateOf(false) }
-      var isDescriptionEmpty by remember { mutableStateOf(false) }
-
-      // Display description window
-      AnimatedVisibility(
-          visible = viewModel.isInDescription(),
-          enter = fadeIn() + expandVertically(expandFrom = Alignment.Bottom),
-          exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)) {
-            // Display the description window
-            Box(
-                modifier =
-                    Modifier.fillMaxHeight()
-                        .fillMaxWidth()
-                        .padding(top = 80.dp, bottom = 80.dp, start = 25.dp, end = 25.dp)
-                        .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp)),
-                contentAlignment = Alignment.TopCenter) {
-                  Column(
-                      horizontalAlignment = Alignment.Start,
-                      verticalArrangement = Arrangement.SpaceEvenly) {
-                        Text(
-                            text = "Congrats on the trip !",
-                            fontSize = 36.sp,
-                            fontFamily = Montserrat,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.padding(top = 50.dp, start = 30.dp, end = 30.dp),
-                        )
-                        // add a text field for the title
-                        Text(
-                            text = "Add a title",
-                            fontSize = 14.sp,
-                            fontFamily = Montserrat,
-                            fontWeight = FontWeight.Normal,
-                            color = md_theme_grey,
-                            modifier = Modifier.padding(top = 50.dp, start = 30.dp, end = 30.dp),
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
-                        // add a text field for the description
-                        OutlinedTextField(
-                            value = viewModel.description.value,
-                            onValueChange = {
-                              viewModel.description.value = it
-                              isDescriptionEmpty = it.isEmpty() // Update empty state
-                            },
-                            label = {
-                              Text(
-                                  text = "Title",
-                                  fontSize = 14.sp,
-                                  fontFamily = Montserrat,
-                                  fontWeight = FontWeight.Normal,
-                              )
-                            },
-                            modifier =
-                                Modifier.fillMaxWidth(1f)
-                                    .padding(top = 5.dp, bottom = 5.dp, start = 30.dp, end = 30.dp),
-                            textStyle =
-                                TextStyle(
-                                    color = Color.White,
-                                    fontSize = 16.sp,
-                                    fontFamily = Montserrat,
-                                    fontWeight = FontWeight.Normal),
-                            colors =
-                                OutlinedTextFieldDefaults.colors(
-                                    unfocusedTextColor = Color.White,
-                                    unfocusedBorderColor =
-                                        if (isTitleEmpty) md_theme_light_error else md_theme_grey,
-                                    unfocusedLabelColor =
-                                        if (isTitleEmpty) md_theme_light_error else md_theme_grey,
-                                    cursorColor = Color.White,
-                                    focusedBorderColor = Color.White,
-                                    focusedLabelColor = Color.White,
-                                ))
-
-                        // add a text field for the description
-                        Text(
-                            text = "Add a description",
-                            fontSize = 14.sp,
-                            fontFamily = Montserrat,
-                            fontWeight = FontWeight.Normal,
-                            color = md_theme_grey,
-                            modifier = Modifier.padding(top = 20.dp, start = 30.dp, end = 30.dp),
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
-                        // add a text field for the description
-                        OutlinedTextField(
-                            value = viewModel.title.value,
-                            onValueChange = {
-                              viewModel.title.value = it
-                              isTitleEmpty = it.isEmpty() // Update empty state
-                            },
-                            label = {
-                              Text(
-                                  text = "Description",
-                                  fontSize = 14.sp,
-                                  fontFamily = Montserrat,
-                                  fontWeight = FontWeight.Normal,
-                              )
-                            },
-                            modifier =
-                                Modifier.fillMaxWidth(1f)
-                                    .padding(top = 5.dp, bottom = 5.dp, start = 30.dp, end = 30.dp)
-                                    .height(100.dp)
-                                    .fillMaxWidth(),
-                            textStyle =
-                                TextStyle(
-                                    color = Color.White,
-                                    fontSize = 16.sp,
-                                    fontFamily = Montserrat,
-                                    fontWeight = FontWeight.Normal,
-                                    lineHeight = 10.sp),
-                            colors =
-                                OutlinedTextFieldDefaults.colors(
-                                    unfocusedTextColor = Color.White,
-                                    unfocusedBorderColor =
-                                        if (isTitleEmpty) md_theme_light_error else md_theme_grey,
-                                    unfocusedLabelColor =
-                                        if (isTitleEmpty) md_theme_light_error else md_theme_grey,
-                                    cursorColor = Color.White,
-                                    focusedBorderColor = Color.White,
-                                    focusedLabelColor = Color.White,
-                                ))
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(top = 30.dp),
-                            horizontalArrangement = Arrangement.Center) {
-                              Spacer(modifier = Modifier.width(20.dp))
-                              // add a button to save the description
-                              FilledTonalButton(
-                                  onClick = {
-                                    if (viewModel.title.value.isEmpty()) {
-                                      isTitleEmpty = true
-                                    }
-                                    if (viewModel.description.value.isEmpty()) {
-                                      isDescriptionEmpty = true
-                                    }
-                                    if (!isTitleEmpty && !isDescriptionEmpty) {
-                                      // Add itinerary to database
-                                      val id = itineraryRepository.getUID()
-                                      val title = viewModel.title.value
-                                      val username =
-                                          "lomimi" // TODO : get username from user but not
-                                      // implemented yet
-                                      val location =
-                                          Location(
-                                              deviceLocation.latitude,
-                                              deviceLocation.longitude,
-                                              "Device Location")
-                                      // TODO : get location from user but not implemented yet
-                                      // (default device location)
-                                      val flameCount = 0L
-                                      val startDate = viewModel.startDate.value
-                                      val endDate = viewModel.endDate.value
-                                      val pinList =
-                                          emptyList<Pin>() // TODO : get pin list from user but not
-                                      // implemented yet
-                                      val description = viewModel.description.value
-                                      val itinerary =
-                                          Itinerary(
-                                              id,
-                                              title,
-                                              username,
-                                              location,
-                                              flameCount,
-                                              startDate,
-                                              endDate,
-                                              pinList,
-                                              description,
-                                              viewModel.latLongList.toList())
-
-                                      viewModel.addNewItinerary(itinerary, itineraryRepository)
-                                      viewModel.stopDescription()
-                                      viewModel.resetRecording()
-                                      localLatLngList.clear()
-                                    }
-                                  },
-                                  modifier = Modifier.size(150.dp, 70.dp),
-                                  colors =
-                                      ButtonDefaults.filledTonalButtonColors(
-                                          containerColor = md_theme_orange,
-                                          contentColor = Color.White),
-                              ) {
-                                Text(
-                                    text = "Save",
-                                    fontSize = 24.sp,
-                                    fontFamily = Montserrat,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = Color.White)
-                              }
-                              Spacer(modifier = Modifier.width(20.dp))
-                            }
-                      }
-                }
-          }
     }
+
+    var isTitleEmpty by remember { mutableStateOf(false) }
+    var isDescriptionEmpty by remember { mutableStateOf(false) }
+
+    // Display description window
+    AnimatedVisibility(
+        visible = viewModel.isInDescription(),
+        enter = fadeIn() + expandVertically(expandFrom = Alignment.Bottom),
+        exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)) {
+          // Display the description window
+          Box(
+              modifier =
+                  Modifier.fillMaxHeight()
+                      .fillMaxWidth()
+                      .padding(top = 80.dp, bottom = 80.dp, start = 25.dp, end = 25.dp)
+                      .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp)),
+              contentAlignment = Alignment.TopCenter) {
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.SpaceEvenly) {
+                      Text(
+                          text = "Congrats on the trip !",
+                          fontSize = 36.sp,
+                          fontFamily = Montserrat,
+                          fontWeight = FontWeight.Bold,
+                          color = Color.White,
+                          modifier = Modifier.padding(top = 50.dp, start = 30.dp, end = 30.dp),
+                      )
+                      // add a text field for the title
+                      Text(
+                          text = "Add a title",
+                          fontSize = 14.sp,
+                          fontFamily = Montserrat,
+                          fontWeight = FontWeight.Normal,
+                          color = md_theme_grey,
+                          modifier = Modifier.padding(top = 50.dp, start = 30.dp, end = 30.dp),
+                      )
+                      Spacer(modifier = Modifier.height(5.dp))
+                      // add a text field for the description
+                      OutlinedTextField(
+                          value = viewModel.description.value,
+                          onValueChange = {
+                            viewModel.description.value = it
+                            isDescriptionEmpty = it.isEmpty() // Update empty state
+                          },
+                          label = {
+                            Text(
+                                text = "Title",
+                                fontSize = 14.sp,
+                                fontFamily = Montserrat,
+                                fontWeight = FontWeight.Normal,
+                            )
+                          },
+                          modifier =
+                              Modifier.fillMaxWidth(1f)
+                                  .padding(top = 5.dp, bottom = 5.dp, start = 30.dp, end = 30.dp),
+                          textStyle =
+                              TextStyle(
+                                  color = Color.White,
+                                  fontSize = 16.sp,
+                                  fontFamily = Montserrat,
+                                  fontWeight = FontWeight.Normal),
+                          colors =
+                              OutlinedTextFieldDefaults.colors(
+                                  unfocusedTextColor = Color.White,
+                                  unfocusedBorderColor =
+                                      if (isTitleEmpty) md_theme_light_error else md_theme_grey,
+                                  unfocusedLabelColor =
+                                      if (isTitleEmpty) md_theme_light_error else md_theme_grey,
+                                  cursorColor = Color.White,
+                                  focusedBorderColor = Color.White,
+                                  focusedLabelColor = Color.White,
+                              ))
+
+                      // add a text field for the description
+                      Text(
+                          text = "Add a description",
+                          fontSize = 14.sp,
+                          fontFamily = Montserrat,
+                          fontWeight = FontWeight.Normal,
+                          color = md_theme_grey,
+                          modifier = Modifier.padding(top = 20.dp, start = 30.dp, end = 30.dp),
+                      )
+                      Spacer(modifier = Modifier.height(5.dp))
+                      // add a text field for the description
+                      OutlinedTextField(
+                          value = viewModel.title.value,
+                          onValueChange = {
+                            viewModel.title.value = it
+                            isTitleEmpty = it.isEmpty() // Update empty state
+                          },
+                          label = {
+                            Text(
+                                text = "Description",
+                                fontSize = 14.sp,
+                                fontFamily = Montserrat,
+                                fontWeight = FontWeight.Normal,
+                            )
+                          },
+                          modifier =
+                              Modifier.fillMaxWidth(1f)
+                                  .padding(top = 5.dp, bottom = 5.dp, start = 30.dp, end = 30.dp)
+                                  .height(100.dp)
+                                  .fillMaxWidth(),
+                          textStyle =
+                              TextStyle(
+                                  color = Color.White,
+                                  fontSize = 16.sp,
+                                  fontFamily = Montserrat,
+                                  fontWeight = FontWeight.Normal,
+                                  lineHeight = 10.sp),
+                          colors =
+                              OutlinedTextFieldDefaults.colors(
+                                  unfocusedTextColor = Color.White,
+                                  unfocusedBorderColor =
+                                      if (isTitleEmpty) md_theme_light_error else md_theme_grey,
+                                  unfocusedLabelColor =
+                                      if (isTitleEmpty) md_theme_light_error else md_theme_grey,
+                                  cursorColor = Color.White,
+                                  focusedBorderColor = Color.White,
+                                  focusedLabelColor = Color.White,
+                              ))
+
+                      Row(
+                          modifier = Modifier.fillMaxWidth().padding(top = 30.dp),
+                          horizontalArrangement = Arrangement.Center) {
+                            Spacer(modifier = Modifier.width(20.dp))
+                            // add a button to save the description
+                            FilledTonalButton(
+                                onClick = {
+                                  if (viewModel.title.value.isEmpty()) {
+                                    isTitleEmpty = true
+                                  }
+                                  if (viewModel.description.value.isEmpty()) {
+                                    isDescriptionEmpty = true
+                                  }
+                                  if (!isTitleEmpty && !isDescriptionEmpty) {
+                                    // Add itinerary to database
+                                    val id = itineraryRepository.getUID()
+                                    val title = viewModel.title.value
+                                    val username = "lomimi" // TODO : get username from user but not
+                                    // implemented yet
+                                    val location =
+                                        Location(
+                                            deviceLocation.latitude,
+                                            deviceLocation.longitude,
+                                            "Device Location")
+                                    // TODO : get location from user but not implemented yet
+                                    // (default device location)
+                                    val flameCount = 0L
+                                    val startDate = viewModel.startDate.value
+                                    val endDate = viewModel.endDate.value
+                                    val pinList =
+                                        emptyList<Pin>() // TODO : get pin list from user but not
+                                    // implemented yet
+                                    val description = viewModel.description.value
+                                    val itinerary =
+                                        Itinerary(
+                                            id,
+                                            title,
+                                            username,
+                                            location,
+                                            flameCount,
+                                            startDate,
+                                            endDate,
+                                            pinList,
+                                            description,
+                                            viewModel.latLongList.toList())
+
+                                    viewModel.addNewItinerary(itinerary, itineraryRepository)
+                                    viewModel.stopDescription()
+                                    viewModel.resetRecording()
+                                    localLatLngList.clear()
+                                  }
+                                },
+                                modifier = Modifier.size(150.dp, 70.dp),
+                                colors =
+                                    ButtonDefaults.filledTonalButtonColors(
+                                        containerColor = md_theme_orange,
+                                        contentColor = Color.White),
+                            ) {
+                              Text(
+                                  text = "Save",
+                                  fontSize = 24.sp,
+                                  fontFamily = Montserrat,
+                                  fontWeight = FontWeight.SemiBold,
+                                  color = Color.White)
+                            }
+                            Spacer(modifier = Modifier.width(20.dp))
+                          }
+                    }
+              }
+        }
   }
 }
 
@@ -542,6 +540,7 @@ fun StartWindow(viewModel: RecordViewModel) {
     }
     false -> {}
   }
+
   if (!viewModel.addSpotClicked.value) {
 
     // Display recording window if user is recording
