@@ -14,16 +14,14 @@ import androidx.compose.ui.test.performClick
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.action.ViewActions.pressKey
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.triptracker.itinerary.MockItineraryList
 import com.example.triptracker.model.itinerary.Itinerary
-import com.example.triptracker.model.location.Location
-import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.TopLevelDestination
 import com.example.triptracker.view.home.HomeScreen
 import com.example.triptracker.viewmodel.HomeViewModel
-import com.google.android.gms.maps.model.LatLng
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
@@ -47,35 +45,8 @@ class HomeTest {
   @RelaxedMockK private lateinit var mockViewModel: HomeViewModel
   @RelaxedMockK private lateinit var mockItineraryRepository: ItineraryRepository
 
-  val mockItineraries =
-      listOf(
-          Itinerary(
-              "1",
-              "Trip to Paris",
-              "User1",
-              Location(0.0, 0.0, "Paris"),
-              200,
-              "10-03-2024",
-              "20-03-2024",
-              listOf(Pin(0.2, 0.1, "Eiffel Tower", "yes", "test.com")),
-              "super cool",
-              listOf(LatLng(0.1, 0.4))), // Fill in your mock data
-          Itinerary(
-              "2",
-              "NYC was fun",
-              "User2",
-              Location(0.0, 0.0, "New York"),
-              200,
-              "10-03-2024",
-              "20-03-2024",
-              listOf(
-                  Pin(0.2, 0.1, "Statue of Liberty", "yes", "test.com"),
-                  Pin(0.2, 0.1, "EmpState", "yes", "test.com"),
-                  Pin(0.2, 0.1, "Cool", "yes", "test.com"),
-                  Pin(0.2, 0.1, "NYC", "yes", "test.com")),
-              "veryyy cool",
-              listOf(LatLng(0.1, 0.4))))
-
+  val mockList = MockItineraryList()
+  val mockItineraries = mockList.getItineraries()
   /**
    * This method is run before each test to set up the necessary mocks. It is used to initialize the
    * mocks and set up the necessary dependencies.
@@ -165,6 +136,10 @@ class HomeTest {
     }
   }
 
+  /**
+   * This test checks if the search bar is displayed correctly and if the search bar text is
+   * displayed correctly
+   */
   @Test
   fun setSearchQuery() {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
