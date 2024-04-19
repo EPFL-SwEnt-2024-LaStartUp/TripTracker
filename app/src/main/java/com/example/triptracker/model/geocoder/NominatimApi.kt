@@ -196,9 +196,9 @@ class NominatimApi {
         return@reverseDecode
       }
 
-      Log.d("API RESPONSE", json.toString())
-
       val name = json?.get(LocationStrings.NAME)
+
+      Log.d("API RESPONSE", name.toString())
 
       if (name == null) {
         callback(LocationErrors.UNKNOWN)
