@@ -1,5 +1,6 @@
 package com.example.triptracker.map
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.viewmodel.RecordViewModel
 import com.google.android.gms.maps.model.LatLng
 import java.util.concurrent.CountDownLatch
@@ -8,7 +9,9 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(AndroidJUnit4::class)
 class RecordViewModelTest {
 
   private lateinit var viewModel: RecordViewModel
