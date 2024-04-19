@@ -15,8 +15,8 @@ import kotlinx.coroutines.launch
  * ViewModel for the Home Screen. Fetches all itineraries from the repository stores them in a
  * LiveData object
  */
-class HomeViewModel : ViewModel() {
-  private val repository = ItineraryRepository()
+class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepository()) :
+    ViewModel() {
 
   private var itineraryInstance = ItineraryList(listOf())
   private var _itineraryList = MutableLiveData<List<Itinerary>>()

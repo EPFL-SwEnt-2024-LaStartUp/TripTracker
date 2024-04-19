@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -47,6 +48,7 @@ import com.example.triptracker.view.theme.md_theme_orange
 fun DisplayItinerary(
     itinerary: Itinerary,
     navigation: Navigation,
+    // onClick: () -> Unit, TODO : Uncomment this line when needed
 ) {
   // Number of additional itineraries not displayed
   val pinListString = fetchPinNames(itinerary)
@@ -67,7 +69,9 @@ fun DisplayItinerary(
                 // TODO : when changing Top Level Destination, the navbar should be updated to
                 // highlight the correct tab.
                 // TODO : Would call DisplayItineraryInMap or sth similar later on
-              }) {
+                // onClick()
+              }
+              .testTag("Itinerary")) {
         Column(modifier = Modifier.fillMaxWidth().padding(25.dp)) {
           Row(modifier = Modifier.fillMaxWidth()) {
             // change the image to the user's profile picture
@@ -75,14 +79,19 @@ fun DisplayItinerary(
                 model =
                     "https://blueprintdigital.com/wp-content/uploads/2014/11/stock-photo-happy-man-giving-okay-sign-portrait-on-white-background-141327337.jpg",
                 contentDescription = "User Avatar",
-                modifier = Modifier.size(avatarSize).clip(CircleShape))
+                modifier =
+                    Modifier.size(avatarSize)
+                        .clip(CircleShape)
+                        .testTag("ProfilePic")
+                        .clickable { /* TODO bring user to profile page */})
             Spacer(modifier = Modifier.width(15.dp))
             Text(
                 text = itinerary.username,
                 fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                 fontWeight = FontWeight.Normal,
                 fontSize = 14.sp,
-                color = md_theme_grey)
+                color = md_theme_grey,
+                modifier = Modifier.testTag("Username"))
             Spacer(modifier = Modifier.width(120.dp))
             Icon(
                 imageVector = Icons.Outlined.Star,
@@ -96,7 +105,8 @@ fun DisplayItinerary(
               fontFamily = FontFamily(Font(R.font.montserrat_regular)),
               fontWeight = FontWeight.Bold,
               fontSize = 24.sp,
-              color = md_theme_light_onPrimary)
+              color = md_theme_light_onPrimary,
+              modifier = Modifier.testTag("Title"))
           Text(
               text = "${itinerary.flameCount}🔥",
               color = md_theme_orange, // This is the orange color
@@ -106,7 +116,7 @@ fun DisplayItinerary(
           Text(
               text = pinListString,
               fontSize = 14.sp,
-              modifier = Modifier.fillMaxWidth(),
+              modifier = Modifier.fillMaxWidth().testTag("PinList"),
               maxLines = 2,
               overflow = "and more".let { TextOverflow.Ellipsis },
               fontFamily = FontFamily(Font(R.font.montserrat_medium)),
