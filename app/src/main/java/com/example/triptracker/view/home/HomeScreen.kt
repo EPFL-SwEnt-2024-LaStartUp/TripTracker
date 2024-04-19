@@ -72,6 +72,7 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
               val home = navigation.getTopLevelDestinations()[0].route
               navigation.navController.navigate(home)
             },
+            viewModel = homeViewModel,
             onSearchActivated = { isActive -> isSearchActive = isActive },
             navigation = navigation,
             isNoResultFound = isNoResultFound)
@@ -79,7 +80,7 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
       bottomBar = { NavigationBar(navigation) },
       modifier = Modifier.testTag("HomeScreen")) { innerPadding ->
         when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
-          null -> {
+          emptyList<Itinerary>() -> {
             Text(
                 text = "You do not have any itineraries yet.",
                 modifier = Modifier.padding(16.dp).testTag("NoItinerariesText"),
@@ -193,7 +194,7 @@ fun SearchBar(
     if (isNoResultFound) {
       Text(
           "No results found",
-          modifier = Modifier.padding(16.dp).testTag("NoResultsText"),
+          modifier = Modifier.padding(16.dp).testTag("NoResultsFound"),
           fontFamily = FontFamily(Font(R.font.montserrat_regular)),
           fontSize = 16.sp,
           fontWeight = FontWeight.Bold,
