@@ -429,9 +429,9 @@ fun Map(
                               OutlinedTextFieldDefaults.colors(
                                   unfocusedTextColor = Color.White,
                                   unfocusedBorderColor =
-                                      if (isTitleEmpty) md_theme_light_error else md_theme_grey,
+                                      if (isDescriptionEmpty) md_theme_light_error else md_theme_grey,
                                   unfocusedLabelColor =
-                                      if (isTitleEmpty) md_theme_light_error else md_theme_grey,
+                                      if (isDescriptionEmpty) md_theme_light_error else md_theme_grey,
                                   cursorColor = Color.White,
                                   focusedBorderColor = Color.White,
                                   focusedLabelColor = Color.White,
