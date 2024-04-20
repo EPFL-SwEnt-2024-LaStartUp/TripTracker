@@ -19,7 +19,9 @@ import kotlinx.coroutines.launch
 class MapViewModel(
     geocoder: NominatimApi = NominatimApi(),
     pathList: MutableLiveData<ItineraryList> = MutableLiveData<ItineraryList>(),
-    repository: ItineraryRepository = ItineraryRepository()
+    repository: ItineraryRepository = ItineraryRepository(),
+    filteredPathList: MutableLiveData<Map<Itinerary, List<LatLng>>> =
+        MutableLiveData<Map<Itinerary, List<LatLng>>>()
 ) : ViewModel() {
 
   // geocoder with Nominatim API that allows to reverse decode the location
@@ -32,7 +34,7 @@ class MapViewModel(
 
   private val _pathList = pathList
 
-  val filteredPathList = MutableLiveData<Map<Itinerary, List<LatLng>>>()
+  val filteredPathList = filteredPathList
 
   /** Data class describing a selected Polyline */
   data class SelectedPolyline(val itinerary: Itinerary, val startLocation: LatLng)
