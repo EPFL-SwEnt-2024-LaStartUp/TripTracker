@@ -18,8 +18,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,8 +43,6 @@ fun UserProfileFollowing(
     userProfileViewModel: UserProfileViewModel,
     userProfile: UserProfile
 ) {
-  var following = userProfile.followers
-
   Scaffold(
       topBar = {
         Row(
@@ -79,7 +75,7 @@ fun UserProfileFollowing(
                             textAlign = TextAlign.Center,
                             letterSpacing = 0.5.sp,
                         ),
-                    modifier = Modifier.weight(1f).testTag("Following"))
+                    modifier = Modifier.weight(1f).testTag("FollowingTitle"))
                 // .padding(horizontal = 16.dp)
                 // modifier =
                 // Modifier.width(250.dp).height(37.dp).padding(5.dp).testTag("FollowingTitle"))
@@ -91,7 +87,7 @@ fun UserProfileFollowing(
       modifier = Modifier.fillMaxSize().testTag("FollowingScreen")) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
           // Display the list of following
-          FriendListView(userProfileViewModel, userProfile, following, false, innerPadding)
+          FriendListView(userProfileViewModel, userProfile, false)
         }
       }
 }

@@ -1,32 +1,35 @@
 package com.example.triptracker.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.profile.UserProfileList
 import com.example.triptracker.model.repository.UserProfileRepository
+import kotlinx.coroutines.launch
 
 /**
  * ViewModel for the UserProfile class This class is responsible for handling the data operations
  * for the UserProfile class
  */
-class UserProfileViewModel(
-    private val userProfileRepository: UserProfileRepository,
-    private val userProfileList: UserProfileList
-) {
+class UserProfileViewModel(private val userProfileRepository: UserProfileRepository): ViewModel() {
+    private var userProfileInstance = UserProfileList(listOf())
+    private var _userProfileList = MutableLiveData<List<UserProfile>>()
+    val userProfileList: LiveData<List<UserProfile>> = _userProfileList
+
+    // Search query LiveData
+    private val _searchQuery = MutableLiveData<String>("")
+    val searchQuery: LiveData<String>
+        get() = _searchQuery
+
+    init { viewModelScope.launch { fetchUserProfiles() } }
 
   /** This function gets all the user's profiles from the database. */
-  fun getAllUserProfilesFromDb() {
-    userProfileList.setUserProfileList(userProfileRepository.getAllUserProfiles())
+  fun fetchUserProfiles() {
+    userProfileInstance.setUserProfileList(userProfileRepository.getAllUserProfiles())
+      _userProfileList.value = userProfileInstance.getAllUserProfiles()
   }
-
-  //  /**
-  //   * This functions return the user profile corresponding to the mail
-  //   *
-  //   * @param mail : mail of the user profile to return
-  //   * @return user profile corresponding to the mail
-  //   */
-  //  fun getUserProfileFromDb(mail: String): UserProfile? {
-  //    return userProfileRepository.getUserProfile(mail)
-  //  }
 
   /**
    * This function adds a new user profile to the database.
@@ -178,4 +181,8 @@ class UserProfileViewModel(
   fun removeUserProfileInDb(mail: String) {
     userProfileRepository.removeUserProfile(mail)
   }
+
+    fun setSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
 }

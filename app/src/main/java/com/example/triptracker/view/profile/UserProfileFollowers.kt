@@ -19,7 +19,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.R
 import com.example.triptracker.model.profile.UserProfile
-import com.example.triptracker.model.profile.UserProfileList
 import com.example.triptracker.model.repository.UserProfileRepository
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
@@ -50,8 +48,6 @@ fun UserProfileFollowers(
     userProfileViewModel: UserProfileViewModel,
     userProfile: UserProfile
 ) {
-  var followers = userProfile.followers
-
   Scaffold(
       topBar = {
         Row(
@@ -97,9 +93,9 @@ fun UserProfileFollowers(
       },
       bottomBar = { NavigationBar(navigation) },
       modifier = Modifier.fillMaxSize().testTag("FollowersScreen")) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
+        Column(modifier = Modifier.padding(innerPadding).testTag("FollowersList")) {
           // Display the list of following
-          FriendListView(userProfileViewModel, userProfile, followers, false, innerPadding)
+          FriendListView(userProfileViewModel, userProfile,false)
         }
       }
 }
@@ -108,39 +104,47 @@ fun UserProfileFollowers(
 @Preview
 @Composable
 fun UserProfileFollowersPreview() {
-  val dummyFriend1 =
-      UserProfile(
-          mail = "1",
-          name = "Alice",
-          surname = "Smith",
-          birthdate = Date(2023, 10, 10),
-          pseudo = "AliceS",
-          profileImageUrl = "stupid-image-url.com",
-          following = emptyList(),
-          followers = emptyList())
+     val mockUser1 = UserProfile(
+        "1",
+        "Alice",
+        "Smith",
+        Date(2021, 1, 1),
+        "AliceS",
+        "stupid-image-url.com",
+        emptyList(),
+        emptyList()
+    )
 
-  val dummyFriend2 =
-      UserProfile(
-          mail = "2",
-          name = "Bob",
-          surname = "Johnson",
-          birthdate = Date(2021, 9, 13),
-          pseudo = "BobJ",
-          profileImageUrl = null,
-      )
+     val mockUser2 = UserProfile(
+        "2",
+        "Bob",
+        "Johnson",
+        Date(2021, 1, 1),
+        "BobJ",
+        null,
+        emptyList(),
+        emptyList()
+    )
 
-  val dummyUserProfile =
-      UserProfile(
-          mail = "3",
-          birthdate = Date(2022, 4, 11),
-          pseudo = "CharlieB",
-          followers = listOf(dummyFriend1, dummyFriend2),
-          following = listOf(dummyFriend1, dummyFriend2))
+     val mockUser3 = UserProfile(
+        "3",
+        "Charlie",
+        "Brown",
+        Date(2021, 1, 1),
+        "CharlieB",
+        null,
+        listOf(mockUser1, mockUser2),
+        listOf(mockUser1, mockUser2)
+    )
 
-  val dummyViewModel =
-      UserProfileViewModel(
-          UserProfileRepository(),
-          UserProfileList(listOf(dummyFriend1, dummyFriend2, dummyUserProfile)))
+     val mockUsers =
+        listOf(
+            mockUser1,
+            mockUser2,
+            mockUser3
+        )
+    val dummyViewModel =
+      UserProfileViewModel(UserProfileRepository())
 
   val navController = rememberNavController()
   val navigation = remember(navController) { Navigation(navController) }
@@ -148,5 +152,5 @@ fun UserProfileFollowersPreview() {
   UserProfileFollowers(
       navigation = navigation,
       userProfileViewModel = dummyViewModel,
-      userProfile = dummyUserProfile)
+      userProfile = mockUser3)
 }

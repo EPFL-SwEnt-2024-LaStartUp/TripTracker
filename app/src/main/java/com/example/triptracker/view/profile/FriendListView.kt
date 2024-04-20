@@ -1,7 +1,6 @@
 package com.example.triptracker.view.profile
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -39,22 +39,22 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
  * This composable function displays the user's followers or following list.
  *
  * @param userProfileViewModel : ViewModel for the UserProfile class
- * @param userList : List of user's profiles to display
+ * @param userProfile : the profile of the current user
  * @param followers : Boolean to determine if the list is for followers or following
  */
 @Composable
 fun FriendListView(
     userProfileViewModel: UserProfileViewModel,
     userProfile: UserProfile,
-    userList: List<UserProfile>,
     followers: Boolean,
-    padding: PaddingValues
 ) {
-  // Display the list of user's profiles
+    val friends = if(followers) { userProfile.followers } else { userProfile.following }
+
+    // Display the list of user's profiles
   LazyColumn(
       modifier = Modifier.fillMaxWidth().padding(15.dp),
   ) {
-    items(userList) { friend ->
+    items(friends) { friend ->
       // Display the user's profile
       Row(
           modifier = Modifier.height(70.dp).fillMaxWidth(),
@@ -133,7 +133,7 @@ fun RemoveFriendButton(remove: () -> Unit, undoRemove: () -> Unit, followers: Bo
                 containerColor = md_theme_light_secondaryContainer,
                 contentColor = md_theme_light_dark)
           },
-      modifier = Modifier.height(40.dp).width(120.dp)) {
+      modifier = Modifier.height(40.dp).width(120.dp).testTag(if (isRemoved) { "RemoveButton" } else { "UndoButton" })) {
         Text(
             text =
                 // Display the appropriate button text based on whether we are prompting

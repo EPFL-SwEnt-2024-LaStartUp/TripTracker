@@ -2,10 +2,9 @@ package com.example.triptracker.model.repository
 
 import android.util.Log
 import com.example.triptracker.model.profile.UserProfile
-import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.firestore
 import java.util.Date
 
 /**
@@ -13,10 +12,10 @@ import java.util.Date
  * for the UserProfile class It interacts with the Firebase Firestore to save, update, delete and
  * retrieve the user's profiles data
  */
-open class UserProfileRepository(private val db: FirebaseFirestore = Firebase.firestore) {
+open class UserProfileRepository {
 
   // Initialise the Firebase Firestore
-  // val db = Firebase.firestore
+  private val db = Firebase.firestore
 
   // Reference to the collection of user's profiles
   private val userProfileDb = db.collection("user_profiles")
@@ -50,15 +49,34 @@ open class UserProfileRepository(private val db: FirebaseFirestore = Firebase.fi
     return _userProfileList
   }
 
-  //    /**
-  //     * This function returns the user profile corresponding to the mail
-  //     *
-  //     * @param mail : mail of the user profile to return
-  //     * @return user profile corresponding to the mail
-  //     */
-  //    fun getUserProfile(mail: String): UserProfile? {
-  //
-  //    }
+      /**
+       * This function returns the user profile corresponding to the mail
+       *
+       * @param mail : mail of the user profile to return
+       * @return user profile corresponding to the mail
+       */
+      fun getUserProfile(mail: String): UserProfile? {
+            var userProfile: UserProfile? = null
+            userProfileDb
+                .document(mail)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document != null) {
+                        userProfile =
+                            UserProfile(
+                                document.id,
+                                document.data?.get("name") as String,
+                                document.data?.get("surname") as String,
+                                document.data?.get("birthdate") as Date,
+                                document.data?.get("pseudo") as String,
+                                document.data?.get("profileImageUrl") as String)
+                    } else {
+                        Log.d(TAG, "No such document")
+                    }
+                }
+                .addOnFailureListener { e -> Log.e(TAG, "Error getting user profile", e) }
+            return userProfile
+      }
 
   /**
    * This function converts the QuerySnapshot to a list of user's profiles.
