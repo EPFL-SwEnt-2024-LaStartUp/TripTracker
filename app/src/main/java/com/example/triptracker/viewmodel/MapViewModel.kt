@@ -61,8 +61,8 @@ class MapViewModel : ViewModel() {
    *
    * @return a map of the title of the itinerary and the route
    */
-  fun getAllPaths(): Map<String, List<LatLng>> {
-    return _pathList.value?.getAllItineraries()?.map { it.title to it.route }?.toMap() ?: emptyMap()
+  fun getAllPaths(pathList: MutableLiveData<ItineraryList> = _pathList): Map<String, List<LatLng>> {
+    return pathList.value?.getAllItineraries()?.map { it.title to it.route }?.toMap() ?: emptyMap()
   }
 
   /**
@@ -70,12 +70,12 @@ class MapViewModel : ViewModel() {
    *
    * @param latLngBounds : the visible region of the map
    */
-  fun getFilteredPaths(latLngBounds: LatLngBounds?, limit: Int = 10) {
+  fun getFilteredPaths(latLngBounds: LatLngBounds?, limit: Int = 10, pathList: MutableLiveData<ItineraryList> = _pathList) {
     if (latLngBounds == null) {
       filteredPathList.value = emptyMap()
     } else {
       filteredPathList.postValue(
-          _pathList.value
+        pathList.value
               ?.getFilteredItineraries(latLngBounds, limit)
               ?.map { it to it.route }
               ?.toMap() ?: emptyMap())
