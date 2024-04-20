@@ -184,6 +184,7 @@ dependencies {
   testImplementation("org.mockito:mockito-inline:2.13.0")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
+  // ----------       Firebase     ------------
   implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
   implementation("com.firebaseui:firebase-ui-auth:7.2.0")
   implementation("com.google.firebase:firebase-database-ktx:20.3.0")
