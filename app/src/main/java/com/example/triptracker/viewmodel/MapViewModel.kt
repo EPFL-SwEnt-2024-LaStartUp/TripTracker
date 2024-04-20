@@ -67,8 +67,8 @@ class MapViewModel(
    *
    * @return a map of the title of the itinerary and the route
    */
-  fun getAllPaths(): Map<String, List<LatLng>> {
-    return _pathList.value?.getAllItineraries()?.map { it.title to it.route }?.toMap() ?: emptyMap()
+  fun getAllPaths(pathList: MutableLiveData<ItineraryList> = _pathList): Map<String, List<LatLng>> {
+    return pathList.value?.getAllItineraries()?.map { it.title to it.route }?.toMap() ?: emptyMap()
   }
 
   /**
