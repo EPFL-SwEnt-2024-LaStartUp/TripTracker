@@ -16,17 +16,21 @@ import kotlinx.coroutines.launch
  * ViewModel for the MapOverview composable. It contains the city name state and the geocoder to
  * reverse decode the location.
  */
-class MapViewModel : ViewModel() {
+class MapViewModel(
+    geocoder: NominatimApi = NominatimApi(),
+    pathList: MutableLiveData<ItineraryList> = MutableLiveData<ItineraryList>(),
+    repository: ItineraryRepository = ItineraryRepository()
+) : ViewModel() {
 
   // geocoder with Nominatim API that allows to reverse decode the location
-  val geocoder = NominatimApi()
+  val geocoder = geocoder
 
   // state for the city name displayed at the top of the screen
   val cityNameState = mutableStateOf("")
 
-  private val repository = ItineraryRepository()
+  private val repository = repository
 
-  private val _pathList = MutableLiveData<ItineraryList>()
+  private val _pathList = pathList
 
   val filteredPathList = MutableLiveData<Map<Itinerary, List<LatLng>>>()
 
@@ -47,8 +51,8 @@ class MapViewModel : ViewModel() {
    * @param lat : latitude of the location
    * @param lon : longitude of the location
    */
-  fun reverseDecode(lat: Float, lon: Float, _geodecoder: NominatimApi = geocoder) {
-    _geodecoder.getCity(lat, lon) { cityName -> cityNameState.value = cityName }
+  fun reverseDecode(lat: Float, lon: Float) {
+    geocoder.getCity(lat, lon) { cityName -> cityNameState.value = cityName }
   }
 
   /** Get all itineraries from the database and update the pathList */
@@ -61,8 +65,8 @@ class MapViewModel : ViewModel() {
    *
    * @return a map of the title of the itinerary and the route
    */
-  fun getAllPaths(pathList: MutableLiveData<ItineraryList> = _pathList): Map<String, List<LatLng>> {
-    return pathList.value?.getAllItineraries()?.map { it.title to it.route }?.toMap() ?: emptyMap()
+  fun getAllPaths(): Map<String, List<LatLng>> {
+    return _pathList.value?.getAllItineraries()?.map { it.title to it.route }?.toMap() ?: emptyMap()
   }
 
   /**
@@ -70,12 +74,16 @@ class MapViewModel : ViewModel() {
    *
    * @param latLngBounds : the visible region of the map
    */
-  fun getFilteredPaths(latLngBounds: LatLngBounds?, limit: Int = 10, pathList: MutableLiveData<ItineraryList> = _pathList) {
+  fun getFilteredPaths(
+      latLngBounds: LatLngBounds?,
+      limit: Int = 10,
+      pathList: MutableLiveData<ItineraryList> = _pathList
+  ) {
     if (latLngBounds == null) {
       filteredPathList.value = emptyMap()
     } else {
       filteredPathList.postValue(
-        pathList.value
+          pathList.value
               ?.getFilteredItineraries(latLngBounds, limit)
               ?.map { it to it.route }
               ?.toMap() ?: emptyMap())
