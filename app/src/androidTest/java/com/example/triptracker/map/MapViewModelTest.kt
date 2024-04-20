@@ -1,7 +1,10 @@
 package com.example.triptracker.map
 
+import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.geocoder.NominatimApi
+import com.example.triptracker.model.itinerary.ItineraryList
+import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.viewmodel.MapViewModel
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
@@ -15,23 +18,30 @@ import org.junit.runner.RunWith
 class MapViewModelTest {
 
   private lateinit var viewModel: MapViewModel
+  @RelaxedMockK private lateinit var geocoder: NominatimApi
+  @RelaxedMockK private lateinit var pathList: MutableLiveData<ItineraryList>
+  @RelaxedMockK private lateinit var repo: ItineraryRepository
 
   @Before
   fun setUp() {
-    viewModel = MapViewModel()
+    geocoder = mockk(relaxed = true)
+    pathList = mockk(relaxed = true)
+    repo = mockk(relaxed = true)
+    every { pathList.postValue(any()) } returns Unit
+    viewModel = MapViewModel(geocoder, pathList, repo)
   }
 
   @Test
   fun testReverseDecode() {
-    val geodecoder = mockk<NominatimApi>(relaxed = true)
-    every { geodecoder.getCity(any(), any(), callback=any()) } returns Unit
-    every { geodecoder.decode(any()) {} } returns Unit
-    every { geodecoder.getPOI(any(), any()) {} } returns Unit
-    every { geodecoder. reverseDecodeAddress(any(), any()) {} } returns Unit
+    every { geocoder.getCity(any(), any(), any()) } returns Unit
+    every { geocoder.decode(any()) {} } returns Unit
+    every { geocoder.getPOI(any(), any()) {} } returns Unit
+    every { geocoder. reverseDecodeAddress(any(), any()) {} } returns Unit
+
     assert(viewModel.cityNameState.value == "")
-    viewModel.reverseDecode(45.75777F, 4.831964F, geodecoder)
-    verify {geodecoder.getCity(any(), any(), any()) }
-    //assert(viewModel.cityNameState.value == "Lyon")
+    viewModel.reverseDecode(45.75777F, 4.831964F)
+    verify { geocoder.getCity(any(), any(), any()) }
+    // assert(viewModel.cityNameState.value == "Lyon")
 
   }
 
