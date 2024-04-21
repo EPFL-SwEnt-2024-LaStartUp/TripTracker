@@ -2,6 +2,7 @@ package com.example.triptracker.map
 
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.triptracker.itinerary.MockItineraryList
 import com.example.triptracker.model.geocoder.NominatimApi
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryList
@@ -12,7 +13,9 @@ import com.google.android.gms.maps.model.LatLngBounds
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
@@ -37,17 +40,12 @@ class MapViewModelTest {
   }
 
   @Test
-  fun viewModelCreationWorks() {
-    geocoder = mockk(relaxed = true)
-    assertNotNull(geocoder)
-    pathList = mockk(relaxed = true)
-    assertNotNull(pathList)
-    repo = mockk(relaxed = true)
-    assertNotNull(repo)
-    filteredPathList = mockk(relaxed = true)
-    assertNotNull(filteredPathList)
-    viewModel = MapViewModel(geocoder, pathList, repo, filteredPathList)
-    assertNotNull(viewModel)
+  fun testConstructor() {
+    // Create an instance of MapViewModel without mocked dependencies but the one using the DB
+    val newViewModel = MapViewModel(repository = repo)
+
+    // Verify that the dependencies are properly initialized
+    assertNotNull(newViewModel)
   }
 
   @Test
@@ -60,24 +58,58 @@ class MapViewModelTest {
   }
 
   @Test
+  fun testSelectedPolyline() {
+    val itineraryList = MockItineraryList()
+    val polyline =
+        MapViewModel.SelectedPolyline(itineraryList.getItineraries()[0], LatLng(0.0, 0.0))
+    assertNotNull(polyline)
+    assertEquals(polyline.itinerary, itineraryList.getItineraries()[0])
+    assertEquals(polyline.startLocation, LatLng(0.0, 0.0))
+  }
+
+  @Test
   fun testReverseDecode() {
-    assert(viewModel.cityNameState.value == "")
+
+    val cityName = "Lyon"
+
+    val callbackSlot = slot<(String) -> Unit>()
+    every { geocoder.getCity(any(), any(), capture(callbackSlot)) } answers
+        {
+          callbackSlot.captured(cityName)
+        }
+
+    // At the beginning empty
+    assertEquals("", viewModel.cityNameState.value)
     viewModel.reverseDecode(45.75777F, 4.831964F)
-    verify { geocoder.getCity(any(), any(), any()) }
+    verify { geocoder.getCity(45.75777F, 4.831964F, any()) }
+
+    // After the callback, contains "Lyon"
+    assertEquals(cityName, viewModel.cityNameState.value)
   }
 
   @Test
   fun testGetAllPaths() {
-    every { pathList.value?.getAllItineraries() } returns null
-    viewModel.getAllPaths()
-    verify { pathList.value?.getAllItineraries() }
+    val mockItineraryList = MockItineraryList()
+    val expectedResult = mockItineraryList.getItineraries().associate { it.title to it.route }
+
+    // Mock pathList.value to return null, so we can test the fallback to emptyMap()
+    every { pathList.value } returns null
+    val res1 = viewModel.getAllPaths()
+    verify { pathList.value }
+    assertEquals(emptyMap<String, List<LatLng>>(), res1)
+
+    every { pathList.value } returns ItineraryList(mockItineraryList.getItineraries())
+    val res2 = viewModel.getAllPaths()
+    verify { pathList.value }
+    assertEquals(expectedResult, res2)
   }
 
   @Test
   fun testGetFilteredPaths() {
     viewModel.getFilteredPaths(null)
-    every { pathList.value } returns null
+    every { pathList.value } returns ItineraryList(listOf<Itinerary>())
     viewModel.getFilteredPaths(LatLngBounds(LatLng(0.0, 0.0), LatLng(0.0, 0.0)))
     verify { filteredPathList.postValue(allAny()) }
+    verify { pathList.value }
   }
 }
