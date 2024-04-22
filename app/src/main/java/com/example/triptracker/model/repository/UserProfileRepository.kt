@@ -2,10 +2,10 @@ package com.example.triptracker.model.repository
 
 import android.util.Log
 import com.example.triptracker.model.profile.UserProfile
-import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.firestore
 import java.util.Date
 
 /**
