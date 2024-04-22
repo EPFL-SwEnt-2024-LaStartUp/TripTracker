@@ -26,15 +26,18 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Map
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -99,6 +102,9 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
   // Variables to store the state of the selected pictures
   var selectedPictures by remember { mutableStateOf<List<Uri?>>(emptyList()) }
 
+  // Variable to store the state of the alert
+  var alertIsDisplayed by remember { mutableStateOf(false) }
+
   // Launcher for the pick multiple media activity
   val pickMultipleMedia =
       rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) {
@@ -132,11 +138,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                 // Close button
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                   IconButton(
-                      modifier = Modifier.padding(10.dp),
-                      onClick = {
-                        boxDisplayed = false
-                        onDismiss()
-                      }) {
+                      modifier = Modifier.padding(10.dp), onClick = { alertIsDisplayed = true }) {
                         Icon(
                             imageVector = Icons.Outlined.Close,
                             contentDescription = "Close",
@@ -289,6 +291,43 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                       InsertPictures(pickMultipleMedia = pickMultipleMedia, selectedPictures)
                     }
 
+                when (alertIsDisplayed) {
+                  true -> {
+                    AlertDialog(
+                        icon = { Icons.Filled.LocationOn },
+                        title = {
+                          androidx.compose.material3.Text(
+                              text = "Path incomplete or don't save this spot")
+                        },
+                        text = {
+                          Text(
+                              text =
+                                  "There are some missing informations and you are about to leave this page. Do you want to save the spot or dismiss it ?")
+                        },
+                        onDismissRequest = {
+                          alertIsDisplayed = false
+                          boxDisplayed = false
+                          onDismiss()
+                        },
+                        confirmButton = {
+                          TextButton(onClick = { alertIsDisplayed = false }) {
+                            Text("Stay on this page")
+                          }
+                        },
+                        dismissButton = {
+                          TextButton(
+                              onClick = {
+                                alertIsDisplayed = false
+                                boxDisplayed = false
+                                onDismiss()
+                              }) {
+                                Text("Dismiss")
+                              }
+                        })
+                  }
+                  false -> {}
+                }
+
                 // Save button that will upload the data to the DB once completed
                 Row(
                     modifier = Modifier.fillMaxWidth().fillMaxHeight().testTag("SaveButton"),
@@ -296,19 +335,31 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                     verticalAlignment = Alignment.Bottom) {
                       FilledTonalButton(
                           onClick = {
-                            // TODO save all the data on the DB ONLY WHEN everything is filled up
-                            Pin(
-                                latitude = position.latitude,
-                                longitude = position.longitude,
-                                name = location,
-                                description = description,
-                                image_url =
-                                    if (selectedPictures.isNotEmpty())
-                                        selectedPictures[0].toString()
-                                    else "" // TODO CHANGE THIS LATER TO A LIST IN THE DB
-                                )
-                            boxDisplayed = false
-                            onDismiss()
+                            if ((location.isEmpty() && recordViewModel.namePOI.value.isEmpty()) ||
+                                description.isEmpty()) {
+                              alertIsDisplayed = true
+                            } else {
+                              // Save the spot with the entered location
+                              if (location.isNotEmpty()) {
+                                saveSpot(
+                                    recordViewModel,
+                                    location,
+                                    description,
+                                    position,
+                                    selectedPictures)
+                                // Or save the spot with the location found by nominatim
+                              } else {
+                                saveSpot(
+                                    recordViewModel,
+                                    recordViewModel.namePOI.value,
+                                    description,
+                                    position,
+                                    selectedPictures)
+                              }
+                              alertIsDisplayed = false
+                              boxDisplayed = false
+                              onDismiss()
+                            }
                           },
                           modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp),
                           colors =
@@ -327,6 +378,30 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
             }
     false -> {}
   }
+}
+
+private fun saveSpot(
+    recordViewModel: RecordViewModel,
+    location: String,
+    description: String,
+    position: LatLng,
+    selectedPictures: List<Uri?>
+) {
+
+  val pin =
+      Pin(
+          latitude = position.latitude,
+          longitude = position.longitude,
+          name = location,
+          description = description,
+          image_url =
+              if (selectedPictures.isNotEmpty()) selectedPictures[0].toString()
+              else "" // TODO CHANGE THIS LATER TO A LIST IN THE DB
+          )
+
+  Log.d("Spot", pin.toString())
+
+  // TODO recordViewModel.addSpot(spot)
 }
 
 @Composable
