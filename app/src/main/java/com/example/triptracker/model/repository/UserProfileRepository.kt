@@ -50,15 +50,34 @@ open class UserProfileRepository(private val db: FirebaseFirestore = Firebase.fi
     return _userProfileList
   }
 
-  //    /**
-  //     * This function returns the user profile corresponding to the mail
-  //     *
-  //     * @param mail : mail of the user profile to return
-  //     * @return user profile corresponding to the mail
-  //     */
-  //    fun getUserProfile(mail: String): UserProfile? {
-  //
-  //    }
+  /**
+   * This function returns the user profile corresponding to the mail
+   *
+   * @param mail : mail of the user profile to return
+   * @return user profile corresponding to the mail
+   */
+  fun getUserProfile(mail: String): UserProfile? {
+    var userProfile: UserProfile? = null
+    userProfileDb
+        .document(mail)
+        .get()
+        .addOnSuccessListener { document ->
+          if (document != null) {
+            userProfile =
+                UserProfile(
+                    document.id,
+                    document.data?.get("name") as String,
+                    document.data?.get("surname") as String,
+                    document.data?.get("birthdate") as Date,
+                    document.data?.get("pseudo") as String,
+                    document.data?.get("profileImageUrl") as String)
+          } else {
+            Log.d(TAG, "No such document")
+          }
+        }
+        .addOnFailureListener { e -> Log.e(TAG, "Error getting user profile", e) }
+    return userProfile
+  }
 
   /**
    * This function converts the QuerySnapshot to a list of user's profiles.
