@@ -76,66 +76,15 @@ fun UserProfileFollowing(
                             letterSpacing = 0.5.sp,
                         ),
                     modifier = Modifier.weight(1f).testTag("FollowingTitle"))
-                // .padding(horizontal = 16.dp)
-                // modifier =
-                // Modifier.width(250.dp).height(37.dp).padding(5.dp).testTag("FollowingTitle"))
                 Box(modifier = Modifier.size(60.dp))
               }
             }
       },
       bottomBar = { NavigationBar(navigation) },
       modifier = Modifier.fillMaxSize().testTag("FollowingScreen")) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
+        Column(modifier = Modifier.padding(innerPadding).testTag("FollowingList")) {
           // Display the list of following
           FriendListView(userProfileViewModel, userProfile, false)
         }
       }
 }
-
-// TODO: remove this preview
-
-// @Preview
-// @Composable
-// fun UserProfileFollowingPreview() {
-//  val dummyFriend1 =
-//      UserProfile(
-//          mail = "1",
-//          name = "Alice",
-//          surname = "Smith",
-//          birthdate = Date(2023, 10, 10),
-//          pseudo = "AliceS",
-//          profileImageUrl = "stupid-image-url.com",
-//          following = emptyList(),
-//          followers = emptyList())
-//
-//  val dummyFriend2 =
-//      UserProfile(
-//          mail = "2",
-//          name = "Bob",
-//          surname = "Johnson",
-//          birthdate = Date(2021, 9, 13),
-//          pseudo = "BobJ",
-//          profileImageUrl = null,
-//      )
-//
-//  val dummyUserProfile =
-//      UserProfile(
-//          mail = "3",
-//          birthdate = Date(2022, 4, 11),
-//          pseudo = "CharlieB",
-//          followers = listOf(dummyFriend1, dummyFriend2),
-//          following = listOf(dummyFriend1, dummyFriend2))
-//
-//  val dummyViewModel =
-//      UserProfileViewModel(
-//          UserProfileRepository(),
-//          UserProfileList(listOf(dummyFriend1, dummyFriend2, dummyUserProfile)))
-//
-//  val navController = rememberNavController()
-//  val navigation = remember(navController) { Navigation(navController) }
-//
-//  UserProfileFollowing(
-//      navigation = navigation,
-//      userProfileViewModel = dummyViewModel,
-//      userProfile = dummyUserProfile)
-// }

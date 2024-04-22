@@ -13,22 +13,24 @@ import kotlinx.coroutines.launch
  * ViewModel for the UserProfile class This class is responsible for handling the data operations
  * for the UserProfile class
  */
-class UserProfileViewModel(private val userProfileRepository: UserProfileRepository): ViewModel() {
-    private var userProfileInstance = UserProfileList(listOf())
-    private var _userProfileList = MutableLiveData<List<UserProfile>>()
-    val userProfileList: LiveData<List<UserProfile>> = _userProfileList
+class UserProfileViewModel(private val userProfileRepository: UserProfileRepository) : ViewModel() {
+  private var userProfileInstance = UserProfileList(listOf())
+  private var _userProfileList = MutableLiveData<List<UserProfile>>()
+  val userProfileList: LiveData<List<UserProfile>> = _userProfileList
 
-    // Search query LiveData
-    private val _searchQuery = MutableLiveData<String>("")
-    val searchQuery: LiveData<String>
-        get() = _searchQuery
+  // Search query LiveData
+  private val _searchQuery = MutableLiveData<String>("")
+  val searchQuery: LiveData<String>
+    get() = _searchQuery
 
-    init { viewModelScope.launch { fetchUserProfiles() } }
+  init {
+    viewModelScope.launch { fetchUserProfiles() }
+  }
 
   /** This function gets all the user's profiles from the database. */
   fun fetchUserProfiles() {
     userProfileInstance.setUserProfileList(userProfileRepository.getAllUserProfiles())
-      _userProfileList.value = userProfileInstance.getAllUserProfiles()
+    _userProfileList.value = userProfileInstance.getAllUserProfiles()
   }
 
   /**
@@ -182,7 +184,7 @@ class UserProfileViewModel(private val userProfileRepository: UserProfileReposit
     userProfileRepository.removeUserProfile(mail)
   }
 
-    fun setSearchQuery(query: String) {
-        _searchQuery.value = query
-    }
+  fun setSearchQuery(query: String) {
+    _searchQuery.value = query
+  }
 }

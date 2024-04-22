@@ -48,11 +48,16 @@ fun FriendListView(
     userProfile: UserProfile,
     followers: Boolean,
 ) {
-    val friends = if(followers) { userProfile.followers } else { userProfile.following }
+  val friends =
+      if (followers) {
+        userProfile.followers
+      } else {
+        userProfile.following
+      }
 
-    // Display the list of user's profiles
+  // Display the list of user's profiles
   LazyColumn(
-      modifier = Modifier.fillMaxWidth().padding(15.dp),
+      modifier = Modifier.fillMaxWidth().padding(15.dp).testTag("FriendListScreen"),
   ) {
     items(friends) { friend ->
       // Display the user's profile
@@ -86,20 +91,22 @@ fun FriendListView(
                 )
               }
         }
-        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
-          if (followers) {
-            // Display the remove follower button
-            RemoveFriendButton(
-                remove = { userProfileViewModel.removeFollowerInDb(userProfile, friend) },
-                undoRemove = { userProfileViewModel.addFollowersInDb(userProfile, friend) },
-                followers = true)
-          } else {
-            RemoveFriendButton(
-                remove = { userProfileViewModel.removeFollowingInDb(userProfile, friend) },
-                undoRemove = { userProfileViewModel.addFollowingInDb(userProfile, friend) },
-                followers = false)
-          }
-        }
+        Column(
+            modifier = Modifier.fillMaxWidth().testTag("Friend"),
+            horizontalAlignment = Alignment.End) {
+              if (followers) {
+                // Display the remove follower button
+                RemoveFriendButton(
+                    remove = { userProfileViewModel.removeFollowerInDb(userProfile, friend) },
+                    undoRemove = { userProfileViewModel.addFollowersInDb(userProfile, friend) },
+                    followers = true)
+              } else {
+                RemoveFriendButton(
+                    remove = { userProfileViewModel.removeFollowingInDb(userProfile, friend) },
+                    undoRemove = { userProfileViewModel.addFollowingInDb(userProfile, friend) },
+                    followers = false)
+              }
+            }
       }
     }
   }
@@ -133,15 +140,19 @@ fun RemoveFriendButton(remove: () -> Unit, undoRemove: () -> Unit, followers: Bo
                 containerColor = md_theme_light_secondaryContainer,
                 contentColor = md_theme_light_dark)
           },
-      modifier = Modifier.height(40.dp).width(120.dp).testTag(if (isRemoved) { "RemoveButton" } else { "UndoButton" })) {
+      modifier =
+          Modifier.height(40.dp)
+              .width(120.dp)
+              .testTag("RemoveButton")) { // .testTag(if (isRemoved) { "RemoveButton" } else {
+        // "UndoButton" })) {
         Text(
             text =
                 // Display the appropriate button text based on whether we are prompting
                 // follower or following and whether the friend have been removed or not
-                if (followers && isRemoved) "Follow" // when displaying removed follower
-                else if (followers && !isRemoved) "Following" // when displaying follower
-                else if (!followers && isRemoved) "Undo" // when displaying removed following
-                else "Remove" // when displaying following
+                if (!followers && isRemoved) "Follow" // when displaying removed following
+                else if (!followers && !isRemoved) "Following" // when displaying following
+                else if (followers && isRemoved) "Undo" // when displaying removed followers
+                else "Remove" // when displaying followers
             )
       }
 }

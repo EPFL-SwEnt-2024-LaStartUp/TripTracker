@@ -1,15 +1,11 @@
 package com.example.triptracker.userProfile
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.repository.UserProfileRepository
 import com.example.triptracker.screens.userProfile.UserProfileFollowersScreen
 import com.example.triptracker.view.Navigation
-import com.example.triptracker.view.Route
-import com.example.triptracker.view.TopLevelDestination
 import com.example.triptracker.view.profile.UserProfileFollowers
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import io.github.kakaocup.compose.node.element.ComposeScreen
@@ -24,58 +20,92 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class UserProfileFollowersTest {
-    @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    @get:Rule val mockkRule = MockKRule(this)
+  @get:Rule val mockkRule = MockKRule(this)
 
-    @RelaxedMockK lateinit var mockNav: Navigation
-    @RelaxedMockK private lateinit var mockViewModel: UserProfileViewModel
-    @RelaxedMockK private lateinit var mockUserProfileRepository: UserProfileRepository
+  @RelaxedMockK lateinit var mockNav: Navigation
+  @RelaxedMockK private lateinit var mockViewModel: UserProfileViewModel
+  @RelaxedMockK private lateinit var mockUserProfileRepository: UserProfileRepository
 
-    private val mockList = MockUserList()
-    private val mockUserProfiles = mockList.getUserProfiles()
+  private val mockList = MockUserList()
+  private val mockUserProfiles = mockList.getUserProfiles()
 
-    @Before
-    fun setUp() {// Mocking necessary components
-        mockNav = mockk(relaxed = true)
-        mockUserProfileRepository = mockk(relaxed = true)
-        mockViewModel = mockk(relaxed = true)
-
-        // Log.d("ItineraryList", mockViewModel.itineraryList.value.toString())
-        every { mockNav.getTopLevelDestinations()[0] } returns
-                TopLevelDestination(Route.HOME, Icons.Outlined.Home, "Home")
-    }
-  @Test
-  fun componentsAreCorrectlyDisplayed() {
-      // Have to repeat code to have specific mock data for each test!!
-      every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
-      every { mockViewModel.userProfileList } returns MutableLiveData(mockUserProfiles)
-      // Setting up the test composition
-      composeTestRule.setContent { UserProfileFollowers(navigation = mockNav, userProfileViewModel = mockViewModel, userProfile = mockList.getUserProfiles()[2]) }
-      ComposeScreen.onComposeScreen<UserProfileFollowersScreen>(composeTestRule) {
-          // Test the UI elements
-          followersTitle {
-              assertIsDisplayed()
-              assertTextEquals("Followers")
-          }
-          goBackButton {
-              assertIsDisplayed()
-              assertHasClickAction()
-          }
-            followersList {
-                assertIsDisplayed()
-            }
-//          removeButton {
-//              assertIsDisplayed()
-//              assertIsEnabled()
-//              assertTextEquals("Remove")
-//          }
-//            undoButton {
-//                assertIsDisplayed()
-//                assertIsNotEnabled()
-//                assertTextEquals("Undo")
-//            }
-      }
+  @Before
+  fun setUp() { // Mocking necessary components
+    mockNav = mockk(relaxed = true)
+    mockUserProfileRepository = mockk(relaxed = true)
+    mockViewModel = mockk(relaxed = true)
   }
 
+  @Test
+  fun componentsAreCorrectlyDisplayed() {
+    every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
+    every { mockViewModel.userProfileList } returns MutableLiveData(mockUserProfiles)
+    // Setting up the test composition
+    composeTestRule.setContent {
+      UserProfileFollowers(
+          navigation = mockNav,
+          userProfileViewModel = mockViewModel,
+          userProfile = mockList.getUserProfiles()[2])
+    }
+    ComposeScreen.onComposeScreen<UserProfileFollowersScreen>(composeTestRule) {
+      // Test the UI elements
+      followersTitle {
+        assertIsDisplayed()
+        assertTextEquals("Followers")
+      }
+      goBackButton {
+        assertIsDisplayed()
+        assertHasClickAction()
+      }
+      followersList { assertIsDisplayed() }
+      followerProfile { assertIsDisplayed() }
+    }
+  }
+
+  @Test
+  fun removeButtonWorks() {
+    every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
+    every { mockViewModel.userProfileList } returns MutableLiveData(mockUserProfiles)
+    // Setting up the test composition
+    composeTestRule.setContent {
+      UserProfileFollowers(
+          navigation = mockNav,
+          userProfileViewModel = mockViewModel,
+          userProfile = mockList.getUserProfiles()[2])
+    }
+    ComposeScreen.onComposeScreen<UserProfileFollowersScreen>(composeTestRule) {
+      removeButton {
+        assertIsDisplayed()
+        assertTextEquals("Remove")
+        assertHasClickAction()
+        performClick()
+        assertTextEquals("Undo")
+        performClick()
+        assertTextEquals("Remove")
+      }
+    }
+  }
+
+  @Test
+  fun backButtonWorks() {
+    every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
+    every { mockViewModel.userProfileList } returns MutableLiveData(mockUserProfiles)
+    // Setting up the test composition
+    composeTestRule.setContent {
+      UserProfileFollowers(
+          navigation = mockNav,
+          userProfileViewModel = mockViewModel,
+          userProfile = mockList.getUserProfiles()[2])
+    }
+    ComposeScreen.onComposeScreen<UserProfileFollowersScreen>(composeTestRule) {
+      // Test the UI elements
+      goBackButton {
+        assertIsDisplayed()
+        assertHasClickAction()
+        performClick()
+      }
+    }
+  }
 }

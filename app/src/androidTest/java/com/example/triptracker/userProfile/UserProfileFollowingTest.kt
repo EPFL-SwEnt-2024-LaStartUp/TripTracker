@@ -36,22 +36,28 @@ class UserProfileFollowingTest {
   private val mockUserProfiles = mockList.getUserProfiles()
 
   @Before
-  fun setUp() {// Mocking necessary components
+  fun setUp() { // Mocking necessary components
     mockNav = mockk(relaxed = true)
     mockUserProfileRepository = mockk(relaxed = true)
     mockViewModel = mockk(relaxed = true)
 
     // Log.d("ItineraryList", mockViewModel.itineraryList.value.toString())
     every { mockNav.getTopLevelDestinations()[0] } returns
-            TopLevelDestination(Route.HOME, Icons.Outlined.Home, "Home")
+        TopLevelDestination(Route.HOME, Icons.Outlined.Home, "Home")
   }
+
   @Test
   fun componentsAreCorrectlyDisplayed() {
     // Have to repeat code to have specific mock data for each test!!
     every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
     every { mockViewModel.userProfileList } returns MutableLiveData(mockUserProfiles)
     // Setting up the test composition
-    composeTestRule.setContent { UserProfileFollowing(navigation = mockNav, userProfileViewModel = mockViewModel, userProfile = mockList.getUserProfiles()[2]) }
+    composeTestRule.setContent {
+      UserProfileFollowing(
+          navigation = mockNav,
+          userProfileViewModel = mockViewModel,
+          userProfile = mockList.getUserProfiles()[2])
+    }
     ComposeScreen.onComposeScreen<UserProfileFollowingScreen>(composeTestRule) {
       // Test the UI elements
       followingTitle {
@@ -62,20 +68,54 @@ class UserProfileFollowingTest {
         assertIsDisplayed()
         assertHasClickAction()
       }
-      followingList {
-        assertIsDisplayed()
-      }
+      followingList { assertIsDisplayed() }
+      followingProfile { assertIsDisplayed() }
+    }
+  }
+
+  @Test
+  fun removeButtonWorks() {
+    // Have to repeat code to have specific mock data for each test!!
+    every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
+    every { mockViewModel.userProfileList } returns MutableLiveData(mockUserProfiles)
+    // Setting up the test composition
+    composeTestRule.setContent {
+      UserProfileFollowing(
+          navigation = mockNav,
+          userProfileViewModel = mockViewModel,
+          userProfile = mockList.getUserProfiles()[2])
+    }
+    ComposeScreen.onComposeScreen<UserProfileFollowingScreen>(composeTestRule) {
       removeButton {
         assertIsDisplayed()
-        assertIsEnabled()
-        assertTextEquals("Remove")
-      }
-      undoButton {
-        assertIsDisplayed()
-        assertIsNotEnabled()
-        assertTextEquals("Undo")
+        assertTextEquals("Following")
+        assertHasClickAction()
+        performClick()
+        assertTextEquals("Follow")
+        performClick()
+        assertTextEquals("Following")
       }
     }
   }
 
+  @Test
+  fun backButtonWorks() {
+    every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
+    every { mockViewModel.userProfileList } returns MutableLiveData(mockUserProfiles)
+    // Setting up the test composition
+    composeTestRule.setContent {
+      UserProfileFollowing(
+          navigation = mockNav,
+          userProfileViewModel = mockViewModel,
+          userProfile = mockList.getUserProfiles()[2])
+    }
+    ComposeScreen.onComposeScreen<UserProfileFollowingScreen>(composeTestRule) {
+      // Test the UI elements
+      goBackButton {
+        assertIsDisplayed()
+        assertHasClickAction()
+        performClick()
+      }
+    }
+  }
 }
