@@ -3,7 +3,6 @@ package com.example.triptracker.model.repository
 import android.util.Log
 import com.example.triptracker.model.profile.UserProfile
 import com.google.firebase.Firebase
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
 import java.util.Date
@@ -13,10 +12,10 @@ import java.util.Date
  * for the UserProfile class It interacts with the Firebase Firestore to save, update, delete and
  * retrieve the user's profiles data
  */
-open class UserProfileRepository(private val db: FirebaseFirestore = Firebase.firestore) {
+open class UserProfileRepository {
 
   // Initialise the Firebase Firestore
-  // val db = Firebase.firestore
+  private val db = Firebase.firestore
 
   // Reference to the collection of user's profiles
   private val userProfileDb = db.collection("user_profiles")
