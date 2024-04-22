@@ -26,6 +26,11 @@ class RecordViewModel : ViewModel() {
   // Boolean state representing whether the recording is paused
   val isPaused = mutableStateOf(false)
 
+  // Boolean state representing whether the description is done or not
+  private val inDescription = mutableStateOf(false)
+  val description = mutableStateOf("")
+  val title = mutableStateOf("")
+
   // Private mutable list of LatLng points
   private var _latLongList = mutableListOf<LatLng>()
   // Public immutable list of LatLng points
@@ -40,6 +45,9 @@ class RecordViewModel : ViewModel() {
 
   // Dropdown menu for POI name
   val displayNameDropDown = mutableStateOf("")
+
+  // AddSpotWindow
+  var addSpotClicked = mutableStateOf(false)
 
   /** Starts the recording. Sets the start time to the current time. */
   fun startRecording() {
@@ -103,6 +111,26 @@ class RecordViewModel : ViewModel() {
   fun resumeRecording() {
     startTime.longValue += System.currentTimeMillis() - endTime.longValue
     isPaused.value = false
+  }
+
+  /** Starts the description phase. */
+  fun startDescription() {
+    inDescription.value = true
+  }
+  /** Stops the description phase. */
+  fun stopDescription() {
+    inDescription.value = false
+    description.value = ""
+    title.value = ""
+  }
+
+  /**
+   * Checks if the recording is in the description phase.
+   *
+   * @return Boolean indicating whether the recording is in the description phase.
+   */
+  fun isInDescription(): Boolean {
+    return inDescription.value
   }
 
   /**

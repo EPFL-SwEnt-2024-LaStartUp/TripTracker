@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -71,6 +72,7 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
               val home = navigation.getTopLevelDestinations()[0].route
               navigation.navController.navigate(home)
             },
+            viewModel = homeViewModel,
             onSearchActivated = { isActive -> isSearchActive = isActive },
             navigation = navigation,
             isNoResultFound = isNoResultFound)
@@ -78,10 +80,10 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
       bottomBar = { NavigationBar(navigation) },
       modifier = Modifier.testTag("HomeScreen")) { innerPadding ->
         when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
-          null -> {
+          emptyList<Itinerary>() -> {
             Text(
                 text = "You do not have any itineraries yet.",
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(16.dp).testTag("NoItinerariesText"),
                 fontSize = 18.sp)
           }
           else -> {
@@ -127,9 +129,7 @@ fun SearchBar(
 
   androidx.compose.material3.SearchBar(
       modifier =
-          Modifier.fillMaxWidth()
-              .padding(horizontal = 30.dp, vertical = 5.dp)
-              .testTag("SearchItinerary"),
+          Modifier.fillMaxWidth().padding(horizontal = 30.dp, vertical = 5.dp).testTag("searchBar"),
       query = searchText,
       onQueryChange = { newText ->
         searchText = newText
@@ -149,22 +149,20 @@ fun SearchBar(
         }
       },
       placeholder = {
-        Row {
-          Text(
-              "Search for an itinerary",
-              modifier = Modifier.weight(1f).padding(start = 10.dp),
-              textAlign = TextAlign.Center,
-              fontFamily = FontFamily(Font(R.font.montserrat_bold)),
-              fontSize = 21.sp,
-              fontWeight = FontWeight.Medium,
-              letterSpacing = 0.15.sp,
-              color = md_theme_grey)
-        }
+        Text(
+            "Search for an itinerary",
+            modifier = Modifier.padding(start = 10.dp).testTag("searchBarText"),
+            textAlign = TextAlign.Center,
+            fontFamily = FontFamily(Font(R.font.montserrat_bold)),
+            fontSize = 21.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 0.15.sp,
+            color = md_theme_grey)
       },
       leadingIcon = {
         if (isActive) {
           androidx.compose.material.Icon(
-              modifier = Modifier.clickable { onBackClicked() },
+              modifier = Modifier.clickable { onBackClicked() }.testTag("BackButton"),
               imageVector = Icons.AutoMirrored.Filled.ArrowBack,
               contentDescription = "Back")
         } else {
@@ -178,14 +176,15 @@ fun SearchBar(
           androidx.compose.material.Icon(
               modifier =
                   Modifier.clickable {
-                    // Clear the text field
-                    searchText = ""
-                    viewModel.setSearchQuery("")
-                    // TODO: For now when clearing the text, it loses focus and exits the
-                    // "search mode"
-                    // we need to find a way to keep the search bar active even when the text is
-                    // cleared
-                  },
+                        // Clear the text field
+                        searchText = ""
+                        viewModel.setSearchQuery("")
+                        // TODO: For now when clearing the text, it loses focus and exits the
+                        // "search mode"
+                        // we need to find a way to keep the search bar active even when the text is
+                        // cleared
+                      }
+                      .testTag("ClearButton"),
               imageVector = Icons.Default.Close,
               contentDescription = "Clear text field")
         }
@@ -195,7 +194,7 @@ fun SearchBar(
     if (isNoResultFound) {
       Text(
           "No results found",
-          modifier = Modifier.padding(16.dp),
+          modifier = Modifier.padding(16.dp).testTag("NoResultsFound"),
           fontFamily = FontFamily(Font(R.font.montserrat_regular)),
           fontSize = 16.sp,
           fontWeight = FontWeight.Bold,
@@ -228,7 +227,10 @@ fun SearchBar(
 fun ItineraryItem(itinerary: Itinerary, onItineraryClick: (String) -> Unit) {
   Row(
       modifier =
-          Modifier.fillMaxWidth().clickable { onItineraryClick(itinerary.id) }.padding(16.dp)) {
+          Modifier.fillMaxWidth()
+              .clickable { onItineraryClick(itinerary.id) }
+              .padding(16.dp)
+              .testTag("ItineraryItem")) {
         Text(text = itinerary.title, style = MaterialTheme.typography.bodyMedium)
       }
 }

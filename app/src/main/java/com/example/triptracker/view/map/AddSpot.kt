@@ -79,7 +79,7 @@ import com.google.android.gms.maps.model.LatLng
  * @param recordViewModel: RecordViewModel
  * @param latLng: LatLng at where the spot is going to be added
  */
-fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
+fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> Unit = {}) {
 
   // Variables to store the state of the add spot box
   var boxDisplayed by remember { mutableStateOf(true) }
@@ -114,7 +114,10 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
       }
 
   // Get the point of interest of the current location if it exists
-  LaunchedEffect(Unit) { recordViewModel.getPOI(latLng) }
+  LaunchedEffect(Unit) {
+    recordViewModel.getPOI(latLng)
+    Log.d("POI", recordViewModel.namePOI.value)
+  }
 
   when (boxDisplayed) {
     true ->
@@ -129,7 +132,11 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
                 // Close button
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                   IconButton(
-                      modifier = Modifier.padding(10.dp), onClick = { boxDisplayed = false }) {
+                      modifier = Modifier.padding(10.dp),
+                      onClick = {
+                        boxDisplayed = false
+                        onDismiss()
+                      }) {
                         Icon(
                             imageVector = Icons.Outlined.Close,
                             contentDescription = "Close",
@@ -172,7 +179,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
                                   .fillMaxWidth()
                                   .testTag("LocationText"),
                           value =
-                              if (recordViewModel.namePOI.value.isEmpty() || !isError) location
+                              if (recordViewModel.namePOI.value.isEmpty() && !isError) location
                               else recordViewModel.namePOI.value,
                           onValueChange = {
                             location = it
@@ -301,6 +308,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng) {
                                     else "" // TODO CHANGE THIS LATER TO A LIST IN THE DB
                                 )
                             boxDisplayed = false
+                            onDismiss()
                           },
                           modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp),
                           colors =
@@ -438,6 +446,6 @@ fun InsertPictures(
 @Preview
 @Composable
 fun AddSpotPreview() {
-  //  AddSpot(RecordViewModel(), LatLng(46.519053, 6.568287))
-  AddSpot(RecordViewModel(), LatLng(46.519879, 6.560632))
+  AddSpot(RecordViewModel(), LatLng(46.519053, 6.568287))
+  //  AddSpot(RecordViewModel(), LatLng(46.519879, 6.560632))
 }
