@@ -110,4 +110,72 @@ class UserProfileViewModelTest {
       Log.d("FirebaseConnection - UserProfileRepository", "User profile removed successfully")
     }
   }
+
+  @Test
+  fun addFollowersInDbTest() {
+    every { mockUserProfileRepository.updateUserProfile(any()) } answers
+        {
+          Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
+        }
+
+    val mockViewModel = UserProfileViewModel(mockUserProfileRepository)
+    val user = mockList.getUserProfiles()[0]
+    val follower = mockList.getUserProfiles()[1]
+
+    mockViewModel.addFollowersInDb(user, follower)
+    verify {
+      Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
+    }
+  }
+
+  @Test
+  fun addFollowingInDbTest() {
+    every { mockUserProfileRepository.updateUserProfile(any()) } answers
+        {
+          Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
+        }
+
+    val mockViewModel = UserProfileViewModel(mockUserProfileRepository)
+    val user = mockList.getUserProfiles()[0]
+    val following = mockList.getUserProfiles()[1]
+
+    mockViewModel.addFollowingInDb(user, following)
+    verify {
+      Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
+    }
+  }
+
+  @Test
+  fun removeFollowerInDbTest() {
+    every { mockUserProfileRepository.updateUserProfile(any()) } answers
+        {
+          Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
+        }
+
+    val mockViewModel = UserProfileViewModel(mockUserProfileRepository)
+    val user = mockList.getUserProfiles()[0]
+    val follower = mockList.getUserProfiles()[1]
+
+    mockViewModel.removeFollowerInDb(user, follower)
+    verify {
+      Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
+    }
+  }
+
+  @Test
+  fun removeFollowingInDbTest() {
+    every { mockUserProfileRepository.updateUserProfile(any()) } answers
+        {
+          Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
+        }
+
+    val mockViewModel = UserProfileViewModel(mockUserProfileRepository)
+    val user = mockList.getUserProfiles()[0]
+    val following = mockList.getUserProfiles()[1]
+
+    mockViewModel.removeFollowingInDb(user, following)
+    verify {
+      Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
+    }
+  }
 }
