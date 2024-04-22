@@ -10,6 +10,7 @@ import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.viewmodel.MapViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
@@ -22,7 +23,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class MapViewModelTest {
+class MapViewModelTest : TestCase() {
 
   private lateinit var viewModel: MapViewModel
   @RelaxedMockK private lateinit var geocoder: NominatimApi
