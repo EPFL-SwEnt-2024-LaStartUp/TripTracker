@@ -58,8 +58,11 @@ import com.google.maps.android.compose.rememberCameraPositionState
  * the user's location. Needs the context of the app in order to ask for location permission and
  * access location.
  *
- * @param mapViewModel: The view model of the map
+ * @param mapViewModel: The view model of the map (optional)
  * @param context: The context of the app (needed for location permission and real time location)
+ * @param navigation: The app navigation instance
+ * @param checkLocationPermission: Boolean whether to check or not the location permission for tests
+ *   purposes (optional)
  */
 fun MapOverview(
     mapViewModel: MapViewModel = MapViewModel(),
