@@ -3,7 +3,6 @@ package com.example.triptracker.userProfile
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.repository.UserProfileRepository
 import com.example.triptracker.screens.userProfile.UserProfileFollowingScreen
@@ -50,7 +49,7 @@ class UserProfileFollowingTest {
   fun componentsAreCorrectlyDisplayed() {
     // Have to repeat code to have specific mock data for each test!!
     every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
-    every { mockViewModel.userProfileList } returns MutableLiveData(mockUserProfiles)
+    every { mockViewModel.getUserProfileList() } returns mockUserProfiles
     // Setting up the test composition
     composeTestRule.setContent {
       UserProfileFollowing(
@@ -77,7 +76,7 @@ class UserProfileFollowingTest {
   fun removeButtonWorks() {
     // Have to repeat code to have specific mock data for each test!!
     every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
-    every { mockViewModel.userProfileList } returns MutableLiveData(mockUserProfiles)
+    every { mockViewModel.getUserProfileList() } returns mockUserProfiles
     // Setting up the test composition
     composeTestRule.setContent {
       UserProfileFollowing(
@@ -101,7 +100,7 @@ class UserProfileFollowingTest {
   @Test
   fun backButtonWorks() {
     every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
-    every { mockViewModel.userProfileList } returns MutableLiveData(mockUserProfiles)
+    every { mockViewModel.getUserProfileList() } returns mockUserProfiles
     // Setting up the test composition
     composeTestRule.setContent {
       UserProfileFollowing(

@@ -57,12 +57,17 @@ fun FriendListView(
 
   // Display the list of user's profiles
   LazyColumn(
-      modifier = Modifier.fillMaxWidth().padding(15.dp).testTag("FriendListScreen"),
+      modifier = Modifier
+          .fillMaxWidth()
+          .padding(15.dp)
+          .testTag("FriendListScreen"),
   ) {
     items(friends) { friend ->
       // Display the user's profile
       Row(
-          modifier = Modifier.height(70.dp).fillMaxWidth(),
+          modifier = Modifier
+              .height(70.dp)
+              .fillMaxWidth(),
       ) {
         Column(modifier = Modifier.fillMaxHeight()) {
           Text(
@@ -92,7 +97,9 @@ fun FriendListView(
               }
         }
         Column(
-            modifier = Modifier.fillMaxWidth().testTag("Friend"),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("Friend"),
             horizontalAlignment = Alignment.End) {
               if (followers) {
                 // Display the remove follower button
@@ -141,9 +148,10 @@ fun RemoveFriendButton(remove: () -> Unit, undoRemove: () -> Unit, followers: Bo
                 contentColor = md_theme_light_dark)
           },
       modifier =
-          Modifier.height(40.dp)
-              .width(120.dp)
-              .testTag("RemoveButton")) { // .testTag(if (isRemoved) { "RemoveButton" } else {
+      Modifier
+          .height(40.dp)
+          .width(120.dp)
+          .testTag("RemoveButton")) { // .testTag(if (isRemoved) { "RemoveButton" } else {
         // "UndoButton" })) {
         Text(
             text =
@@ -156,3 +164,38 @@ fun RemoveFriendButton(remove: () -> Unit, undoRemove: () -> Unit, followers: Bo
             )
       }
 }
+
+//@Preview
+//@Composable
+//fun FriendListViewPreview() {
+//    val mockUser1 =
+//        UserProfile(
+//            "1",
+//            "Alice",
+//            "Smith",
+//            Date(2021, 1, 1),
+//            "AliceS",
+//            "stupid-image-url.com",
+//            emptyList(),
+//            emptyList()
+//        )
+//
+//    val mockUser2 =
+//        UserProfile("2", "Bob", "Johnson", Date(2021, 1, 1), "BobJ", null, emptyList(), emptyList())
+//
+//    val mockUser3 =
+//        UserProfile(
+//            "3",
+//            "Charlie",
+//            "Brown",
+//            Date(2021, 1, 1),
+//            "CharlieB",
+//            null,
+//            listOf(mockUser1, mockUser2),
+//            listOf(mockUser1, mockUser2)
+//        )
+//
+//    val mockUsers = listOf(mockUser1, mockUser2, mockUser3)
+//
+//    FriendListView(userProfileViewModel = UserProfileViewModel(), userProfile = mockUser3, followers = true)
+//}

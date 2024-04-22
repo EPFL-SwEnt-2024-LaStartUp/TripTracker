@@ -1,7 +1,6 @@
 package com.example.triptracker.userProfile
 
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.repository.UserProfileRepository
 import com.example.triptracker.screens.userProfile.UserProfileFollowersScreen
@@ -41,7 +40,7 @@ class UserProfileFollowersTest {
   @Test
   fun componentsAreCorrectlyDisplayed() {
     every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
-    every { mockViewModel.userProfileList } returns MutableLiveData(mockUserProfiles)
+    every { mockViewModel.getUserProfileList() } returns mockUserProfiles
     // Setting up the test composition
     composeTestRule.setContent {
       UserProfileFollowers(
@@ -67,7 +66,7 @@ class UserProfileFollowersTest {
   @Test
   fun removeButtonWorks() {
     every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
-    every { mockViewModel.userProfileList } returns MutableLiveData(mockUserProfiles)
+    every { mockViewModel.getUserProfileList() } returns mockUserProfiles
     // Setting up the test composition
     composeTestRule.setContent {
       UserProfileFollowers(
@@ -91,7 +90,7 @@ class UserProfileFollowersTest {
   @Test
   fun backButtonWorks() {
     every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
-    every { mockViewModel.userProfileList } returns MutableLiveData(mockUserProfiles)
+    every { mockViewModel.getUserProfileList() } returns mockUserProfiles
     // Setting up the test composition
     composeTestRule.setContent {
       UserProfileFollowers(

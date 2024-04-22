@@ -40,7 +40,7 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
 @Composable
 fun UserProfileFollowing(
     navigation: Navigation,
-    userProfileViewModel: UserProfileViewModel,
+    userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
     userProfile: UserProfile
 ) {
   Scaffold(
