@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -68,6 +67,7 @@ import androidx.compose.ui.window.PopupProperties
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.location.Pin
+import com.example.triptracker.model.repository.Response
 import com.example.triptracker.navigation.compareDistance
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_dark_error
@@ -301,7 +301,7 @@ fun AddSpot(
                       InsertPictures(
                           pickMultipleMedia = pickMultipleMedia,
                           selectedPictures,
-                          )
+                      )
                     }
 
                 when (alertIsDisplayed) {
@@ -357,7 +357,7 @@ fun AddSpot(
                                     description,
                                     position,
                                     selectedPictures,
-                                    )
+                                )
                                 // Or save the spot with the location found by nominatim
                               } else {
                                 saveSpot(
@@ -366,7 +366,7 @@ fun AddSpot(
                                     description,
                                     position,
                                     selectedPictures,
-                                    )
+                                )
                               }
                               alertIsDisplayed = false
                               boxDisplayed = false
@@ -401,23 +401,46 @@ private fun saveSpot(
 ) {
 
   recordViewModel.addImageToStorageResponse = emptyList()
-
-  selectedPictures.forEach { picture -> recordViewModel.addImageToStorage(picture!!) }
-
   val pin =
-      Pin(
-          latitude = position.latitude,
-          longitude = position.longitude,
-          name = location,
-          description = description,
-          image_url =
-              if (selectedPictures.isNotEmpty()) selectedPictures[0].toString()
-              else "" // TODO CHANGE THIS LATER TO A LIST IN THE DB
-          )
-
-  Log.d("Spot", pin.toString())
-
-  // TODO recordViewModel.addSpot(spot)
+      mutableStateOf(
+          Pin(
+              latitude = position.latitude,
+              longitude = position.longitude,
+              name = location,
+              description = description,
+              image_url =
+                  recordViewModel.addImageToStorageResponse.map { resp ->
+                    if (resp is Response.Success) {
+                      resp.data!!
+                    } else {
+                      Uri.EMPTY
+                    }
+                  }))
+  var counter = 1
+  selectedPictures.forEach { picture ->
+    recordViewModel.addImageToStorage(picture!!) { resp ->
+      recordViewModel.addImageToStorageResponse += resp
+      pin.value =
+          Pin(
+              latitude = position.latitude,
+              longitude = position.longitude,
+              name = location,
+              description = description,
+              image_url =
+                  recordViewModel.addImageToStorageResponse.map { pictureUrl ->
+                    if (pictureUrl is Response.Success) {
+                      pictureUrl.data!!
+                    } else {
+                      Uri.EMPTY
+                    }
+                  })
+      if (counter == selectedPictures.size) {
+        recordViewModel.addPin(pin.value)
+        Log.d("PIN_LIST", recordViewModel.pinList.toString())
+      }
+      counter++
+    }
+  }
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")

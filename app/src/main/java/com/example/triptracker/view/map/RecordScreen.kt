@@ -57,7 +57,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
-import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
@@ -468,8 +467,7 @@ fun Map(
                                     val flameCount = 0L
                                     val startDate = viewModel.startDate.value
                                     val endDate = viewModel.endDate.value
-                                    val pinList =
-                                        emptyList<Pin>() // TODO : get pin list from user but not
+                                    val pinList = viewModel.pinList
                                     // implemented yet
                                     val description = viewModel.description.value
                                     val itinerary =

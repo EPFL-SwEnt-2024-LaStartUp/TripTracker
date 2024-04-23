@@ -1,5 +1,6 @@
 package com.example.triptracker.model.repository
 
+import android.net.Uri
 import android.util.Log
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
@@ -85,7 +86,7 @@ open class ItineraryRepository {
                 pinData["longitude"] as? Double ?: 0.0,
                 pinData["name"] as? String ?: "",
                 pinData["description"] as? String ?: "",
-                pinData["image-url"] as? String ?: "")
+                pinData["image-url"] as? List<Uri> ?: emptyList())
           }
       val routeData = document.data["route"] as? List<Map<String, Any>> ?: emptyList()
       val route: List<LatLng> = convertMapToLatLng(routeData)
@@ -204,7 +205,7 @@ open class ItineraryRepository {
    * @param latlngList List of LatLng objects
    * @return List of maps with latitude and longitude keys More Firestore friendly format
    */
-  fun convertLatLngToMap(latlngList: List<LatLng>): List<Map<String, Double>> =
+  private fun convertLatLngToMap(latlngList: List<LatLng>): List<Map<String, Any>> =
       latlngList.map { latLng ->
         mapOf("latitude" to latLng.latitude, "longitude" to latLng.longitude)
       }

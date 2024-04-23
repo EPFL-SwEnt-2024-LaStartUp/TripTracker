@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.geocoder.NominatimApi
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.repository.ImageRepository
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.model.repository.Response
@@ -41,6 +42,13 @@ class RecordViewModel : ViewModel() {
   // Public immutable list of LatLng points
   val latLongList: List<LatLng>
     get() = _latLongList
+
+  // Private mutable list of Pin points
+  private var _pinList = mutableListOf<Pin>()
+
+  // Public immutable list of LatLng points
+  val pinList: List<Pin>
+    get() = _pinList
 
   // Geocoder object to interact with the Nominatim API
   private val geocoder = NominatimApi()
@@ -178,6 +186,15 @@ class RecordViewModel : ViewModel() {
   }
 
   /**
+   * Adds a Pin point to the list.
+   *
+   * @param pin The LatLng point to add.
+   */
+  fun addPin(pin: Pin) {
+    _pinList.add(pin)
+  }
+
+  /**
    * Adds new itinerary to the database.
    *
    * @param itinerary Itinerary object to add to the database
@@ -212,10 +229,10 @@ class RecordViewModel : ViewModel() {
     }
   }
 
-  fun addImageToStorage(imageUri: Uri) {
+  fun addImageToStorage(imageUri: Uri, callback: (Response<Uri>) -> Unit) {
     viewModelScope.launch {
       val elem = imageRepository.addImageToFirebaseStorage(imageUri)
-      addImageToStorageResponse = addImageToStorageResponse + elem
+      callback(elem)
     }
   }
 }
