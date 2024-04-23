@@ -2,14 +2,17 @@ package com.example.triptracker.viewmodel
 
 import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.geocoder.NominatimApi
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.repository.ImageRepository
 import com.example.triptracker.model.repository.ItineraryRepository
+import com.example.triptracker.model.repository.Response
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 
@@ -40,7 +43,7 @@ class RecordViewModel : ViewModel() {
     get() = _latLongList
 
   // Geocoder object to interact with the Nominatim API
-  val geocoder = NominatimApi()
+  private val geocoder = NominatimApi()
 
   // Point of interest name
   val namePOI = mutableStateOf("")
@@ -51,7 +54,10 @@ class RecordViewModel : ViewModel() {
   // AddSpotWindow
   var addSpotClicked = mutableStateOf(false)
 
-  val imageRepository = ImageRepository()
+  // ImageRepository
+  private val imageRepository = ImageRepository()
+
+  var addImageToStorageResponse by mutableStateOf<List<Response<Uri>>>(emptyList())
 
   /** Starts the recording. Sets the start time to the current time. */
   fun startRecording() {
@@ -207,6 +213,9 @@ class RecordViewModel : ViewModel() {
   }
 
   fun addImageToStorage(imageUri: Uri) {
-    viewModelScope.launch { imageRepository.addImageToFirebaseStorage(imageUri) }
+    viewModelScope.launch {
+      val elem = imageRepository.addImageToFirebaseStorage(imageUri)
+      addImageToStorageResponse = addImageToStorageResponse + elem
+    }
   }
 }

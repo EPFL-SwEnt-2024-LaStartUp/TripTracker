@@ -40,14 +40,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -303,8 +301,7 @@ fun AddSpot(
                       InsertPictures(
                           pickMultipleMedia = pickMultipleMedia,
                           selectedPictures,
-                          recordViewModel,
-                          context)
+                          )
                     }
 
                 when (alertIsDisplayed) {
@@ -359,7 +356,8 @@ fun AddSpot(
                                     location,
                                     description,
                                     position,
-                                    selectedPictures)
+                                    selectedPictures,
+                                    )
                                 // Or save the spot with the location found by nominatim
                               } else {
                                 saveSpot(
@@ -367,7 +365,8 @@ fun AddSpot(
                                     recordViewModel.namePOI.value,
                                     description,
                                     position,
-                                    selectedPictures)
+                                    selectedPictures,
+                                    )
                               }
                               alertIsDisplayed = false
                               boxDisplayed = false
@@ -398,8 +397,12 @@ private fun saveSpot(
     location: String,
     description: String,
     position: LatLng,
-    selectedPictures: List<Uri?>
+    selectedPictures: List<Uri?>,
 ) {
+
+  recordViewModel.addImageToStorageResponse = emptyList()
+
+  selectedPictures.forEach { picture -> recordViewModel.addImageToStorage(picture!!) }
 
   val pin =
       Pin(
@@ -430,8 +433,6 @@ fun InsertPictures(
     pickMultipleMedia:
         ManagedActivityResultLauncher<PickVisualMediaRequest, List<@JvmSuppressWildcards Uri>>,
     selectedPictures: List<Uri?>,
-    recordViewModel: RecordViewModel,
-    context: Context
 ) {
   when (selectedPictures.isNotEmpty()) {
     // when no selection was done show a clickable dashed box that will allow the user to select
@@ -517,25 +518,17 @@ fun InsertPictures(
                 }
 
             val scrollState = rememberScrollState()
-            val scope = rememberCoroutineScope()
-            val snackbarHostState = remember { SnackbarHostState() }
 
             Row(
                 modifier = Modifier.fillMaxWidth().horizontalScroll(scrollState),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically) {
                   selectedPictures.forEach { picture ->
-                    recordViewModel.addImageToStorage(picture!!)
                     AsyncImage(
                         model = picture,
                         contentDescription = "Image",
                         modifier = Modifier.height(300.dp).padding(horizontal = 2.dp))
                   }
-                  Toast.makeText(
-                          context,
-                          "${selectedPictures.size} Pictures are uploaded",
-                          Toast.LENGTH_SHORT)
-                      .show()
                 }
           }
     }
