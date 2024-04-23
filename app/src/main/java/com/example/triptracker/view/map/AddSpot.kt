@@ -1,7 +1,10 @@
 package com.example.triptracker.view.map
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -37,12 +40,16 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +60,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -73,6 +81,7 @@ import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.RecordViewModel
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.launch
 
 @Composable
 /**
@@ -82,7 +91,7 @@ import com.google.android.gms.maps.model.LatLng
  * @param recordViewModel: RecordViewModel
  * @param latLng: LatLng at where the spot is going to be added
  */
-fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> Unit = {}) {
+fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, context :Context, onDismiss: () -> Unit = {}) {
 
   // Variables to store the state of the add spot box
   var boxDisplayed by remember { mutableStateOf(true) }
@@ -129,10 +138,11 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
     true ->
         Box(
             modifier =
-                Modifier.fillMaxSize()
-                    .padding(15.dp)
-                    .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))
-                    .testTag("AddSpotScreen")) {
+            Modifier
+                .fillMaxSize()
+                .padding(15.dp)
+                .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))
+                .testTag("AddSpotScreen")) {
               Column(modifier = Modifier.matchParentSize()) {
 
                 // Close button
@@ -148,7 +158,9 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
 
                 // Title
                 Row(
-                    modifier = Modifier.fillMaxWidth().testTag("SpotTitle"),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("SpotTitle"),
                     horizontalArrangement = Arrangement.Center) {
                       Text(
                           text = "Add New Spot To Path",
@@ -172,14 +184,18 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                 */
 
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 30.dp).testTag("SpotLocation"),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 30.dp)
+                        .testTag("SpotLocation"),
                     horizontalArrangement = Arrangement.Center) {
                       TextField(
                           enabled = recordViewModel.namePOI.value.isEmpty(),
                           modifier =
-                              Modifier.padding(horizontal = 20.dp)
-                                  .fillMaxWidth()
-                                  .testTag("LocationText"),
+                          Modifier
+                              .padding(horizontal = 20.dp)
+                              .fillMaxWidth()
+                              .testTag("LocationText"),
                           value =
                               if (recordViewModel.namePOI.value.isEmpty() && !isError) location
                               else recordViewModel.namePOI.value,
@@ -218,13 +234,16 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                           expanded = expanded.value,
                           onDismissRequest = { expanded.value = false },
                           modifier =
-                              Modifier.fillMaxWidth()
-                                  .align(Alignment.CenterVertically)
-                                  .testTag("LocationDropDown"),
+                          Modifier
+                              .fillMaxWidth()
+                              .align(Alignment.CenterVertically)
+                              .testTag("LocationDropDown"),
                           properties = PopupProperties(focusable = false),
                       ) {
                         DropdownMenuItem(
-                            modifier = Modifier.fillMaxWidth().testTag("LocationDropDown"),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("LocationDropDown"),
                             onClick = {
                               if (compareDistance(position, pos, 500.0)) {
                                 position = pos
@@ -249,13 +268,16 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
 
                 // Description text box to fill some information about the spot
                 Row(
-                    modifier = Modifier.fillMaxWidth().testTag("SpotDescription"),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("SpotDescription"),
                     horizontalArrangement = Arrangement.Center) {
                       TextField(
                           modifier =
-                              Modifier.padding(horizontal = 20.dp, vertical = 20.dp)
-                                  .fillMaxWidth()
-                                  .onFocusChanged {},
+                          Modifier
+                              .padding(horizontal = 20.dp, vertical = 20.dp)
+                              .fillMaxWidth()
+                              .onFocusChanged {},
                           value = description,
                           placeholder = {
                             Text(
@@ -286,9 +308,12 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
 
                 // Insert pictures (max 5)
                 Row(
-                    modifier = Modifier.fillMaxWidth().height(250.dp).testTag("SpotPictures"),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp)
+                        .testTag("SpotPictures"),
                     horizontalArrangement = Arrangement.Center) {
-                      InsertPictures(pickMultipleMedia = pickMultipleMedia, selectedPictures, recordViewModel)
+                      InsertPictures(pickMultipleMedia = pickMultipleMedia, selectedPictures, recordViewModel, context)
                     }
 
                 when (alertIsDisplayed) {
@@ -296,7 +321,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                     AlertDialog(
                         icon = { Icons.Filled.LocationOn },
                         title = {
-                          androidx.compose.material3.Text(
+                          Text(
                               text = "Path incomplete or don't save this spot")
                         },
                         text = {
@@ -330,7 +355,10 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
 
                 // Save button that will upload the data to the DB once completed
                 Row(
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight().testTag("SaveButton"),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .testTag("SaveButton"),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.Bottom) {
                       FilledTonalButton(
@@ -404,6 +432,7 @@ private fun saveSpot(
   // TODO recordViewModel.addSpot(spot)
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 /**
  * InsertPictures is a composable function that allows the user to insert pictures to the spot
@@ -416,7 +445,8 @@ fun InsertPictures(
     pickMultipleMedia:
         ManagedActivityResultLauncher<PickVisualMediaRequest, List<@JvmSuppressWildcards Uri>>,
     selectedPictures: List<Uri?>,
-    recordViewModel: RecordViewModel
+    recordViewModel: RecordViewModel,
+    context: Context
 ) {
   when (selectedPictures.isNotEmpty()) {
     // when no selection was done show a clickable dashed box that will allow the user to select
@@ -427,27 +457,33 @@ fun InsertPictures(
 
       Box(
           modifier =
-              Modifier.fillMaxSize()
-                  .padding(horizontal = 20.dp, vertical = 5.dp)
-                  .drawBehind {
-                    drawRoundRect(
-                        color = md_theme_orange,
-                        style = stroke,
-                        cornerRadius = CornerRadius(16.dp.toPx()))
-                  }
-                  .clip(RoundedCornerShape(16.dp))
-                  .clickable {
-                    pickMultipleMedia.launch(
-                        PickVisualMediaRequest(
-                            ActivityResultContracts.PickVisualMedia.ImageAndVideo))
-                  },
+          Modifier
+              .fillMaxSize()
+              .padding(horizontal = 20.dp, vertical = 5.dp)
+              .drawBehind {
+                  drawRoundRect(
+                      color = md_theme_orange,
+                      style = stroke,
+                      cornerRadius = CornerRadius(16.dp.toPx())
+                  )
+              }
+              .clip(RoundedCornerShape(16.dp))
+              .clickable {
+                  pickMultipleMedia.launch(
+                      PickVisualMediaRequest(
+                          ActivityResultContracts.PickVisualMedia.ImageAndVideo
+                      )
+                  )
+              },
       ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally) {
               Row(
-                  modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp),
+                  modifier = Modifier
+                      .fillMaxWidth()
+                      .padding(bottom = 5.dp),
                   horizontalArrangement = Arrangement.Center,
                   verticalAlignment = Alignment.CenterVertically) {
                     Icon(
@@ -475,7 +511,9 @@ fun InsertPictures(
     // Add an edit button to allow the user to change the selection
     true -> {
       Column(
-          modifier = Modifier.fillMaxSize().testTag("EditPicture"),
+          modifier = Modifier
+              .fillMaxSize()
+              .testTag("EditPicture"),
           verticalArrangement = Arrangement.Top,
           horizontalAlignment = Alignment.CenterHorizontally) {
             Row(
@@ -502,9 +540,13 @@ fun InsertPictures(
                 }
 
             val scrollState = rememberScrollState()
+            val scope = rememberCoroutineScope()
+            val snackbarHostState = remember { SnackbarHostState() }
 
             Row(
-                modifier = Modifier.fillMaxWidth().horizontalScroll(scrollState),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(scrollState),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically) {
                   selectedPictures.forEach { picture ->
@@ -512,8 +554,11 @@ fun InsertPictures(
                     AsyncImage(
                         model = picture,
                         contentDescription = "Image",
-                        modifier = Modifier.height(300.dp).padding(horizontal = 2.dp))
+                        modifier = Modifier
+                            .height(300.dp)
+                            .padding(horizontal = 2.dp))
                   }
+                Toast.makeText(context, "${selectedPictures.size} Pictures are uploaded", Toast.LENGTH_SHORT).show()
                 }
           }
     }
@@ -523,6 +568,6 @@ fun InsertPictures(
 @Preview
 @Composable
 fun AddSpotPreview() {
-  AddSpot(RecordViewModel(), LatLng(46.519053, 6.568287))
+  AddSpot(RecordViewModel(), LatLng(46.519053, 6.568287), context = LocalContext.current)
   //  AddSpot(RecordViewModel(), LatLng(46.519879, 6.560632))
 }

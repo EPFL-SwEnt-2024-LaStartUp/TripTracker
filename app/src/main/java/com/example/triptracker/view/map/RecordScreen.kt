@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.ButtonDefaults
@@ -32,7 +33,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -274,7 +274,7 @@ fun Map(
 
     // Display start window
     if (!viewModel.isInDescription()) {
-      StartWindow(viewModel = viewModel)
+      StartWindow(viewModel = viewModel, context)
 
       if (!viewModel.addSpotClicked.value) {
         // Button to center on device location
@@ -518,7 +518,7 @@ fun Map(
  * @param viewModel The RecordViewModel instance.
  */
 @Composable
-fun StartWindow(viewModel: RecordViewModel) {
+fun StartWindow(viewModel: RecordViewModel, context: Context) {
   val timer = remember { mutableLongStateOf(0L) }
 
   // Update timer if recording
@@ -536,7 +536,9 @@ fun StartWindow(viewModel: RecordViewModel) {
       AddSpot(
           latLng = viewModel.latLongList.last(),
           recordViewModel = viewModel,
+          context = context,
           onDismiss = { viewModel.addSpotClicked.value = false })
+
     }
     false -> {}
   }
