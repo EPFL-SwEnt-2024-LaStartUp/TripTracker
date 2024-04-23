@@ -10,6 +10,12 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Accessibility
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.PhotoCamera
+import androidx.compose.material.icons.outlined.Start
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,15 +48,18 @@ import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.MapViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PinConfig
 import com.google.android.gms.maps.model.VisibleRegion
 import com.google.maps.android.compose.AdvancedMarker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -97,7 +107,9 @@ fun MapOverview(
       Scaffold(
           bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
               innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+            Box(modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()) {
               Map(mapViewModel, context, deviceLocation, mapProperties, uiSettings, navigation)
             }
           }
@@ -176,14 +188,16 @@ fun Map(
     Box(modifier = Modifier.fillMaxSize()) {
       GoogleMap(
           modifier =
-              Modifier.matchParentSize()
-                  .background(
-                      brush =
-                          Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black))),
+          Modifier
+              .matchParentSize()
+              .background(
+                  brush =
+                  Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black))
+              ),
           cameraPositionState = cameraPositionState,
           properties = properties,
           uiSettings = ui,
-          onMapClick = { it ->
+          onMapClick = {
             displayPopUp = false
             mapViewModel.selectedPolylineState.value = null
           },
@@ -191,7 +205,7 @@ fun Map(
         // Display the path of the trips on the map only when they enter the screen
         mapViewModel.filteredPathList.value?.forEach { (location, latLngList) ->
           // Check if the polyline is selected
-          val isSelected = mapViewModel.selectedPolylineState.value?.itinerary?.id == location.id
+          val isSelected by rememberUpdatedState(newValue = mapViewModel.selectedPolylineState.value?.itinerary?.id == location.id)
           // Display the pat polyline
           Polyline(
               points = latLngList,
@@ -206,21 +220,43 @@ fun Map(
 
           // Display the start marker of the polyline and a thicker path when selected
           if (isSelected) {
-            AdvancedMarker(
-                state =
-                    MarkerState(
-                        position = mapViewModel.selectedPolylineState.value!!.startLocation),
-                title = mapViewModel.selectedPolylineState.value!!.itinerary.title,
-            )
+              val startMarkerState = rememberMarkerState(position = mapViewModel.selectedPolylineState.value!!.startLocation)
+              MarkerComposable (state = startMarkerState){
+                    Icon(
+                        imageVector = Icons.Outlined.Accessibility,
+                        contentDescription = "Start Location",
+                        tint = md_theme_orange)
+              }
+            mapViewModel.selectedPolylineState.value?.itinerary?.pinnedPlaces?.forEach { pin ->
+                val markerState = rememberMarkerState(position = LatLng(pin.latitude, pin.longitude))
+                  MarkerComposable(
+                      state = markerState,
+                      onClick = {marker ->
+                          // Display the pin information
+                          
+                          false
+                      }
+                  ){
+                      Icon(
+                          imageVector = Icons.Outlined.PhotoCamera,
+                          contentDescription = "Add Picture",
+                          tint = md_theme_orange)
+                  }
+              }
           }
         }
       }
     }
 
-    Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
+    Box(modifier = Modifier
+        .matchParentSize()
+        .background(gradient)
+        .align(Alignment.TopCenter)) {
       Text(
           text = mapViewModel.cityNameState.value,
-          modifier = Modifier.padding(30.dp).align(Alignment.TopCenter),
+          modifier = Modifier
+              .padding(30.dp)
+              .align(Alignment.TopCenter),
           fontSize = 24.sp,
           fontFamily = Montserrat,
           fontWeight = FontWeight.SemiBold,
@@ -238,9 +274,13 @@ fun Map(
             }
             if (displayPopUp) {
               Box(modifier = Modifier.fillMaxHeight(0.3f)) {
-                DisplayItinerary(
-                    itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                    navigation = navigation)
+                if (mapViewModel.selectedPolylineState.value != null) {
+                  // Display the itinerary of the selected polyline
+                  // (only when the polyline is selected)
+                  DisplayItinerary(
+                      itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                      navigation = navigation)
+                }
               }
             }
           }
