@@ -58,13 +58,17 @@ import com.google.maps.android.compose.rememberCameraPositionState
  * the user's location. Needs the context of the app in order to ask for location permission and
  * access location.
  *
- * @param mapViewModel: The view model of the map
+ * @param mapViewModel: The view model of the map (optional)
  * @param context: The context of the app (needed for location permission and real time location)
+ * @param navigation: The app navigation instance
+ * @param checkLocationPermission: Boolean whether to check or not the location permission for tests
+ *   purposes (optional)
  */
 fun MapOverview(
     mapViewModel: MapViewModel = MapViewModel(),
     context: Context,
-    navigation: Navigation
+    navigation: Navigation,
+    checkLocationPermission: Boolean = true // Default value true, can be overridden during tests
 ) {
   // The device location is set to EPFL by default
   var deviceLocation = DEFAULT_LOCATION
@@ -80,7 +84,9 @@ fun MapOverview(
 
   getCurrentLocation(context = context, onLocationFetched = { deviceLocation = it })
 
-  var loadMapScreen by remember { mutableStateOf(checkForLocationPermission(context)) }
+  var loadMapScreen by remember {
+    mutableStateOf(if (checkLocationPermission) checkForLocationPermission(context) else false)
+  }
 
   // Check if the location permission is granted if not re-ask for it. If the result is still
   // negative then disable the location button and center the view on EPFL
@@ -245,9 +251,9 @@ fun Map(
 @Preview
 @Composable
 // Start this screen to only see the overview of the map
-fun MapOverviewPreview() {
+fun MapOverviewPreview(mapViewModel: MapViewModel = MapViewModel()) {
   val context = LocalContext.current
   val navController = rememberNavController()
   val navigation = remember(navController) { Navigation(navController) }
-  MapOverview(MapViewModel(), context, navigation)
+  MapOverview(mapViewModel, context, navigation)
 }

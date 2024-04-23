@@ -15,7 +15,7 @@ import java.util.Date
 open class UserProfileRepository {
 
   // Initialise the Firebase Firestore
-  val db = Firebase.firestore
+  private val db = Firebase.firestore
 
   // Reference to the collection of user's profiles
   private val userProfileDb = db.collection("user_profiles")
@@ -50,6 +50,35 @@ open class UserProfileRepository {
   }
 
   /**
+   * This function returns the user profile corresponding to the mail
+   *
+   * @param mail : mail of the user profile to return
+   * @return user profile corresponding to the mail
+   */
+  fun getUserProfile(mail: String): UserProfile? {
+    var userProfile: UserProfile? = null
+    userProfileDb
+        .document(mail)
+        .get()
+        .addOnSuccessListener { document ->
+          if (document != null) {
+            userProfile =
+                UserProfile(
+                    document.id,
+                    document.data?.get("name") as String,
+                    document.data?.get("surname") as String,
+                    document.data?.get("birthdate") as Date,
+                    document.data?.get("pseudo") as String,
+                    document.data?.get("profileImageUrl") as String)
+          } else {
+            Log.d(TAG, "No such document")
+          }
+        }
+        .addOnFailureListener { e -> Log.e(TAG, "Error getting user profile", e) }
+    return userProfile
+  }
+
+  /**
    * This function converts the QuerySnapshot to a list of user's profiles.
    *
    * @param taskSnapshot : QuerySnapshot to convert to a list of user's profiles
@@ -77,7 +106,7 @@ open class UserProfileRepository {
    */
   fun updateUserProfile(userProfile: UserProfile) {
     userProfileDb
-        .document(userProfile.id)
+        .document(userProfile.mail)
         .set(userProfile)
         .addOnSuccessListener { Log.d(TAG, "User profile updated successfully") }
         .addOnFailureListener { e -> Log.e(TAG, "Error updating user profile", e) }
@@ -90,7 +119,7 @@ open class UserProfileRepository {
    */
   fun addNewUserProfile(userProfile: UserProfile) {
     userProfileDb
-        .document(userProfile.id)
+        .document(userProfile.mail)
         .set(userProfile)
         .addOnSuccessListener { Log.d(TAG, "User profile added successfully") }
         .addOnFailureListener { e -> Log.e(TAG, "Error adding new user profile", e) }

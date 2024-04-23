@@ -1,20 +1,27 @@
 package com.example.triptracker.viewmodel
 
 import com.example.triptracker.model.profile.UserProfile
-import com.example.triptracker.model.profile.UserProfileList
 import com.example.triptracker.model.repository.UserProfileRepository
 
 /**
  * ViewModel for the UserProfile class This class is responsible for handling the data operations
  * for the UserProfile class
  */
-class UserProfileViewModel {
-  val userProfileRepository = UserProfileRepository()
-  val userProfileList = UserProfileList(mutableListOf())
+class UserProfileViewModel(
+    private val userProfileRepository: UserProfileRepository = UserProfileRepository()
+) {
+
+  private var userProfileList: List<UserProfile> = mutableListOf()
+
+  /** This function returns the list of user's profiles. */
+  fun getUserProfileList(): List<UserProfile> {
+    getAllUserProfilesFromDb()
+    return userProfileList
+  }
 
   /** This function gets all the user's profiles from the database. */
   fun getAllUserProfilesFromDb() {
-    userProfileList.setUserProfileList(userProfileRepository.getAllUserProfiles())
+    userProfileList = userProfileRepository.getAllUserProfiles()
   }
 
   /**
@@ -36,11 +43,71 @@ class UserProfileViewModel {
   }
 
   /**
+   * This function adds new followers to the user profile in the database.
+   *
+   * @param userProfile : user profile to update
+   * @param follower : follower to add
+   */
+  fun addFollowersInDb(userProfile: UserProfile, follower: UserProfile) {
+    val updatedProfile = userProfile.copy(followers = userProfile.followers + follower)
+    userProfileRepository.updateUserProfile(updatedProfile)
+
+    val updatedFollowerProfile = follower.copy(following = follower.following + userProfile)
+    userProfileRepository.updateUserProfile(updatedFollowerProfile)
+  }
+
+  /**
+   * This function adds new following to the user profile in the database.
+   *
+   * @param userProfile : user profile to update
+   * @param following : following to add
+   */
+  fun addFollowingInDb(userProfile: UserProfile, following: UserProfile) {
+    val updatedProfile = userProfile.copy(following = userProfile.following + following)
+    userProfileRepository.updateUserProfile(updatedProfile)
+
+    val updatedFollowingProfile = following.copy(followers = following.followers + userProfile)
+    userProfileRepository.updateUserProfile(updatedFollowingProfile)
+  }
+
+  /**
+   * This function removes a follower from the user profile in the database.
+   *
+   * @param userProfile : user profile to update
+   * @param follower : follower to remove
+   */
+  fun removeFollowerInDb(userProfile: UserProfile, follower: UserProfile) {
+    val updatedProfile =
+        userProfile.copy(followers = userProfile.followers.filter { it.mail != follower.mail })
+    userProfileRepository.updateUserProfile(updatedProfile)
+
+    val updatedFollowerProfile =
+        follower.copy(following = follower.following.filter { it.mail != userProfile.mail })
+    userProfileRepository.updateUserProfile(updatedFollowerProfile)
+  }
+
+  /**
+   * This function removes a following from the user profile in the database.
+   *
+   * @param userProfile : user profile to update
+   * @param following : following to remove
+   */
+  fun removeFollowingInDb(userProfile: UserProfile, following: UserProfile) {
+    val updatedProfile =
+        userProfile.copy(following = userProfile.following.filter { it.mail != following.mail })
+    userProfileRepository.updateUserProfile(updatedProfile)
+
+    val updatedFollowingProfile =
+        following.copy(followers = following.followers.filter { it.mail != userProfile.mail })
+    userProfileRepository.updateUserProfile(updatedFollowingProfile)
+  }
+
+  /**
    * This function removes the user profile matching the id from the database.
    *
-   * @param id : id of the user profile to remove
+   * @param mail : mail of the user profile to remove
    */
-  fun removeUserProfileInDb(id: String) {
-    userProfileRepository.removeUserProfile(id)
+  fun removeUserProfileInDb(mail: String) {
+    userProfileRepository.removeUserProfile(mail)
   }
 }
