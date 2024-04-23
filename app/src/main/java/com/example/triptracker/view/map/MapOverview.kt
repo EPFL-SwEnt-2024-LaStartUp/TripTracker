@@ -68,10 +68,11 @@ fun MapOverview(
     mapViewModel: MapViewModel = MapViewModel(),
     context: Context,
     navigation: Navigation,
-    checkLocationPermission: Boolean = true // Default value true, can be overridden during tests
+    checkLocationPermission: Boolean = true, // Default value true, can be overridden during tests
+    startLocation: LatLng = DEFAULT_LOCATION
 ) {
   // The device location is set to EPFL by default
-  var deviceLocation = DEFAULT_LOCATION
+  var deviceLocation = startLocation
   var mapProperties by remember {
     mutableStateOf(
         MapProperties(
@@ -82,7 +83,13 @@ fun MapOverview(
     mutableStateOf(MapUiSettings(myLocationButtonEnabled = checkForLocationPermission(context)))
   }
 
-  getCurrentLocation(context = context, onLocationFetched = { deviceLocation = it })
+  getCurrentLocation(
+      context = context,
+      onLocationFetched = {
+        if (startLocation == DEFAULT_LOCATION) {
+          deviceLocation = it
+        }
+      })
 
   var loadMapScreen by remember {
     mutableStateOf(if (checkLocationPermission) checkForLocationPermission(context) else false)
@@ -166,8 +173,10 @@ fun Map(
     getCurrentLocation(
         context = context,
         onLocationFetched = {
-          deviceLocation = it
-          cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
+          if (startLocation == DEFAULT_LOCATION) {
+            deviceLocation = it
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
+          }
         })
   }
 
@@ -234,7 +243,15 @@ fun Map(
               DisplayCenterLocationButton(
                   coroutineScope = coroutineScope,
                   deviceLocation = deviceLocation,
-                  cameraPositionState = cameraPositionState)
+                  cameraPositionState = cameraPositionState) {
+                    getCurrentLocation(
+                        context = context,
+                        onLocationFetched = {
+                          deviceLocation = it
+                          cameraPositionState.position =
+                              CameraPosition.fromLatLngZoom(deviceLocation, 17f)
+                        })
+                  }
             }
             if (displayPopUp) {
               Box(modifier = Modifier.fillMaxHeight(0.3f)) {
@@ -255,5 +272,5 @@ fun MapOverviewPreview(mapViewModel: MapViewModel = MapViewModel()) {
   val context = LocalContext.current
   val navController = rememberNavController()
   val navigation = remember(navController) { Navigation(navController) }
-  MapOverview(mapViewModel, context, navigation)
+  MapOverview(mapViewModel, context, navigation, true, LatLng(46.8, 6.8))
 }
