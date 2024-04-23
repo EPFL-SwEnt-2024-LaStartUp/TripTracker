@@ -41,7 +41,6 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -76,7 +75,7 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
   Scaffold(
       topBar = {
         // Assuming a SearchBar composable is defined elsewhere
-        SearchBar(
+        SearchBarImplementation(
             onBackClicked = {
               // Navigate back to the home
               navigation.goBack()
@@ -98,7 +97,11 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
                     modifier = Modifier.testTag("DropDownFilter")) {
                       FilterType.entries.forEach { filterType ->
                         DropdownMenuItem(
-                            text = { Text(text = filterType.name.replace('_', ' ')) },
+                            text = {
+                              Text(
+                                  text = filterType.name.replace('_', ' '),
+                                  modifier = Modifier.testTag("FilterText"))
+                            },
                             onClick = {
                               homeViewModel.setSearchFilter(filterType)
                               showFilterDropdown = false
@@ -154,7 +157,7 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBar(
+fun SearchBarImplementation(
     onBackClicked: () -> Unit = {},
     onSearchActivated: (Boolean) -> Unit,
     viewModel: HomeViewModel = viewModel(),
@@ -276,24 +279,4 @@ fun ItineraryItem(itinerary: Itinerary, onItineraryClick: (String) -> Unit) {
               .testTag("ItineraryItem")) {
         Text(text = itinerary.title, style = MaterialTheme.typography.bodyMedium)
       }
-}
-
-@Composable
-fun Test() {
-  val bool = true
-  // Test the HomeScreen
-  Box(modifier = Modifier.fillMaxSize()) {
-    // with this test, they superpose each other
-    Text(text = "La puta madre", color = Color.Red)
-    if (bool) {
-      Text(text = "Test bool", color = Color.White, modifier = Modifier.padding(5.dp))
-    }
-  }
-}
-
-@Preview
-@Composable
-fun HomePreview() {
-  // Preview the HomeScreen
-  Test()
 }

@@ -233,6 +233,25 @@ class HomeTest {
   }
 
   @Test
+  fun clickOnDropDownMenu() {
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
+    // Setting up the test composition
+    composeTestRule.setContent { HomeScreen(navigation = mockNav, homeViewModel = mockViewModel) }
+    ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
+      searchBar {
+        assertIsDisplayed()
+        performClick()
+      }
+      composeTestRule
+          .onNodeWithTag("DropDownBox", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .performClick()
+    }
+  }
+
+  @Test
   fun noResultWhenSearchingForInexistantItinerary() {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
