@@ -288,7 +288,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                 Row(
                     modifier = Modifier.fillMaxWidth().height(250.dp).testTag("SpotPictures"),
                     horizontalArrangement = Arrangement.Center) {
-                      InsertPictures(pickMultipleMedia = pickMultipleMedia, selectedPictures)
+                      InsertPictures(pickMultipleMedia = pickMultipleMedia, selectedPictures, recordViewModel)
                     }
 
                 when (alertIsDisplayed) {
@@ -415,7 +415,8 @@ private fun saveSpot(
 fun InsertPictures(
     pickMultipleMedia:
         ManagedActivityResultLauncher<PickVisualMediaRequest, List<@JvmSuppressWildcards Uri>>,
-    selectedPictures: List<Uri?>
+    selectedPictures: List<Uri?>,
+    recordViewModel: RecordViewModel
 ) {
   when (selectedPictures.isNotEmpty()) {
     // when no selection was done show a clickable dashed box that will allow the user to select
@@ -507,6 +508,7 @@ fun InsertPictures(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically) {
                   selectedPictures.forEach { picture ->
+                      recordViewModel.addImageToStorage(picture!!)
                     AsyncImage(
                         model = picture,
                         contentDescription = "Image",

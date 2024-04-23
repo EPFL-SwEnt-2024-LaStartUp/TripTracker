@@ -1,5 +1,6 @@
 package com.example.triptracker.viewmodel
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -7,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.geocoder.NominatimApi
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.repository.ImageRepository
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
@@ -48,6 +50,8 @@ class RecordViewModel : ViewModel() {
 
   // AddSpotWindow
   var addSpotClicked = mutableStateOf(false)
+
+  val imageRepository = ImageRepository()
 
   /** Starts the recording. Sets the start time to the current time. */
   fun startRecording() {
@@ -199,6 +203,12 @@ class RecordViewModel : ViewModel() {
       displayNameDropDown.value = location.name
       Log.d("API RESPONSE", location.name)
       callback(LatLng(location.latitude, location.longitude))
+    }
+  }
+
+  fun addImageToStorage(imageUri: Uri) {
+    viewModelScope.launch {
+      imageRepository.addImageToFirebaseStorage(imageUri)
     }
   }
 }

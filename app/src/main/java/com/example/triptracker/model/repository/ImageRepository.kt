@@ -1,9 +1,11 @@
 package com.example.triptracker.model.repository
 
 import android.net.Uri
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.tasks.await
+import java.util.UUID
 
 class ImageRepository {
 
@@ -16,13 +18,14 @@ class ImageRepository {
       val downloadUrl =
           storage.reference
               .child(PICTURE_FOLDER)
-              .child("test_id")
+              .child(UUID.randomUUID().toString())
               .putFile(imageUri)
               .await()
               .storage
               .downloadUrl
               .await()
-      Response.Success(downloadUrl)
+        Log.d("DOWNLOAD URL", downloadUrl.toString())
+        Response.Success(downloadUrl)
     } catch (e: Exception) {
       Response.Failure(e)
     }
