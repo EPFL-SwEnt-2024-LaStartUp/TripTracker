@@ -1,5 +1,7 @@
 package com.example.triptracker.model.location
 
+import android.net.Uri
+
 /**
  * Data class for Pin
  *
@@ -15,7 +17,7 @@ data class Pin(
     val name: String,
     val description: String,
     val image_url:
-        String // will use this to store the image url and fetch the image from the url on the
+        List<Uri> // will use this to store the image url and fetch the image from the url on the
     // Firestore
 ) {
   override fun toString(): String {
