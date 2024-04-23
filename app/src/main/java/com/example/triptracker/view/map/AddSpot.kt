@@ -302,11 +302,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                                 longitude = position.longitude,
                                 name = location,
                                 description = description,
-                                image_url =
-                                    if (selectedPictures.isNotEmpty())
-                                        selectedPictures[0].toString()
-                                    else "" // TODO CHANGE THIS LATER TO A LIST IN THE DB
-                                )
+                                image_url = emptyList())
                             boxDisplayed = false
                             onDismiss()
                           },
