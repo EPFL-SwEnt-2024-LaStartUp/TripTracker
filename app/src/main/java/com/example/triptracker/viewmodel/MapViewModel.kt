@@ -15,20 +15,24 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel for the MapOverview composable. It contains the city name state and the geocoder to
  * reverse decode the location.
+ *
+ * @param geocoder: Geocoder with Nominatim API that allows to reverse decode the location
+ *   (optional)
+ * @param pathList: Mutable list of that contains all the itineraries (optional)
+ * @param repository: Repository containing the itineraries for Firebase interactions (optional)
+ * @param filteredPathList: Mutable map of Itinerary linked to a list of coordinates for filtering
+ *   purposes (optional)
  */
-class MapViewModel : ViewModel() {
-
-  // geocoder with Nominatim API that allows to reverse decode the location
-  val geocoder = NominatimApi()
+class MapViewModel(
+    val geocoder: NominatimApi = NominatimApi(),
+    private val pathList: MutableLiveData<ItineraryList> = MutableLiveData<ItineraryList>(),
+    private val repository: ItineraryRepository = ItineraryRepository(),
+    val filteredPathList: MutableLiveData<Map<Itinerary, List<LatLng>>> =
+        MutableLiveData<Map<Itinerary, List<LatLng>>>()
+) : ViewModel() {
 
   // state for the city name displayed at the top of the screen
   val cityNameState = mutableStateOf("")
-
-  private val repository = ItineraryRepository()
-
-  private val _pathList = MutableLiveData<ItineraryList>()
-
-  val filteredPathList = MutableLiveData<Map<Itinerary, List<LatLng>>>()
 
   /** Data class describing a selected Polyline */
   data class SelectedPolyline(val itinerary: Itinerary, val startLocation: LatLng)
@@ -47,13 +51,13 @@ class MapViewModel : ViewModel() {
    * @param lat : latitude of the location
    * @param lon : longitude of the location
    */
-  fun reverseDecode(lat: Float, lon: Float) {
-    geocoder.getCity(lat, lon) { cityName -> cityNameState.value = cityName }
+  fun reverseDecode(lat: Float, lon: Float, _geocoder: NominatimApi = geocoder) {
+    _geocoder.getCity(lat, lon) { cityName -> cityNameState.value = cityName }
   }
 
   /** Get all itineraries from the database and update the pathList */
   private fun getAllItineraries() {
-    _pathList.postValue(ItineraryList(repository.getAllItineraries()))
+    pathList.postValue(ItineraryList(repository.getAllItineraries()))
   }
 
   /**
@@ -61,7 +65,7 @@ class MapViewModel : ViewModel() {
    *
    * @return a map of the title of the itinerary and the route
    */
-  fun getAllPaths(): Map<String, List<LatLng>> {
+  fun getAllPaths(_pathList: MutableLiveData<ItineraryList> = pathList): Map<String, List<LatLng>> {
     return _pathList.value?.getAllItineraries()?.map { it.title to it.route }?.toMap() ?: emptyMap()
   }
 
@@ -70,7 +74,11 @@ class MapViewModel : ViewModel() {
    *
    * @param latLngBounds : the visible region of the map
    */
-  fun getFilteredPaths(latLngBounds: LatLngBounds?, limit: Int = 10) {
+  fun getFilteredPaths(
+      latLngBounds: LatLngBounds?,
+      limit: Int = 10,
+      _pathList: MutableLiveData<ItineraryList> = pathList
+  ) {
     if (latLngBounds == null) {
       filteredPathList.value = emptyMap()
     } else {
