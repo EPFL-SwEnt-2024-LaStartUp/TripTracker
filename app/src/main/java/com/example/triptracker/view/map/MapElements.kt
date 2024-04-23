@@ -42,7 +42,8 @@ val DEFAULT_LOCATION = LatLng(46.518831258, 6.559331096)
 fun DisplayCenterLocationButton(
     coroutineScope: CoroutineScope,
     deviceLocation: LatLng,
-    cameraPositionState: CameraPositionState
+    cameraPositionState: CameraPositionState,
+    onClick: () -> Unit
 ) {
 
   Icon(
@@ -55,6 +56,7 @@ fun DisplayCenterLocationButton(
               .background(md_theme_grey, shape = RoundedCornerShape(16.dp))
               .padding(10.dp)
               .clickable {
+                onClick()
                 coroutineScope.launch {
                   cameraPositionState.animate(
                       CameraUpdateFactory.newCameraPosition(
