@@ -538,7 +538,6 @@ fun StartWindow(viewModel: RecordViewModel, context: Context) {
           recordViewModel = viewModel,
           context = context,
           onDismiss = { viewModel.addSpotClicked.value = false })
-
     }
     false -> {}
   }

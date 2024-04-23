@@ -29,7 +29,10 @@ class AddSpotTest {
   @Before
   fun setUp() {
     composeTestRule.setContent {
-      AddSpot(recordViewModel = RecordViewModel(), latLng = LatLng(46.519879, 6.560632), context = LocalContext.current)
+      AddSpot(
+          recordViewModel = RecordViewModel(),
+          latLng = LatLng(46.519879, 6.560632),
+          context = LocalContext.current)
     }
   }
 

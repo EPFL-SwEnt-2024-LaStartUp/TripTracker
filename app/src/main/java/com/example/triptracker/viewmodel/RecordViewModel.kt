@@ -207,8 +207,6 @@ class RecordViewModel : ViewModel() {
   }
 
   fun addImageToStorage(imageUri: Uri) {
-    viewModelScope.launch {
-      imageRepository.addImageToFirebaseStorage(imageUri)
-    }
+    viewModelScope.launch { imageRepository.addImageToFirebaseStorage(imageUri) }
   }
 }

@@ -4,8 +4,8 @@ import android.net.Uri
 import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
-import kotlinx.coroutines.tasks.await
 import java.util.UUID
+import kotlinx.coroutines.tasks.await
 
 class ImageRepository {
 
@@ -24,8 +24,8 @@ class ImageRepository {
               .storage
               .downloadUrl
               .await()
-        Log.d("DOWNLOAD URL", downloadUrl.toString())
-        Response.Success(downloadUrl)
+      Log.d("DOWNLOAD URL", downloadUrl.toString())
+      Response.Success(downloadUrl)
     } catch (e: Exception) {
       Response.Failure(e)
     }
