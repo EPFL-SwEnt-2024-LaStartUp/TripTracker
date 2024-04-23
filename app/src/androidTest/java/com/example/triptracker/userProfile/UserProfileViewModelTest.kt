@@ -66,6 +66,15 @@ class UserProfileViewModelTest {
   }
 
   @Test
+  fun getUserProfileFromDbTest() {
+    every { mockUserProfileRepository.getUserProfile(any()) } returns mockUserProfiles[0]
+    val viewModel = UserProfileViewModel(mockUserProfileRepository)
+
+    val userProfile = viewModel.getUserProfileFromDb("1")
+    assert(userProfile == mockUserProfiles[0])
+  }
+
+  @Test
   fun addNewUserProfileToDbTest() {
     every { mockUserProfileRepository.addNewUserProfile(any()) } answers
         {
