@@ -39,19 +39,19 @@ class MapPopupTest {
                     -0.13424873072712565,
                     "Picadilly Circus",
                     "hi",
-                    "https://www.google.com"),
+                    listOf("https://www.google.com")),
                 Pin(
                     51.501370650469,
                     -0.14182562962180675,
                     "Buckingham Palace",
                     "hi",
-                    "https://www.google.com"),
+                    listOf("https://www.google.com")),
                 Pin(
                     51.537120465492286,
                     -0.18335994496202418,
                     "Abbey Road",
                     "hi",
-                    "https://www.google.com")),
+                    listOf("https://www.google.com"))),
             "description",
             listOf())
 
@@ -74,7 +74,7 @@ class MapPopupTest {
             -0.13424873072712565,
             "Picadilly Circus",
             "hi",
-            "https://www.google.com")
+            listOf("https://www.google.com"))
 
     composeTestRule.setContent {
       AddressText(MapPopupViewModel(), pin.latitude.toFloat(), pin.longitude.toFloat())

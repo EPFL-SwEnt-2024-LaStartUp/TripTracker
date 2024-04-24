@@ -1,13 +1,19 @@
 package com.example.triptracker.viewmodel
 
+import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.geocoder.NominatimApi
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.location.Pin
+import com.example.triptracker.model.repository.ImageRepository
 import com.example.triptracker.model.repository.ItineraryRepository
+import com.example.triptracker.model.repository.Response
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 
@@ -37,14 +43,29 @@ class RecordViewModel : ViewModel() {
   val latLongList: List<LatLng>
     get() = _latLongList
 
+  // Private mutable list of Pin points
+  private var _pinList = mutableListOf<Pin>()
+
+  // Public immutable list of LatLng points
+  val pinList: List<Pin>
+    get() = _pinList
+
   // Geocoder object to interact with the Nominatim API
-  val geocoder = NominatimApi()
+  private val geocoder = NominatimApi()
 
   // Point of interest name
   val namePOI = mutableStateOf("")
 
   // Dropdown menu for POI name
   val displayNameDropDown = mutableStateOf("")
+
+  // AddSpotWindow
+  var addSpotClicked = mutableStateOf(false)
+
+  // ImageRepository
+  private val imageRepository = ImageRepository()
+
+  var addImageToStorageResponse by mutableStateOf<List<Response<Uri>>>(emptyList())
 
   /** Starts the recording. Sets the start time to the current time. */
   fun startRecording() {
@@ -165,6 +186,15 @@ class RecordViewModel : ViewModel() {
   }
 
   /**
+   * Adds a Pin point to the list.
+   *
+   * @param pin The LatLng point to add.
+   */
+  fun addPin(pin: Pin) {
+    _pinList.add(pin)
+  }
+
+  /**
    * Adds new itinerary to the database.
    *
    * @param itinerary Itinerary object to add to the database
@@ -196,6 +226,13 @@ class RecordViewModel : ViewModel() {
       displayNameDropDown.value = location.name
       Log.d("API RESPONSE", location.name)
       callback(LatLng(location.latitude, location.longitude))
+    }
+  }
+
+  fun addImageToStorage(imageUri: Uri, callback: (Response<Uri>) -> Unit) {
+    viewModelScope.launch {
+      val elem = imageRepository.addImageToFirebaseStorage(imageUri)
+      callback(elem)
     }
   }
 }
