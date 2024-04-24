@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intending
@@ -28,7 +29,10 @@ class AddSpotTest {
   @Before
   fun setUp() {
     composeTestRule.setContent {
-      AddSpot(recordViewModel = RecordViewModel(), latLng = LatLng(46.519879, 6.560632))
+      AddSpot(
+          recordViewModel = RecordViewModel(),
+          latLng = LatLng(46.519879, 6.560632),
+          context = LocalContext.current)
     }
   }
 
