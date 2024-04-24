@@ -80,9 +80,9 @@ class HomeTest {
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
       // Test the UI elements
       composeTestRule
-          .onNodeWithText("Search for an itinerary", useUnmergedTree = true)
+          .onNodeWithText("Find Itineraries", useUnmergedTree = true)
           .assertIsDisplayed()
-          .assertTextEquals("Search for an itinerary")
+          .assertTextEquals("Find Itineraries")
 
       itinerary {
         assertIsDisplayed()
@@ -216,7 +216,7 @@ class HomeTest {
         composeTestRule.onNodeWithTag("searchBarText", useUnmergedTree = true).assertIsDisplayed()
         composeTestRule
             .onNodeWithTag("searchBarText", useUnmergedTree = true)
-            .assertTextEquals("Search for an itinerary")
+            .assertTextEquals("Find Itineraries")
         performClick()
         composeTestRule.waitForIdle()
         pressKey(84) // letter t, doesn't update the UI yet
@@ -229,6 +229,25 @@ class HomeTest {
         performClick()
         composeTestRule.onNodeWithTag("ClearButton", useUnmergedTree = true).performClick()
       }
+    }
+  }
+
+  @Test
+  fun clickOnDropDownMenu() {
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
+    // Setting up the test composition
+    composeTestRule.setContent { HomeScreen(navigation = mockNav, homeViewModel = mockViewModel) }
+    ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
+      searchBar {
+        assertIsDisplayed()
+        performClick()
+      }
+      composeTestRule
+          .onNodeWithTag("DropDownBox", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .performClick()
     }
   }
 
