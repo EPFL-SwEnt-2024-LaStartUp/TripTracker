@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.geocoder.NominatimApi
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryList
+import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -40,7 +41,7 @@ class MapViewModel(
   // Hold the selected polyline state
   var selectedPolylineState = mutableStateOf<SelectedPolyline?>(null)
 
-  // Expose the selected polyline state as immutable
+  var selectedPin = mutableStateOf<Pin?>(null)
 
   init {
     viewModelScope.launch { getAllItineraries() }

@@ -1,6 +1,5 @@
 package com.example.triptracker.itinerary
 
-import android.net.Uri
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
@@ -18,7 +17,7 @@ class MockItineraryList {
               200,
               "10-03-2024",
               "20-03-2024",
-              listOf(Pin(0.2, 0.1, "Eiffel Tower", "yes", listOf(Uri.parse("test.com")))),
+              listOf(Pin(0.2, 0.1, "Eiffel Tower", "yes", listOf("test.com"))),
               "super cool",
               listOf(LatLng(0.1, 0.4))), // Fill in your mock data
           Itinerary(
@@ -30,10 +29,10 @@ class MockItineraryList {
               "10-03-2024",
               "20-03-2024",
               listOf(
-                  Pin(0.2, 0.1, "Statue of Liberty", "yes", listOf(Uri.parse("test.com"))),
-                  Pin(0.2, 0.1, "EmpState", "yes", listOf(Uri.parse("test.com"))),
-                  Pin(0.2, 0.1, "Cool", "yes", listOf(Uri.parse("test.com"))),
-                  Pin(0.2, 0.1, "NYC", "yes", listOf(Uri.parse("test.com")))),
+                  Pin(0.2, 0.1, "Statue of Liberty", "yes", listOf("test.com")),
+                  Pin(0.2, 0.1, "EmpState", "yes", listOf("test.com")),
+                  Pin(0.2, 0.1, "Cool", "yes", listOf("test.com")),
+                  Pin(0.2, 0.1, "NYC", "yes", listOf("test.com"))),
               "veryyy cool",
               listOf(LatLng(0.1, 0.4))))
 

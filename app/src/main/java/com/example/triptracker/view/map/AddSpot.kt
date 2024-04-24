@@ -411,9 +411,9 @@ private fun saveSpot(
               image_url =
                   recordViewModel.addImageToStorageResponse.map { resp ->
                     if (resp is Response.Success) {
-                      resp.data!!
+                      resp.data!!.toString()
                     } else {
-                      Uri.EMPTY
+                      Uri.EMPTY.toString()
                     }
                   }))
   var counter = 1
@@ -429,9 +429,9 @@ private fun saveSpot(
               image_url =
                   recordViewModel.addImageToStorageResponse.map { pictureUrl ->
                     if (pictureUrl is Response.Success) {
-                      pictureUrl.data!!
+                      pictureUrl.data!!.toString()
                     } else {
-                      Uri.EMPTY
+                      Uri.EMPTY.toString()
                     }
                   })
       if (counter == selectedPictures.size) {
