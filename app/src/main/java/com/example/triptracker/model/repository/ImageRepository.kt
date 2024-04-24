@@ -12,12 +12,14 @@ class ImageRepository {
   private val storage = Firebase.storage
 
   private val PICTURE_FOLDER = "pictures"
+  private val PIN_PICTURES = "pin"
 
   suspend fun addImageToFirebaseStorage(imageUri: Uri): Response<Uri> {
     return try {
       val downloadUrl =
           storage.reference
               .child(PICTURE_FOLDER)
+              .child(PIN_PICTURES)
               .child(UUID.randomUUID().toString())
               .putFile(imageUri)
               .await()

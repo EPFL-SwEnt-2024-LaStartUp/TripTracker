@@ -204,7 +204,7 @@ open class ItineraryRepository {
    * @param latlngList List of LatLng objects
    * @return List of maps with latitude and longitude keys More Firestore friendly format
    */
-  private fun convertLatLngToMap(latlngList: List<LatLng>): List<Map<String, Any>> =
+  private fun convertLatLngToMap(latlngList: List<LatLng>): List<Map<String, Double>> =
       latlngList.map { latLng ->
         mapOf("latitude" to latLng.latitude, "longitude" to latLng.longitude)
       }
