@@ -1,12 +1,15 @@
 package com.example.triptracker.viewmodel
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.geocoder.NominatimApi
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryList
+import com.example.triptracker.model.location.popupState
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -17,9 +20,16 @@ import kotlinx.coroutines.launch
  * ViewModel for the MapOverview composable. It contains the city name state and the geocoder to
  * reverse decode the location.
  */
+
 class MapViewModel : ViewModel() {
 
-  // geocoder with Nominatim API that allows to reverse decode the location
+
+    //ENUM
+    var mapPopupState = mutableStateOf(popupState.DISPLAYITINERARY)
+    var displayPopUp = mutableStateOf(false)
+
+
+    // geocoder with Nominatim API that allows to reverse decode the location
   val geocoder = NominatimApi()
 
   // state for the city name displayed at the top of the screen

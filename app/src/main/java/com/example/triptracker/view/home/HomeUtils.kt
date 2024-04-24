@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -30,11 +31,15 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.location.popupState
 import com.example.triptracker.view.Navigation
+import com.example.triptracker.view.Route
+import com.example.triptracker.view.TopLevelDestination
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_orange
+import com.example.triptracker.viewmodel.MapViewModel
 
 /**
  * Displays an itinerary in the list of itineraries
@@ -47,6 +52,7 @@ import com.example.triptracker.view.theme.md_theme_orange
 fun DisplayItinerary(
     itinerary: Itinerary,
     navigation: Navigation,
+    mapViewModel: MapViewModel,
 ) {
   // Number of additional itineraries not displayed
   val pinListString = fetchPinNames(itinerary)
@@ -64,6 +70,15 @@ fun DisplayItinerary(
               .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))
               .clickable { // When you click on an itinerary, it should bring you to the map
                 // overview with the selected itinerary highlighted and the first pinned places
+
+                  if (navigation.getCurrentDestination() ==
+                      TopLevelDestination(Route.MAPS, Icons.Outlined.Place, "Maps")
+                  ) {
+                      mapViewModel.mapPopupState.value = popupState.PATHOVERLAY
+                  } else {
+                    navigation.navigateTo(navigation.getTopLevelDestinations()[1])
+                      mapViewModel.displayPopUp.value = true
+                  }
                 // TODO : when changing Top Level Destination, the navbar should be updated to
                 // highlight the correct tab.
                 // TODO : Would call DisplayItineraryInMap or sth similar later on

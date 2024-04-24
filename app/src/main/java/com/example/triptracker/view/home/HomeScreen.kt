@@ -43,6 +43,7 @@ import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.viewmodel.HomeViewModel
+import com.example.triptracker.viewmodel.MapViewModel
 
 /**
  * HomeScreen composable that displays the list of itineraries
@@ -91,7 +92,7 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
                 contentPadding = PaddingValues(16.dp)) {
                   items(itineraries) { itinerary ->
                     Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
-                    DisplayItinerary(itinerary = itinerary, navigation = navigation)
+                    DisplayItinerary(itinerary = itinerary, navigation = navigation, MapViewModel())
                   }
                 }
           }

@@ -29,6 +29,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
+import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.location.popupState
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
@@ -91,7 +93,9 @@ fun MapOverview(
       Scaffold(
           bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
               innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+            Box(modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()) {
               Map(mapViewModel, context, deviceLocation, mapProperties, uiSettings, navigation)
             }
           }
@@ -140,8 +144,6 @@ fun Map(
     position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
   }
   var visibleRegion: VisibleRegion?
-  var displayPopUp by remember { mutableStateOf(false) }
-
   // When the camera is moving, the city name is updated in the top bar with geo decoding
   LaunchedEffect(cameraPositionState.isMoving) {
     mapViewModel.reverseDecode(
@@ -170,15 +172,17 @@ fun Map(
     Box(modifier = Modifier.fillMaxSize()) {
       GoogleMap(
           modifier =
-              Modifier.matchParentSize()
-                  .background(
-                      brush =
-                          Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black))),
+          Modifier
+              .matchParentSize()
+              .background(
+                  brush =
+                  Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black))
+              ),
           cameraPositionState = cameraPositionState,
           properties = properties,
           uiSettings = ui,
           onMapClick = { it ->
-            displayPopUp = false
+            mapViewModel.displayPopUp.value = false
             mapViewModel.selectedPolylineState.value = null
           },
       ) {
@@ -195,7 +199,8 @@ fun Map(
               onClick = {
                 mapViewModel.selectedPolylineState.value =
                     MapViewModel.SelectedPolyline(location, latLngList[0])
-                displayPopUp = true
+                  mapViewModel.mapPopupState.value = popupState.DISPLAYITINERARY
+                  mapViewModel.displayPopUp.value = true
               })
 
           // Display the start marker of the polyline and a thicker path when selected
@@ -211,10 +216,15 @@ fun Map(
       }
     }
 
-    Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
+    Box(modifier = Modifier
+        .matchParentSize()
+        .background(gradient)
+        .align(Alignment.TopCenter)) {
       Text(
           text = mapViewModel.cityNameState.value,
-          modifier = Modifier.padding(30.dp).align(Alignment.TopCenter),
+          modifier = Modifier
+              .padding(30.dp)
+              .align(Alignment.TopCenter),
           fontSize = 24.sp,
           fontFamily = Montserrat,
           fontWeight = FontWeight.SemiBold,
@@ -230,16 +240,31 @@ fun Map(
                   deviceLocation = deviceLocation,
                   cameraPositionState = cameraPositionState)
             }
-            if (displayPopUp) {
-              Box(modifier = Modifier.fillMaxHeight(0.3f)) {
-                DisplayItinerary(
-                    itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                    navigation = navigation)
-              }
+            if (mapViewModel.displayPopUp.value) {
+                Box(modifier = Modifier.fillMaxHeight(0.3f)) {
+                    ManagePopups(
+                        itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                        navigation = navigation, mapViewModel = mapViewModel)
+                }
             }
           }
         }
   }
+}
+
+@Composable
+fun ManagePopups(itinerary: Itinerary, navigation: Navigation, mapViewModel: MapViewModel) {
+    when(mapViewModel.mapPopupState.value) {
+         popupState.DISPLAYITINERARY-> {
+            DisplayItinerary(itinerary = itinerary, navigation = navigation, mapViewModel = mapViewModel)
+        }
+        popupState.DISPLAYPIN -> {
+            //called detailed view Theo
+        }
+        popupState.PATHOVERLAY -> {
+            PathOverlaySheet(itinerary = itinerary)
+        }
+    }
 }
 
 @Preview
