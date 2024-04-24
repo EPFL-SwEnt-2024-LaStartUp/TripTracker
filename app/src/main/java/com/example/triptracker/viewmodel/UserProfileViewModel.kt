@@ -25,6 +25,16 @@ class UserProfileViewModel(
   }
 
   /**
+   * This function returns the user profile corresponding to the mail.
+   *
+   * @param mail : mail of the user profile to return
+   * @return user profile corresponding to the mail
+   */
+  fun getUserProfileFromDb(mail: String): UserProfile? {
+    return userProfileRepository.getUserProfile(mail)
+  }
+
+  /**
    * This function adds a new user profile to the database.
    *
    * @param userProfile : user profile to add
@@ -49,10 +59,10 @@ class UserProfileViewModel(
    * @param follower : follower to add
    */
   fun addFollowersInDb(userProfile: UserProfile, follower: UserProfile) {
-    val updatedProfile = userProfile.copy(followers = userProfile.followers + follower)
+    val updatedProfile = userProfile.copy(followers = userProfile.followers + follower.mail)
     userProfileRepository.updateUserProfile(updatedProfile)
 
-    val updatedFollowerProfile = follower.copy(following = follower.following + userProfile)
+    val updatedFollowerProfile = follower.copy(following = follower.following + userProfile.mail)
     userProfileRepository.updateUserProfile(updatedFollowerProfile)
   }
 
@@ -63,10 +73,10 @@ class UserProfileViewModel(
    * @param following : following to add
    */
   fun addFollowingInDb(userProfile: UserProfile, following: UserProfile) {
-    val updatedProfile = userProfile.copy(following = userProfile.following + following)
+    val updatedProfile = userProfile.copy(following = userProfile.following + following.mail)
     userProfileRepository.updateUserProfile(updatedProfile)
 
-    val updatedFollowingProfile = following.copy(followers = following.followers + userProfile)
+    val updatedFollowingProfile = following.copy(followers = following.followers + userProfile.mail)
     userProfileRepository.updateUserProfile(updatedFollowingProfile)
   }
 
@@ -78,11 +88,11 @@ class UserProfileViewModel(
    */
   fun removeFollowerInDb(userProfile: UserProfile, follower: UserProfile) {
     val updatedProfile =
-        userProfile.copy(followers = userProfile.followers.filter { it.mail != follower.mail })
+        userProfile.copy(followers = userProfile.followers.filter { it != follower.mail })
     userProfileRepository.updateUserProfile(updatedProfile)
 
     val updatedFollowerProfile =
-        follower.copy(following = follower.following.filter { it.mail != userProfile.mail })
+        follower.copy(following = follower.following.filter { it != userProfile.mail })
     userProfileRepository.updateUserProfile(updatedFollowerProfile)
   }
 
@@ -94,11 +104,11 @@ class UserProfileViewModel(
    */
   fun removeFollowingInDb(userProfile: UserProfile, following: UserProfile) {
     val updatedProfile =
-        userProfile.copy(following = userProfile.following.filter { it.mail != following.mail })
+        userProfile.copy(following = userProfile.following.filter { it != following.mail })
     userProfileRepository.updateUserProfile(updatedProfile)
 
     val updatedFollowingProfile =
-        following.copy(followers = following.followers.filter { it.mail != userProfile.mail })
+        following.copy(followers = following.followers.filter { it != userProfile.mail })
     userProfileRepository.updateUserProfile(updatedFollowingProfile)
   }
 

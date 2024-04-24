@@ -26,8 +26,8 @@ class MockUserList {
           Date(2021, 1, 1),
           "CharlieB",
           null,
-          listOf(mockUser1, mockUser2),
-          listOf(mockUser1, mockUser2))
+          listOf(mockUser1.mail, mockUser2.mail),
+          listOf(mockUser1.mail, mockUser2.mail))
 
   private val mockUsers = listOf(mockUser1, mockUser2, mockUser3)
 

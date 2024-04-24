@@ -50,9 +50,9 @@ fun FriendListView(
 ) {
   val friends =
       if (followers) {
-        userProfile.followers
+        userProfile.followers.map { mail -> userProfileViewModel.getUserProfileFromDb(mail)!! }
       } else {
-        userProfile.following
+        userProfile.following.map { mail -> userProfileViewModel.getUserProfileFromDb(mail)!! }
       }
 
   // Display the list of user's profiles
