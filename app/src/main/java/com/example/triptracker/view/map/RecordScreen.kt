@@ -285,7 +285,7 @@ fun Map(
                   DisplayCenterLocationButton(
                       coroutineScope = coroutineScope,
                       deviceLocation = deviceLocation,
-                      cameraPositionState = cameraPositionState)
+                      cameraPositionState = cameraPositionState) { /* DO NOTHING*/}
                 }
               }
 

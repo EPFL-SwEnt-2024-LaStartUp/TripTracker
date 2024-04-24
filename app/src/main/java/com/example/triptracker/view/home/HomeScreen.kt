@@ -1,12 +1,15 @@
 package com.example.triptracker.view.home
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
@@ -15,10 +18,13 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,6 +49,7 @@ import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.md_theme_grey
+import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
 
 /**
@@ -54,9 +61,11 @@ import com.example.triptracker.viewmodel.HomeViewModel
 @Composable
 fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel()) {
   Log.d("HomeScreen", "Rendering HomeScreen")
+  val selectedFilterType by homeViewModel.selectedFilter.observeAsState(FilterType.TITLE)
 
   // Filtered list of itineraries based on search query
   val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
+  var showFilterDropdown by remember { mutableStateOf(false) }
   var isSearchActive by remember { mutableStateOf(false) }
   val isNoResultFound =
       remember(filteredList, isSearchActive) {
@@ -66,25 +75,61 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
   Scaffold(
       topBar = {
         // Assuming a SearchBar composable is defined elsewhere
-        SearchBar(
+        SearchBarImplementation(
             onBackClicked = {
-              // Navigate back to the overview
-              val home = navigation.getTopLevelDestinations()[0].route
-              navigation.navController.navigate(home)
+              // Navigate back to the home
+              navigation.goBack()
             },
             viewModel = homeViewModel,
             onSearchActivated = { isActive -> isSearchActive = isActive },
             navigation = navigation,
+            selectedFilterType = selectedFilterType,
             isNoResultFound = isNoResultFound)
+        if (isSearchActive) {
+          Box(
+              modifier =
+                  Modifier.padding(270.dp, 27.dp, 30.dp, 220.dp)
+                      .width(200.dp)
+                      .testTag("DropDownBox")) {
+                DropdownMenu(
+                    expanded = showFilterDropdown,
+                    onDismissRequest = { showFilterDropdown = false },
+                    modifier = Modifier.testTag("DropDownFilter")) {
+                      FilterType.entries.forEach { filterType ->
+                        DropdownMenuItem(
+                            text = {
+                              Text(
+                                  text = filterType.name.replace('_', ' '),
+                                  modifier = Modifier.testTag("FilterText"))
+                            },
+                            onClick = {
+                              homeViewModel.setSearchFilter(filterType)
+                              showFilterDropdown = false
+                            })
+                      }
+                    }
+                Text(
+                    text = selectedFilterType.name,
+                    modifier =
+                        Modifier.clickable { showFilterDropdown = true }
+                            .background(
+                                MaterialTheme.colorScheme.surfaceVariant,
+                                shape = MaterialTheme.shapes.medium)
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                    fontFamily = FontFamily(Font(R.font.montserrat_semi_bold)),
+                    fontSize = 12.sp,
+                )
+              }
+        }
       },
       bottomBar = { NavigationBar(navigation) },
-      modifier = Modifier.testTag("HomeScreen")) { innerPadding ->
+      modifier = Modifier.fillMaxWidth().testTag("HomeScreen")) { innerPadding ->
         when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
           emptyList<Itinerary>() -> {
             Text(
                 text = "You do not have any itineraries yet.",
-                modifier = Modifier.padding(16.dp).testTag("NoItinerariesText"),
-                fontSize = 18.sp)
+                modifier = Modifier.padding(10.dp).testTag("NoItinerariesText"),
+                fontSize = 1.sp)
           }
           else -> {
             // will display the list of itineraries
@@ -112,106 +157,107 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBar(
+fun SearchBarImplementation(
     onBackClicked: () -> Unit = {},
     onSearchActivated: (Boolean) -> Unit,
     viewModel: HomeViewModel = viewModel(),
+    selectedFilterType: FilterType,
     isNoResultFound: Boolean = false,
     navigation: Navigation
 ) {
-
   var searchText by remember { mutableStateOf("") }
   val items = viewModel.filteredItineraryList.value ?: listOf()
-  val focusManager = LocalFocusManager.current // Get access to the focus manager
-
+  val focusManager = LocalFocusManager.current
   // If the search bar is active (in focus or contains text), we'll consider it active.
-  var isActive by remember(searchText) { mutableStateOf(searchText.isNotEmpty()) }
+  var isActive by remember { mutableStateOf(false) }
 
-  androidx.compose.material3.SearchBar(
-      modifier =
-          Modifier.fillMaxWidth().padding(horizontal = 30.dp, vertical = 5.dp).testTag("searchBar"),
-      query = searchText,
-      onQueryChange = { newText ->
-        searchText = newText
-        viewModel.setSearchQuery(newText)
-        onSearchActivated(isActive)
-        isActive =
-            newText.isNotEmpty() ||
-                focusManager.equals(true) // Properly update the search query in the ViewModel
-      },
-      onSearch = { viewModel.setSearchQuery(searchText) },
-      active = isActive,
-      onActiveChange = { activeState ->
-        isActive = activeState
-        if (!activeState) { // When deactivating, clear the search text.
-          searchText = ""
-          viewModel.setSearchQuery("") // Reset search query
-        }
-      },
-      placeholder = {
+  Box(modifier = Modifier.fillMaxWidth()) {
+    SearchBar(
+        modifier =
+            Modifier.fillMaxWidth()
+                .padding(horizontal = 30.dp, vertical = 5.dp)
+                .testTag("searchBar"),
+        query = searchText,
+        onQueryChange = { newText ->
+          searchText = newText
+          viewModel.setSearchQuery(newText)
+          onSearchActivated(isActive)
+          isActive = newText.isNotEmpty() || focusManager.equals(true)
+        },
+        onSearch = {
+          viewModel.setSearchQuery(searchText)
+          isActive = false
+        },
+        leadingIcon = {
+          if (isActive) {
+            androidx.compose.material.Icon(
+                modifier = Modifier.clickable { onBackClicked() }.testTag("BackButton"),
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back")
+          } else {
+            androidx.compose.material.Icon(
+                imageVector = Icons.Default.Search, contentDescription = "Menu")
+          }
+        },
+        trailingIcon = {
+          if (isActive) {
+            Icon(
+                modifier =
+                    Modifier.clickable {
+                          if (searchText.isEmpty()) {
+                            isActive = false // Deactivate the search bar if text is empty
+                          } else {
+                            searchText = "" // Clear the text but keep the search bar active
+                            viewModel.setSearchQuery(searchText) // Reset search query
+                          }
+                          onSearchActivated(isActive)
+                        }
+                        .testTag("ClearButton"),
+                imageVector = Icons.Default.Close,
+                contentDescription = "Clear text field")
+          }
+        },
+        active = isActive,
+        onActiveChange = { activeState ->
+          isActive = activeState
+          if (!activeState) { // When deactivating, clear the search text.
+            searchText = ""
+            viewModel.setSearchQuery("") // Reset search query
+          }
+        },
+        placeholder = {
+          Text(
+              "Find Itineraries",
+              modifier = Modifier.padding(start = 10.dp).testTag("searchBarText"),
+              textAlign = TextAlign.Center,
+              fontFamily = FontFamily(Font(R.font.montserrat_bold)),
+              fontSize = 21.sp,
+              fontWeight = FontWeight.Medium,
+              letterSpacing = 0.15.sp,
+              color = md_theme_grey)
+        },
+        shape = MaterialTheme.shapes.small.copy(CornerSize(50)),
+    ) {
+      LaunchedEffect(searchText) { onSearchActivated(isActive) }
+
+      if (isNoResultFound) {
         Text(
-            "Search for an itinerary",
-            modifier = Modifier.padding(start = 10.dp).testTag("searchBarText"),
-            textAlign = TextAlign.Center,
-            fontFamily = FontFamily(Font(R.font.montserrat_bold)),
-            fontSize = 21.sp,
-            fontWeight = FontWeight.Medium,
+            "No results found",
+            modifier = Modifier.padding(16.dp).testTag("NoResultsFound"),
+            fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
             letterSpacing = 0.15.sp,
-            color = md_theme_grey)
-      },
-      leadingIcon = {
-        if (isActive) {
-          androidx.compose.material.Icon(
-              modifier = Modifier.clickable { onBackClicked() }.testTag("BackButton"),
-              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = "Back")
-        } else {
-          androidx.compose.material.Icon(
-              imageVector = Icons.Default.Search, contentDescription = "Menu")
-        }
-      },
-      shape = MaterialTheme.shapes.small.copy(CornerSize(50)),
-      trailingIcon = {
-        if (isActive) {
-          androidx.compose.material.Icon(
-              modifier =
-                  Modifier.clickable {
-                        // Clear the text field
-                        searchText = ""
-                        viewModel.setSearchQuery("")
-                        // TODO: For now when clearing the text, it loses focus and exits the
-                        // "search mode"
-                        // we need to find a way to keep the search bar active even when the text is
-                        // cleared
-                      }
-                      .testTag("ClearButton"),
-              imageVector = Icons.Default.Close,
-              contentDescription = "Clear text field")
-        }
-      },
-  ) {
-    LaunchedEffect(searchText) { onSearchActivated(isActive) }
-    if (isNoResultFound) {
-      Text(
-          "No results found",
-          modifier = Modifier.padding(16.dp).testTag("NoResultsFound"),
-          fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-          fontSize = 16.sp,
-          fontWeight = FontWeight.Bold,
-          letterSpacing = 0.15.sp,
-          color = Color.Red)
-    }
-    // This displays the list of itineraries in the search results
-    LazyColumn {
+            color = Color.Red)
+      }
+      // Itinerary items list
       val listToShow = if (isActive) items else viewModel.itineraryList.value ?: listOf()
-      items(listToShow) { itinerary ->
-        ItineraryItem(
-            itinerary = itinerary,
-            onItineraryClick = { id ->
-              // Hard coded for the moment
-              // TODO: Navigate to the itinerary details screen (2nd screen Figma)
-              // for now does nothing
-            })
+      LazyColumn {
+        items(listToShow) { itinerary ->
+          ItineraryItem(
+              itinerary = itinerary,
+              onItineraryClick = { /* TODO: Implement navigation to itinerary details */})
+        }
       }
     }
   }
