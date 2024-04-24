@@ -16,7 +16,7 @@ jobs:
   ci:
     name: CI
     # Execute the CI on the course's runners
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       # First step : Checkout the repository on the runner
