@@ -1,6 +1,7 @@
 package com.example.triptracker.model.geocoder
 
 import android.util.Log
+import com.example.triptracker.model.location.Location
 import java.io.IOException
 import okhttp3.Call
 import okhttp3.Callback
@@ -18,6 +19,7 @@ object LocationStrings {
   const val CITY = "city"
   const val VILLAGE = "village"
   const val TOWN = "town"
+  const val NAME = "name"
 }
 
 /**
@@ -56,6 +58,42 @@ class NominatimApi {
     return "$searchURL$query$format"
   }
 
+  fun decode(query: String, callback: (Location) -> Unit) {
+    val url = getSearchUrl(query)
+    val request = Request.Builder().url(url).build()
+    val call = httpClient.newCall(request)
+
+    call.enqueue(
+        object : Callback {
+          override fun onFailure(call: Call, e: IOException) {
+            callback(Location(0.0, 0.0, ""))
+          }
+
+          override fun onResponse(call: Call, response: Response) {
+            val result = response.body?.string()
+            // In this case the return value of nominatim is a json array with one element so we
+            // remove the first and last character to get a json element
+            val cleaned = result?.drop(1)?.dropLast(1)
+            if (cleaned == "") {
+              callback(Location(0.0, 0.0, ""))
+              return
+            }
+            val json = cleaned?.let { JSONObject(it) }
+
+            val lat = json?.get("lat").toString().toDoubleOrNull()
+            val lon = json?.get("lon").toString().toDoubleOrNull()
+            val display = json?.get("display_name").toString()
+            if (display == "" || lat == null || lon == null) {
+              callback(Location(0.0, 0.0, ""))
+              return
+            }
+            Log.d("API RESPONSE", result ?: "")
+            val location = Location(name = display, latitude = lat, longitude = lon)
+            callback(location)
+          }
+        })
+  }
+
   /**
    * Function to get the reverse search URL.
    *
@@ -72,9 +110,9 @@ class NominatimApi {
    *
    * @param lat : latitude of the location
    * @param lon : longitude of the location
-   * @param callback : function to call when the location is decoded into a city
+   * @param callback : function to call when the location is decoded into a json object
    */
-  fun reverseDecode(lat: Float, lon: Float, callback: (String) -> Unit) {
+  private fun reverseDecode(lat: Float, lon: Float, callback: (JSONObject?) -> Unit) {
 
     // generate the URL
     val url = getReverseUrl(lat, lon)
@@ -87,47 +125,88 @@ class NominatimApi {
 
           // if the request fails log the error and call the callback with the error
           override fun onFailure(call: Call, e: IOException) {
-            Log.d("API RESPONSE", LocationErrors.FAIL)
-            callback(LocationErrors.UNKNOWN)
+            callback(JSONObject())
           }
 
           // if the request is successful, parse the response and call the callback with the city
           override fun onResponse(call: Call, response: Response) {
             val result = response.body?.string()
             if (result == LocationErrors.ERROR || result == "") {
-              callback(LocationErrors.UNKNOWN)
+              callback(JSONObject(LocationErrors.ERROR))
               return
             }
             // parse the response in json
             val json = result?.let { JSONObject(it) }
 
-            // get the address from the json (which is a new json object)
-            val address = json?.get(LocationStrings.ADDRESS)
-
-            if (address == null) {
-              callback(LocationErrors.UNKNOWN)
-              return
-            }
-
-            // get the city, village or town from the address json object since there are multiple
-            // ways to describe a "city"
-            val addressJson = address as JSONObject
-            if (addressJson.has(LocationStrings.CITY)) {
-              val cityName =
-                  addressJson.get(LocationStrings.CITY) as? String ?: LocationErrors.UNKNOWN
-              callback(cityName)
-            } else if (addressJson.has(LocationStrings.VILLAGE)) {
-              val village =
-                  addressJson.get(LocationStrings.VILLAGE) as? String ?: LocationErrors.UNKNOWN
-              callback(village)
-            } else if (addressJson.has(LocationStrings.TOWN)) {
-              val town = addressJson.get(LocationStrings.TOWN) as? String ?: LocationErrors.UNKNOWN
-              callback(town)
-            } else {
-              callback(LocationErrors.UNKNOWN)
-            }
+            callback(json)
           }
         })
+  }
+
+  /**
+   * Function to get the city from the location.
+   *
+   * @param lat : latitude of the location
+   * @param lon : longitude of the location
+   * @param callback : function to call when the city is decoded
+   */
+  fun getCity(lat: Float, lon: Float, callback: (String) -> Unit) {
+    reverseDecode(lat, lon) { json ->
+      if (json.toString() == LocationErrors.ERROR) {
+        callback(LocationErrors.UNKNOWN)
+        return@reverseDecode
+      }
+      // get the address from the json (which is a new json object)
+      val address = json?.get(LocationStrings.ADDRESS)
+
+      if (address == null) {
+        callback(LocationErrors.UNKNOWN)
+        return@reverseDecode
+      }
+
+      // get the city, village or town from the address json object since there are multiple
+      // ways to describe a "city"
+      val addressJson = address as JSONObject
+      if (addressJson.has(LocationStrings.CITY)) {
+        val cityName = addressJson.get(LocationStrings.CITY) as? String ?: LocationErrors.UNKNOWN
+        callback(cityName)
+      } else if (addressJson.has(LocationStrings.VILLAGE)) {
+        val village = addressJson.get(LocationStrings.VILLAGE) as? String ?: LocationErrors.UNKNOWN
+        callback(village)
+      } else if (addressJson.has(LocationStrings.TOWN)) {
+        val town = addressJson.get(LocationStrings.TOWN) as? String ?: LocationErrors.UNKNOWN
+        callback(town)
+      } else {
+        callback(LocationErrors.UNKNOWN)
+      }
+    }
+  }
+
+  /**
+   * Function to get the point of interest from the location.
+   *
+   * @param lat : latitude of the location
+   * @param lon : longitude of the location
+   * @param callback : function to call when the point of interest is decoded
+   */
+  fun getPOI(lat: Float, lon: Float, callback: (String) -> Unit) {
+    reverseDecode(lat, lon) { json ->
+      if (json.toString() == LocationErrors.ERROR) {
+        callback(LocationErrors.UNKNOWN)
+        return@reverseDecode
+      }
+
+      Log.d("API RESPONSE", json.toString())
+
+      val name = json?.get(LocationStrings.NAME)
+
+      if (name == null) {
+        callback(LocationErrors.UNKNOWN)
+        return@reverseDecode
+      }
+
+      callback(name as String)
+    }
   }
 
   /**

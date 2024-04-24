@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.triptracker.model.geocoder.NominatimApi
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.google.android.gms.maps.model.LatLng
@@ -25,11 +26,25 @@ class RecordViewModel : ViewModel() {
   // Boolean state representing whether the recording is paused
   val isPaused = mutableStateOf(false)
 
+  // Boolean state representing whether the description is done or not
+  private val inDescription = mutableStateOf(false)
+  val description = mutableStateOf("")
+  val title = mutableStateOf("")
+
   // Private mutable list of LatLng points
   private var _latLongList = mutableListOf<LatLng>()
   // Public immutable list of LatLng points
   val latLongList: List<LatLng>
     get() = _latLongList
+
+  // Geocoder object to interact with the Nominatim API
+  val geocoder = NominatimApi()
+
+  // Point of interest name
+  val namePOI = mutableStateOf("")
+
+  // Dropdown menu for POI name
+  val displayNameDropDown = mutableStateOf("")
 
   /** Starts the recording. Sets the start time to the current time. */
   fun startRecording() {
@@ -95,13 +110,33 @@ class RecordViewModel : ViewModel() {
     isPaused.value = false
   }
 
+  /** Starts the description phase. */
+  fun startDescription() {
+    inDescription.value = true
+  }
+  /** Stops the description phase. */
+  fun stopDescription() {
+    inDescription.value = false
+    description.value = ""
+    title.value = ""
+  }
+
+  /**
+   * Checks if the recording is in the description phase.
+   *
+   * @return Boolean indicating whether the recording is in the description phase.
+   */
+  fun isInDescription(): Boolean {
+    return inDescription.value
+  }
+
   /**
    * Checks if the recording is ongoing.
    *
    * @return Boolean indicating whether the recording is ongoing.
    */
   fun isRecording(): Boolean {
-    return startTime.longValue != 0L && endTime.longValue == 0L
+    return startTime.longValue != 0L && endDate.value == "" && startDate.value != ""
   }
 
   /**
@@ -142,6 +177,25 @@ class RecordViewModel : ViewModel() {
       } catch (e: Exception) {
         // Handle the exception, e.g. show a message to the user
       }
+    }
+  }
+
+  /** Gets the point of interest (POI) name at the given LatLng point. */
+  fun getPOI(latLng: LatLng) {
+    geocoder.getPOI(latLng.latitude.toFloat(), latLng.longitude.toFloat()) { name ->
+      namePOI.value = name
+    }
+  }
+
+  /**
+   * Gets the suggestion name at the given LatLng point and returns the LAT/LNG of the proposed
+   * location
+   */
+  fun getSuggestion(query: String, callback: (LatLng) -> Unit) {
+    geocoder.decode(query) { location ->
+      displayNameDropDown.value = location.name
+      Log.d("API RESPONSE", location.name)
+      callback(LatLng(location.latitude, location.longitude))
     }
   }
 }
