@@ -182,3 +182,18 @@ fun compareDistance(latLng1: LatLng, latLng2: LatLng, distance: Double): Boolean
   Log.d("MAP-DISTANCE", latLng1.sphericalDistance(latLng2).toString())
   return latLng1.sphericalDistance(latLng2) <= distance
 }
+
+/**
+ * Function that calculates the mean location of a list of LatLng points.
+ *
+ * @param list The list of LatLng points
+ */
+fun meanLocation(list: List<LatLng>): LatLng {
+  var sumLat = 0.0
+  var sumLng = 0.0
+  for (i in list) {
+    sumLat += i.latitude
+    sumLng += i.longitude
+  }
+  return LatLng(sumLat / list.size, sumLng / list.size)
+}

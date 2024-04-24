@@ -61,6 +61,7 @@ import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
+import com.example.triptracker.navigation.meanLocation
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
@@ -457,12 +458,12 @@ fun Map(
                                     val title = viewModel.title.value
                                     val username = "lomimi" // TODO : get username from user but not
                                     // implemented yet
+                                    val meanLocation = meanLocation(viewModel.latLongList.toList())
                                     val location =
                                         Location(
-                                            deviceLocation.latitude,
-                                            deviceLocation.longitude,
-                                            "Device Location")
-                                    // TODO : get location from user but not implemented yet
+                                            meanLocation.latitude,
+                                            meanLocation.longitude,
+                                            "Mean Path Location")
                                     // (default device location)
                                     val flameCount = 0L
                                     val startDate = viewModel.startDate.value

@@ -1,6 +1,5 @@
 package com.example.triptracker.model.itinerary
 
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 
 /**
@@ -57,7 +56,9 @@ data class ItineraryList(private var itineraryList: List<Itinerary>) {
    */
   fun getFilteredItineraries(latLngBounds: LatLngBounds, limit: Int): List<Itinerary> {
     return itineraryList
-        .filter { latLngBounds.contains(LatLng(it.location.latitude, it.location.longitude)) }
+        .filter { itinerary ->
+          itinerary.route.any() { latitudeLongitude -> latLngBounds.contains(latitudeLongitude) }
+        }
         .take(limit)
   }
 
