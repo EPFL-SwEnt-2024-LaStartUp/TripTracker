@@ -30,9 +30,9 @@ class UserProfileViewModel(
    * @param mail : mail of the user profile to return
    * @return user profile corresponding to the mail
    */
-    fun getUserProfileFromDb(mail: String): UserProfile? {
-        return userProfileRepository.getUserProfile(mail)
-    }
+  fun getUserProfileFromDb(mail: String): UserProfile? {
+    return userProfileRepository.getUserProfile(mail)
+  }
 
   /**
    * This function adds a new user profile to the database.
