@@ -7,11 +7,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -47,6 +47,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.NavTopBar
 import com.example.triptracker.view.Navigation
+import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
@@ -129,202 +130,73 @@ fun UserProfileEditScreen(navigation: Navigation) {
             title = "Edit Profile",
             canNavigateBack = true,
             navigateUp = { navigation.goBack() },
-            actions = {
-              SaveButton(
-                  canSave =
-                      !isNameEmpty && !isSurnameEmpty && !isBirthdateEmpty && !isUsernameEmpty,
-                  action = {
-                    updateProfile(profile, name, surname, mail, birthdate, username, imageUrl)
-                  })
-            })
+            actions = {})
       },
+      bottomBar = { NavigationBar(navigation) },
       modifier = Modifier.testTag("UserProfileEditScreen")) { innerPadding ->
         Box(
             modifier =
-                Modifier.fillMaxHeight()
+                Modifier.fillMaxHeight().padding(innerPadding)
+                    .padding(top = 35.dp, bottom = 35.dp, start = 25.dp, end = 25.dp)
                     .fillMaxWidth()
-                    .padding(innerPadding)
-                    .fillMaxSize()
-                    .background(md_theme_light_dark),
+                    .background(md_theme_light_dark, shape = RoundedCornerShape(20.dp)),
             contentAlignment = Alignment.TopCenter) {
               Column(
                   horizontalAlignment = Alignment.Start,
                   verticalArrangement = Arrangement.SpaceEvenly) {
+                    Spacer(modifier = Modifier.height(25.dp))
+                    ProfileEditTextField(
+                        "Username",
+                        username,
+                        {
+                          username = it
+                          isUsernameEmpty = it.isEmpty()
+                        },
+                        isUsernameEmpty)
+                    Spacer(modifier = Modifier.height(15.dp))
+                    ProfileEditTextField(
+                        "Name",
+                        name,
+                        {
+                          name = it
+                          isNameEmpty = it.isEmpty()
+                        },
+                        isNameEmpty)
+                    Spacer(modifier = Modifier.height(15.dp))
+                    ProfileEditTextField(
+                        "Surname",
+                        surname,
+                        {
+                          surname = it
+                          isSurnameEmpty = it.isEmpty()
+                        },
+                        isSurnameEmpty)
+                    Spacer(modifier = Modifier.height(15.dp))
+                    ProfileEditTextField(
+                        "Mail",
+                        mail,
+                        {
+                          mail = it
+                          isMailEmpty = it.isEmpty()
+                        },
+                        isMailEmpty)
+                    Spacer(modifier = Modifier.height(15.dp))
+
+                    val isOpen = remember { mutableStateOf(false) }
                     Text(
-                        text = "Change your information below",
+                        text = "Date of birth",
                         fontSize = 14.sp,
                         fontFamily = Montserrat,
                         fontWeight = FontWeight.Normal,
                         color = md_theme_grey,
-                        modifier = Modifier.padding(top = 50.dp, start = 30.dp, end = 30.dp),
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    OutlinedTextField(
-                        value = name,
-                        onValueChange = {
-                          name = it
-                          isNameEmpty = it.isEmpty() // Update empty state
-                        },
-                        label = {
-                          Text(
-                              text = "Name",
-                              fontSize = 14.sp,
-                              fontFamily = Montserrat,
-                              fontWeight = FontWeight.Normal,
-                              color = Color.White)
-                        },
-                        modifier =
-                            Modifier.fillMaxWidth(1f)
-                                .padding(top = 5.dp, bottom = 5.dp, start = 30.dp, end = 30.dp),
-                        textStyle =
-                            TextStyle(
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                fontFamily = Montserrat,
-                                fontWeight = FontWeight.Normal),
-                        colors =
-                            OutlinedTextFieldDefaults.colors(
-                                unfocusedTextColor = Color.White,
-                                unfocusedBorderColor =
-                                    if (isNameEmpty) md_theme_light_error else md_theme_grey,
-                                unfocusedLabelColor =
-                                    if (isNameEmpty) md_theme_light_error else md_theme_grey,
-                                cursorColor = Color.White,
-                                focusedBorderColor =
-                                    if (isNameEmpty) md_theme_light_error else md_theme_grey,
-                                focusedLabelColor = Color.White,
-                            ))
-
-                    Spacer(modifier = Modifier.height(7.dp))
-                    OutlinedTextField(
-                        value = surname,
-                        onValueChange = {
-                          surname = it
-                          isSurnameEmpty = it.isEmpty() // Update empty state
-                        },
-                        label = {
-                          Text(
-                              text = "Surname",
-                              fontSize = 14.sp,
-                              fontFamily = Montserrat,
-                              fontWeight = FontWeight.Normal,
-                              color = Color.White)
-                        },
-                        modifier =
-                            Modifier.fillMaxWidth(1f)
-                                .padding(top = 5.dp, bottom = 5.dp, start = 30.dp, end = 30.dp),
-                        textStyle =
-                            TextStyle(
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                fontFamily = Montserrat,
-                                fontWeight = FontWeight.Normal),
-                        colors =
-                            OutlinedTextFieldDefaults.colors(
-                                unfocusedTextColor = Color.White,
-                                unfocusedBorderColor =
-                                    if (isSurnameEmpty) md_theme_light_error else md_theme_grey,
-                                unfocusedLabelColor =
-                                    if (isSurnameEmpty) md_theme_light_error else md_theme_grey,
-                                cursorColor = Color.White,
-                                focusedBorderColor =
-                                    if (isSurnameEmpty) md_theme_light_error else md_theme_grey,
-                                focusedLabelColor = Color.White,
-                            ))
-
-                    Spacer(modifier = Modifier.height(7.dp))
-                    OutlinedTextField(
-                        value = mail,
-                        onValueChange = {
-                          mail = it
-                          isMailEmpty = it.isEmpty() // Update empty state
-                        },
-                        label = {
-                          Text(
-                              text = "Mail",
-                              fontSize = 14.sp,
-                              fontFamily = Montserrat,
-                              fontWeight = FontWeight.Normal,
-                              color = Color.White)
-                        },
-                        modifier =
-                            Modifier.fillMaxWidth(1f)
-                                .padding(top = 5.dp, bottom = 5.dp, start = 30.dp, end = 30.dp),
-                        textStyle =
-                            TextStyle(
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                fontFamily = Montserrat,
-                                fontWeight = FontWeight.Normal),
-                        colors =
-                            OutlinedTextFieldDefaults.colors(
-                                unfocusedTextColor = Color.White,
-                                unfocusedBorderColor =
-                                    if (isMailEmpty) md_theme_light_error else md_theme_grey,
-                                unfocusedLabelColor =
-                                    if (isMailEmpty) md_theme_light_error else md_theme_grey,
-                                cursorColor = Color.White,
-                                focusedBorderColor =
-                                    if (isMailEmpty) md_theme_light_error else md_theme_grey,
-                                focusedLabelColor = Color.White,
-                            ))
-
-                    Spacer(modifier = Modifier.height(7.dp))
-                    OutlinedTextField(
-                        value = username,
-                        onValueChange = {
-                          username = it
-                          isUsernameEmpty = it.isEmpty() // Update empty state
-                        },
-                        label = {
-                          Text(
-                              text = "Username",
-                              fontSize = 14.sp,
-                              fontFamily = Montserrat,
-                              fontWeight = FontWeight.Normal,
-                              color = Color.White)
-                        },
-                        modifier =
-                            Modifier.fillMaxWidth(1f)
-                                .padding(top = 5.dp, bottom = 5.dp, start = 30.dp, end = 30.dp),
-                        textStyle =
-                            TextStyle(
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                fontFamily = Montserrat,
-                                fontWeight = FontWeight.Normal),
-                        colors =
-                            OutlinedTextFieldDefaults.colors(
-                                unfocusedTextColor = Color.White,
-                                unfocusedBorderColor =
-                                    if (isUsernameEmpty) md_theme_light_error else md_theme_grey,
-                                unfocusedLabelColor =
-                                    if (isUsernameEmpty) md_theme_light_error else md_theme_grey,
-                                cursorColor = Color.White,
-                                focusedBorderColor =
-                                    if (isUsernameEmpty) md_theme_light_error else md_theme_grey,
-                                focusedLabelColor = Color.White,
-                            ))
-
-                    Spacer(modifier = Modifier.height(7.dp))
-                    val isOpen = remember { mutableStateOf(false) }
-
+                        modifier = Modifier.padding(start = 30.dp, end = 30.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                       OutlinedTextField(
                           readOnly = true,
                           value = birthdate.format(DateTimeFormatter.ISO_DATE),
-                          label = {
-                            Text(
-                                text = "Date of birth",
-                                fontSize = 14.sp,
-                                fontFamily = Montserrat,
-                                fontWeight = FontWeight.Normal,
-                                color = Color.White)
-                          },
+                          label = {},
                           onValueChange = {},
-                          modifier =
-                              Modifier.padding(top = 5.dp, bottom = 5.dp, start = 30.dp).weight(1f),
+                          modifier = Modifier.padding(bottom = 5.dp, start = 30.dp).weight(1f),
                           textStyle =
                               TextStyle(
                                   color = Color.White,
@@ -351,7 +223,7 @@ fun UserProfileEditScreen(navigation: Navigation) {
                             Icon(
                                 imageVector = Icons.Default.CalendarMonth,
                                 contentDescription = "Calendar",
-                                tint = Color.White)
+                                tint = Color.Gray)
                           }
                     }
 
@@ -369,9 +241,70 @@ fun UserProfileEditScreen(navigation: Navigation) {
                             isOpen.value = false // close dialog
                           })
                     }
+                    Spacer(modifier = Modifier.height(50.dp))
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                      SaveButton(
+                          canSave =
+                              !isNameEmpty &&
+                                  !isSurnameEmpty &&
+                                  !isBirthdateEmpty &&
+                                  !isUsernameEmpty,
+                          action = {
+                            updateProfile(
+                                profile, name, surname, mail, birthdate, username, imageUrl)
+                          })
+                    }
                   }
             }
       }
+}
+
+/**
+ * This composable function displays a profile edit text field.
+ *
+ * @param label : label of the text field.
+ * @param value : value of the text field.
+ * @param onValueChange : function to be called when the value of the text field changes.
+ * @param isEmpty : boolean indicating if the text field is empty.
+ * @param modifier : modifier for the text field.
+ */
+@Composable
+fun ProfileEditTextField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    isEmpty: Boolean,
+    modifier: Modifier =
+        Modifier.fillMaxWidth(1f).padding(bottom = 5.dp, start = 30.dp, end = 30.dp)
+) {
+  Text(
+      text = label,
+      fontSize = 14.sp,
+      fontFamily = Montserrat,
+      fontWeight = FontWeight.Normal,
+      color = md_theme_grey,
+      modifier = Modifier.padding(start = 30.dp, end = 30.dp),
+  )
+  OutlinedTextField(
+      value = value,
+      onValueChange = { onValueChange(it) },
+      label = {},
+      modifier = modifier,
+      textStyle =
+          TextStyle(
+              color = Color.White,
+              fontSize = 16.sp,
+              fontFamily = Montserrat,
+              fontWeight = FontWeight.Normal),
+      colors =
+          OutlinedTextFieldDefaults.colors(
+              unfocusedTextColor = Color.White,
+              unfocusedBorderColor = if (isEmpty) md_theme_light_error else md_theme_grey,
+              unfocusedLabelColor = if (isEmpty) md_theme_light_error else md_theme_grey,
+              cursorColor = Color.White,
+              focusedBorderColor = if (isEmpty) md_theme_light_error else md_theme_grey,
+              focusedLabelColor = Color.White,
+          ))
 }
 
 /**
@@ -417,7 +350,7 @@ fun SaveButton(canSave: Boolean = true, action: () -> Unit = {}) {
               containerColor = md_theme_orange, contentColor = Color.White)) {
         Text(
             text = "Save",
-            fontSize = 18.sp,
+            fontSize = 15.sp,
             fontFamily = Montserrat,
             fontWeight = FontWeight.SemiBold,
             color = Color.White)
