@@ -73,14 +73,13 @@ fun DisplayItinerary(
               .clickable { // When you click on an itinerary, it should bring you to the map
                 // overview with the selected itinerary highlighted and the first pinned places
 
-                  if (navigation.getCurrentDestination() ==
-                      TopLevelDestination(Route.MAPS, Icons.Outlined.Place, "Maps")
-                  ) {
-                      mapViewModel.mapPopupState.value = popupState.PATHOVERLAY
-                  } else {
-                    navigation.navigateTo(navigation.getTopLevelDestinations()[1])
-                      mapViewModel.displayPopUp.value = true
-                  }
+                if (navigation.getCurrentDestination() ==
+                    TopLevelDestination(Route.MAPS, Icons.Outlined.Place, "Maps")) {
+                  mapViewModel.mapPopupState.value = popupState.PATHOVERLAY
+                } else {
+                  navigation.navigateTo(navigation.getTopLevelDestinations()[1])
+                  mapViewModel.displayPopUp.value = true
+                }
                 // TODO : when changing Top Level Destination, the navbar should be updated to
                 // highlight the correct tab.
                 // TODO : Would call DisplayItineraryInMap or sth similar later on

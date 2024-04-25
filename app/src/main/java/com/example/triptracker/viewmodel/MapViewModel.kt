@@ -2,7 +2,6 @@ package com.example.triptracker.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -35,14 +34,9 @@ class MapViewModel(
         MutableLiveData<Map<Itinerary, List<LatLng>>>()
 ) : ViewModel() {
 
-
-    //ENUM
-    var mapPopupState = mutableStateOf(popupState.DISPLAYITINERARY)
-    var displayPopUp = mutableStateOf(false)
-
-
-    // geocoder with Nominatim API that allows to reverse decode the location
-  val geocoder = NominatimApi()
+  // ENUM
+  var mapPopupState = mutableStateOf(popupState.DISPLAYITINERARY)
+  var displayPopUp = mutableStateOf(false)
 
   // state for the city name displayed at the top of the screen
   val cityNameState = mutableStateOf("")
