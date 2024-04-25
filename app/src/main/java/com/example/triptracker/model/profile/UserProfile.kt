@@ -11,8 +11,8 @@ import java.util.Date
  * @property birthdate : user's date of birth.
  * @property pseudo : nickname or pseudonym chosen by the user.
  * @property profileImageUrl : optional URL to the user's profile image. (Defaults: null)
- * @property followers : list of user's followers. (Defaults: empty list)
- * @property following : list of user's following. (Defaults: empty list)
+ * @property followers : list of user's followers' email. (Defaults: empty list)
+ * @property following : list of user's following's email. (Defaults: empty list)
  */
 data class UserProfile(
     val mail: String,
@@ -21,6 +21,6 @@ data class UserProfile(
     val birthdate: Date,
     val pseudo: String,
     val profileImageUrl: String? = null,
-    val followers: List<UserProfile> = emptyList(),
-    val following: List<UserProfile> = emptyList()
+    val followers: List<String> = emptyList(),
+    val following: List<String> = emptyList()
 )

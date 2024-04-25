@@ -1,5 +1,7 @@
 package com.example.triptracker.view.map
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -26,15 +28,18 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Map
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,6 +55,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -61,6 +67,7 @@ import androidx.compose.ui.window.PopupProperties
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.location.Pin
+import com.example.triptracker.model.repository.Response
 import com.example.triptracker.navigation.compareDistance
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_dark_error
@@ -70,6 +77,7 @@ import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.RecordViewModel
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.launch
 
 @Composable
 /**
@@ -79,7 +87,12 @@ import com.google.android.gms.maps.model.LatLng
  * @param recordViewModel: RecordViewModel
  * @param latLng: LatLng at where the spot is going to be added
  */
-fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> Unit = {}) {
+fun AddSpot(
+    recordViewModel: RecordViewModel,
+    latLng: LatLng,
+    context: Context,
+    onDismiss: () -> Unit = {}
+) {
 
   // Variables to store the state of the add spot box
   var boxDisplayed by remember { mutableStateOf(true) }
@@ -98,6 +111,9 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
 
   // Variables to store the state of the selected pictures
   var selectedPictures by remember { mutableStateOf<List<Uri?>>(emptyList()) }
+
+  // Variable to store the state of the alert
+  var alertIsDisplayed by remember { mutableStateOf(false) }
 
   // Launcher for the pick multiple media activity
   val pickMultipleMedia =
@@ -132,11 +148,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                 // Close button
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                   IconButton(
-                      modifier = Modifier.padding(10.dp),
-                      onClick = {
-                        boxDisplayed = false
-                        onDismiss()
-                      }) {
+                      modifier = Modifier.padding(10.dp), onClick = { alertIsDisplayed = true }) {
                         Icon(
                             imageVector = Icons.Outlined.Close,
                             contentDescription = "Close",
@@ -286,8 +298,45 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                 Row(
                     modifier = Modifier.fillMaxWidth().height(250.dp).testTag("SpotPictures"),
                     horizontalArrangement = Arrangement.Center) {
-                      InsertPictures(pickMultipleMedia = pickMultipleMedia, selectedPictures)
+                      InsertPictures(
+                          pickMultipleMedia = pickMultipleMedia,
+                          selectedPictures,
+                      )
                     }
+
+                when (alertIsDisplayed) {
+                  true -> {
+                    AlertDialog(
+                        icon = { Icons.Filled.LocationOn },
+                        title = { Text(text = "Path incomplete or don't save this spot") },
+                        text = {
+                          Text(
+                              text =
+                                  "There are some missing informations and you are about to leave this page. Do you want to save the spot or dismiss it ?")
+                        },
+                        onDismissRequest = {
+                          alertIsDisplayed = false
+                          boxDisplayed = false
+                          onDismiss()
+                        },
+                        confirmButton = {
+                          TextButton(onClick = { alertIsDisplayed = false }) {
+                            Text("Stay on this page")
+                          }
+                        },
+                        dismissButton = {
+                          TextButton(
+                              onClick = {
+                                alertIsDisplayed = false
+                                boxDisplayed = false
+                                onDismiss()
+                              }) {
+                                Text("Dismiss")
+                              }
+                        })
+                  }
+                  false -> {}
+                }
 
                 // Save button that will upload the data to the DB once completed
                 Row(
@@ -296,19 +345,33 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                     verticalAlignment = Alignment.Bottom) {
                       FilledTonalButton(
                           onClick = {
-                            // TODO save all the data on the DB ONLY WHEN everything is filled up
-                            Pin(
-                                latitude = position.latitude,
-                                longitude = position.longitude,
-                                name = location,
-                                description = description,
-                                image_url =
-                                    if (selectedPictures.isNotEmpty())
-                                        selectedPictures[0].toString()
-                                    else "" // TODO CHANGE THIS LATER TO A LIST IN THE DB
+                            if ((location.isEmpty() && recordViewModel.namePOI.value.isEmpty()) ||
+                                description.isEmpty()) {
+                              alertIsDisplayed = true
+                            } else {
+                              // Save the spot with the entered location
+                              if (location.isNotEmpty()) {
+                                saveSpot(
+                                    recordViewModel,
+                                    location,
+                                    description,
+                                    position,
+                                    selectedPictures,
                                 )
-                            boxDisplayed = false
-                            onDismiss()
+                                // Or save the spot with the location found by nominatim
+                              } else {
+                                saveSpot(
+                                    recordViewModel,
+                                    recordViewModel.namePOI.value,
+                                    description,
+                                    position,
+                                    selectedPictures,
+                                )
+                              }
+                              alertIsDisplayed = false
+                              boxDisplayed = false
+                              onDismiss()
+                            }
                           },
                           modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp),
                           colors =
@@ -329,6 +392,58 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
   }
 }
 
+private fun saveSpot(
+    recordViewModel: RecordViewModel,
+    location: String,
+    description: String,
+    position: LatLng,
+    selectedPictures: List<Uri?>,
+) {
+
+  recordViewModel.addImageToStorageResponse = emptyList()
+  val pin =
+      mutableStateOf(
+          Pin(
+              latitude = position.latitude,
+              longitude = position.longitude,
+              name = location,
+              description = description,
+              image_url =
+                  recordViewModel.addImageToStorageResponse.map { resp ->
+                    if (resp is Response.Success) {
+                      resp.data!!.toString()
+                    } else {
+                      Uri.EMPTY.toString()
+                    }
+                  }))
+  var counter = 1
+  selectedPictures.forEach { picture ->
+    recordViewModel.addImageToStorage(picture!!) { resp ->
+      recordViewModel.addImageToStorageResponse += resp
+      pin.value =
+          Pin(
+              latitude = position.latitude,
+              longitude = position.longitude,
+              name = location,
+              description = description,
+              image_url =
+                  recordViewModel.addImageToStorageResponse.map { pictureUrl ->
+                    if (pictureUrl is Response.Success) {
+                      pictureUrl.data!!.toString()
+                    } else {
+                      Uri.EMPTY.toString()
+                    }
+                  })
+      if (counter == selectedPictures.size) {
+        recordViewModel.addPin(pin.value)
+        Log.d("PIN_LIST", recordViewModel.pinList.toString())
+      }
+      counter++
+    }
+  }
+}
+
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 /**
  * InsertPictures is a composable function that allows the user to insert pictures to the spot
@@ -340,7 +455,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
 fun InsertPictures(
     pickMultipleMedia:
         ManagedActivityResultLauncher<PickVisualMediaRequest, List<@JvmSuppressWildcards Uri>>,
-    selectedPictures: List<Uri?>
+    selectedPictures: List<Uri?>,
 ) {
   when (selectedPictures.isNotEmpty()) {
     // when no selection was done show a clickable dashed box that will allow the user to select
@@ -446,6 +561,6 @@ fun InsertPictures(
 @Preview
 @Composable
 fun AddSpotPreview() {
-  AddSpot(RecordViewModel(), LatLng(46.519053, 6.568287))
+  AddSpot(RecordViewModel(), LatLng(46.519053, 6.568287), context = LocalContext.current)
   //  AddSpot(RecordViewModel(), LatLng(46.519879, 6.560632))
 }

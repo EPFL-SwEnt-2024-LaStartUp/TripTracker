@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.ButtonDefaults
@@ -32,7 +33,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -57,11 +57,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
-import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
+import com.example.triptracker.navigation.meanLocation
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
@@ -274,7 +274,7 @@ fun Map(
 
     // Display start window
     if (!viewModel.isInDescription()) {
-      StartWindow(viewModel = viewModel)
+      StartWindow(viewModel = viewModel, context)
 
       if (!viewModel.addSpotClicked.value) {
         // Button to center on device location
@@ -286,7 +286,7 @@ fun Map(
                   DisplayCenterLocationButton(
                       coroutineScope = coroutineScope,
                       deviceLocation = deviceLocation,
-                      cameraPositionState = cameraPositionState)
+                      cameraPositionState = cameraPositionState) { /* DO NOTHING*/}
                 }
               }
 
@@ -462,18 +462,17 @@ fun Map(
                                     val title = viewModel.title.value
                                     val username = "lomimi" // TODO : get username from user but not
                                     // implemented yet
+                                    val meanLocation = meanLocation(viewModel.latLongList.toList())
                                     val location =
                                         Location(
-                                            deviceLocation.latitude,
-                                            deviceLocation.longitude,
-                                            "Device Location")
-                                    // TODO : get location from user but not implemented yet
+                                            meanLocation.latitude,
+                                            meanLocation.longitude,
+                                            "Mean Path Location")
                                     // (default device location)
                                     val flameCount = 0L
                                     val startDate = viewModel.startDate.value
                                     val endDate = viewModel.endDate.value
-                                    val pinList =
-                                        emptyList<Pin>() // TODO : get pin list from user but not
+                                    val pinList = viewModel.pinList
                                     // implemented yet
                                     val description = viewModel.description.value
                                     val itinerary =
@@ -522,7 +521,7 @@ fun Map(
  * @param viewModel The RecordViewModel instance.
  */
 @Composable
-fun StartWindow(viewModel: RecordViewModel) {
+fun StartWindow(viewModel: RecordViewModel, context: Context) {
   val timer = remember { mutableLongStateOf(0L) }
 
   // Update timer if recording
@@ -540,6 +539,7 @@ fun StartWindow(viewModel: RecordViewModel) {
       AddSpot(
           latLng = viewModel.latLongList.last(),
           recordViewModel = viewModel,
+          context = context,
           onDismiss = { viewModel.addSpotClicked.value = false })
     }
     false -> {}

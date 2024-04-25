@@ -193,6 +193,15 @@ dependencies {
   implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
   implementation("com.google.android.gms:play-services-auth:19.2.0")
 
+  // ----------       Firebase Storage     ------------
+  // Import the BoM for the Firebase platform
+  implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
+
+  // Add the dependency for the Cloud Storage library
+  // When using the BoM, you don't specify versions in Firebase library dependencies
+  implementation("com.google.firebase:firebase-storage")
+
+  // ----------       Navigation     ------------
   implementation("androidx.navigation:navigation-compose:2.6.0-rc01")
 
   // live data
