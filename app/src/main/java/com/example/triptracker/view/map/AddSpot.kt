@@ -1,7 +1,6 @@
 package com.example.triptracker.view.map
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -55,7 +54,6 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -87,12 +85,7 @@ import kotlinx.coroutines.launch
  * @param recordViewModel: RecordViewModel
  * @param latLng: LatLng at where the spot is going to be added
  */
-fun AddSpot(
-    recordViewModel: RecordViewModel,
-    latLng: LatLng,
-    context: Context,
-    onDismiss: () -> Unit = {}
-) {
+fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> Unit = {}) {
 
   // Variables to store the state of the add spot box
   var boxDisplayed by remember { mutableStateOf(true) }
@@ -148,7 +141,8 @@ fun AddSpot(
                 // Close button
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                   IconButton(
-                      modifier = Modifier.padding(10.dp), onClick = { alertIsDisplayed = true }) {
+                      modifier = Modifier.padding(10.dp).testTag("CloseButton"),
+                      onClick = { alertIsDisplayed = true }) {
                         Icon(
                             imageVector = Icons.Outlined.Close,
                             contentDescription = "Close",
@@ -227,10 +221,7 @@ fun AddSpot(
                       DropdownMenu(
                           expanded = expanded.value,
                           onDismissRequest = { expanded.value = false },
-                          modifier =
-                              Modifier.fillMaxWidth()
-                                  .align(Alignment.CenterVertically)
-                                  .testTag("LocationDropDown"),
+                          modifier = Modifier.fillMaxWidth().align(Alignment.CenterVertically),
                           properties = PopupProperties(focusable = false),
                       ) {
                         DropdownMenuItem(
@@ -265,7 +256,8 @@ fun AddSpot(
                           modifier =
                               Modifier.padding(horizontal = 20.dp, vertical = 20.dp)
                                   .fillMaxWidth()
-                                  .onFocusChanged {},
+                                  .onFocusChanged {}
+                                  .testTag("DescriptionText"),
                           value = description,
                           placeholder = {
                             Text(
@@ -561,6 +553,6 @@ fun InsertPictures(
 @Preview
 @Composable
 fun AddSpotPreview() {
-  AddSpot(RecordViewModel(), LatLng(46.519053, 6.568287), context = LocalContext.current)
+  AddSpot(RecordViewModel(), LatLng(46.519053, 6.568287))
   //  AddSpot(RecordViewModel(), LatLng(46.519879, 6.560632))
 }
