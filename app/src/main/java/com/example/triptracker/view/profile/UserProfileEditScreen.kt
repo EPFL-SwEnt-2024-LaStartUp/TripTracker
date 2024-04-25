@@ -145,7 +145,6 @@ fun UserProfileEditScreen(navigation: Navigation) {
 
   // Variable to store the state of the new profile picture
   var selectedPicture by remember { mutableStateOf<Uri?>(null) }
-
   // Launcher for the pick multiple media activity
   val pickMedia =
       rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { picture ->
@@ -160,13 +159,7 @@ fun UserProfileEditScreen(navigation: Navigation) {
       }
 
   Scaffold(
-      topBar = {
-        // NavTopBar(
-        //    title = "Edit Profile",
-        //    canNavigateBack = true,
-        //    navigateUp = { navigation.goBack() },
-        //    actions = {})
-      },
+      topBar = {},
       bottomBar = { NavigationBar(navigation) },
       modifier = Modifier.testTag("UserProfileEditScreen")) { innerPadding ->
         Box(
@@ -366,16 +359,13 @@ fun UserProfileEditScreen(navigation: Navigation) {
  * @param value : value of the text field.
  * @param onValueChange : function to be called when the value of the text field changes.
  * @param isEmpty : boolean indicating if the text field is empty.
- * @param modifier : modifier for the text field.
  */
 @Composable
 fun ProfileEditTextField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
-    isEmpty: Boolean,
-    modifier: Modifier =
-        Modifier.fillMaxWidth(1f).padding(bottom = 5.dp, start = 30.dp, end = 30.dp)
+    isEmpty: Boolean
 ) {
   Text(
       text = label,
@@ -389,7 +379,7 @@ fun ProfileEditTextField(
       value = value,
       onValueChange = { onValueChange(it) },
       label = {},
-      modifier = modifier,
+      modifier = Modifier.fillMaxWidth(1f).padding(bottom = 5.dp, start = 30.dp, end = 30.dp),
       textStyle =
           TextStyle(
               color = Color.White,
