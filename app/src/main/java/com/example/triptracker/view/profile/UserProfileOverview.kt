@@ -49,14 +49,16 @@ import com.example.triptracker.view.TopLevelDestination
 import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_orange
+import com.example.triptracker.viewmodel.UserProfileViewModel
+import com.example.triptracker.viewmodel.loggedUser
 
 /* Visual preview without any logic */
 @Preview
 @Composable
 fun UserProfilePreview() {
-  val navController = rememberNavController()
-  val navigation = remember(navController) { Navigation(navController) }
-  UserProfileOverview(navigation = navigation)
+    val navController = rememberNavController()
+    val navigation = remember(navController) { Navigation(navController) }
+    UserProfileOverview(navigation = navigation)
 }
 /**
  * Composable displaying the profile overview featuring information about follower, following. 4
@@ -67,199 +69,197 @@ fun UserProfilePreview() {
  */
 @Composable
 fun UserProfileOverview(
-    // userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
+    userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
     navigation: Navigation
 ) {
-  // UID of the user that needs to be fetched from ??, used to fetch the profile from the database
-  // val uid = "TODO"
-  // val profile = userProfileViewModel.userProfileList.getUserProfile(uid)
-  // val url = profile.profileImageUrl
-
-  Scaffold(
-      topBar = {}, bottomBar = { NavigationBar(navigation) }, modifier = Modifier.fillMaxSize()) {
-          innerPadding ->
+    // UID of the user that needs to be fetched from ??, used to fetch the profile from the database
+    val userMail: String = loggedUser.email ?: ""
+    val profile = userProfileViewModel.getUserProfileFromDb("leopold.galhaud@gmail.com")
+    Scaffold(
+        topBar = {}, bottomBar = { NavigationBar(navigation) }, modifier = Modifier.fillMaxSize()) {
+            innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-          Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
+            Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
 
-          // Profile picture and name (later maybe more informations depending of data classes
-          // updates
-          Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
-            // Profile picture
-            Column() {
-              AsyncImage(
-                  model =
-                      "https://img-19.commentcamarche.net/wzKKufHO7dLH-WPFdXJHEmOmi7E=/1500x/smart/2d8c2b30aee345008ee860087f8bcdc9/ccmcms-commentcamarche/36120212.jpg",
-                  contentDescription = "Profile picture",
-                  placeholder = painterResource(id = R.drawable.blankprofile),
-                  modifier =
-                      Modifier.shadow(
-                              elevation = 15.dp,
-                              shape = CircleShape,
-                              ambientColor = Color.Black,
-                              spotColor = Color.Black)
-                          .size(110.dp)
-                          .clip(CircleShape),
-                  contentScale = ContentScale.Crop)
-            }
-            // Other informations
-            Column() {
-              Text(
-                  text =
-                      "Michael Jackson", // I think we only show the pseudo here and keep birthdate
-                  // name and surname private.
-                  style =
-                      TextStyle(
-                          fontSize = 24.sp,
-                          lineHeight = 16.sp,
-                          fontFamily = FontFamily(Font(R.font.montserrat)),
-                          fontWeight = FontWeight(700),
-                          color = Color.Black,
-                          textAlign = TextAlign.Right,
-                          letterSpacing = 0.5.sp,
-                      ),
-                  modifier = Modifier.width(250.dp).height(37.dp))
-              Text(
-                  text = "Interests",
-                  style = AppTypography.secondaryTitleStyle,
-                  modifier = Modifier.align(Alignment.End))
-              Text(
-                  text = "Hiking, Photography",
-                  style = AppTypography.secondaryContentStyle,
-                  modifier = Modifier.align(Alignment.End))
+            // Profile picture and name (later maybe more informations depending of data classes
+            // updates
+            Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                // Profile picture
+                Column() {
+                    AsyncImage(
+                        model = "",//profile?.profileImageUrl,
+                        contentDescription = "Profile picture",
+                        placeholder = painterResource(id = R.drawable.blankprofile),
+                        modifier =
+                        Modifier.shadow(
+                            elevation = 15.dp,
+                            shape = CircleShape,
+                            ambientColor = Color.Black,
+                            spotColor = Color.Black)
+                            .size(110.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop)
+                }
+                // Other informations
+                Column() {
+                    Text(
+                        text ="test",
+                        //profile?.pseudo
+                        //    ?: "Error", // I think we only show the pseudo here and keep birthdate
+                        // name and surname private.
+                        style =
+                        TextStyle(
+                            fontSize = 24.sp,
+                            lineHeight = 16.sp,
+                            fontFamily = FontFamily(Font(R.font.montserrat)),
+                            fontWeight = FontWeight(700),
+                            color = Color.Black,
+                            textAlign = TextAlign.Right,
+                            letterSpacing = 0.5.sp,
+                        ),
+                        modifier = Modifier.width(250.dp).height(37.dp))
+                    Text(
+                        text = "Interests",
+                        style = AppTypography.secondaryTitleStyle,
+                        modifier = Modifier.align(Alignment.End))
+                    Text(
+                        text = "Hiking, Photography",
+                        style = AppTypography.secondaryContentStyle,
+                        modifier = Modifier.align(Alignment.End))
 
-              /*add more informations later if UserProfile is udpated*/
+                    /*add more informations later if UserProfile is udpated*/
+                }
             }
-          }
-          // Number of trips, followers and following when implemented in the data classes
-          Row(modifier = Modifier.height(225.dp).align(Alignment.CenterHorizontally)) {
-            Column(
-                modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 40.dp)) {
-                  Text(
-                      text = "NBR",
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.bigNumberStyle)
-                  Text(
-                      text = "Trips",
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.categoryTextStyle)
+            // Number of trips, followers and following when implemented in the data classes
+            Row(modifier = Modifier.height(225.dp).align(Alignment.CenterHorizontally)) {
+                Column(
+                    modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 40.dp)) {
+                    Text(
+                        text = "NBR",
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        style = AppTypography.bigNumberStyle)
+                    Text(
+                        text = "Trips",
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        style = AppTypography.categoryTextStyle)
                 }
-            Column(
-                modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 30.dp)) {
-                  Text(
-                      text = "NBR",
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.bigNumberStyle)
-                  Text(
-                      text = "Followers",
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.categoryTextStyle)
+                Column(
+                    modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 30.dp)) {
+                    Text(
+                        text = "NBR",
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        style = AppTypography.bigNumberStyle)
+                    Text(
+                        text = "Followers",
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        style = AppTypography.categoryTextStyle)
                 }
-            Column(
-                modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 30.dp)) {
-                  Text(
-                      text = "NBR",
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.bigNumberStyle)
-                  Text(
-                      text = "Following",
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.categoryTextStyle)
+                Column(
+                    modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 30.dp)) {
+                    Text(
+                        text = "NBR",
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        style = AppTypography.bigNumberStyle)
+                    Text(
+                        text = "Following",
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        style = AppTypography.categoryTextStyle)
                 }
-          }
-          // Favourites, Friends, Settings and MyTrips tiles
-          Box(
-              modifier =
-                  Modifier.height(300.dp).width(350.dp).align(Alignment.CenterHorizontally)) {
+            }
+            // Favourites, Friends, Settings and MyTrips tiles
+            Box(
+                modifier =
+                Modifier.height(300.dp).width(350.dp).align(Alignment.CenterHorizontally)) {
                 ProfileButton(
                     label = "Favourites",
                     icon = Icons.Outlined.FavoriteBorder,
                     onClick = {
-                      navigation.navigateTo(
-                          TopLevelDestination(
-                              Route.FAVORITES, Icons.Outlined.Favorite, "Favorites"))
+                        navigation.navigateTo(
+                            TopLevelDestination(
+                                Route.FAVORITES, Icons.Outlined.Favorite, "Favorites"))
                     },
                     modifier = Modifier.align(Alignment.TopStart))
                 ProfileButton(
                     label = "Friends",
                     icon = Icons.Outlined.People,
                     onClick = {
-                      navigation.navigateTo(
-                          TopLevelDestination(Route.FRIENDS, Icons.Outlined.People, "Friends"))
+                        navigation.navigateTo(
+                            TopLevelDestination(Route.FRIENDS, Icons.Outlined.People, "Friends"))
                     },
                     modifier = Modifier.align(Alignment.TopEnd))
                 ProfileButton(
                     label = "MyTrips",
                     icon = Icons.Outlined.BookmarkBorder,
                     onClick = {
-                      navigation.navigateTo(
-                          TopLevelDestination(
-                              Route.MYTRIPS, Icons.Outlined.BookmarkBorder, "MyTrips"))
+                        navigation.navigateTo(
+                            TopLevelDestination(
+                                Route.MYTRIPS, Icons.Outlined.BookmarkBorder, "MyTrips"))
                     },
                     modifier = Modifier.align(Alignment.BottomStart))
                 ProfileButton(
                     label = "Settings",
                     icon = Icons.Outlined.Settings,
                     onClick = {
-                      navigation.navigateTo(
-                          TopLevelDestination(Route.SETTINGS, Icons.Outlined.Settings, "Settings"))
+                        navigation.navigateTo(
+                            TopLevelDestination(Route.SETTINGS, Icons.Outlined.Settings, "Settings"))
                     },
                     modifier = Modifier.align(Alignment.BottomEnd))
-              }
+            }
         }
-      }
+    }
 }
 
 object AppTypography {
-  val bigNumberStyle =
-      TextStyle(
-          fontSize = 24.sp,
-          lineHeight = 16.sp,
-          fontFamily = FontFamily(Font(R.font.montserrat)),
-          fontWeight = FontWeight.Bold,
-          color = md_theme_light_dark,
-          textAlign = TextAlign.Center,
-          letterSpacing = 0.5.sp)
+    val bigNumberStyle =
+        TextStyle(
+            fontSize = 24.sp,
+            lineHeight = 16.sp,
+            fontFamily = FontFamily(Font(R.font.montserrat)),
+            fontWeight = FontWeight.Bold,
+            color = md_theme_light_dark,
+            textAlign = TextAlign.Center,
+            letterSpacing = 0.5.sp)
 
-  val categoryTextStyle =
-      TextStyle(
-          fontSize = 12.sp,
-          lineHeight = 16.sp,
-          fontFamily = FontFamily(Font(R.font.montserrat)),
-          fontWeight = FontWeight.Light,
-          color = md_theme_dark_gray,
-          textAlign = TextAlign.Center,
-          letterSpacing = 0.5.sp)
+    val categoryTextStyle =
+        TextStyle(
+            fontSize = 12.sp,
+            lineHeight = 16.sp,
+            fontFamily = FontFamily(Font(R.font.montserrat)),
+            fontWeight = FontWeight.Light,
+            color = md_theme_dark_gray,
+            textAlign = TextAlign.Center,
+            letterSpacing = 0.5.sp)
 
-  val buttonTextStyle =
-      TextStyle(
-          fontSize = 20.sp,
-          lineHeight = 16.sp,
-          fontFamily = FontFamily(Font(R.font.montserrat)),
-          fontWeight = FontWeight.SemiBold,
-          color = md_theme_dark_gray,
-          letterSpacing = 0.5.sp)
+    val buttonTextStyle =
+        TextStyle(
+            fontSize = 20.sp,
+            lineHeight = 16.sp,
+            fontFamily = FontFamily(Font(R.font.montserrat)),
+            fontWeight = FontWeight.SemiBold,
+            color = md_theme_dark_gray,
+            letterSpacing = 0.5.sp)
 
-  val secondaryTitleStyle =
-      TextStyle(
-          fontSize = 14.sp,
-          lineHeight = 16.sp,
-          fontFamily = FontFamily(Font(R.font.montserrat)),
-          fontWeight = FontWeight(400),
-          color = md_theme_light_dark,
-          textAlign = TextAlign.Right,
-          letterSpacing = 0.5.sp,
-      )
+    val secondaryTitleStyle =
+        TextStyle(
+            fontSize = 14.sp,
+            lineHeight = 16.sp,
+            fontFamily = FontFamily(Font(R.font.montserrat)),
+            fontWeight = FontWeight(400),
+            color = md_theme_light_dark,
+            textAlign = TextAlign.Right,
+            letterSpacing = 0.5.sp,
+        )
 
-  val secondaryContentStyle =
-      TextStyle(
-          fontSize = 12.sp,
-          lineHeight = 16.sp,
-          fontFamily = FontFamily(Font(R.font.montserrat)),
-          fontWeight = FontWeight(400),
-          color = md_theme_dark_gray,
-          textAlign = TextAlign.Right,
-          letterSpacing = 0.5.sp,
-      )
+    val secondaryContentStyle =
+        TextStyle(
+            fontSize = 12.sp,
+            lineHeight = 16.sp,
+            fontFamily = FontFamily(Font(R.font.montserrat)),
+            fontWeight = FontWeight(400),
+            color = md_theme_dark_gray,
+            textAlign = TextAlign.Right,
+            letterSpacing = 0.5.sp,
+        )
 }
 
 @Composable
@@ -269,25 +269,25 @@ fun ProfileButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-  Button(
-      onClick = onClick,
-      colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
-      modifier =
-          modifier
-              .height(130.dp)
-              .width(160.dp)
-              .background(color = md_theme_light_dark, shape = RoundedCornerShape(16.dp))) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
+        modifier =
+        modifier
+            .height(130.dp)
+            .width(160.dp)
+            .background(color = md_theme_light_dark, shape = RoundedCornerShape(16.dp))) {
         Column(modifier = Modifier.width(150.dp)) {
-          Icon(
-              icon,
-              contentDescription = "$label icon",
-              tint = md_theme_orange,
-              modifier = Modifier.size(40.dp))
+            Icon(
+                icon,
+                contentDescription = "$label icon",
+                tint = md_theme_orange,
+                modifier = Modifier.size(40.dp))
 
-          Text(
-              text = label,
-              style = AppTypography.buttonTextStyle,
-              modifier = Modifier.padding(vertical = 15.dp))
+            Text(
+                text = label,
+                style = AppTypography.buttonTextStyle,
+                modifier = Modifier.padding(vertical = 15.dp))
         }
-      }
+    }
 }

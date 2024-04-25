@@ -18,7 +18,7 @@ data class UserProfile(
     val mail: String,
     val name: String = "",
     val surname: String = "",
-    val birthdate: Date,
+    val birthdate: String,
     val pseudo: String,
     val profileImageUrl: String? = null,
     val followers: List<String> = emptyList(),

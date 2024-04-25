@@ -67,9 +67,12 @@ open class UserProfileRepository {
                     document.id,
                     document.data?.get("name") as String,
                     document.data?.get("surname") as String,
-                    document.data?.get("birthdate") as Date,
+                    document.data?.get("birthdate") as String,
                     document.data?.get("pseudo") as String,
-                    document.data?.get("profileImageUrl") as String)
+                    document.data?.get("profileImageUrl") as String,
+                    document.data?.get("followers") as List<String>,
+                    document.data?.get("following") as List<String>
+                )
           } else {
             Log.d(TAG, "No such document")
           }
@@ -78,26 +81,32 @@ open class UserProfileRepository {
     return userProfile
   }
 
-  /**
-   * This function converts the QuerySnapshot to a list of user's profiles.
-   *
-   * @param taskSnapshot : QuerySnapshot to convert to a list of user's profiles
-   * @return List of user's profiles
-   */
-  private fun userProfileList(taskSnapshot: QuerySnapshot) {
-    for (document in taskSnapshot) {
-      val userProfile =
-          UserProfile(
-              document.id,
-              document.data["name"] as String,
-              document.data["surname"] as String,
-              document.data["birthdate"] as Date,
-              document.data["pseudo"] as String,
-              document.data["profileImageUrl"] as String)
+    /**
+     * This function converts the QuerySnapshot to a list of user's profiles.
+     *
+     * @param taskSnapshot : QuerySnapshot to convert to a list of user's profiles
+     * @return List of user's profiles
+     */
+    private fun userProfileList(taskSnapshot: QuerySnapshot) {
+        for (document in taskSnapshot) {
+            val followers = document.data["followers"] as? List<String> ?: emptyList()
+            val following = document.data["following"] as? List<String> ?: emptyList()
 
-      _userProfileList.add(userProfile)
-    }
-  }
+            val userProfile =
+                UserProfile(
+                    mail = document.id,
+                    name = document.getString("name") ?: "",
+                    surname = document.getString("surname") ?: "",
+                    birthdate = document.getString("birthdate") ?: "",
+                    pseudo = document.getString("pseudo") ?: "",
+                    profileImageUrl = document.getString("profileImageUrl") ?: "",
+                    followers = followers,
+                    following = following
+                )
+
+            _userProfileList.add(userProfile)
+            }
+        }
 
   /**
    * This function updates the user's profile passed as a parameter.
