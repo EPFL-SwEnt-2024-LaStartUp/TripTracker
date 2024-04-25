@@ -334,7 +334,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                 Row(
                     modifier = Modifier.fillMaxWidth().fillMaxHeight().testTag("SaveButton"),
                     horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.Bottom) {
+                    verticalAlignment = Alignment.Top) {
                       FilledTonalButton(
                           onClick = {
                             if ((location.isEmpty() && recordViewModel.namePOI.value.isEmpty()) ||
