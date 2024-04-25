@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.model.profile.UserProfile
-import com.example.triptracker.view.NavTopBar
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
@@ -126,18 +125,19 @@ fun UserProfileEditScreen(navigation: Navigation) {
 
   Scaffold(
       topBar = {
-        NavTopBar(
-            title = "Edit Profile",
-            canNavigateBack = true,
-            navigateUp = { navigation.goBack() },
-            actions = {})
+        // NavTopBar(
+        //    title = "Edit Profile",
+        //    canNavigateBack = true,
+        //    navigateUp = { navigation.goBack() },
+        //    actions = {})
       },
       bottomBar = { NavigationBar(navigation) },
       modifier = Modifier.testTag("UserProfileEditScreen")) { innerPadding ->
         Box(
             modifier =
-                Modifier.fillMaxHeight().padding(innerPadding)
-                    .padding(top = 35.dp, bottom = 35.dp, start = 25.dp, end = 25.dp)
+                Modifier.fillMaxHeight()
+                    .padding(innerPadding)
+                    .padding(top = 30.dp, bottom = 30.dp, start = 25.dp, end = 25.dp)
                     .fillMaxWidth()
                     .background(md_theme_light_dark, shape = RoundedCornerShape(20.dp)),
             contentAlignment = Alignment.TopCenter) {
@@ -205,12 +205,12 @@ fun UserProfileEditScreen(navigation: Navigation) {
                                   fontWeight = FontWeight.Normal),
                           colors =
                               OutlinedTextFieldDefaults.colors(
-                                  unfocusedTextColor = Color.White,
+                                  unfocusedTextColor = md_theme_grey,
                                   unfocusedBorderColor =
                                       if (isBirthdateEmpty) md_theme_light_error else md_theme_grey,
                                   unfocusedLabelColor =
                                       if (isBirthdateEmpty) md_theme_light_error else md_theme_grey,
-                                  cursorColor = Color.White,
+                                  cursorColor = md_theme_grey,
                                   focusedBorderColor =
                                       if (isBirthdateEmpty) md_theme_light_error else md_theme_grey,
                                   focusedLabelColor = Color.White,
@@ -241,19 +241,21 @@ fun UserProfileEditScreen(navigation: Navigation) {
                             isOpen.value = false // close dialog
                           })
                     }
-                    Spacer(modifier = Modifier.height(50.dp))
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                      SaveButton(
-                          canSave =
-                              !isNameEmpty &&
-                                  !isSurnameEmpty &&
-                                  !isBirthdateEmpty &&
-                                  !isUsernameEmpty,
-                          action = {
-                            updateProfile(
-                                profile, name, surname, mail, birthdate, username, imageUrl)
-                          })
-                    }
+                    Spacer(modifier = Modifier.height(25.dp))
+                    Box(
+                        modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                        contentAlignment = Alignment.Center) {
+                          SaveButton(
+                              canSave =
+                                  !isNameEmpty &&
+                                      !isSurnameEmpty &&
+                                      !isBirthdateEmpty &&
+                                      !isUsernameEmpty,
+                              action = {
+                                updateProfile(
+                                    profile, name, surname, mail, birthdate, username, imageUrl)
+                              })
+                        }
                   }
             }
       }
@@ -298,10 +300,10 @@ fun ProfileEditTextField(
               fontWeight = FontWeight.Normal),
       colors =
           OutlinedTextFieldDefaults.colors(
-              unfocusedTextColor = Color.White,
+              unfocusedTextColor = md_theme_grey,
               unfocusedBorderColor = if (isEmpty) md_theme_light_error else md_theme_grey,
               unfocusedLabelColor = if (isEmpty) md_theme_light_error else md_theme_grey,
-              cursorColor = Color.White,
+              cursorColor = md_theme_grey,
               focusedBorderColor = if (isEmpty) md_theme_light_error else md_theme_grey,
               focusedLabelColor = Color.White,
           ))
