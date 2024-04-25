@@ -260,7 +260,7 @@ fun Map(
                     if (mapPopupState == popupState.PATHOVERLAY) {
                       displayPicturesPopUp = true
                     }
-                      displayPopUp = false
+                    displayPopUp = false
 
                     false
                   }) {

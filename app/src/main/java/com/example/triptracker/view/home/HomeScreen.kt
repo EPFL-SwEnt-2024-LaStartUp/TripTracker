@@ -142,11 +142,11 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
                         itinerary = itinerary,
                         navigation = navigation,
                         onClick = {
-                            /* TODO Commented out for now to avoid error, needs to be implemented next
-                          val route = navigation.getTopLevelDestinations()[1]
-                          navigation.navController.navigate(
-                              "$route/${itinerary.location.latitude}/${itinerary.location.longitude}")
-                        */} )
+                          /* TODO Commented out for now to avoid error, needs to be implemented next
+                            val route = navigation.getTopLevelDestinations()[1]
+                            navigation.navController.navigate(
+                                "$route/${itinerary.location.latitude}/${itinerary.location.longitude}")
+                          */ })
                   }
                 }
           }
