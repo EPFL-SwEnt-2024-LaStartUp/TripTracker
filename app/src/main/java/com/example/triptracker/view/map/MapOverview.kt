@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.popupState
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
@@ -170,7 +169,7 @@ fun Map(
 
   var displayPopUp by remember { mutableStateOf(false) }
   var displayPicturesPopUp by remember { mutableStateOf(false) }
-  var statePopup by remember { mutableStateOf(mapViewModel.mapPopupState.value) }
+  var mapPopupState by remember { mutableStateOf(popupState.DISPLAYITINERARY) }
 
   val cameraPositionState = rememberCameraPositionState {
     position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
@@ -215,8 +214,8 @@ fun Map(
           properties = properties,
           uiSettings = ui,
           onMapClick = { it ->
-            mapViewModel.displayPopUp.value = false
-            statePopup = popupState.NONE
+            displayPopUp = false
+            mapPopupState = popupState.DISPLAYITINERARY
             displayPicturesPopUp = false
             mapViewModel.selectedPolylineState.value = null
           },
@@ -236,8 +235,8 @@ fun Map(
               onClick = {
                 mapViewModel.selectedPolylineState.value =
                     MapViewModel.SelectedPolyline(location, latLngList[0])
-                mapViewModel.mapPopupState.value = popupState.DISPLAYITINERARY
-                mapViewModel.displayPopUp.value = true
+                mapPopupState = popupState.DISPLAYITINERARY
+                displayPopUp = true
               })
 
           // Display the start marker of the polyline and a thicker path when selected
@@ -258,10 +257,10 @@ fun Map(
                   onClick = { marker ->
                     // Display the pin information
                     mapViewModel.selectedPin.value = pin
-                    displayPopUp = false
-                    if (statePopup == popupState.PATHOVERLAY) {
+                    if (mapPopupState == popupState.PATHOVERLAY) {
                       displayPicturesPopUp = true
                     }
+                      displayPopUp = false
 
                     false
                   }) {
@@ -306,15 +305,26 @@ fun Map(
                         })
                   }
             }
-            if (mapViewModel.displayPopUp.value) {
+            if (displayPopUp) {
               Box(modifier = Modifier.fillMaxHeight(0.3f)) {
                 if (mapViewModel.selectedPolylineState.value != null) {
                   // Display the itinerary of the selected polyline
                   // (only when the polyline is selected)
-                  ManagePopups(
-                      itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                      navigation = navigation,
-                      mapViewModel = mapViewModel)
+                  when (mapPopupState) {
+                    popupState.DISPLAYITINERARY -> {
+                      DisplayItinerary(
+                          itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                          navigation = navigation,
+                          onClick = { mapPopupState = popupState.PATHOVERLAY })
+                    }
+                    popupState.DISPLAYPIN -> {
+                      // called detailed view Theo
+                    }
+                    popupState.PATHOVERLAY -> {
+                      PathOverlaySheet(
+                          itinerary = mapViewModel.selectedPolylineState.value!!.itinerary)
+                    }
+                  }
                 }
               }
             }
@@ -376,12 +386,12 @@ fun Map(
         }
   }
 }
-
+/*
 @Composable
-fun ManagePopups(itinerary: Itinerary, navigation: Navigation, mapViewModel: MapViewModel) {
-  when (mapViewModel.mapPopupState.value) {
+fun ManagePopups(itinerary: Itinerary, navigation: Navigation, mapPopupState: popupState) {
+  when (mapPopupState) {
     popupState.DISPLAYITINERARY -> {
-      DisplayItinerary(itinerary = itinerary, navigation = navigation, mapViewModel = mapViewModel)
+      DisplayItinerary(itinerary = itinerary, navigation = navigation, onClick = { mapPopupState = popupState.PATHOVERLAY})
     }
     popupState.DISPLAYPIN -> {
       // called detailed view Theo
@@ -394,7 +404,7 @@ fun ManagePopups(itinerary: Itinerary, navigation: Navigation, mapViewModel: Map
     }
   }
 }
-
+*/
 @Preview
 @Composable
 // Start this screen to only see the overview of the map

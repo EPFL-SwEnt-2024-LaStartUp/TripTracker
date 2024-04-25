@@ -51,7 +51,6 @@ import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
-import com.example.triptracker.viewmodel.MapViewModel
 
 /**
  * HomeScreen composable that displays the list of itineraries
@@ -139,7 +138,15 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
                 contentPadding = PaddingValues(16.dp)) {
                   items(itineraries) { itinerary ->
                     Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
-                    DisplayItinerary(itinerary = itinerary, navigation = navigation, MapViewModel())
+                    DisplayItinerary(
+                        itinerary = itinerary,
+                        navigation = navigation,
+                        onClick = {
+                            /* TODO Commented out for now to avoid error, needs to be implemented next
+                          val route = navigation.getTopLevelDestinations()[1]
+                          navigation.navController.navigate(
+                              "$route/${itinerary.location.latitude}/${itinerary.location.longitude}")
+                        */} )
                   }
                 }
           }

@@ -9,7 +9,6 @@ import com.example.triptracker.model.geocoder.NominatimApi
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryList
 import com.example.triptracker.model.location.Pin
-import com.example.triptracker.model.location.popupState
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -33,10 +32,6 @@ class MapViewModel(
     val filteredPathList: MutableLiveData<Map<Itinerary, List<LatLng>>> =
         MutableLiveData<Map<Itinerary, List<LatLng>>>()
 ) : ViewModel() {
-
-  // ENUM
-  var mapPopupState = mutableStateOf(popupState.DISPLAYITINERARY)
-  var displayPopUp = mutableStateOf(false)
 
   // state for the city name displayed at the top of the screen
   val cityNameState = mutableStateOf("")

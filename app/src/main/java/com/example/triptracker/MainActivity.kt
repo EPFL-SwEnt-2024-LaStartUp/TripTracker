@@ -17,10 +17,12 @@ import com.example.triptracker.view.LoginScreen
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.home.HomeScreen
+import com.example.triptracker.view.map.DEFAULT_LOCATION
 import com.example.triptracker.view.map.MapOverview
 import com.example.triptracker.view.map.RecordScreen
 import com.example.triptracker.view.profile.UserProfileOverview
 import com.example.triptracker.view.theme.TripTrackerTheme
+import com.google.android.gms.maps.model.LatLng
 
 class MainActivity : ComponentActivity() {
 
@@ -59,6 +61,14 @@ class MainActivity : ComponentActivity() {
             composable(Route.LOGIN) { LoginScreen(navigation) }
             composable(Route.HOME) { HomeScreen(navigation) }
             composable(Route.MAPS) { MapOverview(context = context, navigation = navigation) }
+
+            /* TODO Commented out to avoid error, needs to be implement next
+            composable(Route.MAPS + "/{lat}" + "/{lon}") {
+              val lat: Double = it.arguments?.getDouble("lat") ?: DEFAULT_LOCATION.latitude
+              val lon: Double = it.arguments?.getDouble("lon") ?: DEFAULT_LOCATION.longitude
+              MapOverview(
+                  context = context, navigation = navigation, startLocation = LatLng(lat, lon))
+            }*/
             composable(Route.RECORD) { RecordScreen(context, navigation) }
             composable(Route.PROFILE) { UserProfileOverview(navigation = navigation) }
           }
