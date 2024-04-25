@@ -13,8 +13,6 @@ import androidx.test.rule.GrantPermissionRule
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.map.RecordScreen
 import com.example.triptracker.viewmodel.RecordViewModel
-import com.google.firebase.FirebaseApp
-import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
@@ -24,7 +22,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class RecordTest : TestCase() {
+class RecordTest{
 
   private val appContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
 
@@ -36,6 +34,7 @@ class RecordTest : TestCase() {
 
   @RelaxedMockK private lateinit var mockViewModel: RecordViewModel
   @RelaxedMockK private lateinit var mockNavigation: Navigation
+
   @Before
   fun setUp() {
     mockViewModel = mockk(relaxed = true)
@@ -59,7 +58,6 @@ class RecordTest : TestCase() {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
-    every { mockViewModel.geocoder } returns mockk(relaxed = true)
 
 
 
@@ -89,7 +87,6 @@ class RecordTest : TestCase() {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
-    every { mockViewModel.geocoder } returns mockk(relaxed = true)
 
 
     composeTestRule.setContent {
@@ -119,7 +116,6 @@ class RecordTest : TestCase() {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
-    every { mockViewModel.geocoder } returns mockk(relaxed = true)
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -148,7 +144,6 @@ class RecordTest : TestCase() {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
-    every { mockViewModel.geocoder } returns mockk(relaxed = true)
 
 
     composeTestRule.setContent {
@@ -178,7 +173,6 @@ class RecordTest : TestCase() {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
-    every { mockViewModel.geocoder } returns mockk(relaxed = true)
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -207,7 +201,6 @@ class RecordTest : TestCase() {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
-    every { mockViewModel.geocoder } returns mockk(relaxed = true)
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -232,7 +225,6 @@ class RecordTest : TestCase() {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
-    every { mockViewModel.geocoder } returns mockk(relaxed = true)
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -261,7 +253,6 @@ class RecordTest : TestCase() {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
-    every { mockViewModel.geocoder } returns mockk(relaxed = true)
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -289,7 +280,6 @@ class RecordTest : TestCase() {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
-    every { mockViewModel.geocoder } returns mockk(relaxed = true)
 
 
     composeTestRule.setContent {
@@ -321,7 +311,6 @@ class RecordTest : TestCase() {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
-    every { mockViewModel.geocoder } returns mockk(relaxed = true)
 
 
     composeTestRule.setContent {
@@ -351,7 +340,6 @@ class RecordTest : TestCase() {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
-    every { mockViewModel.geocoder } returns mockk(relaxed = true)
 
 
 
@@ -380,7 +368,6 @@ class RecordTest : TestCase() {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
-    every { mockViewModel.geocoder } returns mockk(relaxed = true)
 
 
     composeTestRule.setContent {
@@ -411,7 +398,6 @@ class RecordTest : TestCase() {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
-    every { mockViewModel.geocoder } returns mockk(relaxed = true)
 
 
     composeTestRule.setContent {
@@ -442,7 +428,6 @@ class RecordTest : TestCase() {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
-    every { mockViewModel.geocoder } returns mockk(relaxed = true)
 
 
     composeTestRule.setContent {
@@ -469,7 +454,6 @@ class RecordTest : TestCase() {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
-    every { mockViewModel.geocoder } returns mockk(relaxed = true)
 
 
     composeTestRule.setContent {
