@@ -4,12 +4,10 @@ import android.content.Context
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.example.triptracker.itinerary.MockItineraryList
-import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.map.MapOverview
 import com.example.triptracker.view.map.MapOverviewPreview
@@ -37,13 +35,11 @@ class MapOverviewTest : TestCase() {
 
   @RelaxedMockK private lateinit var mockViewModel: MapViewModel
   @RelaxedMockK private lateinit var mockNavigation: Navigation
-  @RelaxedMockK private lateinit var filteredPathList: MutableLiveData<Map<Itinerary, List<LatLng>>>
 
   @Before
   fun setUp() {
     mockViewModel = mockk(relaxed = true)
     mockNavigation = mockk(relaxed = true)
-    filteredPathList = mockk(relaxed = true)
   }
 
   @Test
