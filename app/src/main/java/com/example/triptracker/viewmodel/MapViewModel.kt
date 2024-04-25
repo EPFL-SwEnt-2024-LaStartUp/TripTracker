@@ -44,6 +44,10 @@ class MapViewModel(
 
   var selectedPin = mutableStateOf<Pin?>(null)
 
+  var displayPopUp = mutableStateOf(false)
+
+  var displayPicturesPopUp = mutableStateOf(false)
+
   init {
     viewModelScope.launch { getAllItineraries() }
   }

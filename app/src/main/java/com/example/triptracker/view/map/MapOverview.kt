@@ -176,6 +176,9 @@ fun Map(
   }
   var visibleRegion: VisibleRegion?
 
+  var displayPopUp by remember { mutableStateOf(mapViewModel.displayPopUp.value) }
+  var displayPicturesPopUp by remember { mutableStateOf(mapViewModel.displayPicturesPopUp.value) }
+
   // When the camera is moving, the city name is updated in the top bar with geo decoding
   LaunchedEffect(cameraPositionState.isMoving) {
     mapViewModel.reverseDecode(
@@ -209,7 +212,8 @@ fun Map(
               Modifier.matchParentSize()
                   .background(
                       brush =
-                          Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black))),
+                          Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black)))
+                  .testTag("Map"),
           cameraPositionState = cameraPositionState,
           properties = properties,
           uiSettings = ui,
