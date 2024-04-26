@@ -30,7 +30,7 @@ data class UserProfileList(private var userProfileList: List<UserProfile>) {
    * @param userProfile : user's profile to add
    */
   fun addUserProfile(userProfile: UserProfile) {
-    userProfileList = userProfileList + userProfile
+    this.userProfileList += userProfile
   }
 
   /**
@@ -43,7 +43,7 @@ data class UserProfileList(private var userProfileList: List<UserProfile>) {
     return userProfileList.filter {
       it.name.contains(task, ignoreCase = true) ||
           it.surname.contains(task, ignoreCase = true) ||
-          it.pseudo.contains(task, ignoreCase = true)
+          it.username.contains(task, ignoreCase = true)
     }
   }
 
