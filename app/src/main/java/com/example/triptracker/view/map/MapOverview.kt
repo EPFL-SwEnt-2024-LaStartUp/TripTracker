@@ -3,7 +3,6 @@ package com.example.triptracker.view.map
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,14 +13,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Accessibility
 import androidx.compose.material.icons.outlined.PhotoCamera
-import androidx.compose.material.icons.outlined.Start
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -44,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.example.triptracker.model.location.popupState
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
@@ -166,10 +164,13 @@ fun Map(
   var deviceLocation by remember { mutableStateOf(startLocation) }
   val coroutineScope = rememberCoroutineScope()
 
+  var mapPopupState by remember { mutableStateOf(popupState.DISPLAYITINERARY) }
+
   val cameraPositionState = rememberCameraPositionState {
     position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
   }
   var visibleRegion: VisibleRegion?
+
   var displayPopUp by remember { mutableStateOf(mapViewModel.displayPopUp.value) }
   var displayPicturesPopUp by remember { mutableStateOf(mapViewModel.displayPicturesPopUp.value) }
 
@@ -211,8 +212,9 @@ fun Map(
           cameraPositionState = cameraPositionState,
           properties = properties,
           uiSettings = ui,
-          onMapClick = {
+          onMapClick = { it ->
             displayPopUp = false
+            mapPopupState = popupState.DISPLAYITINERARY
             displayPicturesPopUp = false
             mapViewModel.selectedPolylineState.value = null
           },
@@ -232,6 +234,7 @@ fun Map(
               onClick = {
                 mapViewModel.selectedPolylineState.value =
                     MapViewModel.SelectedPolyline(location, latLngList[0])
+                mapPopupState = popupState.DISPLAYITINERARY
                 displayPopUp = true
               })
 
@@ -253,8 +256,11 @@ fun Map(
                   onClick = { marker ->
                     // Display the pin information
                     mapViewModel.selectedPin.value = pin
-                    displayPopUp = false
+
                     displayPicturesPopUp = true
+
+                    displayPopUp = false
+
                     false
                   }) {
                     Icon(
@@ -303,12 +309,25 @@ fun Map(
                 if (mapViewModel.selectedPolylineState.value != null) {
                   // Display the itinerary of the selected polyline
                   // (only when the polyline is selected)
-                  DisplayItinerary(
-                      itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                      navigation = navigation)
+                  when (mapPopupState) {
+                    popupState.DISPLAYITINERARY -> {
+                      DisplayItinerary(
+                          itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                          navigation = navigation,
+                          onClick = { mapPopupState = popupState.PATHOVERLAY })
+                    }
+                    popupState.DISPLAYPIN -> {
+                      // called detailed view Theo
+                    }
+                    popupState.PATHOVERLAY -> {
+                      PathOverlaySheet(
+                          itinerary = mapViewModel.selectedPolylineState.value!!.itinerary)
+                    }
+                  }
                 }
               }
             }
+
             if (displayPicturesPopUp) {
               Box(
                   modifier =

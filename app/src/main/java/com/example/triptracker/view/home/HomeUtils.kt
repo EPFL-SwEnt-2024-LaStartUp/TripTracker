@@ -45,11 +45,7 @@ import com.example.triptracker.view.theme.md_theme_orange
  * @param pinNamesMap: Map of itinerary ID to list of pin names
  */
 @Composable
-fun DisplayItinerary(
-    itinerary: Itinerary,
-    navigation: Navigation,
-    // onClick: () -> Unit, TODO : Uncomment this line when needed
-) {
+fun DisplayItinerary(itinerary: Itinerary, navigation: Navigation, onClick: () -> Unit) {
   // Number of additional itineraries not displayed
   val pinListString = fetchPinNames(itinerary)
   // The height of the box that contains the itinerary, fixed
@@ -66,8 +62,7 @@ fun DisplayItinerary(
               .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))
               .clickable { // When you click on an itinerary, it should bring you to the map
                 // overview with the selected itinerary highlighted and the first pinned places
-                // TODO : when changing Top Level Destination, the navbar should be updated to
-                // highlight the correct tab.
+                onClick()
                 // TODO : Would call DisplayItineraryInMap or sth similar later on
                 // onClick()
               }

@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
@@ -48,6 +47,7 @@ import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
+import com.example.triptracker.view.Route
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
@@ -138,7 +138,15 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
                 contentPadding = PaddingValues(16.dp)) {
                   items(itineraries) { itinerary ->
                     Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
-                    DisplayItinerary(itinerary = itinerary, navigation = navigation)
+                    DisplayItinerary(
+                        itinerary = itinerary,
+                        navigation = navigation,
+                        onClick = {
+                          navigation.navigateTo(navigation.getTopLevelDestinations()[1])
+                          navigation.navController.navigate(
+                              Route.MAPS +
+                                  "/${itinerary.location.latitude}/${itinerary.location.longitude}")
+                        })
                   }
                 }
           }
