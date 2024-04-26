@@ -167,8 +167,6 @@ fun Map(
   var deviceLocation by remember { mutableStateOf(startLocation) }
   val coroutineScope = rememberCoroutineScope()
 
-  var displayPopUp by remember { mutableStateOf(false) }
-  var displayPicturesPopUp by remember { mutableStateOf(false) }
   var mapPopupState by remember { mutableStateOf(popupState.DISPLAYITINERARY) }
 
   val cameraPositionState = rememberCameraPositionState {
