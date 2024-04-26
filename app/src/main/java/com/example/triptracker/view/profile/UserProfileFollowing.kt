@@ -18,7 +18,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,10 +27,8 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.R
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
@@ -96,29 +93,30 @@ fun UserProfileFollowing(
       }
 }
 
-// TODO: remove this preview
-@Preview(showBackground = true)
-@Composable
-fun UserProfileFollowingPreview() {
-  val viewModel = UserProfileViewModel()
-
-  // val list = viewModel.userProfileList.value
-  // val profile = viewModel.getUserProfile("cleorenaud38@gmail.com")
-
-  val navController = rememberNavController()
-  val navigation = remember(navController) { Navigation(navController) }
-
-  val mockUser1 =
-      UserProfile(
-          mail = "cleorenaud38@gmail.com",
-          name = "Cleo",
-          surname = "Renaud",
-          birthdate = "08-February-2004",
-          username = "Cleoooo",
-          profileImageUrl =
-              "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-red-fluffy-cat-with-big-eyes-in-royalty-free-image-1701455126.jpg",
-          followers = listOf("schifferlitheo@gmail.com", "barghornjeremy@gmail.com"),
-          following = emptyList())
-
-  UserProfileFollowing(navigation, viewModel, mockUser1)
-}
+//// TODO: remove this preview
+// @Preview(showBackground = true)
+// @Composable
+// fun UserProfileFollowingPreview() {
+//  val viewModel = UserProfileViewModel()
+//
+//  // val list = viewModel.userProfileList.value
+//  // val profile = viewModel.getUserProfile("cleorenaud38@gmail.com")
+//
+//  val navController = rememberNavController()
+//  val navigation = remember(navController) { Navigation(navController) }
+//
+//  val mockUser1 =
+//      UserProfile(
+//          mail = "cleorenaud38@gmail.com",
+//          name = "Cleo",
+//          surname = "Renaud",
+//          birthdate = "08-February-2004",
+//          username = "Cleoooo",
+//          profileImageUrl =
+//
+// "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-red-fluffy-cat-with-big-eyes-in-royalty-free-image-1701455126.jpg",
+//          followers = listOf("schifferlitheo@gmail.com", "barghornjeremy@gmail.com"),
+//          following = emptyList())
+//
+//  UserProfileFollowing(navigation, viewModel, mockUser1)
+// }
