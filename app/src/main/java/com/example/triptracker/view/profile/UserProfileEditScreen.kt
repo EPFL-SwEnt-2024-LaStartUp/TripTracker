@@ -135,9 +135,9 @@ fun UserProfileEditScreen(navigation: Navigation) {
 
   /* Mutable state variable that holds the username of the user profile */
   var username by remember {
-    mutableStateOf(profile.pseudo)
-  } // TODO: change when pseudo ---> username
-  var isUsernameEmpty by remember { mutableStateOf(profile.pseudo.isEmpty()) }
+    mutableStateOf(profile.username)
+  }
+  var isUsernameEmpty by remember { mutableStateOf(profile.username.isEmpty()) }
 
   /* Mutable state variable that holds the image url of the user profile */
   var imageUrl by remember { mutableStateOf(profile.profileImageUrl) }
@@ -517,10 +517,10 @@ fun InsertPicture(
 }
 
 /** This function previews the UserProfileEditScreen. */
-@Preview
-@Composable
-fun UserProfileEditScreenPreview() {
-  val navController = rememberNavController()
-  val navigation = remember(navController) { Navigation(navController) }
-  UserProfileEditScreen(navigation)
-}
+//@Preview
+//@Composable
+//fun UserProfileEditScreenPreview() {
+//  val navController = rememberNavController()
+//  val navigation = remember(navController) { Navigation(navController) }
+//  UserProfileEditScreen(navigation)
+//}
