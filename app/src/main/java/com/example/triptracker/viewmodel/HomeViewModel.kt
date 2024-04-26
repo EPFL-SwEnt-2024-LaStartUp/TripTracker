@@ -74,7 +74,10 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
                 FilterType.TITLE ->
                     itineraryList.value?.filter { it.title.contains(query, ignoreCase = true) }
                 FilterType.USERNAME ->
-                    itineraryList.value?.filter { it.username.contains(query, ignoreCase = true) }
+                    itineraryList.value?.filter {
+                      val username = UserProfileViewModel().getUserProfile(it.userMail)?.username
+                      username?.contains(query, ignoreCase = true) ?: false
+                    }
                 FilterType.FLAME -> parseFlameQuery(query, itineraryList.value)
                 FilterType.PIN ->
                     itineraryList.value?.filter { itinerary ->
@@ -110,6 +113,8 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
             itineraries?.filter { itinerary -> itinerary.flameCount > value }
         operator == ">=" && value != null ->
             itineraries?.filter { itinerary -> itinerary.flameCount >= value }
+        operator == "=" && value != null ->
+            itineraries?.filter { itinerary -> itinerary.flameCount.toInt() == value }
         else -> null
       }
     } ?: itineraries // return all itineraries if the query is not matched

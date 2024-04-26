@@ -1,7 +1,13 @@
 package com.example.triptracker.viewmodel
 
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.UserProfileRepository
+import kotlinx.coroutines.launch
 
 /**
  * ViewModel for the UserProfile class This class is responsible for handling the data operations
@@ -9,19 +15,34 @@ import com.example.triptracker.model.repository.UserProfileRepository
  */
 class UserProfileViewModel(
     private val userProfileRepository: UserProfileRepository = UserProfileRepository()
-) {
+) : ViewModel() {
 
-  private var userProfileList: List<UserProfile> = mutableListOf()
+  private var _userProfileList = MutableLiveData<List<UserProfile>>()
+  private val userProfileList: LiveData<List<UserProfile>> = _userProfileList
 
-  /** This function returns the list of user's profiles. */
-  fun getUserProfileList(): List<UserProfile> {
-    getAllUserProfilesFromDb()
-    return userProfileList
+  private val _currentUserProfile = MutableLiveData<UserProfile?>()
+  val currentUserProfile: LiveData<UserProfile?> = _currentUserProfile
+
+  init {
+    fetchAllUserProfiles()
   }
 
-  /** This function gets all the user's profiles from the database. */
-  fun getAllUserProfilesFromDb() {
-    userProfileList = userProfileRepository.getAllUserProfiles()
+  private fun fetchAllUserProfiles() {
+    viewModelScope.launch {
+      userProfileRepository.getAllUserProfiles { profiles ->
+        Log.d("ProfileViewModel", "Fetched all user profiles $profiles")
+        _userProfileList.value = profiles // Correctly use postValue to update LiveData
+      }
+    }
+  }
+
+  fun getUserProfile(email: String): UserProfile? {
+    viewModelScope.launch {
+      userProfileRepository.getUserProfileByEmail(email) { userProfile ->
+        _currentUserProfile.postValue(userProfile)
+      }
+    }
+    return _currentUserProfile.value
   }
 
   /**

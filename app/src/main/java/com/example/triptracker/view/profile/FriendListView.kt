@@ -66,7 +66,7 @@ fun FriendListView(
       ) {
         Column(modifier = Modifier.fillMaxHeight()) {
           Text(
-              text = friend.pseudo,
+              text = friend.username,
               style =
                   TextStyle(
                       fontSize = 20.sp,

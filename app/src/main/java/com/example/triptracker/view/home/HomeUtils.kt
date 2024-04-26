@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -36,6 +37,7 @@ import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_orange
+import com.example.triptracker.viewmodel.UserProfileViewModel
 
 /**
  * Displays an itinerary in the list of itineraries
@@ -48,16 +50,20 @@ import com.example.triptracker.view.theme.md_theme_orange
 fun DisplayItinerary(
     itinerary: Itinerary,
     navigation: Navigation,
+    boxHeight: Dp = 200.dp,
     // onClick: () -> Unit, TODO : Uncomment this line when needed
 ) {
   // Number of additional itineraries not displayed
   val pinListString = fetchPinNames(itinerary)
   // The height of the box that contains the itinerary, fixed
-  val boxHeight = 200.dp
   // The padding around the box
   val paddingAround = 15.dp
   // The size of the user's avatar/profile picture
   val avatarSize = 20.dp
+  Log.d("MAILOFUSER", itinerary.userMail)
+  val userProfile = UserProfileViewModel().getUserProfile(itinerary.userMail)
+  Log.d("UserProfileInHome", userProfile.toString())
+
   Box(
       modifier =
           Modifier.fillMaxWidth()
@@ -75,23 +81,31 @@ fun DisplayItinerary(
         Column(modifier = Modifier.fillMaxWidth().padding(25.dp)) {
           Row(modifier = Modifier.fillMaxWidth()) {
             // change the image to the user's profile picture
+
             AsyncImage(
                 model =
-                    "https://blueprintdigital.com/wp-content/uploads/2014/11/stock-photo-happy-man-giving-okay-sign-portrait-on-white-background-141327337.jpg",
+                    "https://lumiere-a.akamaihd.net/v1/images/ct_mickeymouseandfriends_goofy_ddt-16970_5d1d64dc.jpeg",
+                // TODO : Change this to the user's profile picture. Should perharps
+                // give a UserProfile instead of just a username so that can get profile
+                // picture
+                // from the user object and the username
+                // userProfile.profileImageUrl ?: "",
                 contentDescription = "User Avatar",
                 modifier =
                     Modifier.size(avatarSize)
                         .clip(CircleShape)
                         .testTag("ProfilePic")
                         .clickable { /* TODO bring user to profile page */})
+
             Spacer(modifier = Modifier.width(15.dp))
             Text(
-                text = itinerary.username,
+                text = "TeteLaMalice", // userProfile.username,
                 fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                 fontWeight = FontWeight.Normal,
                 fontSize = 14.sp,
                 color = md_theme_grey,
                 modifier = Modifier.testTag("Username"))
+
             Spacer(modifier = Modifier.width(120.dp))
             Icon(
                 imageVector = Icons.Outlined.Star,

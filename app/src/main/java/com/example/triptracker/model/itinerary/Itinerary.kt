@@ -19,7 +19,7 @@ import com.google.android.gms.maps.model.LatLng
 data class Itinerary(
     val id: String,
     val title: String,
-    val username: String,
+    val userMail: String,
     val location: Location,
     val flameCount: Long,
     val startDateAndTime: String,

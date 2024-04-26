@@ -12,7 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.location.Location
+import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.model.repository.ItineraryRepository
+import com.example.triptracker.model.repository.UserProfileRepository
 import com.example.triptracker.navigation.LaunchPermissionRequest
+import com.example.triptracker.view.Itinerary
 import com.example.triptracker.view.LoginScreen
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
@@ -21,6 +27,8 @@ import com.example.triptracker.view.map.MapOverview
 import com.example.triptracker.view.map.RecordScreen
 import com.example.triptracker.view.profile.UserProfileOverview
 import com.example.triptracker.view.theme.TripTrackerTheme
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class MainActivity : ComponentActivity() {
 
@@ -37,6 +45,8 @@ class MainActivity : ComponentActivity() {
     }
   }
 
+  var date = LocalDate.of(2018, 12, 31)
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContent {
@@ -50,6 +60,94 @@ class MainActivity : ComponentActivity() {
           val context: Context = applicationContext()
 
           LaunchPermissionRequest(context)
+          val userRepo = UserProfileRepository()
+          val itineraryRepo = ItineraryRepository()
+          val formatter = DateTimeFormatter.ofPattern("dd-MMMM-yyyy")
+          val theoProfile =
+              UserProfile(
+                  "schifferlitheo@gmail.com",
+                  "Theo",
+                  "Schifferli",
+                  LocalDate.of(1946, 10, 15).format(formatter),
+                  "Tete la malice",
+                  "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcS5n-VN2sv2jYgbMF3kVQWkYZQtdlQzje7_-9SYrgFe6w6gUQmL",
+                  listOf(),
+                  listOf())
+          val loloProfile =
+              UserProfile(
+                  "misentaloic@gmail.com",
+                  "Loic",
+                  "Misenta",
+                  LocalDate.of(1936, 12, 10).format(formatter),
+                  "Lomimi",
+                  "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRrfhlD13rGYJRmde04FRLNn2AT3uApwbvOcEfa5pAdMkQA3q8w",
+                  listOf(),
+                  listOf())
+          val gehreProfile =
+              UserProfile(
+                  "barghornjeremy@gmail.com",
+                  "Jeremy",
+                  "Barghorn",
+                  LocalDate.of(1939, 4, 2).format(formatter),
+                  "GEHREMY",
+                  "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQKS6BRrbH2Pj2QZeMJX_EVsnQcO89myNj1cxHeh2KRLMiamzmL",
+                  listOf(),
+                  listOf())
+          val cleoProfile =
+              UserProfile(
+                  "cleorenaud38@gmail.com",
+                  "Cleo",
+                  "Renaud",
+                  LocalDate.of(2004, 2, 8).format(formatter),
+                  "Cleoooo",
+                  "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-red-fluffy-cat-with-big-eyes-in-royalty-free-image-1701455126.jpg",
+                  listOf(),
+                  listOf())
+          val leopoldProfile =
+              UserProfile(
+                  "leopold.galhaud@gmail.com",
+                  "Leopold",
+                  "Galhaud",
+                  LocalDate.of(2017, 12, 20).format(formatter),
+                  "LeopoldinhoDoBrazil",
+                  "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcRviVquGNsci2DsyGkO0Wf8vlR9m_L0mT2jskinyr7YD6L3CKw_kO6Vdv0D7gFmmFena5SNPDdB0J9R6x8",
+                  listOf(),
+                  listOf())
+          val polProfile =
+              UserProfile(
+                  "polfuentescam@gmail.com",
+                  "Pol",
+                  "Fuentes",
+                  LocalDate.of(1922, 9, 27).format(formatter),
+                  "Polfuegoooo",
+                  "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Maradona-Mundial_86_con_la_copa.JPG/1200px-Maradona-Mundial_86_con_la_copa.JPG",
+                  listOf(),
+                  listOf())
+          val jeremyProfile =
+              UserProfile(
+                  "chaverotjrmy7@gmail.com",
+                  "Jeremy",
+                  "Chaverot",
+                  LocalDate.of(1948, 11, 17).format(formatter),
+                  "JeremyyyTheTigerKing",
+                  "https://cloudfront-us-east-1.images.arcpublishing.com/advancelocal/6AREHOEFLBGB3EHADZJ4AQCD4A.jpg",
+                  listOf(),
+                  listOf())
+
+          val itinerary =
+              Itinerary(
+                  "7",
+                  "Theo's trip",
+                  "schifferlitheo@gmail.com",
+                  Location(0.0, 0.0, "Theo's house"),
+                  0,
+                  "2022-12-31T23:59:59",
+                  "2023-01-01T00:00:00",
+                  listOf(),
+                  "Theo's trip",
+                  listOf())
+
+          // userRepo.addNewUserProfile(theoProfile)
 
           // List of destinations for in app navigation
           NavHost(
