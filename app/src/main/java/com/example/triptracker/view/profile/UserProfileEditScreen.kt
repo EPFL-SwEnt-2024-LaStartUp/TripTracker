@@ -69,7 +69,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Date
 
 /**
  * This function retrieves the user profile from the database.
@@ -82,7 +81,7 @@ private fun retrieveProfile(): UserProfile {
       "jean.rousseau@epfl.ch",
       "Jean-Jacques",
       "Rousseau",
-      Date(),
+      LocalDate.now().format(DateTimeFormatter.ISO_DATE),
       "DarkSkyMan",
       "profileImageUrl",
       listOf(),
@@ -99,7 +98,7 @@ private fun updateProfile(
     name: String,
     surname: String,
     mail: String,
-    birthdate: LocalDate,
+    birthdate: String,
     username: String,
     imageUrl: String?
 ) {
@@ -128,7 +127,7 @@ fun UserProfileEditScreen(navigation: Navigation) {
   var isMailEmpty by remember { mutableStateOf(profile.mail.isEmpty()) }
 
   /* Mutable state variable that holds the birthdate of the user profile */
-  var birthdate by remember { mutableStateOf(LocalDate.now()) }
+  var birthdate by remember { mutableStateOf(profile.birthdate) }
   var isBirthdateEmpty by remember { mutableStateOf(false) }
 
   /* Mutable state variable that holds the username of the user profile */
@@ -281,7 +280,7 @@ fun UserProfileEditScreen(navigation: Navigation) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                       OutlinedTextField(
                           readOnly = true,
-                          value = birthdate.format(DateTimeFormatter.ISO_DATE),
+                          value = birthdate,
                           label = {},
                           onValueChange = {},
                           modifier = Modifier.padding(bottom = 5.dp, start = 30.dp).weight(1f),
@@ -321,7 +320,10 @@ fun UserProfileEditScreen(navigation: Navigation) {
 
                             if (it != null) { // Set the date
                               birthdate =
-                                  Instant.ofEpochMilli(it).atZone(ZoneId.of("UTC")).toLocalDate()
+                                  Instant.ofEpochMilli(it)
+                                      .atZone(ZoneId.of("UTC"))
+                                      .toLocalDate()
+                                      .format(DateTimeFormatter.ISO_DATE)
                             }
                           },
                           onCancel = {
@@ -516,7 +518,7 @@ fun InsertPicture(
 // @Preview
 // @Composable
 // fun UserProfileEditScreenPreview() {
-//  val navController = rememberNavController()
-//  val navigation = remember(navController) { Navigation(navController) }
-//  UserProfileEditScreen(navigation)
+// val navController = rememberNavController()
+// val navigation = remember(navController) { Navigation(navController) }
+// UserProfileEditScreen(navigation)
 // }
