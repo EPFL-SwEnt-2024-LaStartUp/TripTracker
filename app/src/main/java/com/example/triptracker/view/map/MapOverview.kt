@@ -3,7 +3,6 @@ package com.example.triptracker.view.map
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,14 +13,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Accessibility
 import androidx.compose.material.icons.outlined.PhotoCamera
-import androidx.compose.material.icons.outlined.Start
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -259,9 +256,9 @@ fun Map(
                   onClick = { marker ->
                     // Display the pin information
                     mapViewModel.selectedPin.value = pin
-                    if (mapPopupState == popupState.PATHOVERLAY) {
-                      displayPicturesPopUp = true
-                    }
+
+                    displayPicturesPopUp = true
+
                     displayPopUp = false
 
                     false
@@ -388,31 +385,13 @@ fun Map(
         }
   }
 }
-/*
-@Composable
-fun ManagePopups(itinerary: Itinerary, navigation: Navigation, mapPopupState: popupState) {
-  when (mapPopupState) {
-    popupState.DISPLAYITINERARY -> {
-      DisplayItinerary(itinerary = itinerary, navigation = navigation, onClick = { mapPopupState = popupState.PATHOVERLAY})
-    }
-    popupState.DISPLAYPIN -> {
-      // called detailed view Theo
-    }
-    popupState.PATHOVERLAY -> {
-      PathOverlaySheet(itinerary = itinerary)
-    }
-    popupState.NONE -> {
-      // do nothing
-    }
-  }
-}
-*/
+
 @Preview
 @Composable
 // Start this screen to only see the overview of the map
-fun MapOverviewPreview() {
+fun MapOverviewPreview(mapViewModel: MapViewModel = MapViewModel()) {
   val context = LocalContext.current
   val navController = rememberNavController()
   val navigation = remember(navController) { Navigation(navController) }
-  MapOverview(MapViewModel(), context, navigation)
+  MapOverview(mapViewModel, context, navigation, true, LatLng(46.8, 6.8))
 }
