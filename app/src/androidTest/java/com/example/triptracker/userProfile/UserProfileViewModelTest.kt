@@ -131,7 +131,7 @@ class UserProfileViewModelTest {
     val user = mockList.getUserProfiles()[0]
     val follower = mockList.getUserProfiles()[1]
 
-    mockViewModel.addFollowersInDb(user, follower)
+    mockViewModel.addFollower(user, follower)
     verify {
       Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
     }
@@ -148,7 +148,7 @@ class UserProfileViewModelTest {
     val user = mockList.getUserProfiles()[0]
     val following = mockList.getUserProfiles()[1]
 
-    mockViewModel.addFollowingInDb(user, following)
+    mockViewModel.addFollower(following, user)
     verify {
       Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
     }
@@ -165,7 +165,7 @@ class UserProfileViewModelTest {
     val user = mockList.getUserProfiles()[0]
     val follower = mockList.getUserProfiles()[1]
 
-    mockViewModel.removeFollowerInDb(user, follower)
+    mockViewModel.removeFollower(user, follower)
     verify {
       Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
     }
@@ -182,7 +182,7 @@ class UserProfileViewModelTest {
     val user = mockList.getUserProfiles()[0]
     val following = mockList.getUserProfiles()[1]
 
-    mockViewModel.removeFollowingInDb(user, following)
+    mockViewModel.removeFollower(following, user)
     verify {
       Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
     }

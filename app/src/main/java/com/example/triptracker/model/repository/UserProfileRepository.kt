@@ -5,7 +5,6 @@ import com.example.triptracker.model.profile.UserProfile
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
-import java.util.Date
 
 /**
  * Repository for the UserProfile class This class is responsible for handling the data operations
@@ -67,7 +66,7 @@ open class UserProfileRepository {
                     document.id,
                     document.data?.get("name") as String,
                     document.data?.get("surname") as String,
-                    document.data?.get("birthdate") as Date,
+                    document.data?.get("birthdate") as String,
                     document.data?.get("pseudo") as String,
                     document.data?.get("profileImageUrl") as String)
           } else {
@@ -91,7 +90,7 @@ open class UserProfileRepository {
               document.id,
               document.data["name"] as String,
               document.data["surname"] as String,
-              document.data["birthdate"] as Date,
+              document.data["birthdate"] as String,
               document.data["pseudo"] as String,
               document.data["profileImageUrl"] as String)
 
