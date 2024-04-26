@@ -54,10 +54,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
@@ -134,9 +132,7 @@ fun UserProfileEditScreen(navigation: Navigation) {
   var isBirthdateEmpty by remember { mutableStateOf(false) }
 
   /* Mutable state variable that holds the username of the user profile */
-  var username by remember {
-    mutableStateOf(profile.username)
-  }
+  var username by remember { mutableStateOf(profile.username) }
   var isUsernameEmpty by remember { mutableStateOf(profile.username.isEmpty()) }
 
   /* Mutable state variable that holds the image url of the user profile */
@@ -517,10 +513,10 @@ fun InsertPicture(
 }
 
 /** This function previews the UserProfileEditScreen. */
-//@Preview
-//@Composable
-//fun UserProfileEditScreenPreview() {
+// @Preview
+// @Composable
+// fun UserProfileEditScreenPreview() {
 //  val navController = rememberNavController()
 //  val navigation = remember(navController) { Navigation(navController) }
 //  UserProfileEditScreen(navigation)
-//}
+// }
