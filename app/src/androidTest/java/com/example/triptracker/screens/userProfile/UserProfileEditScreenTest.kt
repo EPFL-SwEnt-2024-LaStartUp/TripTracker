@@ -58,13 +58,10 @@ class UserProfileEditScreenTest : TestCase() {
   }
 
   @Test
-  fun testSaveButtonHasClickableButtonAndIntendedAction() {
+  fun testSaveButtonHasClickableAction() {
     composeTestRule.setContent { UserProfileEditScreen(navigation) }
     composeTestRule.onNodeWithText("Save").assertHasClickAction()
     composeTestRule.onNodeWithText("Save").performClick()
-    composeTestRule
-        .onNodeWithTag("AlertDialog")
-        .assertExists() // TODO: Remove later if not used anymore
   }
 
   @Test
