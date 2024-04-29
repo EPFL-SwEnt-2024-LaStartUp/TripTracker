@@ -2,7 +2,6 @@ package com.example.triptracker.userProfile
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.profile.UserProfile
-import java.util.Date
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith

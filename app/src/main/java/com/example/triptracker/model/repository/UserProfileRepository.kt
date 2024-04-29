@@ -42,48 +42,14 @@ open class UserProfileRepository {
    *
    * @return List of all user's profiles
    */
-  fun getAllUserProfiles(onResult: (List<UserProfile>) -> Unit) {
+  open fun getAllUserProfiles(): List<UserProfile> {
     userProfileDb
         .get()
-        .addOnSuccessListener { result ->
-          val userProfileList = result.toUserProfileList()
-          onResult(userProfileList)
-        }
-        .addOnFailureListener { e ->
-          Log.e(TAG, "Error getting all user's profiles", e)
-          onResult(listOf())
-        }
+        .addOnSuccessListener { result -> userProfileList(result) }
+        .addOnFailureListener { e -> Log.e(TAG, "Error getting all user's profiles", e) }
+    Log.d("UserProfileRepository", _userProfileList.toString())
+    return _userProfileList
   }
-
-  private fun QuerySnapshot.toUserProfileList(): List<UserProfile> {
-    return this.documents.mapNotNull { document ->
-      try {
-        UserProfile(
-            mail = document.id,
-            name = document.getString("name") ?: throw IllegalStateException("Name is missing"),
-            surname =
-                document.getString("surname") ?: throw IllegalStateException("Surname is missing"),
-            birthdate =
-                document.getString("birthdate")
-                    ?: throw IllegalStateException("Birthdate is missing"),
-            username =
-                document.getString("username")
-                    ?: throw IllegalStateException("Username is missing"),
-            profileImageUrl =
-                document.getString("profileImageUrl")
-                    ?: throw IllegalStateException("Profile image URL is missing"))
-      } catch (e: IllegalStateException) {
-        Log.e(TAG, "Error converting document to UserProfile", e)
-        null
-      }
-    }
-  }
-
-  /*
-      Wrote this code to be able to fetch more rapidly a user profile by mail
-      but it doesn't work as expected, I don't know why. Now doing it with the UserProfileViewModel
-
-  */
 
   /**
    * This function returns the user profile corresponding to the mail
@@ -126,7 +92,6 @@ open class UserProfileRepository {
         document.data?.get("birthdate") as? String
             ?: throw IllegalStateException("Birthdate is missing")
     val userProfile = UserProfile(document.id, name, surname, birthdate, username, profileImageUrl)
-    // Log.d("UserProfileRepositoryUserProfileyy", userProfile.toString())
     return userProfile
   }
 
@@ -153,8 +118,6 @@ open class UserProfileRepository {
 
       val userProfile =
           UserProfile(document.id, name, surname, birthdate, username, profileImageUrl)
-      // Log.d("UserProfileRepositoryUserProfileList", userProfile.toString())
-
       _userProfileList.add(userProfile)
     }
   }

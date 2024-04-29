@@ -17,13 +17,17 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.itinerary.MockItineraryList
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.repository.ItineraryRepository
+import com.example.triptracker.model.repository.UserProfileRepository
+import com.example.triptracker.userProfile.MockUserList
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.TopLevelDestination
 import com.example.triptracker.view.home.HomeScreen
 import com.example.triptracker.viewmodel.HomeViewModel
+import com.example.triptracker.viewmodel.UserProfileViewModel
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
@@ -44,9 +48,17 @@ class HomeTest {
   @RelaxedMockK lateinit var mockNav: Navigation
   @RelaxedMockK private lateinit var mockViewModel: HomeViewModel
   @RelaxedMockK private lateinit var mockItineraryRepository: ItineraryRepository
+  // @RelaxedMockK private  lateinit var mockUserProfileRepository: UserProfileRepository
+  @MockK(relaxUnitFun = true) private lateinit var mockUserProfileRepository: UserProfileRepository
+  @MockK(relaxUnitFun = true) private lateinit var mockUserProfileViewModel: UserProfileViewModel
+  // private lateinit var mockUserProfileViewModel: UserProfileViewModel
 
   val mockList = MockItineraryList()
   val mockItineraries = mockList.getItineraries()
+
+  val mockUserList = MockUserList()
+  val mockUsers = mockUserList.getUserProfiles()
+  val mockMail = "test@gmail.com"
   /**
    * This method is run before each test to set up the necessary mocks. It is used to initialize the
    * mocks and set up the necessary dependencies.
@@ -63,6 +75,9 @@ class HomeTest {
     mockNav = mockk(relaxed = true)
     mockItineraryRepository = mockk(relaxed = true)
     mockViewModel = mockk(relaxed = true)
+    // This allows mocking unit returning functions
+    mockUserProfileRepository = mockk(relaxUnitFun = true)
+    mockUserProfileViewModel = mockk(relaxUnitFun = true)
 
     // Log.d("ItineraryList", mockViewModel.itineraryList.value.toString())
     every { mockNav.getTopLevelDestinations()[0] } returns
@@ -72,6 +87,8 @@ class HomeTest {
   @Test
   fun homeScreenComponentsAreDisplayed() {
     // Have to repeat code to have specific mock data for each test!!
+    every { mockUserProfileRepository.getUserProfileByEmail(mockMail) {} } returns
+        mockk(relaxUnitFun = true)
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
@@ -253,6 +270,10 @@ class HomeTest {
 
   @Test
   fun noResultWhenSearchingForInexistantItinerary() {
+    Log.d("MockItineraries", mockItineraries.toString())
+    every { mockUserProfileRepository.getUserProfileByEmail(mockMail) {} } returns
+        mockk(relaxUnitFun = true)
+    every { mockUserProfileViewModel.getUserProfile(mockMail){} } returns mockk(relaxUnitFun = true)
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(emptyList())

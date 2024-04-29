@@ -19,6 +19,10 @@ import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
@@ -32,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_black
@@ -51,6 +56,7 @@ fun DisplayItinerary(
     itinerary: Itinerary,
     navigation: Navigation,
     boxHeight: Dp = 200.dp,
+    userProfileViewModel: UserProfileViewModel = UserProfileViewModel()
     // onClick: () -> Unit, TODO : Uncomment this line when needed
 ) {
   // Number of additional itineraries not displayed
@@ -60,83 +66,92 @@ fun DisplayItinerary(
   val paddingAround = 15.dp
   // The size of the user's avatar/profile picture
   val avatarSize = 20.dp
-  Log.d("MAILOFUSER", itinerary.userMail)
-  val userProfile = UserProfileViewModel().getUserProfile(itinerary.userMail)
-  Log.d("UserProfileInHome", userProfile.toString())
 
-  Box(
-      modifier =
-          Modifier.fillMaxWidth()
-              .padding(paddingAround)
-              .height(boxHeight)
-              .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))
-              .clickable { // When you click on an itinerary, it should bring you to the map
-                // overview with the selected itinerary highlighted and the first pinned places
-                // TODO : when changing Top Level Destination, the navbar should be updated to
-                // highlight the correct tab.
-                // TODO : Would call DisplayItineraryInMap or sth similar later on
-                // onClick()
+  var readyToDisplay by remember { mutableStateOf(false) }
+  var profile by remember { mutableStateOf(UserProfile("")) }
+
+  userProfileViewModel.getUserProfile(itinerary.userMail) { itin ->
+    if (itin != null) {
+      profile = itin
+      readyToDisplay = true
+    }
+  }
+
+  when (readyToDisplay) {
+    false -> {
+      Log.d("UserProfile", "User profile is null")
+    }
+    else -> {
+      Log.d("UserProfile", "User profile is not null")
+      Box(
+          modifier =
+              Modifier.fillMaxWidth()
+                  .padding(paddingAround)
+                  .height(boxHeight)
+                  .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))
+                  .clickable { // When you click on an itinerary, it should bring you to the map
+                    // overview with the selected itinerary highlighted and the first pinned places
+                    // TODO : when changing Top Level Destination, the navbar should be updated to
+                    // highlight the correct tab.
+                    // TODO : Would call DisplayItineraryInMap or sth similar later on
+                    // onClick()
+                  }
+                  .testTag("Itinerary")) {
+            Column(modifier = Modifier.fillMaxWidth().padding(25.dp)) {
+              Row(modifier = Modifier.fillMaxWidth()) {
+                // change the image to the user's profile picture
+
+                AsyncImage(
+                    model = profile.profileImageUrl,
+                    contentDescription = "User Avatar",
+                    modifier =
+                        Modifier.size(avatarSize)
+                            .clip(CircleShape)
+                            .testTag("ProfilePic")
+                            .clickable { /* TODO bring user to profile page */})
+
+                Spacer(modifier = Modifier.width(15.dp))
+                Text(
+                    text = profile.username, // userProfile.username,
+                    fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp,
+                    color = md_theme_grey,
+                    modifier = Modifier.testTag("Username"))
+
+                Spacer(modifier = Modifier.width(120.dp))
+                Icon(
+                    imageVector = Icons.Outlined.Star,
+                    contentDescription = "Star",
+                    Modifier.size(20.dp))
               }
-              .testTag("Itinerary")) {
-        Column(modifier = Modifier.fillMaxWidth().padding(25.dp)) {
-          Row(modifier = Modifier.fillMaxWidth()) {
-            // change the image to the user's profile picture
-
-            AsyncImage(
-                model =
-                    "https://lumiere-a.akamaihd.net/v1/images/ct_mickeymouseandfriends_goofy_ddt-16970_5d1d64dc.jpeg",
-                // TODO : Change this to the user's profile picture. Should perharps
-                // give a UserProfile instead of just a username so that can get profile
-                // picture
-                // from the user object and the username
-                // userProfile.profileImageUrl ?: "",
-                contentDescription = "User Avatar",
-                modifier =
-                    Modifier.size(avatarSize)
-                        .clip(CircleShape)
-                        .testTag("ProfilePic")
-                        .clickable { /* TODO bring user to profile page */})
-
-            Spacer(modifier = Modifier.width(15.dp))
-            Text(
-                text = "TeteLaMalice", // userProfile.username,
-                fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                fontWeight = FontWeight.Normal,
-                fontSize = 14.sp,
-                color = md_theme_grey,
-                modifier = Modifier.testTag("Username"))
-
-            Spacer(modifier = Modifier.width(120.dp))
-            Icon(
-                imageVector = Icons.Outlined.Star,
-                contentDescription = "Star",
-                Modifier.size(20.dp))
+              Spacer(modifier = Modifier.height(5.dp))
+              Log.d("ItineraryRoute", itinerary.route.toString())
+              Text(
+                  text = itinerary.title,
+                  fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                  fontWeight = FontWeight.Bold,
+                  fontSize = 24.sp,
+                  color = md_theme_light_onPrimary,
+                  modifier = Modifier.testTag("Title"))
+              Text(
+                  text = "${itinerary.flameCount}🔥",
+                  color = md_theme_orange, // This is the orange color
+                  fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                  fontSize = 14.sp)
+              Spacer(modifier = Modifier.height(30.dp).weight(1f))
+              Text(
+                  text = pinListString,
+                  fontSize = 14.sp,
+                  modifier = Modifier.fillMaxWidth().testTag("PinList"),
+                  maxLines = 2,
+                  overflow = "and more".let { TextOverflow.Ellipsis },
+                  fontFamily = FontFamily(Font(R.font.montserrat_medium)),
+                  color = md_theme_grey)
+            }
           }
-          Spacer(modifier = Modifier.height(5.dp))
-          Log.d("ItineraryRoute", itinerary.route.toString())
-          Text(
-              text = itinerary.title,
-              fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-              fontWeight = FontWeight.Bold,
-              fontSize = 24.sp,
-              color = md_theme_light_onPrimary,
-              modifier = Modifier.testTag("Title"))
-          Text(
-              text = "${itinerary.flameCount}🔥",
-              color = md_theme_orange, // This is the orange color
-              fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-              fontSize = 14.sp)
-          Spacer(modifier = Modifier.height(30.dp).weight(1f))
-          Text(
-              text = pinListString,
-              fontSize = 14.sp,
-              modifier = Modifier.fillMaxWidth().testTag("PinList"),
-              maxLines = 2,
-              overflow = "and more".let { TextOverflow.Ellipsis },
-              fontFamily = FontFamily(Font(R.font.montserrat_medium)),
-              color = md_theme_grey)
-        }
-      }
+    }
+  }
 }
 
 private fun fetchPinNames(itinerary: Itinerary): String {

@@ -61,7 +61,6 @@ class UserProfileViewModelTest {
     every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
     val viewModel = UserProfileViewModel(mockUserProfileRepository)
 
-    viewModel.getAllUserProfilesFromDb()
     assert(viewModel.getUserProfileList() == mockUserProfiles)
   }
 

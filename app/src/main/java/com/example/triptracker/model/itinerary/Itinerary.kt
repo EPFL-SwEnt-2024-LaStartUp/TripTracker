@@ -3,6 +3,7 @@ package com.example.triptracker.model.itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
 import com.google.android.gms.maps.model.LatLng
+import javax.annotation.concurrent.Immutable
 
 /**
  * This class represents the Itinerary object which contains the details of the trip
@@ -16,6 +17,7 @@ import com.google.android.gms.maps.model.LatLng
  * @param route : route taken by the user.
  * @param participants : friends who are part of the trip
  */
+@Immutable
 data class Itinerary(
     val id: String,
     val title: String,

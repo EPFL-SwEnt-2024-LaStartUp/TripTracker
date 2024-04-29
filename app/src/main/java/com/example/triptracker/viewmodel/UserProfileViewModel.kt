@@ -1,6 +1,5 @@
 package com.example.triptracker.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -20,29 +19,24 @@ class UserProfileViewModel(
   private var _userProfileList = MutableLiveData<List<UserProfile>>()
   private val userProfileList: LiveData<List<UserProfile>> = _userProfileList
 
-  private val _currentUserProfile = MutableLiveData<UserProfile?>()
-  val currentUserProfile: LiveData<UserProfile?> = _currentUserProfile
-
-  init {
-    fetchAllUserProfiles()
-  }
-
+  /**
+   * Fetches all user profiles from the repository and stores them in the userProfileList LiveData
+   * could be used to display all user profiles in the UI not used in the current implementation
+   */
   private fun fetchAllUserProfiles() {
-    viewModelScope.launch {
-      userProfileRepository.getAllUserProfiles { profiles ->
-        Log.d("ProfileViewModel", "Fetched all user profiles $profiles")
-        _userProfileList.value = profiles // Correctly use postValue to update LiveData
-      }
-    }
+    viewModelScope.launch { userProfileRepository.getAllUserProfiles() }
   }
 
-  fun getUserProfile(email: String): UserProfile? {
+  /** This function returns the list of user's profiles. */
+  fun getUserProfileList(): List<UserProfile> {
+    fetchAllUserProfiles()
+    return userProfileList.value ?: emptyList()
+  }
+
+  fun getUserProfile(email: String, callback: (UserProfile?) -> Unit) {
     viewModelScope.launch {
-      userProfileRepository.getUserProfileByEmail(email) { userProfile ->
-        _currentUserProfile.postValue(userProfile)
-      }
+      userProfileRepository.getUserProfileByEmail(email) { userProfile -> callback(userProfile) }
     }
-    return _currentUserProfile.value
   }
 
   /**
