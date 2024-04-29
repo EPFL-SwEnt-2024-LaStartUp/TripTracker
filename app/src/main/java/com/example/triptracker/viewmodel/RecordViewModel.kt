@@ -21,7 +21,12 @@ import kotlinx.coroutines.launch
  * ViewModel for recording trips. This ViewModel is responsible for managing the state of a trip
  * recording, including start time, end time, pause status, and the list of LatLng points.
  */
-class RecordViewModel : ViewModel() {
+class RecordViewModel(
+    private val geocoder: NominatimApi = NominatimApi(),
+    private val imageRepository: ImageRepository = ImageRepository(),
+    private val _latLongList: MutableList<LatLng> = mutableListOf(),
+    private var _pinList: MutableList<Pin> = mutableListOf()
+) : ViewModel() {
 
   // Start time and date of the recording
   private val startTime = mutableLongStateOf(0L)
@@ -38,20 +43,19 @@ class RecordViewModel : ViewModel() {
   val title = mutableStateOf("")
 
   // Private mutable list of LatLng points
-  private var _latLongList = mutableListOf<LatLng>()
+  // private var _latLongList = mutableListOf<LatLng>()
   // Public immutable list of LatLng points
   val latLongList: List<LatLng>
     get() = _latLongList
 
   // Private mutable list of Pin points
-  private var _pinList = mutableListOf<Pin>()
+  // private var _pinList = mutableListOf<Pin>()
 
   // Public immutable list of LatLng points
   val pinList: List<Pin>
     get() = _pinList
 
   // Geocoder object to interact with the Nominatim API
-  private val geocoder = NominatimApi()
 
   // Point of interest name
   val namePOI = mutableStateOf("")
@@ -63,7 +67,6 @@ class RecordViewModel : ViewModel() {
   var addSpotClicked = mutableStateOf(false)
 
   // ImageRepository
-  private val imageRepository = ImageRepository()
 
   var addImageToStorageResponse by mutableStateOf<List<Response<Uri>>>(emptyList())
 

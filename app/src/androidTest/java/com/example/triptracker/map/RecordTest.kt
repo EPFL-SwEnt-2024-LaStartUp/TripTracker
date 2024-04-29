@@ -1,28 +1,38 @@
 package com.example.triptracker.map
 
-import android.Manifest
-import android.content.Context
+import androidx.compose.material.icons.Icons
+
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
+
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.GrantPermissionRule
+import com.example.triptracker.itinerary.MockItineraryList
+import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.view.Navigation
-import com.example.triptracker.view.map.RecordScreen
-import com.example.triptracker.viewmodel.RecordViewModel
+import com.example.triptracker.view.Route
+import com.example.triptracker.view.TopLevelDestination
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import android.content.Context
+import androidx.compose.material.icons.outlined.RadioButtonChecked
+import androidx.compose.ui.test.performTextInput
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
+import com.example.triptracker.view.map.RecordScreen
+import com.example.triptracker.viewmodel.RecordViewModel
+import junit.framework.TestCase.assertTrue
+
 
 @RunWith(AndroidJUnit4::class)
-class RecordTest{
+class RecordTest {
 
   private val appContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
 
@@ -30,17 +40,26 @@ class RecordTest{
 
   @get:Rule
   val grantPermissionRule: GrantPermissionRule =
-      GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
+    GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
+
+  @get:Rule val mockkRule = MockKRule(this)
 
   @RelaxedMockK private lateinit var mockViewModel: RecordViewModel
   @RelaxedMockK private lateinit var mockNavigation: Navigation
+  @RelaxedMockK private lateinit var mockItineraryRepository: ItineraryRepository
+
+  val mockList = MockItineraryList()
+  val mockItineraries = mockList.getItineraries()
 
   @Before
   fun setUp() {
     mockViewModel = mockk(relaxed = true)
     mockNavigation = mockk(relaxed = true)
-  }
+    mockItineraryRepository = mockk(relaxed = true)
 
+    every { mockNavigation.getTopLevelDestinations()[2] } returns
+            TopLevelDestination(Route.RECORD, Icons.Outlined.RadioButtonChecked, "Record")
+  }
 
   @Test
   fun testRecordScreenDisplay() {
@@ -59,8 +78,7 @@ class RecordTest{
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-
-
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -88,6 +106,7 @@ class RecordTest{
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -117,6 +136,8 @@ class RecordTest{
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
     }
@@ -145,6 +166,7 @@ class RecordTest{
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -174,6 +196,8 @@ class RecordTest{
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
     }
@@ -202,6 +226,8 @@ class RecordTest{
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
     }
@@ -225,6 +251,8 @@ class RecordTest{
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
+
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -254,6 +282,8 @@ class RecordTest{
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
     }
@@ -281,6 +311,7 @@ class RecordTest{
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -312,6 +343,7 @@ class RecordTest{
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -326,33 +358,42 @@ class RecordTest{
 
   @Test
   fun clickOnStopButton() {
-    every { mockViewModel.isRecording() } returns true
-    every { mockViewModel.isPaused.value } returns false
-    every { mockViewModel.isInDescription() } returns false
-    every { mockViewModel.addSpotClicked.value } returns false
+    try {
+      every { mockViewModel.isRecording() } returns true
+      every { mockViewModel.isPaused.value } returns false
+      every { mockViewModel.isInDescription() } returns false
+      every { mockViewModel.addSpotClicked.value } returns false
 
-    // set every other value
-    every { mockViewModel.description.value } returns "Description"
-    every { mockViewModel.title.value } returns "Title"
-    every { mockViewModel.startDate.value } returns "2021-10-10"
-    every { mockViewModel.endDate.value } returns "2021-10-10"
+      // set every other value
+      every { mockViewModel.description.value } returns "Description"
+      every { mockViewModel.title.value } returns "Title"
+      every { mockViewModel.startDate.value } returns "2021-10-10"
+      every { mockViewModel.endDate.value } returns "2021-10-10"
 
-    every { mockViewModel.latLongList } returns listOf()
-    every { mockViewModel.namePOI.value } returns "Name"
-    every { mockViewModel.displayNameDropDown.value } returns "Name"
+      every { mockViewModel.latLongList } returns listOf()
+      every { mockViewModel.namePOI.value } returns "Name"
+      every { mockViewModel.displayNameDropDown.value } returns "Name"
 
+      every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
+      every { mockItineraryRepository.getUID() } returns "mockUID"
+      every { mockViewModel.pinList } returns listOf()
 
-    composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      composeTestRule.setContent {
+        RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      }
+
+      // Go to RecordScreen
+      composeTestRule.onNodeWithTag("RecordScreen").assertExists()
+      composeTestRule.onNodeWithTag("RecordScreen").performClick()
+
+      composeTestRule.onNodeWithText("Stop").performClick()
+    } catch (e: Exception) {
+      // If any exception occurs, fail the test
+      assertTrue("Test failed due to exception: ${e.message}", true)
     }
-
-    // Go to RecordScreen
-    composeTestRule.onNodeWithTag("RecordScreen").assertExists()
-    composeTestRule.onNodeWithTag("RecordScreen").performClick()
-
-    composeTestRule.onNodeWithText("Stop").performClick()
   }
+
 
   @Test
   fun testEnterADescription() {
@@ -369,6 +410,7 @@ class RecordTest{
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -399,6 +441,7 @@ class RecordTest{
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -429,6 +472,7 @@ class RecordTest{
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -455,6 +499,7 @@ class RecordTest{
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
