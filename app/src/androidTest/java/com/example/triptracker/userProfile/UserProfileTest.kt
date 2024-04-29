@@ -8,7 +8,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class UserProfileTest {
-  private val date1 = "2021-01-01"
+  private val date1 = "08-February-2021"
 
   private val userProfile1 =
       UserProfile(

@@ -30,7 +30,7 @@ data class UserProfileList(private var userProfileList: List<UserProfile>) {
    * @param userProfile : user's profile to add
    */
   fun addUserProfile(userProfile: UserProfile) {
-    userProfileList = userProfileList + userProfile
+    this.userProfileList += userProfile
   }
 
   /**

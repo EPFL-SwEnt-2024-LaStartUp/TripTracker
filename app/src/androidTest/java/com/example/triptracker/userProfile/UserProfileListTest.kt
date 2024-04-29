@@ -3,17 +3,13 @@ package com.example.triptracker.userProfile
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.profile.UserProfileList
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class UserProfileListTest {
-
-  val formatter = DateTimeFormatter.ofPattern("dd-MMMM-yyyy")
-  private val date1 = LocalDate.of(2012, 1, 1).format(formatter)
+  private val date1 = "08-February-2021"
 
   private val userProfileList1 = UserProfileList(listOf())
   private val userProfileList2 =

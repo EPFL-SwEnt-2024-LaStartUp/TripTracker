@@ -75,7 +75,11 @@ fun UserProfileFollowing(
                             textAlign = TextAlign.Center,
                             letterSpacing = 0.5.sp,
                         ),
-                    modifier = Modifier.weight(1f).testTag("FollowingTitle"))
+                    modifier =
+                        Modifier.width(250.dp)
+                            .height(37.dp)
+                            .padding(5.dp)
+                            .testTag("FollowingTitle"))
                 Box(modifier = Modifier.size(60.dp))
               }
             }
@@ -88,3 +92,31 @@ fun UserProfileFollowing(
         }
       }
 }
+
+//// TODO: remove this preview
+// @Preview(showBackground = true)
+// @Composable
+// fun UserProfileFollowingPreview() {
+//  val viewModel = UserProfileViewModel()
+//
+//  // val list = viewModel.userProfileList.value
+//  // val profile = viewModel.getUserProfile("cleorenaud38@gmail.com")
+//
+//  val navController = rememberNavController()
+//  val navigation = remember(navController) { Navigation(navController) }
+//
+//  val mockUser1 =
+//      UserProfile(
+//          mail = "cleorenaud38@gmail.com",
+//          name = "Cleo",
+//          surname = "Renaud",
+//          birthdate = "08-February-2004",
+//          username = "Cleoooo",
+//          profileImageUrl =
+//
+// "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-red-fluffy-cat-with-big-eyes-in-royalty-free-image-1701455126.jpg",
+//          followers = listOf("schifferlitheo@gmail.com", "barghornjeremy@gmail.com"),
+//          following = emptyList())
+//
+//  UserProfileFollowing(navigation, viewModel, mockUser1)
+// }

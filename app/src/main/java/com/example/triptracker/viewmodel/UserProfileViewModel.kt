@@ -40,6 +40,16 @@ class UserProfileViewModel(
   }
 
   /**
+   * This function returns the user profile corresponding to the mail.
+   *
+   * @param mail : mail of the user profile to return
+   * @return user profile corresponding to the mail
+   */
+  fun getUserProfileFromDb(mail: String): UserProfile? {
+    return userProfileRepository.getUserProfile(mail)
+  }
+
+  /**
    * This function adds a new user profile to the database.
    *
    * @param userProfile : user profile to add
@@ -58,63 +68,29 @@ class UserProfileViewModel(
   }
 
   /**
-   * This function adds new followers to the user profile in the database.
+   * Function that add the follower to the user profile
    *
-   * @param userProfile : user profile to update
-   * @param follower : follower to add
+   * @param userProfile : the user profile to which we add a follower
+   * @param follower : the user profile of the follower to add
    */
-  fun addFollowersInDb(userProfile: UserProfile, follower: UserProfile) {
-    val updatedProfile = userProfile.copy(followers = userProfile.followers + follower)
-    userProfileRepository.updateUserProfile(updatedProfile)
-
-    val updatedFollowerProfile = follower.copy(following = follower.following + userProfile)
-    userProfileRepository.updateUserProfile(updatedFollowerProfile)
+  fun addFollower(userProfile: UserProfile, follower: UserProfile) {
+    val updatedUserProfile = userProfile.copy(followers = userProfile.followers + follower.mail)
+    val updatedFollower = follower.copy(following = follower.following + userProfile.mail)
+    userProfileRepository.updateUserProfile(updatedUserProfile)
+    userProfileRepository.updateUserProfile(updatedFollower)
   }
 
   /**
-   * This function adds new following to the user profile in the database.
+   * Function that remove the follower from the user profile
    *
-   * @param userProfile : user profile to update
-   * @param following : following to add
+   * @param userProfile : the user profile from which we remove a follower
+   * @param follower : the user profile of the follower to remove
    */
-  fun addFollowingInDb(userProfile: UserProfile, following: UserProfile) {
-    val updatedProfile = userProfile.copy(following = userProfile.following + following)
-    userProfileRepository.updateUserProfile(updatedProfile)
-
-    val updatedFollowingProfile = following.copy(followers = following.followers + userProfile)
-    userProfileRepository.updateUserProfile(updatedFollowingProfile)
-  }
-
-  /**
-   * This function removes a follower from the user profile in the database.
-   *
-   * @param userProfile : user profile to update
-   * @param follower : follower to remove
-   */
-  fun removeFollowerInDb(userProfile: UserProfile, follower: UserProfile) {
-    val updatedProfile =
-        userProfile.copy(followers = userProfile.followers.filter { it.mail != follower.mail })
-    userProfileRepository.updateUserProfile(updatedProfile)
-
-    val updatedFollowerProfile =
-        follower.copy(following = follower.following.filter { it.mail != userProfile.mail })
-    userProfileRepository.updateUserProfile(updatedFollowerProfile)
-  }
-
-  /**
-   * This function removes a following from the user profile in the database.
-   *
-   * @param userProfile : user profile to update
-   * @param following : following to remove
-   */
-  fun removeFollowingInDb(userProfile: UserProfile, following: UserProfile) {
-    val updatedProfile =
-        userProfile.copy(following = userProfile.following.filter { it.mail != following.mail })
-    userProfileRepository.updateUserProfile(updatedProfile)
-
-    val updatedFollowingProfile =
-        following.copy(followers = following.followers.filter { it.mail != userProfile.mail })
-    userProfileRepository.updateUserProfile(updatedFollowingProfile)
+  fun removeFollower(userProfile: UserProfile, follower: UserProfile) {
+    val updatedUserProfile = userProfile.copy(followers = userProfile.followers - follower.mail)
+    val updatedFollower = follower.copy(following = follower.following - userProfile.mail)
+    userProfileRepository.updateUserProfile(userProfile)
+    userProfileRepository.updateUserProfile(follower)
   }
 
   /**

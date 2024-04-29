@@ -26,7 +26,7 @@ class ItineraryListTest {
                   endDateAndTime = "2021-01-02",
                   pinnedPlaces = listOf(),
                   description = "A trip to the beach with friends",
-                  route = listOf()),
+                  route = listOf(LatLng(0.0, 0.0), LatLng(0.5, 0.5))),
               Itinerary(
                   id = "2",
                   title = "Trip to the mountains",

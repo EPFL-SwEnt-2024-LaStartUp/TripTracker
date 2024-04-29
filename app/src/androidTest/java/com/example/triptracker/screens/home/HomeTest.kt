@@ -3,7 +3,7 @@ package com.example.triptracker.screens.home
 import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.material.icons.outlined.Place
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -114,6 +114,9 @@ class HomeTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
+    every { mockNav.getTopLevelDestinations()[1] } returns
+        TopLevelDestination(Route.MAPS, Icons.Outlined.Place, "Maps")
+
     // Setting up the test composition
     composeTestRule.setContent { HomeScreen(navigation = mockNav, homeViewModel = mockViewModel) }
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
@@ -182,6 +185,8 @@ class HomeTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
+    every { mockNav.getTopLevelDestinations()[1] } returns
+        TopLevelDestination(Route.MAPS, Icons.Outlined.Place, "Maps")
     // Setting up the test composition
     composeTestRule.setContent { HomeScreen(navigation = mockNav, homeViewModel = mockViewModel) }
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) { itinerary { performClick() } }

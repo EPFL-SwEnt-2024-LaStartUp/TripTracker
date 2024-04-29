@@ -7,6 +7,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
+import java.util.Date
 
 /**
  * Repository for the UserProfile class This class is responsible for handling the data operations
@@ -27,7 +28,6 @@ open class UserProfileRepository {
   // A tag for logging
   private val TAG = "FirebaseConnection - UserProfileRepository"
 
-  private var _currentProfile = MutableLiveData<UserProfile>()
   /**
    * This function returns a unique identifier.
    *
