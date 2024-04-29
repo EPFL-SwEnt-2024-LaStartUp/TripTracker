@@ -1,13 +1,11 @@
 package com.example.triptracker.model.repository
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import com.example.triptracker.model.profile.UserProfile
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
-import java.util.Date
 
 /**
  * Repository for the UserProfile class This class is responsible for handling the data operations

@@ -56,8 +56,8 @@ fun DisplayItinerary(
     itinerary: Itinerary,
     navigation: Navigation,
     boxHeight: Dp = 200.dp,
-    userProfileViewModel: UserProfileViewModel = UserProfileViewModel()
-    // onClick: () -> Unit, TODO : Uncomment this line when needed
+    userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
+    onClick: () -> Unit
 ) {
   // Number of additional itineraries not displayed
   val pinListString = fetchPinNames(itinerary)
@@ -82,7 +82,6 @@ fun DisplayItinerary(
       Log.d("UserProfile", "User profile is null")
     }
     else -> {
-      Log.d("UserProfile", "User profile is not null")
       Box(
           modifier =
               Modifier.fillMaxWidth()
@@ -91,10 +90,7 @@ fun DisplayItinerary(
                   .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))
                   .clickable { // When you click on an itinerary, it should bring you to the map
                     // overview with the selected itinerary highlighted and the first pinned places
-                    // TODO : when changing Top Level Destination, the navbar should be updated to
-                    // highlight the correct tab.
-                    // TODO : Would call DisplayItineraryInMap or sth similar later on
-                    // onClick()
+                    onClick()
                   }
                   .testTag("Itinerary")) {
             Column(modifier = Modifier.fillMaxWidth().padding(25.dp)) {

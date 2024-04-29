@@ -26,8 +26,8 @@ import com.example.triptracker.view.home.HomeScreen
 import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import io.mockk.MockKAnnotations
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
@@ -49,8 +49,8 @@ class HomeTest {
   @RelaxedMockK private lateinit var mockViewModel: HomeViewModel
   @RelaxedMockK private lateinit var mockItineraryRepository: ItineraryRepository
   // @RelaxedMockK private  lateinit var mockUserProfileRepository: UserProfileRepository
-  @MockK(relaxUnitFun = true) private lateinit var mockUserProfileRepository: UserProfileRepository
-  @MockK(relaxUnitFun = true) private lateinit var mockUserProfileViewModel: UserProfileViewModel
+  @RelaxedMockK private lateinit var mockUserProfileRepository: UserProfileRepository
+  @RelaxedMockK private lateinit var mockUserProfileViewModel: UserProfileViewModel
   // private lateinit var mockUserProfileViewModel: UserProfileViewModel
 
   val mockList = MockItineraryList()
@@ -78,6 +78,8 @@ class HomeTest {
     // This allows mocking unit returning functions
     mockUserProfileRepository = mockk(relaxUnitFun = true)
     mockUserProfileViewModel = mockk(relaxUnitFun = true)
+
+    MockKAnnotations.init(this, relaxUnitFun = true)
 
     // Log.d("ItineraryList", mockViewModel.itineraryList.value.toString())
     every { mockNav.getTopLevelDestinations()[0] } returns
@@ -278,7 +280,8 @@ class HomeTest {
     Log.d("MockItineraries", mockItineraries.toString())
     every { mockUserProfileRepository.getUserProfileByEmail(mockMail) {} } returns
         mockk(relaxUnitFun = true)
-    every { mockUserProfileViewModel.getUserProfile(mockMail){} } returns mockk(relaxUnitFun = true)
+    every { mockUserProfileViewModel.getUserProfile(mockMail) {} } returns
+        mockk(relaxUnitFun = true)
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(emptyList())

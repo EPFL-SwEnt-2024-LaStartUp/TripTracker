@@ -23,13 +23,12 @@ class UserProfileViewModel(
    * Fetches all user profiles from the repository and stores them in the userProfileList LiveData
    * could be used to display all user profiles in the UI not used in the current implementation
    */
-  private fun fetchAllUserProfiles() {
+  fun fetchAllUserProfiles() {
     viewModelScope.launch { userProfileRepository.getAllUserProfiles() }
   }
 
   /** This function returns the list of user's profiles. */
   fun getUserProfileList(): List<UserProfile> {
-    fetchAllUserProfiles()
     return userProfileList.value ?: emptyList()
   }
 
@@ -37,16 +36,6 @@ class UserProfileViewModel(
     viewModelScope.launch {
       userProfileRepository.getUserProfileByEmail(email) { userProfile -> callback(userProfile) }
     }
-  }
-
-  /**
-   * This function returns the user profile corresponding to the mail.
-   *
-   * @param mail : mail of the user profile to return
-   * @return user profile corresponding to the mail
-   */
-  fun getUserProfileFromDb(mail: String): UserProfile? {
-    return userProfileRepository.getUserProfile(mail)
   }
 
   /**

@@ -26,7 +26,7 @@ fun ItineraryPreview(itinerary: Itinerary, navigation: Navigation, onClick: () -
   val boxHeight = 600.dp
   val paddingAround = 15.dp
 
-  DisplayItinerary(itinerary, navigation, boxHeight)
+  DisplayItinerary(itinerary, navigation, boxHeight, onClick = onClick)
 }
 
 @Preview
