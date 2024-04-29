@@ -1,35 +1,32 @@
 package com.example.triptracker.map
 
+import android.content.Context
 import androidx.compose.material.icons.Icons
-
+import androidx.compose.material.icons.outlined.RadioButtonChecked
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-
+import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
 import com.example.triptracker.itinerary.MockItineraryList
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.TopLevelDestination
+import com.example.triptracker.view.map.RecordScreen
+import com.example.triptracker.viewmodel.RecordViewModel
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
+import junit.framework.TestCase.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import android.content.Context
-import androidx.compose.material.icons.outlined.RadioButtonChecked
-import androidx.compose.ui.test.performTextInput
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.GrantPermissionRule
-import com.example.triptracker.view.map.RecordScreen
-import com.example.triptracker.viewmodel.RecordViewModel
-import junit.framework.TestCase.assertTrue
-
 
 @RunWith(AndroidJUnit4::class)
 class RecordTest {
@@ -40,7 +37,7 @@ class RecordTest {
 
   @get:Rule
   val grantPermissionRule: GrantPermissionRule =
-    GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
+      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
   @get:Rule val mockkRule = MockKRule(this)
 
@@ -58,7 +55,7 @@ class RecordTest {
     mockItineraryRepository = mockk(relaxed = true)
 
     every { mockNavigation.getTopLevelDestinations()[2] } returns
-            TopLevelDestination(Route.RECORD, Icons.Outlined.RadioButtonChecked, "Record")
+        TopLevelDestination(Route.RECORD, Icons.Outlined.RadioButtonChecked, "Record")
   }
 
   @Test
@@ -393,7 +390,6 @@ class RecordTest {
       assertTrue("Test failed due to exception: ${e.message}", true)
     }
   }
-
 
   @Test
   fun testEnterADescription() {
