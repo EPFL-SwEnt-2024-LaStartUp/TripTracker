@@ -166,20 +166,11 @@ fun Map(
             position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
           })
     }
-//    else {
-//      val location = mapViewModel.getPathById(selectedId)?.location
-//      position =
-//          if (location != null) {
-//            CameraPosition.fromLatLngZoom(LatLng(location.latitude, location.longitude), 17f)
-//          } else {
-//            CameraPosition.fromLatLngZoom(deviceLocation, 17f)
-//          }
-//    }
   }
   var visibleRegion: VisibleRegion?
 
-  var displayPopUp by remember { mutableStateOf(mapViewModel.displayPopUp.value) }
-  var displayPicturesPopUp by remember { mutableStateOf(mapViewModel.displayPicturesPopUp.value) }
+  var displayPopUp by remember { mutableStateOf(false) }
+  var displayPicturesPopUp by remember { mutableStateOf(false) }
 
   var selectedPolyline by remember { mapViewModel.selectedPolylineState }
 
@@ -208,35 +199,34 @@ fun Map(
 
   val pathList by mapViewModel.pathList.observeAsState()
   LaunchedEffect(pathList) {
-      if((pathList?.size() ?: 0) > 0) {
-          Log.d("ENTEREDUPDATE", deviceLocation.toString() + " " + pathList?.size().toString())
-          if (selectedId != "") {
-              val selection = mapViewModel.getPathById(pathList!!, selectedId)
-                if (selection != null) {
+    if ((pathList?.size() ?: 0) > 0) {
+      Log.d("ENTEREDUPDATE", deviceLocation.toString() + " " + pathList?.size().toString())
+      if (selectedId != "") {
+        val selection = mapViewModel.getPathById(pathList!!, selectedId)
+        if (selection != null) {
 
-                  cameraPositionState.position =
-                      CameraPosition.fromLatLngZoom(
-                          LatLng(selection.location.latitude, selection.location.longitude), 17f)
+          cameraPositionState.position =
+              CameraPosition.fromLatLngZoom(
+                  LatLng(selection.location.latitude, selection.location.longitude), 17f)
 
-                  mapViewModel.reverseDecode(
-                      cameraPositionState.position.target.latitude.toFloat(),
-                      cameraPositionState.position.target.longitude.toFloat())
-                  visibleRegion = cameraPositionState.projection?.visibleRegion
-                  mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
+          mapViewModel.reverseDecode(
+              cameraPositionState.position.target.latitude.toFloat(),
+              cameraPositionState.position.target.longitude.toFloat())
+          visibleRegion = cameraPositionState.projection?.visibleRegion
+          mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
 
-                  mapViewModel.selectedPolylineState.value =
-                      MapViewModel.SelectedPolyline(selection, selection.route[0])
-                  selectedPolyline = mapViewModel.selectedPolylineState.value
-                  displayPopUp = true
+          mapViewModel.selectedPolylineState.value =
+              MapViewModel.SelectedPolyline(selection, selection.route[0])
+          selectedPolyline = mapViewModel.selectedPolylineState.value
+          displayPopUp = true
         }
-          } else {
-                cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
-                visibleRegion = cameraPositionState.projection?.visibleRegion
-                mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
-                displayPopUp = false
-          }
+      } else {
+        cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
+        visibleRegion = cameraPositionState.projection?.visibleRegion
+        mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
+        displayPopUp = false
       }
-
+    }
   }
 
   // Displays the map

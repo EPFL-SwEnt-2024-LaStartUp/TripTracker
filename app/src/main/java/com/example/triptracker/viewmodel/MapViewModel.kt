@@ -1,6 +1,5 @@
 package com.example.triptracker.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
@@ -52,10 +51,6 @@ class MapViewModel(
 
   var selectedPin = mutableStateOf<Pin?>(null)
 
-  var displayPopUp = mutableStateOf(false)
-
-  var displayPicturesPopUp = mutableStateOf(false)
-
   init {
     viewModelScope.launch { getAllItineraries() }
   }
@@ -106,12 +101,13 @@ class MapViewModel(
     }
   }
 
-    /**
-     * Get the path by id
-     * @param id : the id of the path
-     * @return the path with the id or null if not found
-     */
-  fun getPathById(pathL : ItineraryList, id: String): Itinerary? {
-      return pathL.getAllItineraries().find { it.id == id }
+  /**
+   * Get the path by id
+   *
+   * @param id : the id of the path
+   * @return the path with the id or null if not found
+   */
+  fun getPathById(pathL: ItineraryList, id: String): Itinerary? {
+    return pathL.getAllItineraries().find { it.id == id }
   }
 }
