@@ -316,51 +316,68 @@ fun Map(
         modifier = Modifier.align(Alignment.BottomStart),
         horizontalArrangement = Arrangement.Start) {
           Box(modifier = Modifier.padding(horizontal = 35.dp, vertical = 65.dp)) {
-            if (ui.myLocationButtonEnabled &&
-                properties.isMyLocationEnabled &&
-                !displayPopUp &&
-                !displayPicturesPopUp) {
-              DisplayCenterLocationButton(
-                  coroutineScope = coroutineScope,
-                  deviceLocation = deviceLocation,
-                  cameraPositionState = cameraPositionState) {
-                    getCurrentLocation(
-                        context = context,
-                        onLocationFetched = {
-                          deviceLocation = it
-                          cameraPositionState.position =
-                              CameraPosition.fromLatLngZoom(deviceLocation, 17f)
-                        })
+              if (ui.myLocationButtonEnabled &&
+                  properties.isMyLocationEnabled &&
+                  !displayPopUp &&
+                  !displayPicturesPopUp
+              ) {
+                  DisplayCenterLocationButton(
+                      coroutineScope = coroutineScope,
+                      deviceLocation = deviceLocation,
+                      cameraPositionState = cameraPositionState
+                  ) {
+                      getCurrentLocation(
+                          context = context,
+                          onLocationFetched = {
+                              deviceLocation = it
+                              cameraPositionState.position =
+                                  CameraPosition.fromLatLngZoom(deviceLocation, 17f)
+                          })
                   }
-            }
+              }
+          }
+    }
             if (displayPopUp) {
-              Box(modifier = Modifier.fillMaxHeight(0.3f)) {
+
                 if (mapViewModel.selectedPolylineState.value != null) {
                   // Display the itinerary of the selected polyline
                   // (only when the polyline is selected)
                   when (mapPopupState) {
                     popupState.DISPLAYITINERARY -> {
-                      DisplayItinerary(
-                          itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                          navigation = navigation,
-                          onClick = { mapPopupState = popupState.PATHOVERLAY })
+                        Box(modifier = Modifier.fillMaxHeight(0.3f).fillMaxWidth().align(Alignment.BottomCenter)) {
+                            DisplayItinerary(
+                                itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                                navigation = navigation,
+                                onClick = { mapPopupState = popupState.PATHOVERLAY })
+                        }
                     }
                     popupState.DISPLAYPIN -> {
                       // called detailed view Theo
                     }
                     popupState.PATHOVERLAY -> {
-                      PathOverlaySheet(
-                          itinerary = mapViewModel.selectedPolylineState.value!!.itinerary)
+                        Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f).align(Alignment.BottomCenter)) {
+                            PathOverlaySheet(
+                                itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                                onClick = {
+                                    mapPopupState = popupState.DISPLAYITINERARY
+                                    displayPopUp = false
+                                    displayPicturesPopUp = true
+                                    mapViewModel.selectedPin.value = it
+                                }
+                            )
+                        }
                     }
                   }
                 }
-              }
+
             }
 
             if (displayPicturesPopUp) {
               Box(
                   modifier =
                       Modifier.fillMaxWidth()
+                          .fillMaxHeight(0.4f)
+                          .align(Alignment.BottomCenter)
                           .padding(15.dp)
                           .height(300.dp)
                           .background(
@@ -398,8 +415,9 @@ fun Map(
                         modifier =
                             Modifier.fillMaxSize()
                                 .horizontalScroll(scrollState)
+                                .align(Alignment.BottomStart)
                                 .padding(vertical = 20.dp, horizontal = 20.dp),
-                        horizontalArrangement = Arrangement.End,
+                        horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.Bottom) {
                           selectedPin?.image_url?.forEach { url ->
                             AsyncImage(
@@ -410,8 +428,8 @@ fun Map(
                         }
                   }
             }
-          }
-        }
+
+
   }
 }
 

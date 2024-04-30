@@ -2,6 +2,7 @@ package com.example.triptracker.view.map
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,6 +35,7 @@ import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.theme.md_theme_light_black
+import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.viewmodel.MapPopupViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
@@ -45,7 +47,8 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
 @Composable
 fun PathOverlaySheet(
     itinerary: Itinerary,
-    userProfileViewModel: UserProfileViewModel = UserProfileViewModel()
+    userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
+    onClick: (Pin) -> Unit
 ) {
   var readyToDisplay by remember { mutableStateOf(false) }
   var profile by remember { mutableStateOf(UserProfile("")) }
@@ -65,19 +68,19 @@ fun PathOverlaySheet(
       Box(
           modifier =
               Modifier.fillMaxWidth()
-                  .padding(vertical = 10.dp)
                   .background(
                       color = md_theme_light_black,
-                      shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp))) {
+                      shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp)
+                  )) {
             Column(modifier = Modifier.fillMaxWidth().testTag("PathOverlaySheet").padding(25.dp)) {
-              Text(text = profile.username + "'s Path", color = Color.White)
+              Text(text = profile.username + "'s Path", color = md_theme_light_onPrimary, modifier = Modifier.padding(end = 10.dp))
               Spacer(modifier = Modifier.height(16.dp))
 
               // This lazy column will display all the pins in the path
               // Each pin will be displayed using the PathItem composable
               LazyColumn {
                 items(itinerary.pinnedPlaces) { pin ->
-                  PathItem(pin)
+                  PathItem(pin, onClick)
                   Divider(thickness = 1.dp)
                 }
               }
@@ -92,27 +95,9 @@ fun PathOverlaySheet(
  *
  * @param pinnedPlace specific Pin to be displayed
  */
-
-/**
- * PathItem is a composable function that displays a single pin in the path
- *
- * @param pinnedPlace specific Pin to be displayed
- */
-
-/**
- * PathItem is a composable function that displays a single pin in the path
- *
- * @param pinnedPlace specific Pin to be displayed
- */
-
-/**
- * PathItem is a composable function that displays a single pin in the path
- *
- * @param pinnedPlace specific Pin to be displayed
- */
 @Composable
-fun PathItem(pinnedPlace: Pin) {
-  Row(verticalAlignment = Alignment.CenterVertically) {
+fun PathItem(pinnedPlace: Pin, onClick: (Pin) -> Unit) {
+  Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { onClick(pinnedPlace) }) {
     Icon(
         painter =
             painterResource(
