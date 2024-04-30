@@ -55,6 +55,7 @@ class Navigation(val navController: NavHostController) {
   fun navigateTo(destination: TopLevelDestination) {
     navController.navigate(destination.route) {
       currentDestination = destination
+      navController.currentBackStackEntry?.arguments?.putString("id", "")
       // Pop up to the start destination of the graph to
       // avoid building up a large stack of destinations
       // on the back stack as users select items

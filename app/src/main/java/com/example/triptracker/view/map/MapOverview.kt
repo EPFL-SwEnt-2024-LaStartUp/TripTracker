@@ -203,29 +203,30 @@ fun Map(
   // updated
   LaunchedEffect(pathList) {
     Log.d("ISELECTEDOUT", currentSelectedId)
-    if ((pathList?.size() ?: 0) > 0) {
-      Log.d("ISELECTED", currentSelectedId)
-      if (currentSelectedId != "") {
-        Log.d("ISELECTEDIN", currentSelectedId)
-        // fetch the selected path
-        val selection = mapViewModel.getPathById(pathList!!, currentSelectedId)
-        if (selection != null) {
+    //    if ((pathList?.size() ?: 0) > 0) {
+    Log.d("ISELECTED", currentSelectedId)
+    if (currentSelectedId != "") {
+      Log.d("ISELECTEDIN", currentSelectedId)
+      // fetch the selected path
+      val selection = mapViewModel.getPathById(pathList!!, currentSelectedId)
+      Log.d("selection", selection.toString())
+      if (selection != null) {
 
-          // center the camera on the selected path
-          cameraPositionState.position =
-              CameraPosition.fromLatLngZoom(
-                  LatLng(selection.location.latitude, selection.location.longitude), 17f)
+        // center the camera on the selected path
+        cameraPositionState.position =
+            CameraPosition.fromLatLngZoom(
+                LatLng(selection.location.latitude, selection.location.longitude), 17f)
 
-          // set the selected polyline
-          mapViewModel.selectedPolylineState.value =
-              MapViewModel.SelectedPolyline(selection, selection.route[0])
-          selectedPolyline = mapViewModel.selectedPolylineState.value
+        // set the selected polyline
+        mapViewModel.selectedPolylineState.value =
+            MapViewModel.SelectedPolyline(selection, selection.route[0])
+        selectedPolyline = mapViewModel.selectedPolylineState.value
 
-          // display the path popup
-          displayPopUp = true
-        }
+        // display the path popup
+        displayPopUp = true
       }
     }
+    //    }
   }
 
   // Displays the map
