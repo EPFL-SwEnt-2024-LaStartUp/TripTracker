@@ -2,7 +2,6 @@ package com.example.triptracker.view.map
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -202,14 +201,10 @@ fun Map(
   // Get the path list from the view model and trigger the launch effect when the path list is
   // updated
   LaunchedEffect(pathList) {
-    Log.d("ISELECTEDOUT", currentSelectedId)
     //    if ((pathList?.size() ?: 0) > 0) {
-    Log.d("ISELECTED", currentSelectedId)
     if (currentSelectedId != "") {
-      Log.d("ISELECTEDIN", currentSelectedId)
       // fetch the selected path
       val selection = mapViewModel.getPathById(pathList!!, currentSelectedId)
-      Log.d("selection", selection.toString())
       if (selection != null) {
 
         // center the camera on the selected path

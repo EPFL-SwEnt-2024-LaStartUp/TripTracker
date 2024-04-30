@@ -149,7 +149,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                           fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                           fontWeight = FontWeight.Bold,
                           fontSize = 30.sp,
-                          modifier = Modifier.padding(start = 130.dp))
+                          modifier = Modifier.padding(start = 130.dp).testTag("SpotTitle"))
                       // Close button
                       IconButton(
                           modifier = Modifier.padding(10.dp).testTag("CloseButton"),

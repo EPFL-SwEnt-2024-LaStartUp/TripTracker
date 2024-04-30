@@ -93,7 +93,7 @@ class AddSpotTest {
         performTextInput("EPFL")
         composeTestRule.onNodeWithTag("LocationDropDown").performClick()
       }
-      runBlocking { delay(1000) }
+      runBlocking { delay(2000) }
       locationText {
         assertIsDisplayed()
         assertTextContains("École Polytechnique Fédérale de Lausanne", substring = true)
