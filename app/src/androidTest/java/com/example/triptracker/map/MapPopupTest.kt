@@ -10,6 +10,7 @@ import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
 import com.example.triptracker.view.map.AddressText
+import com.example.triptracker.view.map.PathItem
 import com.example.triptracker.view.map.PathOverlaySheet
 import com.example.triptracker.viewmodel.MapPopupViewModel
 import org.junit.Rule
@@ -23,6 +24,7 @@ class MapPopupTest {
 
   @Test
   fun testPathOverlaySheetDisplays() {
+
     // Setup the test environment with the same data used in the @Preview
     val itinerary =
         Itinerary(
@@ -54,14 +56,16 @@ class MapPopupTest {
                     listOf("https://www.google.com"))),
             "description",
             listOf())
+    if (itinerary != null) {
 
-    composeTestRule.setContent { PathOverlaySheet(itinerary) }
+      composeTestRule.setContent { PathOverlaySheet(itinerary) }
 
-    // Assertions to check if the UI components are displayed correctly
-    composeTestRule.onNodeWithText("Jack's Path").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Picadilly Circus").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Buckingham Palace").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Abbey Road").assertIsDisplayed()
+      // Assertions to check if the UI components are displayed correctly
+      composeTestRule.onNodeWithText("Jack's Path").assertIsDisplayed()
+      composeTestRule.onNodeWithText("Picadilly Circus").assertIsDisplayed()
+      composeTestRule.onNodeWithText("Buckingham Palace").assertIsDisplayed()
+      composeTestRule.onNodeWithText("Abbey Road").assertIsDisplayed()
+    }
   }
 
   // Test if address is correctly displayed
@@ -82,5 +86,18 @@ class MapPopupTest {
 
     // Assertions to check if the UI components are displayed correctly
     composeTestRule.onNodeWithTag("AddressText").assertIsDisplayed()
+  }
+
+  @Test
+  fun testPathItem() {
+    val pin =
+        Pin(
+            51.50991301840581,
+            -0.13424873072712565,
+            "Picadilly Circus",
+            "hi",
+            listOf("https://www.google.com"))
+    composeTestRule.setContent { PathItem(pin) }
+    composeTestRule.onNodeWithTag("PathItem").assertIsDisplayed()
   }
 }

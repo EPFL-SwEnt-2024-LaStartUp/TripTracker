@@ -92,24 +92,6 @@ fun PathOverlaySheet(
  *
  * @param pinnedPlace specific Pin to be displayed
  */
-
-/**
- * PathItem is a composable function that displays a single pin in the path
- *
- * @param pinnedPlace specific Pin to be displayed
- */
-
-/**
- * PathItem is a composable function that displays a single pin in the path
- *
- * @param pinnedPlace specific Pin to be displayed
- */
-
-/**
- * PathItem is a composable function that displays a single pin in the path
- *
- * @param pinnedPlace specific Pin to be displayed
- */
 @Composable
 fun PathItem(pinnedPlace: Pin) {
   Row(verticalAlignment = Alignment.CenterVertically) {
