@@ -1,7 +1,12 @@
 package com.example.triptracker.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.UserProfileRepository
+import kotlinx.coroutines.launch
 
 /**
  * ViewModel for the UserProfile class This class is responsible for handling the data operations
@@ -9,29 +14,28 @@ import com.example.triptracker.model.repository.UserProfileRepository
  */
 class UserProfileViewModel(
     private val userProfileRepository: UserProfileRepository = UserProfileRepository()
-) {
+) : ViewModel() {
 
-  private var userProfileList: List<UserProfile> = mutableListOf()
+  private var _userProfileList = MutableLiveData<List<UserProfile>>()
+  private val userProfileList: LiveData<List<UserProfile>> = _userProfileList
+
+  /**
+   * Fetches all user profiles from the repository and stores them in the userProfileList LiveData
+   * could be used to display all user profiles in the UI not used in the current implementation
+   */
+  fun fetchAllUserProfiles() {
+    viewModelScope.launch { userProfileRepository.getAllUserProfiles() }
+  }
 
   /** This function returns the list of user's profiles. */
   fun getUserProfileList(): List<UserProfile> {
-    getAllUserProfilesFromDb()
-    return userProfileList
+    return userProfileList.value ?: emptyList()
   }
 
-  /** This function gets all the user's profiles from the database. */
-  fun getAllUserProfilesFromDb() {
-    userProfileList = userProfileRepository.getAllUserProfiles()
-  }
-
-  /**
-   * This function returns the user profile corresponding to the mail.
-   *
-   * @param mail : mail of the user profile to return
-   * @return user profile corresponding to the mail
-   */
-  fun getUserProfileFromDb(mail: String): UserProfile? {
-    return userProfileRepository.getUserProfile(mail)
+  fun getUserProfile(email: String, callback: (UserProfile?) -> Unit) {
+    viewModelScope.launch {
+      userProfileRepository.getUserProfileByEmail(email) { userProfile -> callback(userProfile) }
+    }
   }
 
   /**
