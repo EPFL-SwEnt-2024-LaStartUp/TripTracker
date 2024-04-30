@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.triptracker.model.location.popupState
@@ -80,7 +82,7 @@ import com.google.maps.android.compose.rememberMarkerState
  *   purposes (optional)
  */
 fun MapOverview(
-    mapViewModel: MapViewModel = MapViewModel(),
+    mapViewModel: MapViewModel = viewModel(),
     context: Context,
     navigation: Navigation,
     checkLocationPermission: Boolean = true, // Default value true, can be overridden during tests
@@ -267,14 +269,14 @@ fun Map(
 
           // Display the start marker of the polyline and a thicker path when selected
           if (isSelected) {
-            //            val startMarkerState =
-            //                rememberMarkerState(position = selectedPolyline!!.itinerary.route[0])
-            //            MarkerComposable(state = startMarkerState) {
-            //              Icon(
-            //                  imageVector = Icons.Outlined.ArrowDownward,
-            //                  contentDescription = "Start Location",
-            //                  tint = md_theme_light_black)
-            //            }
+//                        val startMarkerState =
+//                            rememberMarkerState(position = selectedPolyline!!.itinerary.route[0])
+//                        MarkerComposable(state = startMarkerState) {
+//                          Icon(
+//                              imageVector = Icons.Outlined.ArrowDownward,
+//                              contentDescription = "Start Location",
+//                              tint = md_theme_light_black)
+//                        }
 
             selectedPolyline!!.itinerary.pinnedPlaces.forEach { pin ->
               val markerState = rememberMarkerState(position = LatLng(pin.latitude, pin.longitude))

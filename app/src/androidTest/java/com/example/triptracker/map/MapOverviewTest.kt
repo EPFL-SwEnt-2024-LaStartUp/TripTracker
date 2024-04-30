@@ -48,8 +48,6 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.cityNameState.value } returns "Lyon"
     every { mockViewModel.filteredPathList.value } returns null
     every { mockViewModel.selectedPin.value } returns itineraryList[0].pinnedPlaces[0]
-    every { mockViewModel.displayPopUp.value } returns false
-    every { mockViewModel.displayPicturesPopUp.value } returns false
 
     composeTestRule.setContent {
       MapOverview(mapViewModel = mockViewModel, context = appContext, navigation = mockNavigation)
@@ -66,8 +64,6 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.cityNameState.value } returns "Lyon"
     every { mockViewModel.filteredPathList.value } returns null
     every { mockViewModel.selectedPin.value } returns itineraryList[0].pinnedPlaces[0]
-    every { mockViewModel.displayPopUp.value } returns false
-    every { mockViewModel.displayPicturesPopUp.value } returns false
 
     composeTestRule.setContent {
       MapOverview(
@@ -90,8 +86,6 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.selectedPolylineState.value } returns
         MapViewModel.SelectedPolyline(itineraryList[0], LatLng(0.0, 0.0))
     every { mockViewModel.selectedPin.value } returns itineraryList[0].pinnedPlaces[0]
-    every { mockViewModel.displayPopUp.value } returns false
-    every { mockViewModel.displayPicturesPopUp.value } returns false
 
     composeTestRule.setContent {
       MapOverview(mapViewModel = mockViewModel, context = appContext, navigation = mockNavigation)
@@ -110,8 +104,6 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.selectedPolylineState.value } returns
         MapViewModel.SelectedPolyline(itineraryList[0], LatLng(0.0, 0.0))
     every { mockViewModel.selectedPin.value } returns itineraryList[0].pinnedPlaces[0]
-    every { mockViewModel.displayPopUp.value } returns false
-    every { mockViewModel.displayPicturesPopUp.value } returns false
 
     composeTestRule.setContent {
       MapOverview(mapViewModel = mockViewModel, context = appContext, navigation = mockNavigation)
@@ -127,8 +119,6 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.cityNameState.value } returns "Lyon"
     every { mockViewModel.filteredPathList.value } returns null
     every { mockViewModel.selectedPin.value } returns itineraryList[0].pinnedPlaces[0]
-    every { mockViewModel.displayPopUp.value } returns false
-    every { mockViewModel.displayPicturesPopUp.value } returns false
 
     composeTestRule.setContent { MapOverviewPreview(mapViewModel = mockViewModel) }
 
@@ -144,9 +134,7 @@ class MapOverviewTest : TestCase() {
         mapOf(itineraryList[0] to listOf<LatLng>(LatLng(0.0, 0.0)))
     every { mockViewModel.selectedPolylineState.value } returns
         MapViewModel.SelectedPolyline(itineraryList[0], LatLng(0.0, 0.0))
-    every { mockViewModel.displayPopUp.value } returns true
     every { mockViewModel.selectedPin.value } returns itineraryList[0].pinnedPlaces[0]
-    every { mockViewModel.displayPicturesPopUp.value } returns false
 
     composeTestRule.setContent {
       MapOverview(mapViewModel = mockViewModel, context = appContext, navigation = mockNavigation)
@@ -168,10 +156,6 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.selectedPolylineState.value } returns
         MapViewModel.SelectedPolyline(itineraryList[0], LatLng(0.0, 0.0))
     every { mockViewModel.selectedPin.value } returns itineraryList[0].pinnedPlaces[0]
-
-    every { mockViewModel.displayPopUp.value } returns false
-
-    every { mockViewModel.displayPicturesPopUp.value } returns true
 
     composeTestRule.setContent {
       MapOverview(mapViewModel = mockViewModel, context = appContext, navigation = mockNavigation)
