@@ -2,6 +2,7 @@ package com.example.triptracker.view.map
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +29,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.popupState
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
@@ -120,7 +122,9 @@ fun MapOverview(
       Scaffold(
           bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
               innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+            Box(modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()) {
               Map(mapViewModel, context, deviceLocation, mapProperties, uiSettings, navigation)
             }
           }
@@ -175,6 +179,8 @@ fun Map(
   var displayPopUp by remember { mutableStateOf(mapViewModel.displayPopUp.value) }
   var displayPicturesPopUp by remember { mutableStateOf(mapViewModel.displayPicturesPopUp.value) }
 
+  var selectedPolyline by remember {mapViewModel.selectedPolylineState}
+
   // When the camera is moving, the city name is updated in the top bar with geo decoding
   LaunchedEffect(cameraPositionState.isMoving) {
     mapViewModel.reverseDecode(
@@ -204,12 +210,12 @@ fun Map(
       mapViewModel.reverseDecode(
           cameraPositionState.position.target.latitude.toFloat(),
           cameraPositionState.position.target.longitude.toFloat())
+      cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
       visibleRegion = cameraPositionState.projection?.visibleRegion
-      if (visibleRegion == null) {
-        cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
-        visibleRegion = cameraPositionState.projection?.visibleRegion
-      }
       mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
+        if(startLocation != DEFAULT_LOCATION) {
+//            selectedPolyline =
+        }
     }
   }
 
@@ -218,27 +224,27 @@ fun Map(
     Box(modifier = Modifier.fillMaxSize()) {
       GoogleMap(
           modifier =
-              Modifier.matchParentSize()
-                  .background(
-                      brush =
-                          Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black)))
-                  .testTag("Map"),
+          Modifier
+              .matchParentSize()
+              .background(
+                  brush =
+                  Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black))
+              )
+              .testTag("Map"),
           cameraPositionState = cameraPositionState,
           properties = properties,
           uiSettings = ui,
-          onMapClick = { it ->
+          onMapClick = {
             displayPopUp = false
-            mapPopupState = popupState.DISPLAYITINERARY
             displayPicturesPopUp = false
-            mapViewModel.selectedPolylineState.value = null
+              selectedPolyline = MapViewModel.SelectedPolyline(Itinerary("", "", "", Location(0.0, 0.0, ""), 0, "", "", emptyList(), "", emptyList()), LatLng(0.0, 0.0))
           },
       ) {
         // Display the path of the trips on the map only when they enter the screen
         mapViewModel.filteredPathList.value?.forEach { (location, latLngList) ->
           // Check if the polyline is selected
-          val isSelected by
-              rememberUpdatedState(
-                  newValue = mapViewModel.selectedPolylineState.value?.itinerary?.id == location.id)
+          val isSelected = selectedPolyline?.itinerary?.id == location.id
+            Log.d("ISSELECTED", selectedPolyline?.itinerary?.id.toString())
           // Display the pat polyline
           Polyline(
               points = latLngList,
@@ -246,7 +252,7 @@ fun Map(
               color = md_theme_orange,
               width = if (isSelected) 25f else 15f,
               onClick = {
-                mapViewModel.selectedPolylineState.value =
+                selectedPolyline =
                     MapViewModel.SelectedPolyline(location, latLngList[0])
                 mapPopupState = popupState.DISPLAYITINERARY
                 displayPopUp = true
@@ -256,42 +262,48 @@ fun Map(
           if (isSelected) {
             val startMarkerState =
                 rememberMarkerState(
-                    position = mapViewModel.selectedPolylineState.value!!.startLocation)
+                    position = selectedPolyline!!.startLocation)
             MarkerComposable(state = startMarkerState) {
               Icon(
                   imageVector = Icons.Outlined.ArrowDownward,
                   contentDescription = "Start Location",
                   tint = md_theme_light_black)
             }
-            mapViewModel.selectedPolylineState.value?.itinerary?.pinnedPlaces?.forEach { pin ->
-              val markerState = rememberMarkerState(position = LatLng(pin.latitude, pin.longitude))
-              MarkerComposable(
-                  state = markerState,
-                  onClick = {
-                    // Display the pin information
-                    mapViewModel.selectedPin.value = pin
 
-                    displayPicturesPopUp = true
+              selectedPolyline!!.itinerary.pinnedPlaces.forEach { pin ->
+                  val markerState = rememberMarkerState(position = LatLng(pin.latitude, pin.longitude))
+                  MarkerComposable(
+                      state = markerState,
+                      onClick = {
+                          // Display the pin information
+                          mapViewModel.selectedPin.value = pin
 
-                    displayPopUp = false
+                          displayPicturesPopUp = true
 
-                    true
-                  }) {
-                    Icon(
-                        imageVector = Icons.Outlined.PinDrop,
-                        contentDescription = "Add Picture",
-                        tint = md_theme_light_black)
+                          displayPopUp = false
+
+                          true
+                      }) {
+                      Icon(
+                          imageVector = Icons.Outlined.PinDrop,
+                          contentDescription = "Add Picture",
+                          tint = md_theme_light_black)
                   }
-            }
+              }
           }
         }
       }
     }
 
-    Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
+    Box(modifier = Modifier
+        .matchParentSize()
+        .background(gradient)
+        .align(Alignment.TopCenter)) {
       Text(
           text = mapViewModel.cityNameState.value,
-          modifier = Modifier.padding(30.dp).align(Alignment.TopCenter),
+          modifier = Modifier
+              .padding(30.dp)
+              .align(Alignment.TopCenter),
           fontSize = 24.sp,
           fontFamily = Montserrat,
           fontWeight = FontWeight.SemiBold,
@@ -345,11 +357,13 @@ fun Map(
             if (displayPicturesPopUp) {
               Box(
                   modifier =
-                      Modifier.fillMaxWidth()
-                          .padding(15.dp)
-                          .height(300.dp)
-                          .background(
-                              color = md_theme_light_black, shape = RoundedCornerShape(35.dp))) {
+                  Modifier
+                      .fillMaxWidth()
+                      .padding(15.dp)
+                      .height(300.dp)
+                      .background(
+                          color = md_theme_light_black, shape = RoundedCornerShape(35.dp)
+                      )) {
                     // Display the pictures of the selected pin
                     // (only when the pin is selected)
                     Row(
@@ -381,16 +395,19 @@ fun Map(
 
                     Row(
                         modifier =
-                            Modifier.fillMaxSize()
-                                .horizontalScroll(scrollState)
-                                .padding(vertical = 20.dp, horizontal = 20.dp),
+                        Modifier
+                            .fillMaxSize()
+                            .horizontalScroll(scrollState)
+                            .padding(vertical = 20.dp, horizontal = 20.dp),
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.Bottom) {
                           selectedPin?.image_url?.forEach { url ->
                             AsyncImage(
                                 model = url,
                                 contentDescription = "Image",
-                                modifier = Modifier.height(200.dp).padding(horizontal = 2.dp))
+                                modifier = Modifier
+                                    .height(200.dp)
+                                    .padding(horizontal = 2.dp))
                           }
                         }
                   }
