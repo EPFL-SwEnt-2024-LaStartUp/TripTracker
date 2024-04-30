@@ -37,7 +37,7 @@ private val TOP_LEVEL_DESTINATIONS =
     listOf(
         // TopLevelDestination(Route.LOGIN, Icons.Default.List, "Login"),
         TopLevelDestination(Route.HOME, Icons.Outlined.Home, "Home"),
-        TopLevelDestination(Route.MAPS, Icons.Outlined.Place, "Maps"),
+        TopLevelDestination(Route.MAPS + "/null", Icons.Outlined.Place, "Maps"),
         TopLevelDestination(Route.RECORD, Icons.Outlined.RadioButtonChecked, "Record"),
         TopLevelDestination(Route.PROFILE, Icons.Outlined.Person, "Profile"),
     )

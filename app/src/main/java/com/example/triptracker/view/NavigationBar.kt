@@ -20,7 +20,9 @@ fun NavigationBar(navigation: Navigation) {
               icon = { Icon(destination.icon, contentDescription = destination.textId) },
               label = { Text(destination.textId) },
               selected = navigation.getCurrentDestination().route == destination.route,
-              onClick = { navigation.navigateTo(destination) })
+              onClick = {
+                      navigation.navigateTo(destination)
+              })
         }
       })
 }

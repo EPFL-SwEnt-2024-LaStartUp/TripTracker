@@ -58,10 +58,12 @@ class MainActivity : ComponentActivity() {
           ) {
             composable(Route.LOGIN) { LoginScreen(navigation) }
             composable(Route.HOME) { HomeScreen(navigation) }
-            composable(Route.MAPS) { MapOverview(context = context, navigation = navigation) }
+//            composable(Route.MAPS) { MapOverview(context = context, navigation = navigation, selectedId = "") }
             composable(Route.MAPS + "/{id}") { backStackEntry ->
               val id = backStackEntry.arguments?.getString("id") ?: ""
-
+              if(id == "null"){
+                MapOverview(context = context, navigation = navigation, selectedId = "")
+              } else
               MapOverview(context = context, navigation = navigation, selectedId = id)
             }
 
