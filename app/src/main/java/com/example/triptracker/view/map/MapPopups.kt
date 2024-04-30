@@ -1,5 +1,6 @@
 package com.example.triptracker.view.map
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,8 +32,10 @@ import androidx.compose.ui.unit.dp
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Pin
+import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.viewmodel.MapPopupViewModel
+import com.example.triptracker.viewmodel.UserProfileViewModel
 
 /**
  * PathOverlaySheet is a composable function that displays the all of the pins of a path
@@ -37,31 +43,69 @@ import com.example.triptracker.viewmodel.MapPopupViewModel
  * @param itinerary Itinerary of that path
  */
 @Composable
-fun PathOverlaySheet(itinerary: Itinerary) {
-  Box(
-      modifier =
-          Modifier.fillMaxWidth()
-              .padding(vertical = 10.dp)
-              .background(
-                  color = md_theme_light_black,
-                  shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp))) {
-        Column(modifier = Modifier.fillMaxWidth().testTag("PathOverlaySheet").padding(25.dp)) {
-          Text(
-              text = itinerary.userMail + "'s Path",
-              color = Color.White) // TODO change this to the user's name
-          Spacer(modifier = Modifier.height(16.dp))
+fun PathOverlaySheet(
+    itinerary: Itinerary,
+    userProfileViewModel: UserProfileViewModel = UserProfileViewModel()
+) {
+  var readyToDisplay by remember { mutableStateOf(false) }
+  var profile by remember { mutableStateOf(UserProfile("")) }
 
-          // This lazy column will display all the pins in the path
-          // Each pin will be displayed using the PathItem composable
-          LazyColumn {
-            items(itinerary.pinnedPlaces) { pin ->
-              PathItem(pin)
-              Divider(thickness = 1.dp)
+  userProfileViewModel.getUserProfile(itinerary.userMail) { itin ->
+    if (itin != null) {
+      profile = itin
+      readyToDisplay = true
+    }
+  }
+
+  when (readyToDisplay) {
+    false -> {
+      Log.d("UserProfile", "User profile is null")
+    }
+    else -> {
+      Box(
+          modifier =
+              Modifier.fillMaxWidth()
+                  .padding(vertical = 10.dp)
+                  .background(
+                      color = md_theme_light_black,
+                      shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp))) {
+            Column(modifier = Modifier.fillMaxWidth().testTag("PathOverlaySheet").padding(25.dp)) {
+              Text(
+                  text = profile.username + "'s Path",
+                  color = Color.White) // TODO change this to the user's name
+              Spacer(modifier = Modifier.height(16.dp))
+
+              // This lazy column will display all the pins in the path
+              // Each pin will be displayed using the PathItem composable
+              LazyColumn {
+                items(itinerary.pinnedPlaces) { pin ->
+                  PathItem(pin)
+                  Divider(thickness = 1.dp)
+                }
+              }
             }
           }
-        }
-      }
+    }
+  }
 }
+
+/**
+ * PathItem is a composable function that displays a single pin in the path
+ *
+ * @param pinnedPlace specific Pin to be displayed
+ */
+
+/**
+ * PathItem is a composable function that displays a single pin in the path
+ *
+ * @param pinnedPlace specific Pin to be displayed
+ */
+
+/**
+ * PathItem is a composable function that displays a single pin in the path
+ *
+ * @param pinnedPlace specific Pin to be displayed
+ */
 
 /**
  * PathItem is a composable function that displays a single pin in the path

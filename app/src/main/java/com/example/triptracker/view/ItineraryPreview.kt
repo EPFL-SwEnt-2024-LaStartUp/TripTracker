@@ -21,6 +21,15 @@ val Itinerary =
         "description",
         listOf())
 
+/**
+ * This function is used to display the itinerary preview It's the screen that shows the itinerary
+ * details when you click on one from the home screen or in the map screen
+ *
+ * @param itinerary: Itinerary object to display
+ * @param navigation: Navigation object to use for navigation, used to navigate to start the
+ *   itinerary
+ * @param onClick: Function to call when the start button is clicked
+ */
 @Composable
 fun ItineraryPreview(itinerary: Itinerary, navigation: Navigation, onClick: () -> Unit) {
   val boxHeight = 600.dp

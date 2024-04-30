@@ -12,8 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import com.example.triptracker.R
 
+/**
+ * This function is used to display the waiting screen. It's the screen that shows a loading
+ * animation when the app is waiting for data to load. Not used in the current version of the app
+ * but could be very useful in the future.
+ */
 @Composable
 fun WaitingScreen() {
   Box(modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.Center)) {
@@ -21,6 +27,7 @@ fun WaitingScreen() {
     Text(
         text = "Loading...",
         fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-        fontWeight = FontWeight.Normal)
+        fontWeight = FontWeight.Normal,
+        fontSize = 11.sp)
   }
 }
