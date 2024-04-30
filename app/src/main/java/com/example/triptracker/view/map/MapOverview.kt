@@ -18,7 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -269,14 +268,15 @@ fun Map(
 
           // Display the start marker of the polyline and a thicker path when selected
           if (isSelected) {
-//                        val startMarkerState =
-//                            rememberMarkerState(position = selectedPolyline!!.itinerary.route[0])
-//                        MarkerComposable(state = startMarkerState) {
-//                          Icon(
-//                              imageVector = Icons.Outlined.ArrowDownward,
-//                              contentDescription = "Start Location",
-//                              tint = md_theme_light_black)
-//                        }
+            //                        val startMarkerState =
+            //                            rememberMarkerState(position =
+            // selectedPolyline!!.itinerary.route[0])
+            //                        MarkerComposable(state = startMarkerState) {
+            //                          Icon(
+            //                              imageVector = Icons.Outlined.ArrowDownward,
+            //                              contentDescription = "Start Location",
+            //                              tint = md_theme_light_black)
+            //                        }
 
             selectedPolyline!!.itinerary.pinnedPlaces.forEach { pin ->
               val markerState = rememberMarkerState(position = LatLng(pin.latitude, pin.longitude))
@@ -316,120 +316,117 @@ fun Map(
         modifier = Modifier.align(Alignment.BottomStart),
         horizontalArrangement = Arrangement.Start) {
           Box(modifier = Modifier.padding(horizontal = 35.dp, vertical = 65.dp)) {
-              if (ui.myLocationButtonEnabled &&
-                  properties.isMyLocationEnabled &&
-                  !displayPopUp &&
-                  !displayPicturesPopUp
-              ) {
-                  DisplayCenterLocationButton(
-                      coroutineScope = coroutineScope,
-                      deviceLocation = deviceLocation,
-                      cameraPositionState = cameraPositionState
-                  ) {
-                      getCurrentLocation(
-                          context = context,
-                          onLocationFetched = {
-                              deviceLocation = it
-                              cameraPositionState.position =
-                                  CameraPosition.fromLatLngZoom(deviceLocation, 17f)
-                          })
+            if (ui.myLocationButtonEnabled &&
+                properties.isMyLocationEnabled &&
+                !displayPopUp &&
+                !displayPicturesPopUp) {
+              DisplayCenterLocationButton(
+                  coroutineScope = coroutineScope,
+                  deviceLocation = deviceLocation,
+                  cameraPositionState = cameraPositionState) {
+                    getCurrentLocation(
+                        context = context,
+                        onLocationFetched = {
+                          deviceLocation = it
+                          cameraPositionState.position =
+                              CameraPosition.fromLatLngZoom(deviceLocation, 17f)
+                        })
                   }
-              }
+            }
           }
-    }
-            if (displayPopUp) {
+        }
+    if (displayPopUp) {
 
-                if (mapViewModel.selectedPolylineState.value != null) {
-                  // Display the itinerary of the selected polyline
-                  // (only when the polyline is selected)
-                  when (mapPopupState) {
-                    popupState.DISPLAYITINERARY -> {
-                        Box(modifier = Modifier.fillMaxHeight(0.3f).fillMaxWidth().align(Alignment.BottomCenter)) {
-                            DisplayItinerary(
-                                itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                                navigation = navigation,
-                                onClick = { mapPopupState = popupState.PATHOVERLAY })
-                        }
-                    }
-                    popupState.DISPLAYPIN -> {
-                      // called detailed view Theo
-                    }
-                    popupState.PATHOVERLAY -> {
-                        Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f).align(Alignment.BottomCenter)) {
-                            PathOverlaySheet(
-                                itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                                onClick = {
-                                    mapPopupState = popupState.DISPLAYITINERARY
-                                    displayPopUp = false
-                                    displayPicturesPopUp = true
-                                    mapViewModel.selectedPin.value = it
-                                }
-                            )
-                        }
-                    }
-                  }
+      if (mapViewModel.selectedPolylineState.value != null) {
+        // Display the itinerary of the selected polyline
+        // (only when the polyline is selected)
+        when (mapPopupState) {
+          popupState.DISPLAYITINERARY -> {
+            Box(
+                modifier =
+                    Modifier.fillMaxHeight(0.3f).fillMaxWidth().align(Alignment.BottomCenter)) {
+                  DisplayItinerary(
+                      itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                      navigation = navigation,
+                      onClick = { mapPopupState = popupState.PATHOVERLAY })
+                }
+          }
+          popupState.DISPLAYPIN -> {
+            // called detailed view Theo
+          }
+          popupState.PATHOVERLAY -> {
+            Box(
+                modifier =
+                    Modifier.fillMaxWidth().fillMaxHeight(0.3f).align(Alignment.BottomCenter)) {
+                  PathOverlaySheet(
+                      itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                      onClick = {
+                        mapPopupState = popupState.DISPLAYITINERARY
+                        displayPopUp = false
+                        displayPicturesPopUp = true
+                        mapViewModel.selectedPin.value = it
+                      })
+                }
+          }
+        }
+      }
+    }
+
+    if (displayPicturesPopUp) {
+      Box(
+          modifier =
+              Modifier.fillMaxWidth()
+                  .fillMaxHeight(0.4f)
+                  .align(Alignment.BottomCenter)
+                  .padding(15.dp)
+                  .height(300.dp)
+                  .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))) {
+            // Display the pictures of the selected pin
+            // (only when the pin is selected)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically) {
+                  Column(
+                      modifier = Modifier.fillMaxWidth(),
+                      verticalArrangement = Arrangement.Center,
+                      horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = mapViewModel.selectedPin.value?.name ?: "",
+                            modifier = Modifier.padding(vertical = 10.dp),
+                            fontSize = 15.sp,
+                            fontFamily = Montserrat,
+                            fontWeight = FontWeight.SemiBold,
+                            color = md_theme_orange)
+                        Text(
+                            text = mapViewModel.selectedPin.value?.description ?: "",
+                            fontSize = 12.sp,
+                            fontFamily = Montserrat,
+                            fontWeight = FontWeight.SemiBold,
+                            color = md_theme_light_onPrimary)
+                      }
                 }
 
-            }
+            val selectedPin = mapViewModel.selectedPin.value
+            val scrollState = rememberScrollState()
 
-            if (displayPicturesPopUp) {
-              Box(
-                  modifier =
-                      Modifier.fillMaxWidth()
-                          .fillMaxHeight(0.4f)
-                          .align(Alignment.BottomCenter)
-                          .padding(15.dp)
-                          .height(300.dp)
-                          .background(
-                              color = md_theme_light_black, shape = RoundedCornerShape(35.dp))) {
-                    // Display the pictures of the selected pin
-                    // (only when the pin is selected)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically) {
-                          Column(
-                              modifier = Modifier.fillMaxWidth(),
-                              verticalArrangement = Arrangement.Center,
-                              horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    text = mapViewModel.selectedPin.value?.name ?: "",
-                                    modifier = Modifier.padding(vertical = 10.dp),
-                                    fontSize = 15.sp,
-                                    fontFamily = Montserrat,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = md_theme_orange)
-                                Text(
-                                    text = mapViewModel.selectedPin.value?.description ?: "",
-                                    fontSize = 12.sp,
-                                    fontFamily = Montserrat,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = md_theme_light_onPrimary)
-                              }
-                        }
-
-                    val selectedPin = mapViewModel.selectedPin.value
-                    val scrollState = rememberScrollState()
-
-                    Row(
-                        modifier =
-                            Modifier.fillMaxSize()
-                                .horizontalScroll(scrollState)
-                                .align(Alignment.BottomStart)
-                                .padding(vertical = 20.dp, horizontal = 20.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.Bottom) {
-                          selectedPin?.image_url?.forEach { url ->
-                            AsyncImage(
-                                model = url,
-                                contentDescription = "Image",
-                                modifier = Modifier.height(200.dp).padding(horizontal = 2.dp))
-                          }
-                        }
+            Row(
+                modifier =
+                    Modifier.fillMaxSize()
+                        .horizontalScroll(scrollState)
+                        .align(Alignment.BottomStart)
+                        .padding(vertical = 20.dp, horizontal = 20.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.Bottom) {
+                  selectedPin?.image_url?.forEach { url ->
+                    AsyncImage(
+                        model = url,
+                        contentDescription = "Image",
+                        modifier = Modifier.height(200.dp).padding(horizontal = 2.dp))
                   }
-            }
-
-
+                }
+          }
+    }
   }
 }
 

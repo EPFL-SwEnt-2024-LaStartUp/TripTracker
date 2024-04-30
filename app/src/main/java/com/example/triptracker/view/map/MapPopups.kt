@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -68,12 +69,15 @@ fun PathOverlaySheet(
       Box(
           modifier =
               Modifier.fillMaxWidth()
+                  .fillMaxHeight()
                   .background(
                       color = md_theme_light_black,
-                      shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp)
-                  )) {
+                      shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp))) {
             Column(modifier = Modifier.fillMaxWidth().testTag("PathOverlaySheet").padding(25.dp)) {
-              Text(text = profile.username + "'s Path", color = md_theme_light_onPrimary, modifier = Modifier.padding(end = 10.dp))
+              Text(
+                  text = profile.username + "'s Path",
+                  color = md_theme_light_onPrimary,
+                  modifier = Modifier.padding(end = 10.dp))
               Spacer(modifier = Modifier.height(16.dp))
 
               // This lazy column will display all the pins in the path
@@ -97,27 +101,29 @@ fun PathOverlaySheet(
  */
 @Composable
 fun PathItem(pinnedPlace: Pin, onClick: (Pin) -> Unit) {
-  Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { onClick(pinnedPlace) }) {
-    Icon(
-        painter =
-            painterResource(
-                id = R.drawable.ic_gps_fixed), // Replace with your actual pin icon resource
-        contentDescription = "Location pin",
-        tint = Color.White)
-    Column(modifier = Modifier.weight(1f).testTag("PathItem").padding(start = 16.dp)) {
-      Text(text = pinnedPlace.name, color = Color.White)
-      // Fetch address
-      AddressText(
-          mpv = MapPopupViewModel(),
-          latitude = pinnedPlace.latitude.toFloat(),
-          longitude = pinnedPlace.longitude.toFloat())
-    }
-    Icon(
-        painterResource(id = R.drawable.rightarrow),
-        modifier = Modifier.size(16.dp),
-        contentDescription = "More info",
-        tint = Color.White)
-  }
+  Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.clickable { onClick(pinnedPlace) }) {
+        Icon(
+            painter =
+                painterResource(
+                    id = R.drawable.ic_gps_fixed), // Replace with your actual pin icon resource
+            contentDescription = "Location pin",
+            tint = Color.White)
+        Column(modifier = Modifier.weight(1f).testTag("PathItem").padding(start = 16.dp)) {
+          Text(text = pinnedPlace.name, color = Color.White)
+          // Fetch address
+          AddressText(
+              mpv = MapPopupViewModel(),
+              latitude = pinnedPlace.latitude.toFloat(),
+              longitude = pinnedPlace.longitude.toFloat())
+        }
+        Icon(
+            painterResource(id = R.drawable.rightarrow),
+            modifier = Modifier.size(16.dp),
+            contentDescription = "More info",
+            tint = Color.White)
+      }
   Spacer(modifier = Modifier.height(16.dp))
 }
 
