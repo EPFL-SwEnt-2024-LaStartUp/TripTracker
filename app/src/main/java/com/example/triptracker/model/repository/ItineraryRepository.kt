@@ -36,7 +36,6 @@ open class ItineraryRepository {
   /**
    * Get all itineraries from the database
    *
-   * @param callback Function to call with the list of itineraries once they are fetched
    * @return List of itineraries
    */
   open fun getAllItineraries(): List<Itinerary> {
@@ -94,7 +93,7 @@ open class ItineraryRepository {
           Itinerary(
               id = document.id,
               title = document.getString("title") ?: "",
-              username = document.getString("username") ?: "",
+              userMail = document.getString("userMail") ?: "",
               location = location,
               flameCount = document.getLong("flameCount") ?: 0L,
               startDateAndTime = document.getString("startDateAndTime") ?: "",
@@ -119,7 +118,7 @@ open class ItineraryRepository {
         hashMapOf<String, Any>(
             "id" to itinerary.id,
             "title" to itinerary.title,
-            "username" to itinerary.username,
+            "userMail" to itinerary.userMail,
             "location" to
                 hashMapOf(
                     "latitude" to itinerary.location.latitude,
@@ -157,7 +156,7 @@ open class ItineraryRepository {
         hashMapOf<String, Any>(
             "id" to itinerary.id,
             "title" to itinerary.title,
-            "username" to itinerary.username,
+            "userMail" to itinerary.userMail,
             "location" to
                 hashMapOf(
                     "latitude" to itinerary.location.latitude,

@@ -63,6 +63,39 @@ class RecordViewModelTest {
   }
 
   @Test
+  fun testPauseRecording() = runTest {
+    viewModel.startRecording()
+    viewModel.pauseRecording()
+    assert(viewModel.isPaused.value)
+  }
+
+  @Test
+  fun testResumeRecording() = runTest {
+    viewModel.startRecording()
+    viewModel.pauseRecording()
+    viewModel.resumeRecording()
+    assert(!viewModel.isPaused.value)
+  }
+
+  @Test
+  fun testStartDescription() = runTest {
+    viewModel.startDescription()
+    assert(viewModel.isInDescription())
+  }
+
+  @Test
+  fun testStopDescription() = runTest {
+    viewModel.stopDescription()
+    assert(!viewModel.isInDescription())
+  }
+
+  @Test
+  fun testIsInDescription() = runTest {
+    viewModel.startDescription()
+    assert(viewModel.isInDescription())
+  }
+
+  @Test
   fun testGetElapsedTime() = runTest {
     viewModel.startRecording()
     // Here we would ideally wait for some time before stopping the recording
@@ -73,5 +106,24 @@ class RecordViewModelTest {
     // 1ms
     viewModel.stopRecording()
     assertEquals(0L, viewModel.getElapsedTime())
+  }
+
+  @Test
+  fun testPrettyPrint() = runTest {
+    viewModel.startRecording()
+    viewModel.addLatLng(LatLng(0.0, 0.0))
+    viewModel.addLatLng(LatLng(1.0, 1.0))
+    viewModel.addLatLng(LatLng(2.0, 2.0))
+
+    // prettty print is inside
+    viewModel.stopRecording()
+  }
+
+  @Test
+  fun testStopRecordingPaused() = runTest {
+    viewModel.startRecording()
+    viewModel.pauseRecording()
+    viewModel.stopRecording()
+    assert(viewModel.endDate.value.isNotEmpty())
   }
 }

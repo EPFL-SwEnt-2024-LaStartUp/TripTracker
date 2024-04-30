@@ -10,12 +10,13 @@ class AddSpotScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
         viewBuilderAction = { hasTestTag("AddSpotScreen") }) {
 
   // Structural elements of the UI
+  val close: KNode = child { hasTestTag("CloseButton") }
   val title: KNode = child { hasTestTag("SpotTitle") }
   val locationRow: KNode = child { hasTestTag("SpotLocation") }
   val locationText: KNode = locationRow.child { hasTestTag("LocationText") }
-  private val locationDropDownMenu: KNode = locationRow.child { hasTestTag("LocationDropDown") }
-  val inputLocationProposal: KNode = locationDropDownMenu.child { hasClickAction() }
+  val locationDropDownMenu: KNode = locationRow.child { hasTestTag("LocationDropDown") }
   val description: KNode = child { hasTestTag("SpotDescription") }
+  val descriptionText: KNode = description.child { hasTestTag("DescriptionText") }
   val pictures: KNode = child { hasTestTag("SpotPictures") }
   val saveButton: KNode = child { hasTestTag("SaveButton") }
 

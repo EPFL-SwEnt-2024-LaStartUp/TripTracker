@@ -3,6 +3,7 @@ package com.example.triptracker.model.repository
 import android.util.Log
 import com.example.triptracker.model.profile.UserProfile
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
 import java.util.Date
@@ -55,58 +56,70 @@ open class UserProfileRepository {
    * @param mail : mail of the user profile to return
    * @return user profile corresponding to the mail
    */
-  fun getUserProfile(mail: String): UserProfile? {
-    var userProfile: UserProfile? = null
+  fun getUserProfileByEmail(email: String, onResult: (UserProfile?) -> Unit) {
     userProfileDb
-        .document(mail)
+        .document(email)
         .get()
         .addOnSuccessListener { document ->
-          if (document != null) {
-            userProfile =
-                UserProfile(
-                    document.id,
-                    document.data?.get("name") as String,
-                    document.data?.get("surname") as String,
-                    document.data?.get("birthdate") as String,
-                    document.data?.get("pseudo") as String,
-                    document.data?.get("profileImageUrl") as String,
-                    document.data?.get("followers") as List<String>,
-                    document.data?.get("following") as List<String>
-                )
+          if (document.exists()) {
+            val userProfile = userProfile(document)
+            onResult(userProfile)
           } else {
-            Log.d(TAG, "No such document")
+            Log.d(TAG, "No user profile found for email: $email")
+            onResult(null)
           }
         }
-        .addOnFailureListener { e -> Log.e(TAG, "Error getting user profile", e) }
+        .addOnFailureListener { e ->
+          Log.e(TAG, "Error getting user profile for email: $email", e)
+          onResult(null)
+        }
+  }
+
+  private fun userProfile(document: DocumentSnapshot): UserProfile {
+    val name =
+        document.data?.get("name") as? String ?: throw IllegalStateException("Name is missing")
+    val surname =
+        document.data?.get("surname") as? String
+            ?: throw IllegalStateException("Surname is missing")
+    val username =
+        document.data?.get("username") as? String
+            ?: throw IllegalStateException("Username is missing")
+    val profileImageUrl =
+        document.data?.get("profileImageUrl") as? String
+            ?: throw IllegalStateException("Profile image URL is missing")
+    val birthdate =
+        document.data?.get("birthdate") as? String
+            ?: throw IllegalStateException("Birthdate is missing")
+    val userProfile = UserProfile(document.id, name, surname, birthdate, username, profileImageUrl)
     return userProfile
   }
 
-    /**
-     * This function converts the QuerySnapshot to a list of user's profiles.
-     *
-     * @param taskSnapshot : QuerySnapshot to convert to a list of user's profiles
-     * @return List of user's profiles
-     */
-    private fun userProfileList(taskSnapshot: QuerySnapshot) {
-        for (document in taskSnapshot) {
-            val followers = document.data["followers"] as? List<String> ?: emptyList()
-            val following = document.data["following"] as? List<String> ?: emptyList()
+  /**
+   * This function converts the QuerySnapshot to a list of user's profiles.
+   *
+   * @param taskSnapshot : QuerySnapshot to convert to a list of user's profiles
+   * @return List of user's profiles
+   */
+  private fun userProfileList(taskSnapshot: QuerySnapshot) {
+    for (document in taskSnapshot) {
+      val name = document.data["name"] as? String ?: throw IllegalStateException("Name is missing")
+      val surname =
+          document.data["surname"] as? String ?: throw IllegalStateException("Surname is missing")
+      val username =
+          document.data["username"] as? String ?: throw IllegalStateException("Username is missing")
+      val profileImageUrl =
+          document.data["profileImageUrl"] as? String
+              ?: throw IllegalStateException("Profile image URL is missing")
 
-            val userProfile =
-                UserProfile(
-                    mail = document.id,
-                    name = document.getString("name") ?: "",
-                    surname = document.getString("surname") ?: "",
-                    birthdate = document.getString("birthdate") ?: "",
-                    pseudo = document.getString("pseudo") ?: "",
-                    profileImageUrl = document.getString("profileImageUrl") ?: "",
-                    followers = followers,
-                    following = following
-                )
+      val birthdate =
+          document.data["birthdate"] as? String
+              ?: throw IllegalStateException("Birthdate is missing")
 
-            _userProfileList.add(userProfile)
-            }
-        }
+      val userProfile =
+          UserProfile(document.id, name, surname, birthdate, username, profileImageUrl)
+      _userProfileList.add(userProfile)
+    }
+  }
 
   /**
    * This function updates the user's profile passed as a parameter.

@@ -4,8 +4,11 @@ import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers.isInternal
@@ -15,6 +18,8 @@ import com.example.triptracker.view.map.AddSpot
 import com.example.triptracker.viewmodel.RecordViewModel
 import com.google.android.gms.maps.model.LatLng
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Rule
@@ -32,7 +37,7 @@ class AddSpotTest {
       AddSpot(
           recordViewModel = RecordViewModel(),
           latLng = LatLng(46.519879, 6.560632),
-          context = LocalContext.current)
+      )
     }
   }
 
@@ -41,17 +46,23 @@ class AddSpotTest {
     ComposeScreen.onComposeScreen<AddSpotScreen>(composeTestRule) {
       assertIsDisplayed()
 
+      close { assertIsDisplayed() }
+
       title { assertIsDisplayed() }
 
-      locationRow { assertIsDisplayed() }
+      locationRow {
+        assertIsDisplayed()
+        performClick()
+      }
 
-      description { assertIsDisplayed() }
+      description {
+        assertIsDisplayed()
+        performClick()
+      }
 
       pictures { assertIsDisplayed() }
 
-      // Tests that are not passing on the CI but that are good examples to keep
-
-      //      saveButton { assertIsDisplayed() }
+      saveButton { assertIsDisplayed() }
     }
   }
 
@@ -71,7 +82,27 @@ class AddSpotTest {
   }
 
   @Test
-  fun dropDownTest() {
+  fun dropDownTestOk() {
+    ComposeScreen.onComposeScreen<AddSpotScreen>(composeTestRule) {
+      locationRow { assertIsDisplayed() }
+      locationText {
+        assertIsDisplayed()
+
+        performTextClearance()
+
+        performTextInput("EPFL")
+        composeTestRule.onNodeWithTag("LocationDropDown").performClick()
+      }
+      runBlocking { delay(1000) }
+      locationText {
+        assertIsDisplayed()
+        assertTextContains("École Polytechnique Fédérale de Lausanne", substring = true)
+      }
+    }
+  }
+
+  @Test
+  fun dropDownTestNotOk() {
     ComposeScreen.onComposeScreen<AddSpotScreen>(composeTestRule) {
       locationRow { assertIsDisplayed() }
       locationText {
@@ -80,14 +111,53 @@ class AddSpotTest {
         performTextClearance()
 
         performTextInput("statue")
+        composeTestRule.onNodeWithTag("LocationDropDown").performClick()
       }
 
-      // Tests that are not passing on the CI but that are good examples to keep
+      locationText {
+        assertIsDisplayed()
+        assertTextContains("")
+      }
+    }
+  }
 
-      //        inputLocationProposal {
-      //          assertIsDisplayed()
-      //          performClick()
-      //        }
+  @Test
+  fun quitPageTest() {
+    ComposeScreen.onComposeScreen<AddSpotScreen>(composeTestRule) {
+      close {
+        assertIsDisplayed()
+        performClick()
+      }
+    }
+  }
+
+  @Test
+  fun fillSpotAndSaveTest() {
+    ComposeScreen.onComposeScreen<AddSpotScreen>(composeTestRule) {
+      locationText {
+        assertIsDisplayed()
+
+        performTextClearance()
+
+        performTextInput("EPFL")
+        composeTestRule.onNodeWithTag("LocationDropDown").performClick()
+      }
+
+      description {
+        assertIsDisplayed()
+        performClick()
+      }
+
+      descriptionText {
+        assertIsDisplayed()
+        performTextClearance()
+        performTextInput("This is a test")
+      }
+
+      saveButton {
+        assertIsDisplayed()
+        performClick()
+      }
     }
   }
 }

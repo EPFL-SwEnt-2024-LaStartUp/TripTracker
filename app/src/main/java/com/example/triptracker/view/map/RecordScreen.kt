@@ -356,9 +356,9 @@ fun Map(
                       Spacer(modifier = Modifier.height(5.dp))
                       // add a text field for the description
                       OutlinedTextField(
-                          value = viewModel.description.value,
+                          value = viewModel.title.value,
                           onValueChange = {
-                            viewModel.description.value = it
+                            viewModel.title.value = it
                             isDescriptionEmpty = it.isEmpty() // Update empty state
                           },
                           label = {
@@ -371,7 +371,8 @@ fun Map(
                           },
                           modifier =
                               Modifier.fillMaxWidth(1f)
-                                  .padding(top = 5.dp, bottom = 5.dp, start = 30.dp, end = 30.dp),
+                                  .padding(top = 5.dp, bottom = 5.dp, start = 30.dp, end = 30.dp)
+                                  .testTag("TitleTextField"),
                           textStyle =
                               TextStyle(
                                   color = Color.White,
@@ -402,10 +403,10 @@ fun Map(
                       Spacer(modifier = Modifier.height(5.dp))
                       // add a text field for the description
                       OutlinedTextField(
-                          value = viewModel.title.value,
+                          value = viewModel.description.value,
                           onValueChange = {
-                            viewModel.title.value = it
-                            isTitleEmpty = it.isEmpty() // Update empty state
+                            viewModel.description.value = it
+                            isDescriptionEmpty = it.isEmpty() // Update empty state
                           },
                           label = {
                             Text(
@@ -419,7 +420,8 @@ fun Map(
                               Modifier.fillMaxWidth(1f)
                                   .padding(top = 5.dp, bottom = 5.dp, start = 30.dp, end = 30.dp)
                                   .height(100.dp)
-                                  .fillMaxWidth(),
+                                  .fillMaxWidth()
+                                  .testTag("DescriptionTextField"),
                           textStyle =
                               TextStyle(
                                   color = Color.White,
@@ -431,9 +433,11 @@ fun Map(
                               OutlinedTextFieldDefaults.colors(
                                   unfocusedTextColor = Color.White,
                                   unfocusedBorderColor =
-                                      if (isTitleEmpty) md_theme_light_error else md_theme_grey,
+                                      if (isDescriptionEmpty) md_theme_light_error
+                                      else md_theme_grey,
                                   unfocusedLabelColor =
-                                      if (isTitleEmpty) md_theme_light_error else md_theme_grey,
+                                      if (isDescriptionEmpty) md_theme_light_error
+                                      else md_theme_grey,
                                   cursorColor = Color.White,
                                   focusedBorderColor = Color.White,
                                   focusedLabelColor = Color.White,
@@ -535,7 +539,6 @@ fun StartWindow(viewModel: RecordViewModel, context: Context) {
       AddSpot(
           latLng = viewModel.latLongList.last(),
           recordViewModel = viewModel,
-          context = context,
           onDismiss = { viewModel.addSpotClicked.value = false })
     }
     false -> {}
@@ -561,7 +564,7 @@ fun StartWindow(viewModel: RecordViewModel, context: Context) {
                               .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
                               .align(Alignment.Center)) {
                         Row(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxSize().testTag("Timer"),
                             horizontalArrangement = Arrangement.SpaceEvenly) {
                               Text(
                                   text = "TIME",
@@ -572,7 +575,8 @@ fun StartWindow(viewModel: RecordViewModel, context: Context) {
                                   color = Color.White)
                               Text(
                                   text = displayTime(timer.longValue),
-                                  modifier = Modifier.align(Alignment.CenterVertically),
+                                  modifier =
+                                      Modifier.align(Alignment.CenterVertically).testTag("Time"),
                                   fontSize = 22.sp,
                                   fontFamily = Montserrat,
                                   fontWeight = FontWeight.SemiBold,

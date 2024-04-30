@@ -143,7 +143,9 @@ dependencies {
   implementation("androidx.compose.ui:ui:1.4.0")
   implementation("androidx.compose.ui:ui-tooling-preview:1.4.0")
   implementation("androidx.compose.material:material:1.1.1")
-  implementation("androidx.compose.material3:material3:1.1.2")
+  // This material3 version enables having
+  // a waiting screen animation (See WaitingScreen.kt in view)
+  implementation("androidx.compose.material3:material3-android:1.2.0-rc01")
   implementation("androidx.navigation:navigation-compose:2.6.0-rc01")
 
   implementation("com.google.maps.android:maps-compose:4.3.0")

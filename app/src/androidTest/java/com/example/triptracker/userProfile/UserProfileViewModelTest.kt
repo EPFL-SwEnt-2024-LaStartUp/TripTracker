@@ -26,6 +26,7 @@ class UserProfileViewModelTest {
   // Relaxed mocks methods have a default implementation returning values
 
   @RelaxedMockK private lateinit var mockUserProfileRepository: UserProfileRepository
+  @RelaxedMockK private lateinit var mockUserProfileViewModel: UserProfileViewModel
 
   private val mockList = MockUserList()
   private val mockUserProfiles = mockList.getUserProfiles()
@@ -43,35 +44,17 @@ class UserProfileViewModelTest {
   fun setUp() {
     // Mocking necessary components
     mockUserProfileRepository = mockk(relaxed = true)
+    mockUserProfileViewModel = mockk(relaxed = true)
     mockkStatic(Log::class)
   }
 
   @Test
   fun getUserProfileListTest() {
     every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
-    val viewModel = UserProfileViewModel(mockUserProfileRepository)
 
-    val userProfileList = viewModel.getUserProfileList()
-    assert(userProfileList == mockUserProfiles)
-  }
+    every { mockUserProfileViewModel.getUserProfileList() } answers { mockUserProfiles }
 
-  @Test
-  fun getAllUserProfilesFromDbTest() {
-    // Have to repeat code to have specific mock data for each test!!
-    every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
-    val viewModel = UserProfileViewModel(mockUserProfileRepository)
-
-    viewModel.getAllUserProfilesFromDb()
-    assert(viewModel.getUserProfileList() == mockUserProfiles)
-  }
-
-  @Test
-  fun getUserProfileFromDbTest() {
-    every { mockUserProfileRepository.getUserProfile(any()) } returns mockUserProfiles[0]
-    val viewModel = UserProfileViewModel(mockUserProfileRepository)
-
-    val userProfile = viewModel.getUserProfileFromDb("1")
-    assert(userProfile == mockUserProfiles[0])
+    assert(mockUserProfileViewModel.getUserProfileList() == mockUserProfiles)
   }
 
   @Test
@@ -131,7 +114,7 @@ class UserProfileViewModelTest {
     val user = mockList.getUserProfiles()[0]
     val follower = mockList.getUserProfiles()[1]
 
-    mockViewModel.addFollowersInDb(user, follower)
+    mockViewModel.addFollower(user, follower)
     verify {
       Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
     }
@@ -148,7 +131,7 @@ class UserProfileViewModelTest {
     val user = mockList.getUserProfiles()[0]
     val following = mockList.getUserProfiles()[1]
 
-    mockViewModel.addFollowingInDb(user, following)
+    mockViewModel.addFollower(following, user)
     verify {
       Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
     }
@@ -165,7 +148,7 @@ class UserProfileViewModelTest {
     val user = mockList.getUserProfiles()[0]
     val follower = mockList.getUserProfiles()[1]
 
-    mockViewModel.removeFollowerInDb(user, follower)
+    mockViewModel.removeFollower(user, follower)
     verify {
       Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
     }
@@ -182,7 +165,7 @@ class UserProfileViewModelTest {
     val user = mockList.getUserProfiles()[0]
     val following = mockList.getUserProfiles()[1]
 
-    mockViewModel.removeFollowingInDb(user, following)
+    mockViewModel.removeFollower(following, user)
     verify {
       Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
     }

@@ -3,14 +3,13 @@ package com.example.triptracker.userProfile
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.profile.UserProfileList
-import java.util.Date
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class UserProfileListTest {
-  private val date1 = Date(2021, 1, 1)
+  private val date1 = "08-February-2021"
 
   private val userProfileList1 = UserProfileList(listOf())
   private val userProfileList2 =
@@ -21,15 +20,19 @@ class UserProfileListTest {
                   name = "Alice",
                   surname = "Smith",
                   birthdate = date1,
-                  pseudo = "AliceS"),
+                  username = "AliceS"),
               UserProfile(
                   mail = "2",
                   name = "Bob",
                   surname = "Johnson",
                   birthdate = date1,
-                  pseudo = "BobJ"),
+                  username = "BobJ"),
               UserProfile(
-                  mail = "3", name = "Bob", surname = "Brown", birthdate = date1, pseudo = "BobB")))
+                  mail = "3",
+                  name = "Bob",
+                  surname = "Brown",
+                  birthdate = date1,
+                  username = "BobB")))
 
   private val userProfileList3 =
       UserProfileList(
@@ -39,19 +42,19 @@ class UserProfileListTest {
                   name = "Alice",
                   surname = "Smith",
                   birthdate = date1,
-                  pseudo = "AliceS"),
+                  username = "AliceS"),
               UserProfile(
                   mail = "5",
                   name = "Bob",
                   surname = "Johnson",
                   birthdate = date1,
-                  pseudo = "BobJ"),
+                  username = "BobJ"),
               UserProfile(
                   mail = "6",
                   name = "Charlie",
                   surname = "Brown",
                   birthdate = date1,
-                  pseudo = "CharlieB")))
+                  username = "CharlieB")))
 
   // TODO: complete this test
 

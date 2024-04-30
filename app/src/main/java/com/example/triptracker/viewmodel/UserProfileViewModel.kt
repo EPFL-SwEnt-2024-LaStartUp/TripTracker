@@ -1,7 +1,12 @@
 package com.example.triptracker.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.UserProfileRepository
+import kotlinx.coroutines.launch
 
 /**
  * ViewModel for the UserProfile class This class is responsible for handling the data operations
@@ -9,29 +14,28 @@ import com.example.triptracker.model.repository.UserProfileRepository
  */
 class UserProfileViewModel(
     private val userProfileRepository: UserProfileRepository = UserProfileRepository()
-) {
+) : ViewModel() {
 
-  private var userProfileList: List<UserProfile> = mutableListOf()
+  private var _userProfileList = MutableLiveData<List<UserProfile>>()
+  private val userProfileList: LiveData<List<UserProfile>> = _userProfileList
+
+  /**
+   * Fetches all user profiles from the repository and stores them in the userProfileList LiveData
+   * could be used to display all user profiles in the UI not used in the current implementation
+   */
+  fun fetchAllUserProfiles() {
+    viewModelScope.launch { userProfileRepository.getAllUserProfiles() }
+  }
 
   /** This function returns the list of user's profiles. */
   fun getUserProfileList(): List<UserProfile> {
-    getAllUserProfilesFromDb()
-    return userProfileList
+    return userProfileList.value ?: emptyList()
   }
 
-  /** This function gets all the user's profiles from the database. */
-  fun getAllUserProfilesFromDb() {
-    userProfileList = userProfileRepository.getAllUserProfiles()
-  }
-
-  /**
-   * This function returns the user profile corresponding to the mail.
-   *
-   * @param mail : mail of the user profile to return
-   * @return user profile corresponding to the mail
-   */
-  fun getUserProfileFromDb(mail: String): UserProfile? {
-    return userProfileRepository.getUserProfile(mail)
+  fun getUserProfile(email: String, callback: (UserProfile?) -> Unit) {
+    viewModelScope.launch {
+      userProfileRepository.getUserProfileByEmail(email) { userProfile -> callback(userProfile) }
+    }
   }
 
   /**
@@ -53,63 +57,29 @@ class UserProfileViewModel(
   }
 
   /**
-   * This function adds new followers to the user profile in the database.
+   * Function that add the follower to the user profile
    *
-   * @param userProfile : user profile to update
-   * @param follower : follower to add
+   * @param userProfile : the user profile to which we add a follower
+   * @param follower : the user profile of the follower to add
    */
-  fun addFollowersInDb(userProfile: UserProfile, follower: UserProfile) {
-    val updatedProfile = userProfile.copy(followers = userProfile.followers + follower.mail)
-    userProfileRepository.updateUserProfile(updatedProfile)
-
-    val updatedFollowerProfile = follower.copy(following = follower.following + userProfile.mail)
-    userProfileRepository.updateUserProfile(updatedFollowerProfile)
+  fun addFollower(userProfile: UserProfile, follower: UserProfile) {
+    val updatedUserProfile = userProfile.copy(followers = userProfile.followers + follower.mail)
+    val updatedFollower = follower.copy(following = follower.following + userProfile.mail)
+    userProfileRepository.updateUserProfile(updatedUserProfile)
+    userProfileRepository.updateUserProfile(updatedFollower)
   }
 
   /**
-   * This function adds new following to the user profile in the database.
+   * Function that remove the follower from the user profile
    *
-   * @param userProfile : user profile to update
-   * @param following : following to add
+   * @param userProfile : the user profile from which we remove a follower
+   * @param follower : the user profile of the follower to remove
    */
-  fun addFollowingInDb(userProfile: UserProfile, following: UserProfile) {
-    val updatedProfile = userProfile.copy(following = userProfile.following + following.mail)
-    userProfileRepository.updateUserProfile(updatedProfile)
-
-    val updatedFollowingProfile = following.copy(followers = following.followers + userProfile.mail)
-    userProfileRepository.updateUserProfile(updatedFollowingProfile)
-  }
-
-  /**
-   * This function removes a follower from the user profile in the database.
-   *
-   * @param userProfile : user profile to update
-   * @param follower : follower to remove
-   */
-  fun removeFollowerInDb(userProfile: UserProfile, follower: UserProfile) {
-    val updatedProfile =
-        userProfile.copy(followers = userProfile.followers.filter { it != follower.mail })
-    userProfileRepository.updateUserProfile(updatedProfile)
-
-    val updatedFollowerProfile =
-        follower.copy(following = follower.following.filter { it != userProfile.mail })
-    userProfileRepository.updateUserProfile(updatedFollowerProfile)
-  }
-
-  /**
-   * This function removes a following from the user profile in the database.
-   *
-   * @param userProfile : user profile to update
-   * @param following : following to remove
-   */
-  fun removeFollowingInDb(userProfile: UserProfile, following: UserProfile) {
-    val updatedProfile =
-        userProfile.copy(following = userProfile.following.filter { it != following.mail })
-    userProfileRepository.updateUserProfile(updatedProfile)
-
-    val updatedFollowingProfile =
-        following.copy(followers = following.followers.filter { it != userProfile.mail })
-    userProfileRepository.updateUserProfile(updatedFollowingProfile)
+  fun removeFollower(userProfile: UserProfile, follower: UserProfile) {
+    val updatedUserProfile = userProfile.copy(followers = userProfile.followers - follower.mail)
+    val updatedFollower = follower.copy(following = follower.following - userProfile.mail)
+    userProfileRepository.updateUserProfile(userProfile)
+    userProfileRepository.updateUserProfile(follower)
   }
 
   /**

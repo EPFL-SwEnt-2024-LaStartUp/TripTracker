@@ -15,5 +15,5 @@ class UserProfileFollowingScreen(semanticsProvider: SemanticsNodeInteractionsPro
   val goBackButton: KNode = child { hasTestTag("GoBackButton") }
   val removeButton: KNode = child { hasTestTag("RemoveButton") }
   val followingList: KNode = child { hasTestTag("FollowingList") }
-  val followingProfile: KNode = child { hasTestTag("Friend") }
+  val followingProfile: KNode = child { hasTestTag("FriendProfile") }
 }
