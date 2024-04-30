@@ -88,7 +88,7 @@ fun MapOverview(
     context: Context,
     navigation: Navigation,
     checkLocationPermission: Boolean = true, // Default value true, can be overridden during tests
-    selectedId: String
+    selectedId: String = ""
 ) {
   var mapProperties by remember {
     mutableStateOf(
@@ -104,11 +104,6 @@ fun MapOverview(
     mutableStateOf(if (checkLocationPermission) checkForLocationPermission(context) else false)
   }
 
-    val currentSelectedId by remember { mutableStateOf(selectedId) }
-
-    Log.d("ISELECTED", currentSelectedId + " " + selectedId)
-
-
   // Check if the location permission is granted if not re-ask for it. If the result is still
   // negative then disable the location button and center the view on EPFL
   // else enable the location button and center the view on the user's location and show real time
@@ -119,7 +114,7 @@ fun MapOverview(
           bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
               innerPadding ->
             Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-              Map(mapViewModel, context, mapProperties, uiSettings, navigation, currentSelectedId)
+              Map(mapViewModel, context, mapProperties, uiSettings, navigation, selectedId)
             }
           }
     }
@@ -165,7 +160,7 @@ fun Map(
   val coroutineScope = rememberCoroutineScope()
 
   var mapPopupState by remember { mutableStateOf(popupState.DISPLAYITINERARY) }
-    val pathList by mapViewModel.pathList.observeAsState()
+  val pathList by mapViewModel.pathList.observeAsState()
 
   val cameraPositionState = rememberCameraPositionState {
     if (currentSelectedId == "") {
@@ -186,9 +181,6 @@ fun Map(
 
   // When the camera is moving, the city name is updated in the top bar with geo decoding
   LaunchedEffect(cameraPositionState.isMoving) {
-    mapViewModel.reverseDecode(
-        cameraPositionState.position.target.latitude.toFloat(),
-        cameraPositionState.position.target.longitude.toFloat())
     // Get the visible region of the map
     visibleRegion = cameraPositionState.projection?.visibleRegion
     // Get the filtered paths based on the visible region of the map asynchronously
@@ -210,8 +202,11 @@ fun Map(
   // Get the path list from the view model and trigger the launch effect when the path list is
   // updated
   LaunchedEffect(pathList) {
+    Log.d("ISELECTEDOUT", currentSelectedId)
     if ((pathList?.size() ?: 0) > 0) {
+      Log.d("ISELECTED", currentSelectedId)
       if (currentSelectedId != "") {
+        Log.d("ISELECTEDIN", currentSelectedId)
         // fetch the selected path
         val selection = mapViewModel.getPathById(pathList!!, currentSelectedId)
         if (selection != null) {
@@ -252,70 +247,66 @@ fun Map(
             displayPicturesPopUp = false
           },
           onMapLoaded = {
-              // decode the city name and update the top bar
-              mapViewModel.reverseDecode(
-                  cameraPositionState.position.target.latitude.toFloat(),
-                  cameraPositionState.position.target.longitude.toFloat())
-              visibleRegion = cameraPositionState.projection?.visibleRegion
-              mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
-          }
-      ) {
-        // Display the path of the trips on the map only when they enter the screen
-        mapViewModel.filteredPathList.value?.forEach { (location, latLngList) ->
-          // Check if the polyline is selected
-          val isSelected = selectedPolyline?.itinerary?.id == location.id
-          // Display the pat polyline
-          Polyline(
-              points = latLngList,
-              clickable = true,
-              color = md_theme_orange,
-              width = if (isSelected) 25f else 15f,
-              onClick = {
-                selectedPolyline = MapViewModel.SelectedPolyline(location, latLngList[0])
-                mapPopupState = popupState.DISPLAYITINERARY
-                displayPopUp = true
-              })
-
-          // Display the start marker of the polyline and a thicker path when selected
-          if (isSelected) {
-              if(selectedPolyline!!.itinerary.route.isNotEmpty()) {
-                  val startMarkerState =
-                      rememberMarkerState(
-                          position =
-                          selectedPolyline!!.itinerary.route[0]
-                      )
-                  MarkerComposable(state = startMarkerState) {
-                      Icon(
-                          imageVector = Icons.Outlined.ArrowDownward,
-                          contentDescription = "Start Location",
-                          tint = md_theme_light_black
-                      )
-                  }
-              }
-
-            selectedPolyline!!.itinerary.pinnedPlaces.forEach { pin ->
-              val markerState = rememberMarkerState(position = LatLng(pin.latitude, pin.longitude))
-              MarkerComposable(
-                  state = markerState,
+            // decode the city name and update the top bar
+            mapViewModel.reverseDecode(
+                cameraPositionState.position.target.latitude.toFloat(),
+                cameraPositionState.position.target.longitude.toFloat())
+            visibleRegion = cameraPositionState.projection?.visibleRegion
+            mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
+          }) {
+            // Display the path of the trips on the map only when they enter the screen
+            mapViewModel.filteredPathList.value?.forEach { (location, latLngList) ->
+              // Check if the polyline is selected
+              val isSelected = selectedPolyline?.itinerary?.id == location.id
+              // Display the pat polyline
+              Polyline(
+                  points = latLngList,
+                  clickable = true,
+                  color = md_theme_orange,
+                  width = if (isSelected) 25f else 15f,
                   onClick = {
-                    // Display the pin information
-                    mapViewModel.selectedPin.value = pin
+                    selectedPolyline = MapViewModel.SelectedPolyline(location, latLngList[0])
+                    mapPopupState = popupState.DISPLAYITINERARY
+                    displayPopUp = true
+                  })
 
-                    displayPicturesPopUp = true
-
-                    displayPopUp = false
-
-                    true
-                  }) {
+              // Display the start marker of the polyline and a thicker path when selected
+              if (isSelected) {
+                if (selectedPolyline!!.itinerary.route.isNotEmpty()) {
+                  val startMarkerState =
+                      rememberMarkerState(position = selectedPolyline!!.itinerary.route[0])
+                  MarkerComposable(state = startMarkerState) {
                     Icon(
-                        imageVector = Icons.Outlined.PinDrop,
-                        contentDescription = "Add Picture",
+                        imageVector = Icons.Outlined.ArrowDownward,
+                        contentDescription = "Start Location",
                         tint = md_theme_light_black)
                   }
+                }
+
+                selectedPolyline!!.itinerary.pinnedPlaces.forEach { pin ->
+                  val markerState =
+                      rememberMarkerState(position = LatLng(pin.latitude, pin.longitude))
+                  MarkerComposable(
+                      state = markerState,
+                      onClick = {
+                        // Display the pin information
+                        mapViewModel.selectedPin.value = pin
+
+                        displayPicturesPopUp = true
+
+                        displayPopUp = false
+
+                        true
+                      }) {
+                        Icon(
+                            imageVector = Icons.Outlined.PinDrop,
+                            contentDescription = "Add Picture",
+                            tint = md_theme_light_black)
+                      }
+                }
+              }
             }
           }
-        }
-      }
     }
 
     Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {

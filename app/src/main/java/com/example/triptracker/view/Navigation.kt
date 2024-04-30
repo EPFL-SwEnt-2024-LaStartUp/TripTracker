@@ -1,5 +1,6 @@
 package com.example.triptracker.view
 
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
@@ -37,7 +38,7 @@ private val TOP_LEVEL_DESTINATIONS =
     listOf(
         // TopLevelDestination(Route.LOGIN, Icons.Default.List, "Login"),
         TopLevelDestination(Route.HOME, Icons.Outlined.Home, "Home"),
-        TopLevelDestination(Route.MAPS + "/null", Icons.Outlined.Place, "Maps"),
+        TopLevelDestination(Route.MAPS, Icons.Outlined.Place, "Maps"),
         TopLevelDestination(Route.RECORD, Icons.Outlined.RadioButtonChecked, "Record"),
         TopLevelDestination(Route.PROFILE, Icons.Outlined.Person, "Profile"),
     )
@@ -63,6 +64,24 @@ class Navigation(val navController: NavHostController) {
       launchSingleTop = true
       // Restore state when reselecting a previously selected item
       restoreState = true
+    }
+  }
+
+  fun navigateTo(route: String, id: String) {
+    Log.d("Navigation", route + id)
+    navController.navigate("MAPS?id=$id") {
+      currentDestination = getTopLevelDestinations().find { it.route == "maps" }!!
+
+      navController.currentBackStackEntry?.arguments?.putString("id", id)
+      // Pop up to the start destination of the graph to
+      // avoid building up a large stack of destinations
+      // on the back stack as users select items
+      popUpTo(navController.graph.findStartDestination().id) { saveState = false }
+      // Avoid multiple copies of the same destination when
+      // reselecting the same item
+      //      launchSingleTop = true
+      // Restore state when reselecting a previously selected item
+      //      restoreState = true
     }
   }
 

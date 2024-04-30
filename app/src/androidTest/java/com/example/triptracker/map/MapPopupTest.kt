@@ -55,7 +55,7 @@ class MapPopupTest {
             "description",
             listOf())
 
-    composeTestRule.setContent { PathOverlaySheet(itinerary) }
+    composeTestRule.setContent { PathOverlaySheet(itinerary, onClick = {}) }
 
     // Assertions to check if the UI components are displayed correctly
     composeTestRule.onNodeWithText("Jack's Path").assertIsDisplayed()

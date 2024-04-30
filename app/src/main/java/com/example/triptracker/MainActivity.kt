@@ -2,6 +2,7 @@ package com.example.triptracker
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.triptracker.navigation.LaunchPermissionRequest
 import com.example.triptracker.view.LoginScreen
 import com.example.triptracker.view.Navigation
@@ -58,14 +60,18 @@ class MainActivity : ComponentActivity() {
           ) {
             composable(Route.LOGIN) { LoginScreen(navigation) }
             composable(Route.HOME) { HomeScreen(navigation) }
-//            composable(Route.MAPS) { MapOverview(context = context, navigation = navigation, selectedId = "") }
-            composable(Route.MAPS + "/{id}") { backStackEntry ->
-              val id = backStackEntry.arguments?.getString("id") ?: ""
-              if(id == "null"){
-                MapOverview(context = context, navigation = navigation, selectedId = "")
-              } else
-              MapOverview(context = context, navigation = navigation, selectedId = id)
-            }
+            //            composable(Route.MAPS) { MapOverview(context = context, navigation =
+            // navigation, selectedId = "") }
+            composable(
+                "MAPS?id={id}", arguments = listOf(navArgument("id") { defaultValue = "" })) {
+                    backStackEntry ->
+                  Log.d("MainActivity", backStackEntry.toString())
+                  Log.d("MainActivity", backStackEntry.arguments?.getString("id") ?: "")
+                  MapOverview(
+                      context = context,
+                      navigation = navigation,
+                      selectedId = backStackEntry.arguments?.getString("id") ?: "")
+                }
 
             composable(Route.RECORD) { RecordScreen(context, navigation) }
             composable(Route.PROFILE) { UserProfileOverview(navigation = navigation) }

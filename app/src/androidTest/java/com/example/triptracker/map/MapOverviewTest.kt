@@ -50,7 +50,11 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.selectedPin.value } returns itineraryList[0].pinnedPlaces[0]
 
     composeTestRule.setContent {
-      MapOverview(mapViewModel = mockViewModel, context = appContext, navigation = mockNavigation)
+      MapOverview(
+          mapViewModel = mockViewModel,
+          context = appContext,
+          navigation = mockNavigation,
+          selectedId = "")
     }
 
     // Verify that the dependencies are properly initialized
@@ -70,7 +74,8 @@ class MapOverviewTest : TestCase() {
           mapViewModel = mockViewModel,
           context = appContext,
           navigation = mockNavigation,
-          checkLocationPermission = false)
+          checkLocationPermission = false,
+          selectedId = "")
     }
 
     // Verify that the map is not shown
