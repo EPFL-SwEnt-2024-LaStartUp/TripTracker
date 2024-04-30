@@ -102,6 +102,7 @@ private fun updateProfile(
     username: String,
     imageUrl: String?
 ) {
+  // updateUserProfileInDb(profile)
   // TODO: Implement saving the profile to the database
 }
 
@@ -314,21 +315,23 @@ fun UserProfileEditScreen(navigation: Navigation) {
                     }
 
                     if (isOpen.value) {
-                      CustomDatePickerDialog(
-                          onAccept = {
-                            isOpen.value = false // close dialog
+                      Box(modifier = Modifier.testTag("CustomDatePickerDialog")) {
+                        CustomDatePickerDialog(
+                            onAccept = {
+                              isOpen.value = false // close dialog
 
-                            if (it != null) { // Set the date
-                              birthdate =
-                                  Instant.ofEpochMilli(it)
-                                      .atZone(ZoneId.of("UTC"))
-                                      .toLocalDate()
-                                      .format(DateTimeFormatter.ISO_DATE)
-                            }
-                          },
-                          onCancel = {
-                            isOpen.value = false // close dialog
-                          })
+                              if (it != null) { // Set the date
+                                birthdate =
+                                    Instant.ofEpochMilli(it)
+                                        .atZone(ZoneId.of("UTC"))
+                                        .toLocalDate()
+                                        .format(DateTimeFormatter.ISO_DATE)
+                              }
+                            },
+                            onCancel = {
+                              isOpen.value = false // close dialog
+                            })
+                      }
                     }
                     Spacer(modifier = Modifier.height(25.dp))
                     Box(
@@ -407,6 +410,7 @@ fun SaveButton(canSave: Boolean = true, action: () -> Unit = {}) {
 
   if (showDialog.value) {
     AlertDialog(
+        modifier = Modifier.testTag("AlertDialog"),
         backgroundColor = Color.White,
         onDismissRequest = {},
         title = { Text(text = "Profile saved! \uD83D\uDE0A", color = Color.Black) },
@@ -414,15 +418,14 @@ fun SaveButton(canSave: Boolean = true, action: () -> Unit = {}) {
           FilledTonalButton(
               onClick = { showDialog.value = false },
               colors = ButtonDefaults.filledTonalButtonColors(containerColor = md_theme_orange),
-              modifier = Modifier.width(108.dp).height(30.dp),
-          ) {
-            Text(
-                text = "Go back",
-                fontSize = 14.sp,
-                fontFamily = Montserrat,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.White)
-          }
+              modifier = Modifier.width(108.dp).height(30.dp)) {
+                Text(
+                    text = "Go back",
+                    fontSize = 14.sp,
+                    fontFamily = Montserrat,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White)
+              }
         })
   }
 
@@ -486,7 +489,7 @@ fun InsertPicture(
     false -> {
       Box(
           modifier =
-              Modifier.fillMaxSize().clickable {
+              Modifier.fillMaxSize().testTag("NoProfilePicture").clickable {
                 pickMedia.launch(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
               },
@@ -500,7 +503,7 @@ fun InsertPicture(
     }
     // when a picture was selected show the picture
     true -> {
-      Box(modifier = Modifier.fillMaxSize().testTag("EditPicture")) {
+      Box(modifier = Modifier.fillMaxSize().testTag("ProfilePicture")) {
         AsyncImage(
             model = selectedPicture,
             contentDescription = "Profile picture",
@@ -518,7 +521,7 @@ fun InsertPicture(
 // @Preview
 // @Composable
 // fun UserProfileEditScreenPreview() {
-// val navController = rememberNavController()
-// val navigation = remember(navController) { Navigation(navController) }
-// UserProfileEditScreen(navigation)
+//  val navController = rememberNavController()
+//  val navigation = remember(navController) { Navigation(navController) }
+//  UserProfileEditScreen(navigation)
 // }
