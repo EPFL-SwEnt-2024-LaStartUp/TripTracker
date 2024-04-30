@@ -3,9 +3,9 @@ package com.example.triptracker.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.UserProfileRepository
 import kotlinx.coroutines.launch
@@ -90,8 +90,8 @@ class UserProfileViewModel(
   fun removeFollower(userProfile: UserProfile, follower: UserProfile) {
     val updatedUserProfile = userProfile.copy(followers = userProfile.followers - follower.mail)
     val updatedFollower = follower.copy(following = follower.following - userProfile.mail)
-    userProfileRepository.updateUserProfile(userProfile)
-    userProfileRepository.updateUserProfile(follower)
+    userProfileRepository.updateUserProfile(updatedUserProfile)
+    userProfileRepository.updateUserProfile(updatedFollower)
   }
 
   /**
