@@ -1,5 +1,6 @@
 package com.example.triptracker.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
@@ -105,28 +106,12 @@ class MapViewModel(
     }
   }
 
-  fun getPathById(id: String, _pathList: MutableLiveData<ItineraryList> = pathList): Itinerary? {
-    return _pathList.value?.getAllItineraries()?.find { it.id == id }
-  }
-
-  fun getPathByLatLng(
-      latLng: LatLng,
-      _pathList: MutableLiveData<ItineraryList> = pathList
-  ): SelectedPolyline {
-    //        filteredPathList.postValue(
-    //            _pathList.value?.getAllItineraries()?.map { itinerary ->
-    //                itinerary to itinerary.route
-    //            }?.toMap() ?: emptyMap()
-    //        )
-    //        filteredPathList.value?.filter { (itinerary, route) ->
-    //            val location = LatLng(itinerary.location.latitude, itinerary.location.longitude)
-    //            Log.d("FOUNDRESULT", location.toString() + " " + latLng.toString())
-    //            location == latLng
-    //        }?.forEach { (itinerary, route) ->
-    //            Log.d("FOUNDRESULT", "getPathByLatLng: $itinerary")
-    //            selectedPolylineState.value = SelectedPolyline(itinerary, latLng)
-    //            return SelectedPolyline(itinerary, latLng)
-    //        }
-    return DUMMY_SELECTED_POLYLINE
+    /**
+     * Get the path by id
+     * @param id : the id of the path
+     * @return the path with the id or null if not found
+     */
+  fun getPathById(pathL : ItineraryList, id: String): Itinerary? {
+      return pathL.getAllItineraries().find { it.id == id }
   }
 }

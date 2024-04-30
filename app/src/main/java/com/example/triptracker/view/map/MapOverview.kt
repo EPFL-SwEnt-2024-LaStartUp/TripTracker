@@ -165,15 +165,16 @@ fun Map(
             deviceLocation = it
             position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
           })
-    } else {
-      val location = mapViewModel.getPathById(selectedId)?.location
-      position =
-          if (location != null) {
-            CameraPosition.fromLatLngZoom(LatLng(location.latitude, location.longitude), 17f)
-          } else {
-            CameraPosition.fromLatLngZoom(deviceLocation, 17f)
-          }
     }
+//    else {
+//      val location = mapViewModel.getPathById(selectedId)?.location
+//      position =
+//          if (location != null) {
+//            CameraPosition.fromLatLngZoom(LatLng(location.latitude, location.longitude), 17f)
+//          } else {
+//            CameraPosition.fromLatLngZoom(deviceLocation, 17f)
+//          }
+//    }
   }
   var visibleRegion: VisibleRegion?
 
@@ -207,32 +208,35 @@ fun Map(
 
   val pathList by mapViewModel.pathList.observeAsState()
   LaunchedEffect(pathList) {
-    pathList.let {
-      if (selectedId != "") {
-        val selection = mapViewModel.getPathById(selectedId)
-        if (selection != null) {
-          cameraPositionState.position =
-              CameraPosition.fromLatLngZoom(
-                  LatLng(selection.location.latitude, selection.location.longitude), 17f)
+      if((pathList?.size() ?: 0) > 0) {
+          Log.d("ENTEREDUPDATE", deviceLocation.toString() + " " + pathList?.size().toString())
+          if (selectedId != "") {
+              val selection = mapViewModel.getPathById(pathList!!, selectedId)
+                if (selection != null) {
 
-          mapViewModel.reverseDecode(
-              cameraPositionState.position.target.latitude.toFloat(),
-              cameraPositionState.position.target.longitude.toFloat())
-          visibleRegion = cameraPositionState.projection?.visibleRegion
-          mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
+                  cameraPositionState.position =
+                      CameraPosition.fromLatLngZoom(
+                          LatLng(selection.location.latitude, selection.location.longitude), 17f)
 
-          mapViewModel.selectedPolylineState.value =
-              MapViewModel.SelectedPolyline(selection, selection.route[0])
-          selectedPolyline = mapViewModel.selectedPolylineState.value
-          displayPopUp = true
+                  mapViewModel.reverseDecode(
+                      cameraPositionState.position.target.latitude.toFloat(),
+                      cameraPositionState.position.target.longitude.toFloat())
+                  visibleRegion = cameraPositionState.projection?.visibleRegion
+                  mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
+
+                  mapViewModel.selectedPolylineState.value =
+                      MapViewModel.SelectedPolyline(selection, selection.route[0])
+                  selectedPolyline = mapViewModel.selectedPolylineState.value
+                  displayPopUp = true
         }
-      } else {
-        cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
-        visibleRegion = cameraPositionState.projection?.visibleRegion
-        mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
-        displayPopUp = false
+          } else {
+                cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
+                visibleRegion = cameraPositionState.projection?.visibleRegion
+                mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
+                displayPopUp = false
+          }
       }
-    }
+
   }
 
   // Displays the map
