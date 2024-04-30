@@ -18,7 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -87,8 +86,6 @@ fun MapOverview(
     checkLocationPermission: Boolean = true, // Default value true, can be overridden during tests
     selectedId: String = ""
 ) {
-  // The device location is set to EPFL by default
-  var deviceLocation = DEFAULT_LOCATION
   var mapProperties by remember {
     mutableStateOf(
         MapProperties(
@@ -98,14 +95,6 @@ fun MapOverview(
   var uiSettings by remember {
     mutableStateOf(MapUiSettings(myLocationButtonEnabled = checkForLocationPermission(context)))
   }
-
-  getCurrentLocation(
-      context = context,
-      onLocationFetched = {
-        if (selectedId == "") {
-          deviceLocation = it
-        }
-      })
 
   var loadMapScreen by remember {
     mutableStateOf(if (checkLocationPermission) checkForLocationPermission(context) else false)
@@ -121,14 +110,7 @@ fun MapOverview(
           bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
               innerPadding ->
             Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-              Map(
-                  mapViewModel,
-                  context,
-                  deviceLocation,
-                  mapProperties,
-                  uiSettings,
-                  navigation,
-                  selectedId)
+              Map(mapViewModel, context, mapProperties, uiSettings, navigation, selectedId)
             }
           }
     }
@@ -153,15 +135,15 @@ fun MapOverview(
  *
  * @param mapViewModel: The view model of the map
  * @param context: The context of the app (needed for location permission and real time location)
- * @param startLocation: The starting location of the map
  * @param mapProperties: The properties of the map (type, location enabled)
  * @param uiSettings: The settings of the map (location button enabled)
+ * @param navigation: The app navigation instance
+ * @param selectedId: The id of the selected path
  */
 @Composable
 fun Map(
     mapViewModel: MapViewModel,
     context: Context,
-    startLocation: LatLng,
     mapProperties: MapProperties,
     uiSettings: MapUiSettings,
     navigation: Navigation,
@@ -170,13 +152,28 @@ fun Map(
   // Used to display the gradient with the top bar and the changing city location
   val ui by remember { mutableStateOf(uiSettings) }
   val properties by remember { mutableStateOf(mapProperties) }
-  var deviceLocation by remember { mutableStateOf(startLocation) }
+  var deviceLocation by remember { mutableStateOf(DEFAULT_LOCATION) }
   val coroutineScope = rememberCoroutineScope()
 
   var mapPopupState by remember { mutableStateOf(popupState.DISPLAYITINERARY) }
 
   val cameraPositionState = rememberCameraPositionState {
-    position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
+    if (selectedId == "") {
+      getCurrentLocation(
+          context = context,
+          onLocationFetched = {
+            deviceLocation = it
+            position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
+          })
+    } else {
+      val location = mapViewModel.getPathById(selectedId)?.location
+      position =
+          if (location != null) {
+            CameraPosition.fromLatLngZoom(LatLng(location.latitude, location.longitude), 17f)
+          } else {
+            CameraPosition.fromLatLngZoom(deviceLocation, 17f)
+          }
+    }
   }
   var visibleRegion: VisibleRegion?
 
@@ -227,13 +224,13 @@ fun Map(
           mapViewModel.selectedPolylineState.value =
               MapViewModel.SelectedPolyline(selection, selection.route[0])
           selectedPolyline = mapViewModel.selectedPolylineState.value
-          Log.d("TESTITIN", selection.id)
           displayPopUp = true
         }
       } else {
         cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
         visibleRegion = cameraPositionState.projection?.visibleRegion
         mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
+        displayPopUp = false
       }
     }
   }
@@ -252,18 +249,16 @@ fun Map(
           properties = properties,
           uiSettings = ui,
           onMapClick = {
+            selectedPolyline = mapViewModel.DUMMY_SELECTED_POLYLINE
             displayPopUp = false
             displayPicturesPopUp = false
-            selectedPolyline = mapViewModel.DUMMY_SELECTED_POLYLINE
           },
       ) {
         // Display the path of the trips on the map only when they enter the screen
         mapViewModel.filteredPathList.value?.forEach { (location, latLngList) ->
           // Check if the polyline is selected
-          val isSelected by remember {
-            mutableStateOf(selectedPolyline?.itinerary?.id == location.id)
-          }
-          //            val isSelected = selectedPolyline?.itinerary?.id == location.id
+          val isSelected = selectedPolyline?.itinerary?.id == location.id
+          Log.d("ISSELECTED", selectedPolyline?.itinerary?.id + " " + isSelected.toString())
           // Display the pat polyline
           Polyline(
               points = latLngList,
@@ -278,14 +273,14 @@ fun Map(
 
           // Display the start marker of the polyline and a thicker path when selected
           if (isSelected) {
-            val startMarkerState =
-                rememberMarkerState(position = selectedPolyline!!.itinerary.route[0])
-            MarkerComposable(state = startMarkerState) {
-              Icon(
-                  imageVector = Icons.Outlined.ArrowDownward,
-                  contentDescription = "Start Location",
-                  tint = md_theme_light_black)
-            }
+            //            val startMarkerState =
+            //                rememberMarkerState(position = selectedPolyline!!.itinerary.route[0])
+            //            MarkerComposable(state = startMarkerState) {
+            //              Icon(
+            //                  imageVector = Icons.Outlined.ArrowDownward,
+            //                  contentDescription = "Start Location",
+            //                  tint = md_theme_light_black)
+            //            }
 
             selectedPolyline!!.itinerary.pinnedPlaces.forEach { pin ->
               val markerState = rememberMarkerState(position = LatLng(pin.latitude, pin.longitude))
