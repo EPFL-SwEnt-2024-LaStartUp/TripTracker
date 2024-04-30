@@ -70,9 +70,7 @@ fun PathOverlaySheet(
                       color = md_theme_light_black,
                       shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp))) {
             Column(modifier = Modifier.fillMaxWidth().testTag("PathOverlaySheet").padding(25.dp)) {
-              Text(
-                  text = profile.username + "'s Path",
-                  color = Color.White) // TODO change this to the user's name
+              Text(text = profile.username + "'s Path", color = Color.White)
               Spacer(modifier = Modifier.height(16.dp))
 
               // This lazy column will display all the pins in the path
