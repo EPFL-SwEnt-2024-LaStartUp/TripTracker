@@ -143,9 +143,7 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
                         navigation = navigation,
                         onClick = {
                           navigation.navigateTo(navigation.getTopLevelDestinations()[1])
-                          navigation.navController.navigate(
-                              Route.MAPS +
-                                  "/${itinerary.location.latitude}/${itinerary.location.longitude}")
+                          navigation.navController.navigate(Route.MAPS + "/${itinerary.id}")
                         })
                   }
                 }
