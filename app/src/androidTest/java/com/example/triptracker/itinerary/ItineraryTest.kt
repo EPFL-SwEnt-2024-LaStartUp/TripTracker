@@ -15,7 +15,7 @@ class ItineraryTest {
       Itinerary(
           id = "1",
           title = "Trip to the beach",
-          username = "Alice",
+          userMail = "testmail@gmail.com",
           location = Location(0.0, 0.0, "Beach"),
           flameCount = 234,
           startDateAndTime = "2021-01-01",
@@ -28,7 +28,7 @@ class ItineraryTest {
       Itinerary(
           id = "2",
           title = "",
-          username = "Alice",
+          userMail = "testmail@gmail.com",
           location = Location(0.0, 0.0, "Mountains"),
           flameCount = 0,
           startDateAndTime = "2021-01-01",
@@ -41,7 +41,7 @@ class ItineraryTest {
   fun testItinerary1() {
     assertEquals("1", itinerary1.id)
     assertEquals("Trip to the beach", itinerary1.title)
-    assertEquals("Alice", itinerary1.username)
+    assertEquals("testmail@gmail.com", itinerary1.userMail)
     assertEquals(Location(0.0, 0.0, "Beach"), itinerary1.location)
     assertEquals(234, itinerary1.flameCount)
     assertEquals("2021-01-01", itinerary1.startDateAndTime)
@@ -55,7 +55,7 @@ class ItineraryTest {
   fun testItinerary2() {
     assertEquals("2", itinerary2.id)
     assertEquals("", itinerary2.title)
-    assertEquals("Alice", itinerary2.username)
+    assertEquals("testmail@gmail.com", itinerary2.userMail)
     assertEquals(Location(0.0, 0.0, "Mountains"), itinerary2.location)
     assertEquals(0, itinerary2.flameCount)
     assertEquals("2021-01-01", itinerary2.startDateAndTime)

@@ -19,7 +19,7 @@ class ItineraryListTest {
               Itinerary(
                   id = "1",
                   title = "Trip to the beach",
-                  username = "Alice",
+                  userMail = "testmail@gmail.com",
                   location = Location(0.0, 0.0, "Beach"),
                   flameCount = 234,
                   startDateAndTime = "2021-01-01",
@@ -30,7 +30,7 @@ class ItineraryListTest {
               Itinerary(
                   id = "2",
                   title = "Trip to the mountains",
-                  username = "Bob",
+                  userMail = "testmail@gmail.com",
                   location = Location(0.2, 0.2, "Mountains"),
                   flameCount = 123,
                   startDateAndTime = "2021-01-01",
@@ -56,7 +56,7 @@ class ItineraryListTest {
             Itinerary(
                 id = "1",
                 title = "Trip to the beach",
-                username = "Alice",
+                userMail = "testmail@gmail.com",
                 location = Location(0.0, 0.0, "Beach"),
                 flameCount = 234,
                 startDateAndTime = "2021-01-01",
@@ -66,7 +66,7 @@ class ItineraryListTest {
                 route = listOf())))
     assertEquals(1, itineraryList.size())
     assertEquals("Trip to the beach", itineraryList.getAllItineraries()[0].title)
-    assertEquals("Alice", itineraryList.getAllItineraries()[0].username)
+    assertEquals("testmail@gmail.com", itineraryList.getAllItineraries()[0].userMail)
     assertEquals(234, itineraryList.getAllItineraries()[0].flameCount)
     assertEquals("2021-01-01", itineraryList.getAllItineraries()[0].startDateAndTime)
     assertEquals("2021-01-02", itineraryList.getAllItineraries()[0].endDateAndTime)
@@ -87,7 +87,7 @@ class ItineraryListTest {
         Itinerary(
             id = "1",
             title = "Trip to the beach",
-            username = "Alice",
+            userMail = "testmail@gmail.com",
             location = Location(0.0, 0.0, "Beach"),
             flameCount = 234,
             startDateAndTime = "2021-01-01",
@@ -97,7 +97,7 @@ class ItineraryListTest {
             route = listOf()))
     assertEquals(1, itineraryList.size())
     assertEquals("Trip to the beach", itineraryList.getAllItineraries()[0].title)
-    assertEquals("Alice", itineraryList.getAllItineraries()[0].username)
+    assertEquals("testmail@gmail.com", itineraryList.getAllItineraries()[0].userMail)
     assertEquals(234, itineraryList.getAllItineraries()[0].flameCount)
     assertEquals("2021-01-01", itineraryList.getAllItineraries()[0].startDateAndTime)
     assertEquals("2021-01-02", itineraryList.getAllItineraries()[0].endDateAndTime)
