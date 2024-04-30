@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.liveData
+import androidx.lifecycle.switchMap
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.UserProfileRepository
 import kotlinx.coroutines.launch
@@ -26,6 +28,10 @@ class UserProfileViewModel(
   fun fetchAllUserProfiles() {
     viewModelScope.launch { userProfileRepository.getAllUserProfiles() }
   }
+
+  private val _searchQuery = MutableLiveData<String>("")
+  val searchQuery: LiveData<String>
+    get() = _searchQuery
 
   /** This function returns the list of user's profiles. */
   fun getUserProfileList(): List<UserProfile> {
@@ -57,20 +63,26 @@ class UserProfileViewModel(
   }
 
   /**
-   * Function that add the follower to the user profile
+   * Function that add follower to userProfile follower list
    *
    * @param userProfile : the user profile to which we add a follower
    * @param follower : the user profile of the follower to add
    */
   fun addFollower(userProfile: UserProfile, follower: UserProfile) {
-    val updatedUserProfile = userProfile.copy(followers = userProfile.followers + follower.mail)
-    val updatedFollower = follower.copy(following = follower.following + userProfile.mail)
-    userProfileRepository.updateUserProfile(updatedUserProfile)
-    userProfileRepository.updateUserProfile(updatedFollower)
+    // we only add follower to userProfile's follower list if he is not already present
+    if (!userProfile.followers.contains(follower.mail)) {
+      val updatedUserProfile = userProfile.copy(followers = userProfile.followers + follower.mail)
+      userProfileRepository.updateUserProfile(updatedUserProfile)
+    }
+    // we only add userProfile to follower's following list if he is not already present
+    if (!follower.following.contains(userProfile.mail)) {
+      val updatedFollower = follower.copy(following = follower.following + userProfile.mail)
+      userProfileRepository.updateUserProfile(updatedFollower)
+    }
   }
 
   /**
-   * Function that remove the follower from the user profile
+   * Function that remove follower from userProfile follower list
    *
    * @param userProfile : the user profile from which we remove a follower
    * @param follower : the user profile of the follower to remove
@@ -90,4 +102,31 @@ class UserProfileViewModel(
   fun removeUserProfileInDb(mail: String) {
     userProfileRepository.removeUserProfile(mail)
   }
+
+  /**
+   * This function sets the search query to the specified query.
+   *
+   * @param query : search query to set
+   */
+  fun setSearchQuery(query: String) {
+    _searchQuery.value = query
+  }
+
+  /**
+   * This function returns the filtered user profile list based on the search query.
+   *
+   * @return filtered user profile list based on the search query
+   */
+  val filteredUserProfileList: LiveData<List<UserProfile>> =
+      _searchQuery.switchMap { query ->
+        liveData {
+            val filteredList =
+                userProfileList.value?.filter {
+                  it.username.contains(query, ignoreCase = true) ||
+                  it.surname.contains(query, ignoreCase = true) ||
+                  it.name.contains(query, ignoreCase = true)
+                } ?: emptyList()
+            emit(filteredList)
+        }
+      }
 }
