@@ -17,13 +17,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Accessibility
-import androidx.compose.material.icons.outlined.PhotoCamera
+import androidx.compose.material.icons.outlined.ArrowDownward
+import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -183,8 +184,6 @@ fun Map(
     visibleRegion = cameraPositionState.projection?.visibleRegion
     // Get the filtered paths based on the visible region of the map asynchronously
     mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
-    //      Log.d("MAP_VISIBLE_REGION", visibleRegion?.latLngBounds.toString())
-    //      Log.d("MAP_FILTERED_PATHS",  mapViewModel.filteredPathList.value.toString())
   }
 
   // Fetch the device location when the composable is launched
@@ -197,6 +196,21 @@ fun Map(
             cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
           }
         })
+  }
+
+  val pathList by mapViewModel.pathList.observeAsState()
+  LaunchedEffect(pathList) {
+    pathList.let {
+      mapViewModel.reverseDecode(
+          cameraPositionState.position.target.latitude.toFloat(),
+          cameraPositionState.position.target.longitude.toFloat())
+      visibleRegion = cameraPositionState.projection?.visibleRegion
+      if (visibleRegion == null) {
+        cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation, 17f)
+        visibleRegion = cameraPositionState.projection?.visibleRegion
+      }
+      mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
+    }
   }
 
   // Displays the map
@@ -245,15 +259,15 @@ fun Map(
                     position = mapViewModel.selectedPolylineState.value!!.startLocation)
             MarkerComposable(state = startMarkerState) {
               Icon(
-                  imageVector = Icons.Outlined.Accessibility,
+                  imageVector = Icons.Outlined.ArrowDownward,
                   contentDescription = "Start Location",
-                  tint = md_theme_orange)
+                  tint = md_theme_light_black)
             }
             mapViewModel.selectedPolylineState.value?.itinerary?.pinnedPlaces?.forEach { pin ->
               val markerState = rememberMarkerState(position = LatLng(pin.latitude, pin.longitude))
               MarkerComposable(
                   state = markerState,
-                  onClick = { marker ->
+                  onClick = {
                     // Display the pin information
                     mapViewModel.selectedPin.value = pin
 
@@ -261,12 +275,12 @@ fun Map(
 
                     displayPopUp = false
 
-                    false
+                    true
                   }) {
                     Icon(
-                        imageVector = Icons.Outlined.PhotoCamera,
+                        imageVector = Icons.Outlined.PinDrop,
                         contentDescription = "Add Picture",
-                        tint = md_theme_orange)
+                        tint = md_theme_light_black)
                   }
             }
           }
@@ -393,5 +407,6 @@ fun MapOverviewPreview(mapViewModel: MapViewModel = MapViewModel()) {
   val context = LocalContext.current
   val navController = rememberNavController()
   val navigation = remember(navController) { Navigation(navController) }
-  MapOverview(mapViewModel, context, navigation, true, LatLng(46.8, 6.8))
+  //  MapOverview(mapViewModel, context, navigation, true, LatLng(46.8, 6.8))
+  MapOverview(mapViewModel, context, navigation, true)
 }

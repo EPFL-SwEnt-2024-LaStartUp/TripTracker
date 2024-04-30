@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
  */
 class MapViewModel(
     val geocoder: NominatimApi = NominatimApi(),
-    private val pathList: MutableLiveData<ItineraryList> = MutableLiveData<ItineraryList>(),
+    val pathList: MutableLiveData<ItineraryList> = MutableLiveData<ItineraryList>(),
     private val repository: ItineraryRepository = ItineraryRepository(),
     val filteredPathList: MutableLiveData<Map<Itinerary, List<LatLng>>> =
         MutableLiveData<Map<Itinerary, List<LatLng>>>()
