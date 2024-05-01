@@ -177,11 +177,12 @@ private fun fetchPinNames(itinerary: Itinerary): String {
  * @return String representation of the list of pin names
  */
 private fun convertPinListToString(pinList: List<String>): String {
-  return if (pinList.size <= 3) {
+  val numOfPinsToDisplay = 2
+  return if (pinList.size <= numOfPinsToDisplay) {
     pinList.joinToString(", ")
   } else {
     val displayedPins = pinList.take(3).joinToString(", ")
-    val remainingCount = pinList.size - 3
+    val remainingCount = pinList.size - numOfPinsToDisplay
     "$displayedPins, and $remainingCount more"
   }
 }
