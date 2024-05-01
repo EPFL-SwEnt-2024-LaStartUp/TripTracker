@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.triptracker.R
+import com.example.triptracker.model.profile.Relationship
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_grey
@@ -51,37 +52,28 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
 /**
  * This composable function displays the user's followers or following list.
  *
- * @param userProfileViewModel : ViewModel for the UserProfile class
+ * @param viewModel : ViewModel for the UserProfile class
  * @param userProfile : the profile of the current user
- * @param followers : Boolean to determine if the list is for followers or following
+ * @param relationship : the relationship between the current user and the friend
+ * @param friendList : List of friends' email to display
  */
 @Composable
 fun FriendListView(
-    userProfileViewModel: UserProfileViewModel,
+    viewModel: UserProfileViewModel,
     userProfile: UserProfile,
-    followers: Boolean,
+    relationship: Relationship,
+    friendList: List<UserProfile>
 ) {
-  // TODO: Remove this hardcoded list of friends
-  val friends =
-      listOf(
-          UserProfile(
-              "schifferlitheo@gmail.com",
-              "Theo",
-              "Schifferli",
-              "15-October-1946",
-              "Tete la malice",
-              "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcS5n-VN2sv2jYgbMF3kVQWkYZQtdlQzje7_-9SYrgFe6w6gUQmL",
-              listOf("cleorenaud38@gmail.com"),
-              emptyList()))
-
   // Display the list of user's profiles
   LazyColumn(
       modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(15.dp).testTag("FriendListScreen"),
       verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        if (friends.isEmpty()) {
+        if (friendList.isEmpty()) {
           item {
             Text(
-                text = if (followers) "No followers" else "Not following anyone",
+                text = "test",
+                // TODO : modify this
+                //text = if (followers) "No followers" else "Not following anyone",
                 style =
                     TextStyle(
                         fontSize = 20.sp,
@@ -94,7 +86,7 @@ fun FriendListView(
                 modifier = Modifier.fillMaxWidth().padding(10.dp))
           }
         } else {
-          items(friends) { friend ->
+          items(friendList) { friend ->
             if (friend != null) {
               // Display the user's profile
               Box(
@@ -159,25 +151,35 @@ fun FriendListView(
                               modifier = Modifier.fillMaxWidth().width(95.dp),
                               horizontalAlignment = Alignment.End,
                           ) {
-                            if (followers) {
+                            if (relationship == Relationship.FOLLOWER) {
                               // Display the remove follower button
                               RemoveFriendButton(
                                   remove = {
-                                    userProfileViewModel.removeFollower(userProfile, friend)
+                                    viewModel.removeFollower(userProfile, friend)
                                   },
                                   undoRemove = {
-                                    userProfileViewModel.addFollower(userProfile, friend)
+                                    viewModel.addFollower(userProfile, friend)
                                   },
-                                  followers = true)
-                            } else {
+                                  relationship = relationship)
+                            } else if (relationship == Relationship.FOLLOWING) {
                               RemoveFriendButton(
                                   remove = {
-                                    userProfileViewModel.removeFollower(friend, userProfile)
+                                    viewModel.removeFollower(friend, userProfile)
                                   },
                                   undoRemove = {
-                                    userProfileViewModel.addFollower(friend, userProfile)
+                                    viewModel.addFollower(friend, userProfile)
                                   },
-                                  followers = false)
+                                  relationship = relationship)
+                            } else {
+                                RemoveFriendButton(
+                                    remove = {
+                                        viewModel.addFollower(userProfile, friend)
+                                    },
+                                    undoRemove = {
+                                        viewModel.removeFollower(userProfile, friend)
+                                    },
+                                    relationship = relationship)
+
                             }
                           }
                         }
@@ -190,15 +192,15 @@ fun FriendListView(
 
 /** This composable function displays a button to remove a follower. */
 @Composable
-fun RemoveFriendButton(remove: () -> Unit, undoRemove: () -> Unit, followers: Boolean) {
+fun RemoveFriendButton(remove: () -> Unit, undoRemove: () -> Unit, relationship: Relationship) {
   // State to determine if the follower is removed and update the button text
-  var isRemoved by remember { mutableStateOf(false) }
+  var isToggled by remember { mutableStateOf(false) }
 
   Button(
       onClick = {
-        isRemoved = !isRemoved
+        isToggled = !isToggled
         // Remove the follower if the button is clicked
-        if (isRemoved) {
+        if (isToggled) {
           remove()
         }
         // Undo the removal if the button is clicked again
@@ -207,7 +209,7 @@ fun RemoveFriendButton(remove: () -> Unit, undoRemove: () -> Unit, followers: Bo
         }
       },
       colors =
-          if (!isRemoved) {
+          if (!isToggled) {
             ButtonDefaults.buttonColors(
                 containerColor = md_theme_orange, contentColor = md_theme_light_onPrimary)
           } else {
@@ -225,11 +227,15 @@ fun RemoveFriendButton(remove: () -> Unit, undoRemove: () -> Unit, followers: Bo
         Text(
             text =
                 // Display the appropriate button text based on whether we are prompting
-                // follower or following and whether the friend have been removed or not
-                if (!followers && isRemoved) "Follow" // when displaying removed following
-                else if (!followers && !isRemoved) "Following" // when displaying following
-                else if (followers && isRemoved) "Undo" // when displaying removed followers
-                else "Remove", // when displaying followers
+                // followers, following or profiles and whether the button have been toggled or not
+                //
+                if (relationship == Relationship.FOLLOWER) {
+                    if (!isToggled) "Remove" else "Undo"
+                } else if (relationship == Relationship.FOLLOWING) {
+                    if (!isToggled) "Following" else "Follow"
+                } else {
+                    if (!isToggled) "Follow" else "Following"
+                },
             modifier = Modifier.fillMaxWidth(),
             style =
                 TextStyle(
