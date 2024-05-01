@@ -60,9 +60,15 @@ class AddSpotTest {
         performClick()
       }
 
-      pictures { assertIsDisplayed() }
+      pictures {
+        performScrollTo()
+        assertIsDisplayed()
+      }
 
-      saveButton { assertIsDisplayed() }
+      saveButton {
+        performScrollTo()
+        assertIsDisplayed()
+      }
     }
   }
 
@@ -90,7 +96,7 @@ class AddSpotTest {
 
         performTextClearance()
 
-        performTextInput("EPFL")
+        performTextInput("ecole polytechnique federale")
         composeTestRule.onNodeWithTag("LocationDropDown").performClick()
       }
       runBlocking { delay(2000) }
@@ -155,6 +161,7 @@ class AddSpotTest {
       }
 
       saveButton {
+        performScrollTo()
         assertIsDisplayed()
         performClick()
       }

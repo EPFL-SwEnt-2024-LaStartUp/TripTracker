@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -137,7 +138,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                     .padding(top = 80.dp, start = 15.dp, end = 15.dp, bottom = 20.dp)
                     .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))
                     .testTag("AddSpotScreen")) {
-              Column(modifier = Modifier.matchParentSize()) {
+              Column(modifier = Modifier.matchParentSize().verticalScroll(rememberScrollState())) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
