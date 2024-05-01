@@ -1,5 +1,6 @@
 package com.example.triptracker.view
 
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
@@ -54,6 +55,8 @@ class Navigation(val navController: NavHostController) {
   fun navigateTo(destination: TopLevelDestination) {
     navController.navigate(destination.route) {
       currentDestination = destination
+      // reset the id when navigating normally so that the state is not saved
+      navController.currentBackStackEntry?.arguments?.putString("id", "")
       // Pop up to the start destination of the graph to
       // avoid building up a large stack of destinations
       // on the back stack as users select items
@@ -63,6 +66,25 @@ class Navigation(val navController: NavHostController) {
       launchSingleTop = true
       // Restore state when reselecting a previously selected item
       restoreState = true
+    }
+  }
+
+  // Only use this when navigating to the maps screen
+  fun navigateTo(route: String, id: String) {
+    Log.d("Navigation", route + id)
+    navController.navigate("MAPS?id=$id") {
+      currentDestination = getTopLevelDestinations().find { it.route == "maps" }!!
+      // set the id when navigating with the map
+      navController.currentBackStackEntry?.arguments?.putString("id", id)
+      // Pop up to the start destination of the graph to
+      // avoid building up a large stack of destinations
+      // on the back stack as users select items
+      popUpTo(navController.graph.findStartDestination().id) { saveState = false }
+      // Avoid multiple copies of the same destination when
+      // reselecting the same item
+      //      launchSingleTop = true
+      // Restore state when reselecting a previously selected item
+      //      restoreState = true
     }
   }
 
