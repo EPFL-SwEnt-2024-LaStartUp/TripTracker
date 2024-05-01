@@ -181,7 +181,7 @@ private fun convertPinListToString(pinList: List<String>): String {
   return if (pinList.size <= numOfPinsToDisplay) {
     pinList.joinToString(", ")
   } else {
-    val displayedPins = pinList.take(3).joinToString(", ")
+    val displayedPins = pinList.take(numOfPinsToDisplay).joinToString(", ")
     val remainingCount = pinList.size - numOfPinsToDisplay
     "$displayedPins, and $remainingCount more"
   }
