@@ -35,6 +35,7 @@ class MapViewModel(
         MutableLiveData<Map<Itinerary, List<LatLng>>>()
 ) : ViewModel() {
 
+  // Dummy selected polyline to avoid nullability issues
   val DUMMY_SELECTED_POLYLINE =
       SelectedPolyline(
           Itinerary("", "", "", Location(0.0, 0.0, ""), 0, "", "", emptyList(), "", emptyList()),

@@ -270,10 +270,7 @@ fun SearchBarImplementation(
         items(listToShow) { itinerary ->
           ItineraryItem(
               itinerary = itinerary,
-              onItineraryClick = {
-                navigation.navigateTo(navigation.getTopLevelDestinations()[1])
-                navigation.navController.navigate(Route.MAPS + "/${itinerary.id}")
-              })
+              onItineraryClick = { navigation.navigateTo(Route.MAPS, itinerary.id) })
         }
       }
     }

@@ -2,6 +2,7 @@ package com.example.triptracker.view.map
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -201,27 +202,28 @@ fun Map(
   // Get the path list from the view model and trigger the launch effect when the path list is
   // updated
   LaunchedEffect(pathList) {
-    //    if ((pathList?.size() ?: 0) > 0) {
     if (currentSelectedId != "") {
       // fetch the selected path
-      val selection = mapViewModel.getPathById(pathList!!, currentSelectedId)
-      if (selection != null) {
+      Log.d("MapOverviewPRINT", pathList?.size().toString())
+      if (pathList != null) {
+        val selection = mapViewModel.getPathById(pathList!!, currentSelectedId)
+        if (selection != null) {
 
-        // center the camera on the selected path
-        cameraPositionState.position =
-            CameraPosition.fromLatLngZoom(
-                LatLng(selection.location.latitude, selection.location.longitude), 17f)
+          // center the camera on the selected path
+          cameraPositionState.position =
+              CameraPosition.fromLatLngZoom(
+                  LatLng(selection.location.latitude, selection.location.longitude), 17f)
 
-        // set the selected polyline
-        mapViewModel.selectedPolylineState.value =
-            MapViewModel.SelectedPolyline(selection, selection.route[0])
-        selectedPolyline = mapViewModel.selectedPolylineState.value
+          // set the selected polyline
+          mapViewModel.selectedPolylineState.value =
+              MapViewModel.SelectedPolyline(selection, selection.route[0])
+          selectedPolyline = mapViewModel.selectedPolylineState.value
 
-        // display the path popup
-        displayPopUp = true
+          // display the path popup
+          displayPopUp = true
+        }
       }
     }
-    //    }
   }
 
   // Displays the map

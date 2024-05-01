@@ -55,6 +55,7 @@ class Navigation(val navController: NavHostController) {
   fun navigateTo(destination: TopLevelDestination) {
     navController.navigate(destination.route) {
       currentDestination = destination
+      // reset the id when navigating normally so that the state is not saved
       navController.currentBackStackEntry?.arguments?.putString("id", "")
       // Pop up to the start destination of the graph to
       // avoid building up a large stack of destinations
@@ -68,11 +69,12 @@ class Navigation(val navController: NavHostController) {
     }
   }
 
+  // Only use this when navigating to the maps screen
   fun navigateTo(route: String, id: String) {
     Log.d("Navigation", route + id)
     navController.navigate("MAPS?id=$id") {
       currentDestination = getTopLevelDestinations().find { it.route == "maps" }!!
-
+      // set the id when navigating with the map
       navController.currentBackStackEntry?.arguments?.putString("id", id)
       // Pop up to the start destination of the graph to
       // avoid building up a large stack of destinations
