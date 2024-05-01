@@ -19,6 +19,8 @@ object Route {
   const val FRIENDS = "friends"
   const val MYTRIPS = "mytrips"
   const val SETTINGS = "settings"
+  const val FOLLOWERS = "followers"
+  const val FOLLOWING = "following"
 
   const val ITINERARY_PREVIEW = "itinerary_preview"
 
