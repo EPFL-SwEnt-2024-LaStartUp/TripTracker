@@ -9,11 +9,20 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
+import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.map.AddressText
 import com.example.triptracker.view.map.PathItem
 import com.example.triptracker.view.map.PathOverlaySheet
 import com.example.triptracker.viewmodel.MapPopupViewModel
+import com.example.triptracker.viewmodel.UserProfileViewModel
+import io.mockk.Runs
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.just
+import io.mockk.mockk
 import junit.framework.TestCase
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,9 +32,26 @@ class MapPopupTest {
 
   @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-  @Test
+    @RelaxedMockK private lateinit var mockViewModel: UserProfileViewModel
+
+    @Before
+    fun setUp() {
+        mockViewModel = mockk(relaxed = true)
+        mockViewModel = mockk {
+            coEvery { fetchAllUserProfiles() } just Runs
+            coEvery { getUserProfileList() } returns listOf()
+            coEvery { getUserProfile(any(), any()) } coAnswers {
+                secondArg<(UserProfile?) -> Unit>().invoke(UserProfile("test@mail.com", "Jack", "", ""))
+            }
+            coEvery { addNewUserProfileToDb(any()) } just Runs
+            coEvery { updateUserProfileInDb(any()) } just Runs
+            coEvery { addFollower(any(), any()) } just Runs
+            coEvery { removeFollower(any(), any()) } just Runs
+            coEvery { removeUserProfileInDb(any()) } just Runs
+        }
+    }
+    @Test
   fun testPathOverlaySheetDisplays() {
-    try {
       // Setup the test environment with the same data used in the @Preview
       val itinerary =
           Itinerary(
@@ -58,16 +84,11 @@ class MapPopupTest {
               "description",
               listOf())
 
-      composeTestRule.setContent { PathOverlaySheet(itinerary, onClick = {}) }
-
+      composeTestRule.setContent { PathOverlaySheet(itinerary, mockViewModel,onClick = {}) }
       // Assertions to check if the UI components are displayed correctly
       composeTestRule.onNodeWithText("Picadilly Circus").assertIsDisplayed()
       composeTestRule.onNodeWithText("Buckingham Palace").assertIsDisplayed()
       composeTestRule.onNodeWithText("Abbey Road").assertIsDisplayed()
-    } catch (e: Exception) {
-      // If any exception occurs, fail the test
-      TestCase.assertTrue("Test failed due to exception: ${e.message}", true)
-    }
   }
 
   @Test
@@ -113,7 +134,7 @@ class MapPopupTest {
             "Picadilly Circus",
             "hi",
             listOf("https://www.google.com"))
-    composeTestRule.setContent { PathItem(pin) }
+    composeTestRule.setContent { PathItem(pin, onClick = {}) }
     composeTestRule.onNodeWithTag("PathItem").assertIsDisplayed()
   }
 }
