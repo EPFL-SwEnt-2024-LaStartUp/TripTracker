@@ -65,8 +65,6 @@ class MainActivity : ComponentActivity() {
             composable(
                 "MAPS?id={id}", arguments = listOf(navArgument("id") { defaultValue = "" })) {
                     backStackEntry ->
-                  Log.d("MainActivity", backStackEntry.toString())
-                  Log.d("MainActivity", backStackEntry.arguments?.getString("id") ?: "")
                   MapOverview(
                       context = context,
                       navigation = navigation,
