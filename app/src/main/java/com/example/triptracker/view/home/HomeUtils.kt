@@ -45,6 +45,9 @@ import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
+// set up a dummy profile for testing
+val dummyProfile = UserProfile("test@gmail.com", "Test User", "test", "test bio")
+
 /**
  * Displays an itinerary in the list of itineraries
  *
@@ -76,7 +79,7 @@ fun DisplayItinerary(
   var profile by remember { mutableStateOf(UserProfile("")) }
   if (test) {
     readyToDisplay = true
-    profile = UserProfile("test@gmail.com", "Test User", "test", "test bio")
+    profile = dummyProfile
   }
   userProfileViewModel.getUserProfile(itinerary.userMail) { itin ->
     if (itin != null) {
