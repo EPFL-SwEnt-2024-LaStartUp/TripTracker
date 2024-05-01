@@ -12,17 +12,16 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.triptracker.navigation.LaunchPermissionRequest
 import com.example.triptracker.view.LoginScreen
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.home.HomeScreen
-import com.example.triptracker.view.map.DEFAULT_LOCATION
 import com.example.triptracker.view.map.MapOverview
 import com.example.triptracker.view.map.RecordScreen
 import com.example.triptracker.view.profile.UserProfileOverview
 import com.example.triptracker.view.theme.TripTrackerTheme
-import com.google.android.gms.maps.model.LatLng
 
 class MainActivity : ComponentActivity() {
 
@@ -60,18 +59,16 @@ class MainActivity : ComponentActivity() {
           ) {
             composable(Route.LOGIN) { LoginScreen(navigation) }
             composable(Route.HOME) { HomeScreen(navigation) }
-            composable(Route.MAPS) { MapOverview(context = context, navigation = navigation) }
-            composable(Route.MAPS + "/{lat}" + "/{lon}") { backStackEntry ->
-              val lat =
-                  backStackEntry.arguments?.getString("lat") ?: DEFAULT_LOCATION.latitude.toString()
-              val lon =
-                  backStackEntry.arguments?.getString("lon")
-                      ?: DEFAULT_LOCATION.longitude.toString()
-              MapOverview(
-                  context = context,
-                  navigation = navigation,
-                  startLocation = LatLng(lat.toDouble(), lon.toDouble()))
-            }
+            //            composable(Route.MAPS) { MapOverview(context = context, navigation =
+            // navigation, selectedId = "") }
+            composable(
+                "MAPS?id={id}", arguments = listOf(navArgument("id") { defaultValue = "" })) {
+                    backStackEntry ->
+                  MapOverview(
+                      context = context,
+                      navigation = navigation,
+                      selectedId = backStackEntry.arguments?.getString("id") ?: "")
+                }
 
             composable(Route.RECORD) { RecordScreen(context, navigation) }
             composable(Route.PROFILE) { UserProfileOverview(navigation = navigation) }

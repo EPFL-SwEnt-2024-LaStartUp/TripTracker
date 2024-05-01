@@ -68,6 +68,7 @@ import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_light_error
+import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.RecordViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -227,7 +228,7 @@ fun Map(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
-          Box(modifier = Modifier.size(100.dp).background(Color.White))
+          Box(modifier = Modifier.size(100.dp).background(md_theme_light_onPrimary))
         }
       } else {
         GoogleMap(
@@ -276,45 +277,43 @@ fun Map(
     if (!viewModel.isInDescription()) {
       StartWindow(viewModel = viewModel, context)
 
-      if (!viewModel.addSpotClicked.value) {
-        // Button to center on device location
-        Row(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            horizontalArrangement = Arrangement.Center) {
-              if (ui.myLocationButtonEnabled && properties.isMyLocationEnabled) {
-                Box(modifier = Modifier.padding(horizontal = 0.dp, vertical = 60.dp)) {
-                  DisplayCenterLocationButton(
-                      coroutineScope = coroutineScope,
-                      deviceLocation = deviceLocation,
-                      cameraPositionState = cameraPositionState) { /* DO NOTHING*/}
-                }
-              }
-
-              // Button to start/stop recording
-              FilledTonalButton(
-                  onClick = {
-                    if (viewModel.isRecording()) {
-                      viewModel.stopRecording()
-                      viewModel.startDescription()
-                    } else {
-                      viewModel.startRecording()
-                    }
-                  },
-                  modifier = Modifier.padding(50.dp).fillMaxWidth(0.6f).fillMaxHeight(0.1f),
-                  colors =
-                      ButtonDefaults.filledTonalButtonColors(
-                          containerColor = md_theme_orange, contentColor = Color.White),
-              ) {
-                Text(
-                    text = if (viewModel.isRecording()) "Stop" else "Start",
-                    fontSize = 24.sp,
-                    fontFamily = Montserrat,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White)
+      // Button to center on device location
+      Row(
+          modifier = Modifier.align(Alignment.BottomCenter),
+          horizontalArrangement = Arrangement.Center) {
+            if (ui.myLocationButtonEnabled && properties.isMyLocationEnabled) {
+              Box(modifier = Modifier.padding(horizontal = 0.dp, vertical = 60.dp)) {
+                DisplayCenterLocationButton(
+                    coroutineScope = coroutineScope,
+                    deviceLocation = deviceLocation,
+                    cameraPositionState = cameraPositionState) { /* DO NOTHING*/}
               }
             }
-        Spacer(modifier = Modifier.width(50.dp))
-      }
+
+            // Button to start/stop recording
+            FilledTonalButton(
+                onClick = {
+                  if (viewModel.isRecording()) {
+                    viewModel.stopRecording()
+                    viewModel.startDescription()
+                  } else {
+                    viewModel.startRecording()
+                  }
+                },
+                modifier = Modifier.padding(50.dp).fillMaxWidth(0.6f).fillMaxHeight(0.1f),
+                colors =
+                    ButtonDefaults.filledTonalButtonColors(
+                        containerColor = md_theme_orange, contentColor = md_theme_light_onPrimary),
+            ) {
+              Text(
+                  text = if (viewModel.isRecording()) "Stop" else "Start",
+                  fontSize = 24.sp,
+                  fontFamily = Montserrat,
+                  fontWeight = FontWeight.SemiBold,
+                  color = md_theme_light_onPrimary)
+            }
+          }
+      Spacer(modifier = Modifier.width(50.dp))
     }
 
     var isTitleEmpty by remember { mutableStateOf(false) }
@@ -341,7 +340,7 @@ fun Map(
                           fontSize = 36.sp,
                           fontFamily = Montserrat,
                           fontWeight = FontWeight.Bold,
-                          color = Color.White,
+                          color = md_theme_light_onPrimary,
                           modifier = Modifier.padding(top = 50.dp, start = 30.dp, end = 30.dp),
                       )
                       // add a text field for the title
@@ -367,7 +366,7 @@ fun Map(
                                 fontSize = 14.sp,
                                 fontFamily = Montserrat,
                                 fontWeight = FontWeight.Normal,
-                            )
+                                color = md_theme_grey)
                           },
                           modifier =
                               Modifier.fillMaxWidth(1f)
@@ -375,21 +374,22 @@ fun Map(
                                   .testTag("TitleTextField"),
                           textStyle =
                               TextStyle(
-                                  color = Color.White,
+                                  color = md_theme_light_onPrimary,
                                   fontSize = 16.sp,
                                   fontFamily = Montserrat,
                                   fontWeight = FontWeight.Normal),
                           colors =
                               OutlinedTextFieldDefaults.colors(
-                                  unfocusedTextColor = Color.White,
+                                  unfocusedTextColor = md_theme_light_onPrimary,
                                   unfocusedBorderColor =
                                       if (isTitleEmpty) md_theme_light_error else md_theme_grey,
                                   unfocusedLabelColor =
                                       if (isTitleEmpty) md_theme_light_error else md_theme_grey,
-                                  cursorColor = Color.White,
-                                  focusedBorderColor = Color.White,
-                                  focusedLabelColor = Color.White,
-                              ))
+                                  cursorColor = md_theme_light_onPrimary,
+                                  focusedBorderColor = md_theme_light_onPrimary,
+                                  focusedLabelColor = md_theme_light_onPrimary,
+                              ),
+                      )
 
                       // add a text field for the description
                       Text(
@@ -414,6 +414,7 @@ fun Map(
                                 fontSize = 14.sp,
                                 fontFamily = Montserrat,
                                 fontWeight = FontWeight.Normal,
+                                color = md_theme_grey,
                             )
                           },
                           modifier =
@@ -424,23 +425,23 @@ fun Map(
                                   .testTag("DescriptionTextField"),
                           textStyle =
                               TextStyle(
-                                  color = Color.White,
+                                  color = md_theme_light_onPrimary,
                                   fontSize = 16.sp,
                                   fontFamily = Montserrat,
                                   fontWeight = FontWeight.Normal,
                                   lineHeight = 10.sp),
                           colors =
                               OutlinedTextFieldDefaults.colors(
-                                  unfocusedTextColor = Color.White,
+                                  unfocusedTextColor = md_theme_light_onPrimary,
                                   unfocusedBorderColor =
                                       if (isDescriptionEmpty) md_theme_light_error
                                       else md_theme_grey,
                                   unfocusedLabelColor =
                                       if (isDescriptionEmpty) md_theme_light_error
                                       else md_theme_grey,
-                                  cursorColor = Color.White,
-                                  focusedBorderColor = Color.White,
-                                  focusedLabelColor = Color.White,
+                                  cursorColor = md_theme_light_onPrimary,
+                                  focusedBorderColor = md_theme_light_onPrimary,
+                                  focusedLabelColor = md_theme_light_onPrimary,
                               ))
 
                       Row(
@@ -498,14 +499,14 @@ fun Map(
                                 colors =
                                     ButtonDefaults.filledTonalButtonColors(
                                         containerColor = md_theme_orange,
-                                        contentColor = Color.White),
+                                        contentColor = md_theme_light_onPrimary),
                             ) {
                               Text(
                                   text = "Save",
                                   fontSize = 24.sp,
                                   fontFamily = Montserrat,
                                   fontWeight = FontWeight.SemiBold,
-                                  color = Color.White)
+                                  color = md_theme_light_onPrimary)
                             }
                             Spacer(modifier = Modifier.width(20.dp))
                           }
@@ -572,7 +573,7 @@ fun StartWindow(viewModel: RecordViewModel, context: Context) {
                                   fontSize = 22.sp,
                                   fontFamily = Montserrat,
                                   fontWeight = FontWeight.SemiBold,
-                                  color = Color.White)
+                                  color = md_theme_light_onPrimary)
                               Text(
                                   text = displayTime(timer.longValue),
                                   modifier =
@@ -580,7 +581,7 @@ fun StartWindow(viewModel: RecordViewModel, context: Context) {
                                   fontSize = 22.sp,
                                   fontFamily = Montserrat,
                                   fontWeight = FontWeight.SemiBold,
-                                  color = Color.White)
+                                  color = md_theme_light_onPrimary)
                             }
                       }
                 }
@@ -617,7 +618,7 @@ fun StartWindow(viewModel: RecordViewModel, context: Context) {
                                           .fillMaxHeight(0.6f),
                                   colors =
                                       ButtonDefaults.filledTonalButtonColors(
-                                          containerColor = Color.White,
+                                          containerColor = md_theme_light_onPrimary,
                                           contentColor = md_theme_light_dark),
                               ) {
                                 Text(
@@ -643,7 +644,8 @@ fun StartWindow(viewModel: RecordViewModel, context: Context) {
                                         modifier =
                                             Modifier.align(Alignment.CenterVertically)
                                                 .size(50.dp)
-                                                .background(Color.White, shape = CircleShape),
+                                                .background(
+                                                    md_theme_light_onPrimary, shape = CircleShape),
                                     ) {
                                       Icon(
                                           imageVector = Icons.Outlined.Add,
