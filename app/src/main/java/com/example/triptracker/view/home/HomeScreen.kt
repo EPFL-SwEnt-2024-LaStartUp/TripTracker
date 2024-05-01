@@ -144,9 +144,7 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
                     DisplayItinerary(
                         itinerary = itinerary,
                         navigation = navigation,
-                        onClick = {
-                          navigation.navigateTo(Route.MAPS, itinerary.id)
-                        })
+                        onClick = { navigation.navigateTo(Route.MAPS, itinerary.id) })
                   }
                 }
             /*
