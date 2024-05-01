@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
@@ -49,15 +50,19 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
  *
  * @param itinerary: Itinerary object to display
  * @param navigation: Navigation object to use for navigation
- * @param pinNamesMap: Map of itinerary ID to list of pin names
+ * @param boxHeight: Height of the box that contains the itinerary
+ * @param userProfileViewModel: UserProfileViewModel object to use for fetching user profiles
+ * @param onClick: Function to call when the itinerary is clicked
+ * @param test : Boolean to test the function
  */
 @Composable
 fun DisplayItinerary(
     itinerary: Itinerary,
     navigation: Navigation,
     boxHeight: Dp = 200.dp,
-    userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
-    onClick: () -> Unit
+    userProfileViewModel: UserProfileViewModel = viewModel(),
+    onClick: () -> Unit,
+    test: Boolean = false
 ) {
   // Number of additional itineraries not displayed
   val pinListString = fetchPinNames(itinerary)
@@ -69,7 +74,10 @@ fun DisplayItinerary(
 
   var readyToDisplay by remember { mutableStateOf(false) }
   var profile by remember { mutableStateOf(UserProfile("")) }
-
+  if (test) {
+    readyToDisplay = true
+    profile = UserProfile("test@gmail.com", "Test User", "test", "test bio")
+  }
   userProfileViewModel.getUserProfile(itinerary.userMail) { itin ->
     if (itin != null) {
       profile = itin

@@ -58,9 +58,14 @@ import com.example.triptracker.viewmodel.HomeViewModel
  *
  * @param navigation: Navigation object to use for navigation
  * @param homeViewModel: HomeViewModel to use for fetching itineraries
+ * @param test: Boolean to test the function
  */
 @Composable
-fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel()) {
+fun HomeScreen(
+    navigation: Navigation,
+    homeViewModel: HomeViewModel = viewModel(),
+    test: Boolean = false
+) {
   Log.d("HomeScreen", "Rendering HomeScreen")
   val selectedFilterType by homeViewModel.selectedFilter.observeAsState(FilterType.TITLE)
 
@@ -144,7 +149,8 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
                     DisplayItinerary(
                         itinerary = itinerary,
                         navigation = navigation,
-                        onClick = { navigation.navigateTo(Route.MAPS, itinerary.id) })
+                        onClick = { navigation.navigateTo(Route.MAPS, itinerary.id) },
+                        test = test)
                   }
                 }
             /*
