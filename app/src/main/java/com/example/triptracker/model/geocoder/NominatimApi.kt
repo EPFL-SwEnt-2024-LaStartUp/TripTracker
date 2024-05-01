@@ -198,7 +198,7 @@ class NominatimApi {
 
       val name = json?.get(LocationStrings.NAME)
 
-      Log.d("API RESPONSE", name.toString())
+      //      Log.d("API RESPONSE", name.toString())
 
       if (name == null) {
         callback(LocationErrors.UNKNOWN)

@@ -144,12 +144,7 @@ fun HomeScreen(navigation: Navigation, homeViewModel: HomeViewModel = viewModel(
                     DisplayItinerary(
                         itinerary = itinerary,
                         navigation = navigation,
-                        onClick = {
-                          navigation.navigateTo(navigation.getTopLevelDestinations()[1])
-                          navigation.navController.navigate(
-                              Route.MAPS +
-                                  "/${itinerary.location.latitude}/${itinerary.location.longitude}")
-                        })
+                        onClick = { navigation.navigateTo(Route.MAPS, itinerary.id) })
                   }
                 }
             /*
@@ -275,7 +270,7 @@ fun SearchBarImplementation(
         items(listToShow) { itinerary ->
           ItineraryItem(
               itinerary = itinerary,
-              onItineraryClick = { /* TODO: Implement navigation to itinerary details */})
+              onItineraryClick = { navigation.navigateTo(Route.MAPS, itinerary.id) })
         }
       }
     }
