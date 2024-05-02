@@ -58,11 +58,9 @@ fun UserProfileMyTrips(
     test: Boolean = false,
     username: String = ""
 ) {
-  // Log for debugging
-  Log.d("HomeScreen", "Rendering HomeScreen")
 
   // Set search filter and query in the ViewModel
-  homeViewModel.setSearchFilter(FilterType.TITLE)
+  homeViewModel.setSearchFilter(FilterType.USERNAME)
   homeViewModel.setSearchQuery(username)
 
   // Observe the filtered itinerary list from the ViewModel
