@@ -7,7 +7,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 /** Implementation of the Authenticator interface for Google sign-in. */
-class GoogleAuthenticator(private val context: Context) : Authenticator {
+class GoogleAuthenticator(
+    //    private val context: Context
+) : Authenticator {
 
   override var signInLauncher: ActivityResultLauncher<Intent>? = null
 
