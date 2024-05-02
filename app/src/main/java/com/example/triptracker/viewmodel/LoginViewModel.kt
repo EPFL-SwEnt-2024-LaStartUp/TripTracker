@@ -8,7 +8,7 @@ import com.example.triptracker.authentication.AuthResponse
 import com.example.triptracker.model.authentication.SignInResult
 
 object loggedUser {
-  var email: String? =""
+  var email: String? = ""
 }
 
 class LoginViewModel(application: Application) : AndroidViewModel(application) {

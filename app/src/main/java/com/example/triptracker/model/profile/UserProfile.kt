@@ -1,7 +1,5 @@
 package com.example.triptracker.model.profile
 
-import java.util.Date
-
 /**
  * This data class represents a user's profile information.
  *
