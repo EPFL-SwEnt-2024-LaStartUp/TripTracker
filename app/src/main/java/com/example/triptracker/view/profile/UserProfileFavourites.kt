@@ -35,6 +35,13 @@ import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.viewmodel.HomeViewModel
 
+/**
+ * UserProfileFavourite is a Composable function that displays the user's favourite trips.
+ *
+ * @param homeViewModel ViewModel for the home screen.
+ * @param navigation Navigation object for navigating between screens.
+ * @param test Boolean flag for testing.
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun UserProfileFavourite(
@@ -42,18 +49,23 @@ fun UserProfileFavourite(
     navigation: Navigation,
     test: Boolean = false
 ) {
+  // Log for debugging
   Log.d("HomeScreen", "Rendering HomeScreen")
 
   // TODO Not implemented yet -> next sprint
   // homeViewModel.setSearchFilter(FilterType.USERNAME)
   // homeViewModel.setSearchQuery("Cleoooo")
   // val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
+  // Currently, the filtered list is empty as the feature is not implemented yet
   val filteredList = emptyList<Itinerary>()
+
+  // Scaffold for the main layout
   Scaffold(
       topBar = {},
       bottomBar = { NavigationBar(navigation) },
       modifier = Modifier.testTag("UserProfileFavouriteScreen")) {
         Box {
+          // Display a message as the feature is not implemented yet
           Box(modifier = Modifier.fillMaxWidth().padding(top = 100.dp)) {
             Text(
                 text = "Favourites not implemented yet, please check back later!",
@@ -65,6 +77,7 @@ fun UserProfileFavourite(
                 color = md_theme_grey)
           }
 
+          // Box for the back button and title
           Box(
               modifier =
                   Modifier.fillMaxWidth()
@@ -75,6 +88,7 @@ fun UserProfileFavourite(
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.padding(vertical = 10.dp)) { // Row for the back button
+                      // Back button
                       Icon(
                           imageVector = Icons.Default.ArrowBack,
                           contentDescription = "Back",
@@ -84,6 +98,7 @@ fun UserProfileFavourite(
                                   .clickable { navigation.goBack() }
                                   .align(Alignment.CenterVertically),
                       )
+                      // Title
                       Text(
                           text = "Favourites",
                           fontSize = 28.sp,

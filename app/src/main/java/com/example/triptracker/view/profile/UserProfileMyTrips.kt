@@ -43,6 +43,14 @@ import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
 
+/**
+ * UserProfileMyTrips is a Composable function that displays the user's trips.
+ *
+ * @param homeViewModel ViewModel for the home screen.
+ * @param navigation Navigation object for navigating between screens.
+ * @param test Boolean flag for testing.
+ * @param username Username of the user.
+ */
 @Composable
 fun UserProfileMyTrips(
     homeViewModel: HomeViewModel = viewModel(),
@@ -50,18 +58,26 @@ fun UserProfileMyTrips(
     test: Boolean = false,
     username: String = ""
 ) {
+  // Log for debugging
   Log.d("HomeScreen", "Rendering HomeScreen")
+
+  // Set search filter and query in the ViewModel
   homeViewModel.setSearchFilter(FilterType.TITLE)
   homeViewModel.setSearchQuery(username)
+
+  // Observe the filtered itinerary list from the ViewModel
   val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
 
+  // Scaffold for the main layout
   Scaffold(
       topBar = {},
       bottomBar = { NavigationBar(navigation) },
       modifier = Modifier.testTag("UserProfileMyTripsScreen")) { innerPadding ->
         Box {
+          // Display different content based on the filtered list
           when (filteredList) {
             emptyList<Itinerary>() -> {
+              // Display a message when the list is empty
               Box(modifier = Modifier.fillMaxWidth().padding(top = 100.dp)) {
                 Text(
                     text = "You do not have any trips yet. Create a new trip to get started!",
@@ -74,8 +90,8 @@ fun UserProfileMyTrips(
               }
             }
             else -> {
+              // Display the list of itineraries when the list is not empty
               val listState = rememberLazyListState()
-              // will display the list of itineraries
               LazyColumn(
                   modifier =
                       Modifier.fillMaxSize()
@@ -98,6 +114,7 @@ fun UserProfileMyTrips(
                   }
             }
           }
+          // Box for the back button and title
           Box(
               modifier =
                   Modifier.fillMaxWidth()
@@ -107,7 +124,8 @@ fun UserProfileMyTrips(
               contentAlignment = Alignment.Center) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.padding(vertical = 10.dp)) { // Row for the back button
+                    modifier = Modifier.padding(vertical = 10.dp)) {
+                      // Back button
                       Icon(
                           imageVector = Icons.Default.ArrowBack,
                           contentDescription = "Back",
@@ -117,6 +135,7 @@ fun UserProfileMyTrips(
                                   .align(Alignment.CenterVertically)
                                   .testTag("GoBackButton"),
                       )
+                      // Title
                       Text(
                           text = "My Trips",
                           fontSize = 28.sp,
