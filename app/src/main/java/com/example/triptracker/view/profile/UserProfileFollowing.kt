@@ -30,103 +30,106 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.R
+import com.example.triptracker.model.profile.Relationship
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.viewmodel.UserProfileViewModel
+import com.example.triptracker.viewmodel.loggedUser
 
 /** This composable function displays the user's following list. */
 @Composable
 fun UserProfileFollowing(
     navigation: Navigation,
-    userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
-    userProfile: UserProfile
+    viewModel: UserProfileViewModel = UserProfileViewModel(),
 ) {
-    val filteredList by userProfileViewModel.filteredUserProfileList.observeAsState(initial = emptyList())
-    var isSearchActive by remember { mutableStateOf(false) }
-    val isNoResultFound = remember(filteredList, isSearchActive) {
-        isSearchActive && filteredList.isEmpty() && userProfileViewModel.searchQuery.value!!.isNotEmpty()
+  val userMail: String = loggedUser.email ?: ""
+  var userProfile by remember { mutableStateOf(UserProfile("")) }
+  var readyToDisplay by remember { mutableStateOf(false) }
+  var isSearchActive by remember { mutableStateOf(false) }
+
+  // val list = viewModel.userProfileList.value
+  viewModel.getUserProfile(userMail) { profile ->
+    if (profile != null) {
+      userProfile = profile
+      readyToDisplay = true
     }
-
-  Scaffold(
-      topBar = {
-        Row(
-            modifier = Modifier
-                .height(100.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            // Button to navigate back to the user profile
-            Button(
-                onClick = { navigation.goBack() },
-                colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent, contentColor = md_theme_light_dark),
-                modifier = Modifier.testTag("GoBackButton")
-            ) {
-                Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
-            }
-
-            Text(
-                text = "Following",
-                style =
-                    TextStyle(
-                        fontSize = 24.sp,
-                        lineHeight = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.montserrat)),
-                        fontWeight = FontWeight(700),
-                        color = Color.Black,
-                        textAlign = TextAlign.Start,
-                        letterSpacing = 0.5.sp,
-                    ),
-                modifier =
-                    Modifier
-                        .width(250.dp)
-                        .height(37.dp)
-                        .padding(5.dp)
-                        .testTag("FollowingTitle")
-            )
-        }
-      },
-      bottomBar = { NavigationBar(navigation) },
-      modifier = Modifier
-          .fillMaxSize()
-          .testTag("FollowingScreen")) { innerPadding ->
-        Column(modifier = Modifier
-            .padding(innerPadding)
-            .testTag("FollowingList")) {
-          // Display the list of following
-          FriendSearchBar(userProfile = userProfile, onSearchActivated = { isActive -> isSearchActive = isActive }, viewModel = userProfileViewModel, isNoResultFound = isNoResultFound)
-        }
-      }
-}
-
-// TODO: remove this preview
- @Preview(showBackground = true)
- @Composable
- fun UserProfileFollowingPreview() {
-  val viewModel = UserProfileViewModel()
-
-    var profile by remember { mutableStateOf(UserProfile("")) }
-
-
-    // val list = viewModel.userProfileList.value
-  val mockUser = viewModel.getUserProfile("barghornjeremy@gmail.com"
-  ) { itin ->
-      if (itin != null) {
-          profile = itin
-      }
   }
 
-    val navController = rememberNavController()
-  val navigation = remember(navController) { Navigation(navController) }
+  when (readyToDisplay) {
+    false -> {
+      // Display a loading screen while the user profile is being fetched
+      Text("Loading...")
+    }
+    true -> {
+      var followingList: List<UserProfile> by remember { mutableStateOf(listOf<UserProfile>()) }
+      userProfile.following.forEach { following ->
+        viewModel.getUserProfile(following) { profile ->
+          if (profile != null) {
+            // we check that the profile is not already in the following list
+            if (!followingList.contains(profile)) {
+              followingList += profile
+            }
+          }
+        }
+      }
 
-  UserProfileFollowing(navigation, viewModel, profile)
- }
+      viewModel.setListToFilter(followingList)
+      var filteredList = viewModel.filteredUserProfileList.observeAsState(initial = emptyList())
+
+      Scaffold(
+          topBar = {
+            Row(
+                modifier = Modifier.height(100.dp).fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start) {
+                  Button(
+                      onClick = { navigation.goBack() },
+                      colors =
+                          ButtonDefaults.buttonColors(
+                              containerColor = Color.Transparent,
+                              contentColor = md_theme_light_dark),
+                      modifier = Modifier.testTag("GoBackButton")) {
+                        Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
+                      }
+
+                  Text(
+                      text = "Following",
+                      style =
+                          TextStyle(
+                              fontSize = 24.sp,
+                              lineHeight = 16.sp,
+                              fontFamily = FontFamily(Font(R.font.montserrat)),
+                              fontWeight = FontWeight(700),
+                              color = Color.Black,
+                              textAlign = TextAlign.Start,
+                              letterSpacing = 0.5.sp,
+                          ),
+                      modifier =
+                          Modifier.width(250.dp)
+                              .height(37.dp)
+                              .padding(5.dp)
+                              .testTag("FollowingTitle"))
+                }
+          },
+          bottomBar = { NavigationBar(navigation) },
+          modifier = Modifier.fillMaxSize().testTag("FollowingScreen")) { innerPadding ->
+            Column(modifier = Modifier.padding(innerPadding).testTag("FollowingList")) {
+              FriendSearchBar(
+                  viewModel = viewModel,
+                  onSearchActivated = { isActive -> isSearchActive = isActive })
+              // Display the list of following
+              FriendListView(
+                  viewModel = viewModel,
+                  userProfile = userProfile,
+                  relationship = Relationship.FOLLOWING,
+                  friendList = filteredList)
+            }
+          }
+    }
+  }
+}
