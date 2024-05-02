@@ -57,7 +57,7 @@ import com.google.android.gms.tasks.Task
 fun LoginScreen(navigation: Navigation, loginViewModel: LoginViewModel = viewModel()) {
 
   val context = LocalContext.current
-  val authenticator = GoogleAuthenticator(context)
+  val authenticator = GoogleAuthenticator()
 
   val signInLauncher =
       rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result
