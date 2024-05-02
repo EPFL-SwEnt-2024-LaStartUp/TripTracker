@@ -35,5 +35,6 @@ class GoogleAuthenticator(private val context: Context) : Authenticator {
 
   override fun delete() {
     //    TODO("Not yet implemented")
+
   }
 }
