@@ -36,7 +36,7 @@ class MapPopupTest {
   fun setUp() {
     mockViewModel = mockk(relaxed = true)
     mockViewModel = mockk {
-      coEvery { fetchAllUserProfiles() } just Runs
+      coEvery { fetchAllUserProfiles(any()) } just Runs
       coEvery { getUserProfileList() } returns listOf()
       coEvery { getUserProfile(any(), any()) } coAnswers
           {

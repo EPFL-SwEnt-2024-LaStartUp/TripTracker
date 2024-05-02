@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -139,12 +138,10 @@ fun HomeScreen(
                 fontSize = 1.sp)
           }
           else -> {
-            val listState = rememberLazyListState()
             // will display the list of itineraries
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("ItineraryList"),
-                contentPadding = PaddingValues(16.dp),
-                state = listState) {
+                contentPadding = PaddingValues(16.dp)) {
                   items(itineraries) { itinerary ->
                     Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
                     DisplayItinerary(
