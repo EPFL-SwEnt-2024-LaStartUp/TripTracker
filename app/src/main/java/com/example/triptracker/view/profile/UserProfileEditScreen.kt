@@ -144,22 +144,31 @@ fun UserProfileEditScreen(
                 if (resp is Response.Success) {
                   resp.data!!.toString()
                 } else {
-                  print(resp)
-                  Uri.EMPTY.toString()
+                  imageUrl // Keep the old image if the new one could not be uploaded
                 }
+            userProfileViewModel.updateUserProfileInDb(
+                UserProfile(
+                    userMail,
+                    name,
+                    surname,
+                    birthdate,
+                    username,
+                    imageUrl,
+                    profile.followers,
+                    profile.following))
           }
+        } else {
+          userProfileViewModel.updateUserProfileInDb(
+              UserProfile(
+                  userMail,
+                  name,
+                  surname,
+                  birthdate,
+                  username,
+                  imageUrl,
+                  profile.followers,
+                  profile.following))
         }
-
-        userProfileViewModel.updateUserProfileInDb(
-            UserProfile(
-                userMail,
-                name,
-                surname,
-                birthdate,
-                username,
-                imageUrl,
-                profile.followers,
-                profile.following))
       }
 
       Scaffold(
@@ -187,12 +196,11 @@ fun UserProfileEditScreen(
                                     modifier =
                                         Modifier.size(90.dp)
                                             .background(Color.White, shape = CircleShape)) {
-                                      InsertPicture(pickMedia, selectedPicture)
+                                      InsertPicture(pickMedia, selectedPicture, imageUrl)
                                     }
                                 // Position the small orange circle with a plus sign
-                                when (selectedPicture != null) {
-                                  true -> {}
-                                  false -> {
+                                when (selectedPicture == null && imageUrl.isNullOrEmpty()) {
+                                  true -> {
                                     Box(
                                         modifier =
                                             Modifier.size(24.dp)
@@ -205,6 +213,7 @@ fun UserProfileEditScreen(
                                               modifier = Modifier.padding(4.dp))
                                         }
                                   }
+                                  false -> {}
                                 }
                               }
                               Spacer(modifier = Modifier.width(25.dp))
@@ -475,23 +484,38 @@ fun CustomDatePickerDialog(onAccept: (Long?) -> Unit, onCancel: () -> Unit) {
 fun InsertPicture(
     pickMedia: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
     selectedPicture: Uri?,
+    oldPicture: String?
 ) {
   when (selectedPicture != null) {
     // when no picture was selected show the add picture icon
     false -> {
-      Box(
-          modifier =
-              Modifier.fillMaxSize().testTag("NoProfilePicture").clickable {
-                pickMedia.launch(
-                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
-              },
-          contentAlignment = Alignment.Center // Center the content
-          ) {
-            Icon(
-                imageVector = Icons.Outlined.Image,
-                contentDescription = "Add Picture",
-                tint = md_theme_orange)
-          }
+      if (!oldPicture.isNullOrEmpty()) {
+        Box(modifier = Modifier.fillMaxSize().testTag("ProfilePicture")) {
+          AsyncImage(
+              model = oldPicture,
+              contentDescription = "Profile picture",
+              modifier =
+                  Modifier.fillMaxSize().clip(CircleShape).clickable {
+                    pickMedia.launch(
+                        PickVisualMediaRequest(
+                            ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                  })
+        }
+      } else {
+        Box(
+            modifier =
+                Modifier.fillMaxSize().testTag("NoProfilePicture").clickable {
+                  pickMedia.launch(
+                      PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                },
+            contentAlignment = Alignment.Center // Center the content
+            ) {
+              Icon(
+                  imageVector = Icons.Outlined.Image,
+                  contentDescription = "Add Picture",
+                  tint = md_theme_orange)
+            }
+      }
     }
     // when a picture was selected show the picture
     true -> {
