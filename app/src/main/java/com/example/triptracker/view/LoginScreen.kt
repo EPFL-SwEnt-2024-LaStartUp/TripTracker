@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -36,15 +34,12 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.authentication.AuthResponse
 import com.example.triptracker.authentication.GoogleAuthenticator
-import com.example.triptracker.model.authentication.SignInResult
 import com.example.triptracker.view.theme.md_theme_light_inverseSurface
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.viewmodel.LoginViewModel
@@ -178,45 +173,45 @@ fun Login(
   }
 }
 
-@Composable
-/**
- * @param result: SignInResult object containing the user's information to be displayed
- * @param onSignOut: Function to sign out the user Displays the user's information and a button to
- *   sign out
- */
-fun LoginResponseOk(result: SignInResult, onSignOut: () -> Unit, navigation: Navigation) {
-  Column(
-      modifier = Modifier.fillMaxSize(),
-      verticalArrangement = Arrangement.Center,
-      horizontalAlignment = Alignment.CenterHorizontally) {
-        if (result.imageUrl != null) {
-          AsyncImage(
-              model = result.imageUrl,
-              contentDescription = "Profile picture",
-              modifier = Modifier.size(150.dp).clip(CircleShape),
-              contentScale = ContentScale.Crop)
-          Spacer(modifier = Modifier.height(16.dp))
-        }
-        if (result.name != null) {
-          Text(
-              text = result.name,
-              textAlign = TextAlign.Center,
-              fontSize = 36.sp,
-              fontWeight = FontWeight.SemiBold)
-          Spacer(modifier = Modifier.height(16.dp))
-        }
-        androidx.compose.material.Button(
-            onClick = {
-              navigation.navController.navigate(Route.HOME)
-            } /* TODO logic to navigate to overview screen : onNavigateTo */) {
-              androidx.compose.material.Text(text = "Go to overview")
-            }
-        // UNCOMMENT THIS CODE IF YOU WANT TO ADD A SIGN OUT BUTTON
-        androidx.compose.material.Button(onClick = onSignOut) {
-          androidx.compose.material.Text(text = "Sign out")
-        }
-      }
-}
+// @Composable
+/// **
+// * @param result: SignInResult object containing the user's information to be displayed
+// * @param onSignOut: Function to sign out the user Displays the user's information and a button to
+// *   sign out
+// */
+// fun LoginResponseOk(result: SignInResult, onSignOut: () -> Unit, navigation: Navigation) {
+//  Column(
+//      modifier = Modifier.fillMaxSize(),
+//      verticalArrangement = Arrangement.Center,
+//      horizontalAlignment = Alignment.CenterHorizontally) {
+//        if (result.imageUrl != null) {
+//          AsyncImage(
+//              model = result.imageUrl,
+//              contentDescription = "Profile picture",
+//              modifier = Modifier.size(150.dp).clip(CircleShape),
+//              contentScale = ContentScale.Crop)
+//          Spacer(modifier = Modifier.height(16.dp))
+//        }
+//        if (result.name != null) {
+//          Text(
+//              text = result.name,
+//              textAlign = TextAlign.Center,
+//              fontSize = 36.sp,
+//              fontWeight = FontWeight.SemiBold)
+//          Spacer(modifier = Modifier.height(16.dp))
+//        }
+//        androidx.compose.material.Button(
+//            onClick = {
+//              navigation.navController.navigate(Route.HOME)
+//            } /* TODO logic to navigate to overview screen : onNavigateTo */) {
+//              androidx.compose.material.Text(text = "Go to overview")
+//            }
+//        // UNCOMMENT THIS CODE IF YOU WANT TO ADD A SIGN OUT BUTTON
+//        androidx.compose.material.Button(onClick = onSignOut) {
+//          androidx.compose.material.Text(text = "Sign out")
+//        }
+//      }
+// }
 
 @Composable
 /**
@@ -231,8 +226,8 @@ fun LoginResponseFailure(message: String) {
   }
 }
 
-@Preview
-@Composable
-fun PreviewLoginResponseFailure() {
-  LoginResponseFailure("Error")
-}
+// @Preview
+// @Composable
+// fun PreviewLoginResponseFailure() {
+//  LoginResponseFailure("Error")
+// }
