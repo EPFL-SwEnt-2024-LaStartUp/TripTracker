@@ -34,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -103,7 +104,7 @@ fun UserProfileOverview(
       Scaffold(
           topBar = {},
           bottomBar = { NavigationBar(navigation) },
-          modifier = Modifier.fillMaxSize()) { innerPadding ->
+          modifier = Modifier.fillMaxSize().testTag("ProfileOverview")) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
               Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
 
@@ -204,10 +205,10 @@ fun UserProfileOverview(
                   modifier =
                       Modifier.height(300.dp).width(350.dp).align(Alignment.CenterHorizontally)) {
                     ProfileButton(
-                        label = "Favourites",
+                        label = "Favorites",
                         icon = Icons.Outlined.FavoriteBorder,
                         onClick = { navigation.navController.navigate(Route.FAVORITES) },
-                        modifier = Modifier.align(Alignment.TopStart))
+                        modifier = Modifier.align(Alignment.TopStart).testTag("FavoritesButton"))
                     ProfileButton(
                         label = "Friends",
                         icon = Icons.Outlined.People,
@@ -217,12 +218,12 @@ fun UserProfileOverview(
                         label = "MyTrips",
                         icon = Icons.Outlined.BookmarkBorder,
                         onClick = { navigation.navController.navigate(Route.MYTRIPS) },
-                        modifier = Modifier.align(Alignment.BottomStart))
+                        modifier = Modifier.align(Alignment.BottomStart).testTag("MyTripsButton"))
                     ProfileButton(
                         label = "Settings",
                         icon = Icons.Outlined.Settings,
                         onClick = { navigation.navController.navigate(Route.FAVORITES) },
-                        modifier = Modifier.align(Alignment.BottomEnd))
+                        modifier = Modifier.align(Alignment.BottomEnd).testTag("SettingsButton"))
                   }
             }
           }
@@ -298,6 +299,7 @@ fun ProfileButton(
           modifier
               .height(130.dp)
               .width(160.dp)
+              .testTag("ProfileButton")
               .background(color = md_theme_light_dark, shape = RoundedCornerShape(16.dp))) {
         Column(modifier = Modifier.width(150.dp)) {
           Icon(
