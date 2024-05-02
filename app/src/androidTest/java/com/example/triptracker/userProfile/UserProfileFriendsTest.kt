@@ -19,45 +19,35 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class UserProfileFriendsTest {
-    @get:Rule
-    val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    @get:Rule
-    val mockkRule = MockKRule(this)
+  @get:Rule val mockkRule = MockKRule(this)
 
-    @RelaxedMockK
-    lateinit var mockNav: Navigation
-    @RelaxedMockK
-    private lateinit var mockViewModel: UserProfileViewModel
-    @RelaxedMockK
-    private lateinit var mockUserProfileRepository: UserProfileRepository
+  @RelaxedMockK lateinit var mockNav: Navigation
+  @RelaxedMockK private lateinit var mockViewModel: UserProfileViewModel
+  @RelaxedMockK private lateinit var mockUserProfileRepository: UserProfileRepository
 
-    private val mockList = MockUserList()
-    private val mockUserProfiles = mockList.getUserProfiles()
+  private val mockList = MockUserList()
+  private val mockUserProfiles = mockList.getUserProfiles()
 
-    @Before
-    fun setUp() { // Mocking necessary components
-        mockNav = mockk(relaxed = true)
-        mockUserProfileRepository = mockk(relaxed = true)
-        mockViewModel = mockk(relaxed = true)
+  @Before
+  fun setUp() { // Mocking necessary components
+    mockNav = mockk(relaxed = true)
+    mockUserProfileRepository = mockk(relaxed = true)
+    mockViewModel = mockk(relaxed = true)
+  }
+
+  @Test
+  fun componentAreCorrectlyDisplayed() {
+    every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
+    every { mockViewModel.getUserProfileList() } returns mockUserProfiles
+    // Setting up the test composition
+    composeTestRule.setContent {
+      UserProfileFriends(
+          navigation = mockNav,
+          viewModel = mockViewModel,
+      )
     }
-
-    @Test
-    fun componentAreCorrectlyDisplayed() {
-        every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
-        every { mockViewModel.getUserProfileList() } returns mockUserProfiles
-        // Setting up the test composition
-        composeTestRule.setContent {
-            UserProfileFriends(
-                navigation = mockNav,
-                viewModel = mockViewModel,
-                )
-        }
-        ComposeScreen.onComposeScreen<UserProfileFriendsScreen>(composeTestRule) {
-
-        }
-
-
-    }
-
+    ComposeScreen.onComposeScreen<UserProfileFriendsScreen>(composeTestRule) {}
+  }
 }

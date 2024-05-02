@@ -38,78 +38,77 @@ import com.example.triptracker.R
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
-/**
- * This composable function displays the friend search bar
- */
+/** This composable function displays the friend search bar */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FriendSearchBar(viewModel: UserProfileViewModel, onSearchActivated: (Boolean) -> Unit) {
-    var searchText by remember { mutableStateOf("") }
-    val focusManager = LocalFocusManager.current
-    // If the search bar is active (in focus or contains text), we'll consider it active.
-    var isActive by remember { mutableStateOf(false) }
+  var searchText by remember { mutableStateOf("") }
+  val focusManager = LocalFocusManager.current
+  // If the search bar is active (in focus or contains text), we'll consider it active.
+  var isActive by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp)
-            .padding(horizontal = 30.dp, vertical = 5.dp)
-            .background(color = Color.LightGray.copy(alpha = 0.3f), shape = MaterialTheme.shapes.small.copy(
-                CornerSize(50)
-            ))
-    ) {
+  Box(
+      modifier =
+          Modifier.fillMaxWidth()
+              .height(65.dp)
+              .padding(horizontal = 30.dp, vertical = 5.dp)
+              .background(
+                  color = Color.LightGray.copy(alpha = 0.3f),
+                  shape = MaterialTheme.shapes.small.copy(CornerSize(50)))) {
         TextField(
             value = searchText,
             onValueChange = { newText ->
-                searchText = newText
-                isActive = newText.isNotEmpty()
-                viewModel.setSearchQuery(newText)
-                onSearchActivated(isActive)
+              searchText = newText
+              isActive = newText.isNotEmpty()
+              viewModel.setSearchQuery(newText)
+              onSearchActivated(isActive)
             },
             placeholder = {
-                Text(
-                    "Find Friends",
-                    modifier = Modifier.padding(start = 10.dp).testTag("searchBarText"),
-                    textAlign = TextAlign.Center,
-                    fontFamily = FontFamily(Font(R.font.montserrat_bold)),
-                    fontSize = 21.sp,
-                    fontWeight = FontWeight.Medium,
-                    letterSpacing = 0.15.sp,
-                    color = md_theme_grey
-                ) },
+              Text(
+                  "Find Friends",
+                  modifier = Modifier.padding(start = 10.dp).testTag("searchBarText"),
+                  textAlign = TextAlign.Center,
+                  fontFamily = FontFamily(Font(R.font.montserrat_bold)),
+                  fontSize = 21.sp,
+                  fontWeight = FontWeight.Medium,
+                  letterSpacing = 0.15.sp,
+                  color = md_theme_grey)
+            },
             leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search",
-                    tint = if (isActive) Color.DarkGray else Color.Gray
-                )
+              Icon(
+                  imageVector = Icons.Default.Search,
+                  contentDescription = "Search",
+                  tint = if (isActive) Color.DarkGray else Color.Gray)
             },
             trailingIcon = {
-                if (searchText.isNotEmpty()) {
-                    IconButton(onClick = { searchText = "" }) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Clear",
-                            tint = Color.Gray
-                        )
-                    }
+              if (searchText.isNotEmpty()) {
+                IconButton(
+                    onClick = {
+                        searchText = ""
+                        viewModel.setSearchQuery("")
+                    }) {
+                  Icon(
+                      imageVector = Icons.Default.Close,
+                      contentDescription = "Clear",
+                      tint = Color.Gray)
                 }
+              }
             },
             singleLine = true,
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-            ),
+            colors =
+                TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                ),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = {
-                focusManager.clearFocus()
-                onSearchActivated(false)
-            }),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp, horizontal = 12.dp)
-        )
-    }
+            keyboardActions =
+                KeyboardActions(
+                    onSearch = {
+                      focusManager.clearFocus()
+                      onSearchActivated(false)
+                    }),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp))
+      }
 }

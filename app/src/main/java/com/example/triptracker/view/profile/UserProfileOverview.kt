@@ -2,6 +2,7 @@ package com.example.triptracker.view.profile
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,7 +28,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -170,7 +172,9 @@ fun UserProfileOverview(
                     }
                 Column(
                     modifier =
-                        Modifier.align(Alignment.CenterVertically).padding(horizontal = 30.dp)) {
+                        Modifier.align(Alignment.CenterVertically)
+                            .padding(horizontal = 30.dp)
+                            .clickable { navigation.navController.navigate(Route.FOLLOWERS) }) {
                       Text(
                           text = "${profile.followers.size}",
                           modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -182,7 +186,9 @@ fun UserProfileOverview(
                     }
                 Column(
                     modifier =
-                        Modifier.align(Alignment.CenterVertically).padding(horizontal = 30.dp)) {
+                        Modifier.align(Alignment.CenterVertically)
+                            .padding(horizontal = 30.dp)
+                            .clickable { navigation.navController.navigate(Route.FOLLOWING) }) {
                       Text(
                           text = "${profile.following.size}",
                           modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -205,7 +211,7 @@ fun UserProfileOverview(
                     ProfileButton(
                         label = "Friends",
                         icon = Icons.Outlined.People,
-                        onClick = { navigation.navController.navigate(Route.FAVORITES) },
+                        onClick = { navigation.navController.navigate(Route.FRIENDS) },
                         modifier = Modifier.align(Alignment.TopEnd))
                     ProfileButton(
                         label = "MyTrips",

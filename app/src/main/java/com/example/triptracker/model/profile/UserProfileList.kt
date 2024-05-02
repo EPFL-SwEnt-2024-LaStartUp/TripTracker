@@ -67,9 +67,7 @@ data class UserProfileList(private var userProfileList: List<UserProfile>) {
   }
 }
 
-/**
- * This enumeration class represents the different types of relationships
- */
+/** This enumeration class represents the different types of relationships */
 enum class Relationship {
   FOLLOWER,
   FOLLOWING,

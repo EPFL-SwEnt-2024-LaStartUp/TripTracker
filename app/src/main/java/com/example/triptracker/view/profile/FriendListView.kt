@@ -20,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,32 +63,43 @@ fun FriendListView(
     viewModel: UserProfileViewModel,
     userProfile: UserProfile,
     relationship: Relationship,
-    friendList: List<UserProfile>
+    friendList: State<List<UserProfile>>
 ) {
-  // Display the list of user's profiles
-  LazyColumn(
-      modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(15.dp).testTag("FriendListScreen"),
-      verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        if (friendList.isEmpty()) {
-          item {
-            Text(
-                text = "test",
-                // TODO : modify this
-                //text = if (followers) "No followers" else "Not following anyone",
-                style =
-                    TextStyle(
-                        fontSize = 20.sp,
-                        lineHeight = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.montserrat)),
-                        fontWeight = FontWeight(700),
-                        color = Color.Black,
-                        textAlign = TextAlign.Center,
-                        letterSpacing = 0.5.sp),
-                modifier = Modifier.fillMaxWidth().padding(10.dp))
-          }
-        } else {
-          items(friendList) { friend ->
-            if (friend != null) {
+    // If there is no profile corresponding to the search query we display a message
+    // If we are in the friend finder view and the search query is empty we don't display profiles
+  if (friendList.value.isEmpty() ||
+      (relationship == Relationship.FRIENDS && viewModel.searchQuery.value == "")) {
+    Column(
+        modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally) {
+          Text(
+              text =
+                  if (relationship == Relationship.FOLLOWER) {
+                    "No followers"
+                  } else if (relationship == Relationship.FOLLOWING) {
+                    "Not following anyone"
+                  } else {
+                    "Start searching for friends"
+                  },
+              style =
+                  TextStyle(
+                      fontSize = 20.sp,
+                      lineHeight = 16.sp,
+                      fontFamily = FontFamily(Font(R.font.montserrat)),
+                      fontWeight = FontWeight(600),
+                      color = Color.Black,
+                      textAlign = TextAlign.Center,
+                      letterSpacing = 0.5.sp),
+              modifier = Modifier.fillMaxWidth().padding(10.dp))
+        }
+  } else {
+    // Display the list of user's profiles
+    LazyColumn(
+        modifier =
+            Modifier.fillMaxWidth().fillMaxHeight().padding(15.dp).testTag("FriendListScreen"),
+        verticalArrangement = Arrangement.spacedBy(10.dp)) {
+          items(friendList.value) { friend ->
               // Display the user's profile
               Box(
                   modifier =
@@ -128,9 +140,7 @@ fun FriendListView(
                                     overflow = TextOverflow.Ellipsis,
                                     maxLines = 1)
                                 Row(
-                                    // modifier = Modifier.fillMaxWidth(),
-                                    //                              verticalAlignment =
-                                    // Alignment.CenterVertically
+
                                     ) {
                                       Text(
                                           text = "${friend.name} ${friend.surname}",
@@ -154,40 +164,26 @@ fun FriendListView(
                             if (relationship == Relationship.FOLLOWER) {
                               // Display the remove follower button
                               RemoveFriendButton(
-                                  remove = {
-                                    viewModel.removeFollower(userProfile, friend)
-                                  },
-                                  undoRemove = {
-                                    viewModel.addFollower(userProfile, friend)
-                                  },
+                                  remove = { viewModel.removeFollower(userProfile, friend) },
+                                  undoRemove = { viewModel.addFollower(userProfile, friend) },
                                   relationship = relationship)
                             } else if (relationship == Relationship.FOLLOWING) {
                               RemoveFriendButton(
-                                  remove = {
-                                    viewModel.removeFollower(friend, userProfile)
-                                  },
-                                  undoRemove = {
-                                    viewModel.addFollower(friend, userProfile)
-                                  },
+                                  remove = { viewModel.removeFollower(friend, userProfile) },
+                                  undoRemove = { viewModel.addFollower(friend, userProfile) },
                                   relationship = relationship)
                             } else {
-                                RemoveFriendButton(
-                                    remove = {
-                                        viewModel.addFollower(userProfile, friend)
-                                    },
-                                    undoRemove = {
-                                        viewModel.removeFollower(userProfile, friend)
-                                    },
-                                    relationship = relationship)
-
+                              RemoveFriendButton(
+                                  remove = { viewModel.addFollower(userProfile, friend) },
+                                  undoRemove = { viewModel.removeFollower(userProfile, friend) },
+                                  relationship = relationship)
                             }
                           }
                         }
                   }
-            }
           }
         }
-      }
+  }
 }
 
 /** This composable function displays a button to remove a follower. */
@@ -222,19 +218,18 @@ fun RemoveFriendButton(remove: () -> Unit, undoRemove: () -> Unit, relationship:
               start = 2.dp,
               top = 4.dp,
               end = 2.dp,
-              bottom = 4.dp)) { // .testTag(if (isRemoved) { "RemoveButton" } else {
-        // "UndoButton" })) {
+              bottom = 4.dp)) {
         Text(
             text =
                 // Display the appropriate button text based on whether we are prompting
                 // followers, following or profiles and whether the button have been toggled or not
                 //
                 if (relationship == Relationship.FOLLOWER) {
-                    if (!isToggled) "Remove" else "Undo"
+                  if (!isToggled) "Remove" else "Undo"
                 } else if (relationship == Relationship.FOLLOWING) {
-                    if (!isToggled) "Following" else "Follow"
+                  if (!isToggled) "Following" else "Follow"
                 } else {
-                    if (!isToggled) "Follow" else "Following"
+                  if (!isToggled) "Follow" else "Following"
                 },
             modifier = Modifier.fillMaxWidth(),
             style =

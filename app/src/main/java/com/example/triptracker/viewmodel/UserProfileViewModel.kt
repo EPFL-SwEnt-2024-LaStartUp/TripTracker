@@ -19,19 +19,26 @@ class UserProfileViewModel(
 ) : ViewModel() {
 
   private var _userProfileList = MutableLiveData<List<UserProfile>>()
-  private val userProfileList: LiveData<List<UserProfile>> = _userProfileList
+  val userProfileList: LiveData<List<UserProfile>> = _userProfileList
+
+  private val _listToFilter = MutableLiveData<List<UserProfile>>()
+  private val listToFilter: LiveData<List<UserProfile>> = _listToFilter
+
+  private val _searchQuery = MutableLiveData<String>("")
+  val searchQuery: LiveData<String>
+    get() = _searchQuery
+  
 
   /**
    * Fetches all user profiles from the repository and stores them in the userProfileList LiveData
    * could be used to display all user profiles in the UI not used in the current implementation
    */
   fun fetchAllUserProfiles() {
-    viewModelScope.launch { userProfileRepository.getAllUserProfiles() }
+    viewModelScope.launch {
+      val profiles = userProfileRepository.getAllUserProfiles()
+      _userProfileList.postValue(profiles)
+    }
   }
-
-  private val _searchQuery = MutableLiveData<String>("")
-  val searchQuery: LiveData<String>
-    get() = _searchQuery
 
   /** This function returns the list of user's profiles. */
   fun getUserProfileList(): List<UserProfile> {
@@ -120,13 +127,23 @@ class UserProfileViewModel(
   val filteredUserProfileList: LiveData<List<UserProfile>> =
       _searchQuery.switchMap { query ->
         liveData {
-            val filteredList =
-                userProfileList.value?.filter {
-                  it.username.contains(query, ignoreCase = true) ||
-                  it.surname.contains(query, ignoreCase = true) ||
-                  it.name.contains(query, ignoreCase = true)
-                } ?: emptyList()
-            emit(filteredList)
+          val filteredList =
+              listToFilter.value?.filter {
+                it.username.contains(query, ignoreCase = true) ||
+                    it.surname.contains(query, ignoreCase = true) ||
+                    it.name.contains(query, ignoreCase = true)
+              } ?: emptyList()
+          emit(filteredList)
         }
       }
+
+  /**
+   * Function used to set the list of user profiles that we want to filter using the search query.
+   *
+   * @param list : list of user profiles to filter
+   */
+  fun setListToFilter(list: List<UserProfile>) {
+    _listToFilter.value = list
+  }
+
 }

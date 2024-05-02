@@ -52,7 +52,8 @@ open class UserProfileRepository {
   /**
    * This function returns the user profile corresponding to the mail
    *
-   * @param mail : mail of the user profile to return
+   * @param email : mail of the user profile to return
+   * @param onResult : callback function to return the user profile
    * @return user profile corresponding to the mail
    */
   fun getUserProfileByEmail(email: String, onResult: (UserProfile?) -> Unit) {
@@ -89,8 +90,13 @@ open class UserProfileRepository {
     val birthdate =
         document.data?.get("birthdate") as? String
             ?: throw IllegalStateException("Birthdate is missing")
-    val userProfile = UserProfile(document.id, name, surname, birthdate, username, profileImageUrl)
-    return userProfile
+      val follower =
+        document.data?.get("followers") as? List<String>
+            ?: throw IllegalStateException("Followers is missing")
+      val following =
+        document.data?.get("following") as? List<String>
+            ?: throw IllegalStateException("Following is missing")
+    return UserProfile(document.id, name, surname, birthdate, username, profileImageUrl, follower, following)
   }
 
   /**
@@ -113,9 +119,15 @@ open class UserProfileRepository {
       val birthdate =
           document.data["birthdate"] as? String
               ?: throw IllegalStateException("Birthdate is missing")
+        val followers =
+          document.data["followers"] as? List<String>
+              ?: throw IllegalStateException("Followers is missing")
+        val following =
+            document.data["following"] as? List<String>
+                ?: throw IllegalStateException("Following is missing")
 
       val userProfile =
-          UserProfile(document.id, name, surname, birthdate, username, profileImageUrl)
+          UserProfile(document.id, name, surname, birthdate, username, profileImageUrl, followers, following)
       _userProfileList.add(userProfile)
     }
   }
