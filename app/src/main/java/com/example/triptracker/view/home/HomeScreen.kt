@@ -197,7 +197,7 @@ fun SearchBarImplementation(
         when (selectedFilterType) {
           FilterType.FLAME -> "Example: <500"
           FilterType.PIN -> "Example: EPFL"
-          FilterType.TITLE -> "Search an Itinerary"
+          FilterType.TITLE -> "Find Itineraries"
           FilterType.USERNAME -> "Search for a User"
         }
       }

@@ -45,7 +45,6 @@ open class UserProfileRepository {
         .get()
         .addOnSuccessListener { result ->
           userProfileList(result)
-          Log.d("TRALALALAL", _userProfileList.toString())
           callback(_userProfileList)
         }
         .addOnFailureListener { e -> Log.e(TAG, "Error getting all user's profiles", e) }
