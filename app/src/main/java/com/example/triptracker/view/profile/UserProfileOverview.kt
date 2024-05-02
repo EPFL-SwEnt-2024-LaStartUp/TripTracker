@@ -13,13 +13,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -101,7 +105,7 @@ fun UserProfileOverview(
       Scaffold(
           topBar = {},
           bottomBar = { NavigationBar(navigation) },
-          modifier = Modifier.fillMaxSize()) { innerPadding ->
+          modifier = Modifier.fillMaxSize().testTag("ProfileOverview")) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
               Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
 
@@ -124,24 +128,31 @@ fun UserProfileOverview(
                               .clip(CircleShape),
                       contentScale = ContentScale.Crop)
                 }
+
                 // Other informations
                 Column() {
-                  Text(
-                      text =
-                          profile
-                              .username, // I think we only show the pseudo here and keep birthdate
-                      // name and surname private.
-                      style =
-                          TextStyle(
-                              fontSize = sizeUsername,
-                              lineHeight = 16.sp,
-                              fontFamily = FontFamily(Font(R.font.montserrat)),
-                              fontWeight = FontWeight(700),
-                              color = md_theme_light_dark,
-                              textAlign = TextAlign.Right,
-                              letterSpacing = 0.5.sp,
-                          ),
-                      modifier = Modifier.width(250.dp).height(37.dp))
+                  Row() {
+                    IconButton(
+                        modifier = Modifier.padding(start = 20.dp),
+                        onClick = { navigation.navController.navigate(Route.EDIT) }) {
+                          Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
+                        }
+                    Text(
+                        text = profile.username, // I think we only show the pseudo here and keep
+                        // birthdate
+                        // name and surname private.
+                        style =
+                            TextStyle(
+                                fontSize = sizeUsername,
+                                lineHeight = 16.sp,
+                                fontFamily = FontFamily(Font(R.font.montserrat)),
+                                fontWeight = FontWeight(700),
+                                color = md_theme_light_dark,
+                                textAlign = TextAlign.Right,
+                                letterSpacing = 0.5.sp,
+                            ),
+                        modifier = Modifier.width(250.dp).height(37.dp).padding(top = 12.dp))
+                  }
                   Text(
                       text = "Interests",
                       style = AppTypography.secondaryTitleStyle,
@@ -198,18 +209,20 @@ fun UserProfileOverview(
                   modifier =
                       Modifier.height(300.dp).width(350.dp).align(Alignment.CenterHorizontally)) {
                     ProfileButton(
-                        label = "Favourites",
+                        label = "Favorites",
                         icon = Icons.Outlined.FavoriteBorder,
                         onClick = { navigation.navController.navigate(Route.FAVORITES) },
-                        modifier = Modifier.align(Alignment.TopStart))
+                        modifier = Modifier.align(Alignment.TopStart).testTag("FavoritesButton"))
                     ProfileButton(
                         label = "Friends",
                         icon = Icons.Outlined.People,
                         onClick = { navigation.navController.navigate(Route.FAVORITES) },
-                        modifier = Modifier.align(Alignment.TopEnd))
+                        modifier = Modifier.align(Alignment.TopEnd).testTag("FriendsButton"))
                     ProfileButton(
                         label = "MyTrips",
                         icon = Icons.Outlined.BookmarkBorder,
+                        onClick = { navigation.navController.navigate(Route.MYTRIPS) },
+                        modifier = Modifier.align(Alignment.BottomStart).testTag("MyTripsButton"))
                         onClick = {
                           navigation.navController.navigate("${Route.MYTRIPS}?username=${"NYC"}")
                         }, // profile.username}") },
@@ -218,7 +231,7 @@ fun UserProfileOverview(
                         label = "Settings",
                         icon = Icons.Outlined.Settings,
                         onClick = { navigation.navController.navigate(Route.FAVORITES) },
-                        modifier = Modifier.align(Alignment.BottomEnd))
+                        modifier = Modifier.align(Alignment.BottomEnd).testTag("SettingsButton"))
                   }
             }
           }
@@ -294,6 +307,7 @@ fun ProfileButton(
           modifier
               .height(130.dp)
               .width(160.dp)
+              .testTag("ProfileButton")
               .background(color = md_theme_light_dark, shape = RoundedCornerShape(16.dp))) {
         Column(modifier = Modifier.width(150.dp)) {
           Icon(

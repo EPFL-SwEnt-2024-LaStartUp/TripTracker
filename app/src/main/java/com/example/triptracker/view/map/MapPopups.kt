@@ -103,14 +103,14 @@ fun PathOverlaySheet(
 fun PathItem(pinnedPlace: Pin, onClick: (Pin) -> Unit) {
   Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.clickable { onClick(pinnedPlace) }) {
+      modifier = Modifier.clickable { onClick(pinnedPlace) }.testTag("PathItem")) {
         Icon(
             painter =
                 painterResource(
                     id = R.drawable.ic_gps_fixed), // Replace with your actual pin icon resource
             contentDescription = "Location pin",
             tint = Color.White)
-        Column(modifier = Modifier.weight(1f).testTag("PathItem").padding(start = 16.dp)) {
+        Column(modifier = Modifier.weight(1f).padding(start = 16.dp)) {
           Text(text = pinnedPlace.name, color = Color.White)
           // Fetch address
           AddressText(
