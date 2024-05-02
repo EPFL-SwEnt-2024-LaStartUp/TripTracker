@@ -17,7 +17,6 @@ import com.example.triptracker.viewmodel.MapPopupViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import io.mockk.Runs
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.just
 import io.mockk.mockk
@@ -32,63 +31,65 @@ class MapPopupTest {
 
   @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    @RelaxedMockK private lateinit var mockViewModel: UserProfileViewModel
+  @RelaxedMockK private lateinit var mockViewModel: UserProfileViewModel
 
-    @Before
-    fun setUp() {
-        mockViewModel = mockk(relaxed = true)
-        mockViewModel = mockk {
-            coEvery { fetchAllUserProfiles() } just Runs
-            coEvery { getUserProfileList() } returns listOf()
-            coEvery { getUserProfile(any(), any()) } coAnswers {
-                secondArg<(UserProfile?) -> Unit>().invoke(UserProfile("test@mail.com", "Jack", "", ""))
-            }
-            coEvery { addNewUserProfileToDb(any()) } just Runs
-            coEvery { updateUserProfileInDb(any()) } just Runs
-            coEvery { addFollower(any(), any()) } just Runs
-            coEvery { removeFollower(any(), any()) } just Runs
-            coEvery { removeUserProfileInDb(any()) } just Runs
-        }
+  @Before
+  fun setUp() {
+    mockViewModel = mockk(relaxed = true)
+    mockViewModel = mockk {
+      coEvery { fetchAllUserProfiles() } just Runs
+      coEvery { getUserProfileList() } returns listOf()
+      coEvery { getUserProfile(any(), any()) } coAnswers
+          {
+            secondArg<(UserProfile?) -> Unit>().invoke(UserProfile("test@mail.com", "Jack", "", ""))
+          }
+      coEvery { addNewUserProfileToDb(any()) } just Runs
+      coEvery { updateUserProfileInDb(any()) } just Runs
+      coEvery { addFollower(any(), any()) } just Runs
+      coEvery { removeFollower(any(), any()) } just Runs
+      coEvery { removeUserProfileInDb(any()) } just Runs
     }
-    @Test
-  fun testPathOverlaySheetDisplays() {
-      // Setup the test environment with the same data used in the @Preview
-      val itinerary =
-          Itinerary(
-              "1",
-              "Jack's Path",
-              "Jack",
-              Location(34.5, 34.5, "jo"),
-              0,
-              "start",
-              "end",
-              listOf(
-                  Pin(
-                      51.50991301840581,
-                      -0.13424873072712565,
-                      "Picadilly Circus",
-                      "hi",
-                      listOf("https://www.google.com")),
-                  Pin(
-                      51.501370650469,
-                      -0.14182562962180675,
-                      "Buckingham Palace",
-                      "hi",
-                      listOf("https://www.google.com")),
-                  Pin(
-                      51.537120465492286,
-                      -0.18335994496202418,
-                      "Abbey Road",
-                      "hi",
-                      listOf("https://www.google.com"))),
-              "description",
-              listOf())
+  }
 
-      composeTestRule.setContent { PathOverlaySheet(itinerary, mockViewModel,onClick = {}) }
-      // Assertions to check if the UI components are displayed correctly
-      composeTestRule.onNodeWithText("Picadilly Circus").assertIsDisplayed()
-      composeTestRule.onNodeWithText("Buckingham Palace").assertIsDisplayed()
-      composeTestRule.onNodeWithText("Abbey Road").assertIsDisplayed()
+  @Test
+  fun testPathOverlaySheetDisplays() {
+    // Setup the test environment with the same data used in the @Preview
+    val itinerary =
+        Itinerary(
+            "1",
+            "Jack's Path",
+            "Jack",
+            Location(34.5, 34.5, "jo"),
+            0,
+            "start",
+            "end",
+            listOf(
+                Pin(
+                    51.50991301840581,
+                    -0.13424873072712565,
+                    "Picadilly Circus",
+                    "hi",
+                    listOf("https://www.google.com")),
+                Pin(
+                    51.501370650469,
+                    -0.14182562962180675,
+                    "Buckingham Palace",
+                    "hi",
+                    listOf("https://www.google.com")),
+                Pin(
+                    51.537120465492286,
+                    -0.18335994496202418,
+                    "Abbey Road",
+                    "hi",
+                    listOf("https://www.google.com"))),
+            "description",
+            listOf())
+
+    composeTestRule.setContent { PathOverlaySheet(itinerary, mockViewModel, onClick = {}) }
+    // Assertions to check if the UI components are displayed correctly
+    composeTestRule.onNodeWithText("Picadilly Circus").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Buckingham Palace").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Abbey Road").assertIsDisplayed()
   }
 
   @Test
