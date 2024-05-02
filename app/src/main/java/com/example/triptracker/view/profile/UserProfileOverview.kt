@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BookmarkBorder
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Settings
@@ -31,10 +30,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -51,7 +48,6 @@ import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
-import com.example.triptracker.view.TopLevelDestination
 import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_orange
@@ -71,7 +67,7 @@ import com.example.triptracker.viewmodel.loggedUser
  */
 @Composable
 fun UserProfileOverview(
-    userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
+    userProfileViewModel: UserProfileViewModel = viewModel(),
     homeViewModel: HomeViewModel = viewModel(),
     navigation: Navigation
 ) {
@@ -105,7 +101,7 @@ fun UserProfileOverview(
       Scaffold(
           topBar = {},
           bottomBar = { NavigationBar(navigation) },
-          modifier = Modifier.fillMaxSize().testTag("ProfileOverview")) { innerPadding ->
+          modifier = Modifier.fillMaxSize()) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
               Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
 
@@ -122,8 +118,8 @@ fun UserProfileOverview(
                           Modifier.shadow(
                                   elevation = 15.dp,
                                   shape = CircleShape,
-                                  ambientColor = Color.Black,
-                                  spotColor = Color.Black)
+                                  ambientColor = md_theme_light_dark,
+                                  spotColor = md_theme_light_dark)
                               .size(110.dp)
                               .clip(CircleShape),
                       contentScale = ContentScale.Crop)
@@ -141,7 +137,7 @@ fun UserProfileOverview(
                               lineHeight = 16.sp,
                               fontFamily = FontFamily(Font(R.font.montserrat)),
                               fontWeight = FontWeight(700),
-                              color = Color.Black,
+                              color = md_theme_light_dark,
                               textAlign = TextAlign.Right,
                               letterSpacing = 0.5.sp,
                           ),
@@ -202,40 +198,25 @@ fun UserProfileOverview(
                   modifier =
                       Modifier.height(300.dp).width(350.dp).align(Alignment.CenterHorizontally)) {
                     ProfileButton(
-                        label = "Favorites",
+                        label = "Favourites",
                         icon = Icons.Outlined.FavoriteBorder,
-                        onClick = {
-                          navigation.navigateTo(
-                              TopLevelDestination(
-                                  Route.FAVORITES, Icons.Outlined.Favorite, "Favorites"))
-                        },
-                        modifier = Modifier.align(Alignment.TopStart).testTag("FavoritesButton"))
+                        onClick = { navigation.navController.navigate(Route.FAVORITES) },
+                        modifier = Modifier.align(Alignment.TopStart))
                     ProfileButton(
                         label = "Friends",
                         icon = Icons.Outlined.People,
-                        onClick = {
-                          navigation.navigateTo(
-                              TopLevelDestination(Route.FRIENDS, Icons.Outlined.People, "Friends"))
-                        },
-                        modifier = Modifier.align(Alignment.TopEnd).testTag("FriendsButton"))
+                        onClick = { navigation.navController.navigate(Route.FAVORITES) },
+                        modifier = Modifier.align(Alignment.TopEnd))
                     ProfileButton(
                         label = "MyTrips",
                         icon = Icons.Outlined.BookmarkBorder,
-                        onClick = {
-                          navigation.navigateTo(
-                              TopLevelDestination(
-                                  Route.MYTRIPS, Icons.Outlined.BookmarkBorder, "MyTrips"))
-                        },
-                        modifier = Modifier.align(Alignment.BottomStart).testTag("MyTripsButton"))
+                        onClick = { navigation.navController.navigate(Route.MYTRIPS) },
+                        modifier = Modifier.align(Alignment.BottomStart))
                     ProfileButton(
                         label = "Settings",
                         icon = Icons.Outlined.Settings,
-                        onClick = {
-                          navigation.navigateTo(
-                              TopLevelDestination(
-                                  Route.SETTINGS, Icons.Outlined.Settings, "Settings"))
-                        },
-                        modifier = Modifier.align(Alignment.BottomEnd).testTag("SettingsButton"))
+                        onClick = { navigation.navController.navigate(Route.FAVORITES) },
+                        modifier = Modifier.align(Alignment.BottomEnd))
                   }
             }
           }
@@ -311,7 +292,6 @@ fun ProfileButton(
           modifier
               .height(130.dp)
               .width(160.dp)
-              .testTag("ProfileButton")
               .background(color = md_theme_light_dark, shape = RoundedCornerShape(16.dp))) {
         Column(modifier = Modifier.width(150.dp)) {
           Icon(
