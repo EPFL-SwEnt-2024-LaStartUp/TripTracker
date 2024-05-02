@@ -20,6 +20,7 @@ object Route {
   const val FRIENDS = "friends"
   const val MYTRIPS = "mytrips"
   const val SETTINGS = "settings"
+  const val EDIT = "edit"
 
   const val ITINERARY_PREVIEW = "itinerary_preview"
 

@@ -1,10 +1,15 @@
 package com.example.triptracker.viewmodel
 
+import android.net.Uri
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.model.repository.ImageRepository
+import com.example.triptracker.model.repository.Response
 import com.example.triptracker.model.repository.UserProfileRepository
 import kotlinx.coroutines.launch
 
@@ -13,7 +18,8 @@ import kotlinx.coroutines.launch
  * for the UserProfile class
  */
 class UserProfileViewModel(
-    private val userProfileRepository: UserProfileRepository = UserProfileRepository()
+    private val userProfileRepository: UserProfileRepository = UserProfileRepository(),
+    private val imageRepository: ImageRepository = ImageRepository(),
 ) : ViewModel() {
 
   private var _userProfileList = MutableLiveData<List<UserProfile>>()
@@ -89,5 +95,18 @@ class UserProfileViewModel(
    */
   fun removeUserProfileInDb(mail: String) {
     userProfileRepository.removeUserProfile(mail)
+  }
+
+  /**
+   * This function adds a profile picture to the user profile.
+   *
+   * @param imageUri : Uri of the image to add
+   * @param callback : callback function to handle the response
+   */
+  fun addProfilePictureToStorage(imageUri: Uri, callback: (Response<Uri>) -> Unit) {
+    viewModelScope.launch {
+      val elem = imageRepository.addProfilePictureToFirebaseStorage(imageUri)
+      callback(elem)
+    }
   }
 }
