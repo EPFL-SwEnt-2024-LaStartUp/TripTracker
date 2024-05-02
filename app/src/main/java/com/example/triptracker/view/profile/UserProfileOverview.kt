@@ -210,7 +210,9 @@ fun UserProfileOverview(
                     ProfileButton(
                         label = "MyTrips",
                         icon = Icons.Outlined.BookmarkBorder,
-                        onClick = { navigation.navController.navigate(Route.MYTRIPS) },
+                        onClick = {
+                          navigation.navController.navigate("${Route.MYTRIPS}?username=${"NYC"}")
+                        }, // profile.username}") },
                         modifier = Modifier.align(Alignment.BottomStart))
                     ProfileButton(
                         label = "Settings",

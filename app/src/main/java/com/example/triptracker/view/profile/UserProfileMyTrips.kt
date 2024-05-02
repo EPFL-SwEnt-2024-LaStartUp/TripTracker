@@ -51,7 +51,7 @@ fun UserProfileMyTrips(
     username: String = ""
 ) {
   Log.d("HomeScreen", "Rendering HomeScreen")
-  homeViewModel.setSearchFilter(FilterType.USERNAME)
+  homeViewModel.setSearchFilter(FilterType.TITLE)
   homeViewModel.setSearchQuery(username)
   val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
 
