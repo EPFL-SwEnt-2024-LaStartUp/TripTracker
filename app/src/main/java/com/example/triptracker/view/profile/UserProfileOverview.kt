@@ -33,7 +33,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
@@ -136,10 +135,7 @@ fun UserProfileOverview(
                     IconButton(
                         modifier = Modifier.padding(start = 20.dp),
                         onClick = { navigation.navController.navigate(Route.EDIT) }) {
-                          Icon(
-                              imageVector = Icons.Outlined.Edit,
-                              contentDescription = "Edit",
-                              tint = Color.Black)
+                          Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
                         }
                     Text(
                         text = profile.username, // I think we only show the pseudo here and keep
