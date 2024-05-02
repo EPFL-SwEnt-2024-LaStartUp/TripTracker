@@ -21,23 +21,24 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.outlined.AddPhotoAlternate
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,6 +56,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -68,14 +70,13 @@ import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.repository.Response
 import com.example.triptracker.navigation.compareDistance
 import com.example.triptracker.view.theme.Montserrat
-import com.example.triptracker.view.theme.md_theme_dark_error
-import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_light_black
+import com.example.triptracker.view.theme.md_theme_light_error
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
+import com.example.triptracker.view.theme.md_theme_light_secondary
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.RecordViewModel
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.launch
 
 @Composable
 /**
@@ -132,35 +133,33 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
     true ->
         Box(
             modifier =
-                Modifier.fillMaxSize()
-                    .padding(15.dp)
+                Modifier.fillMaxWidth()
+                    .fillMaxHeight(0.85f)
+                    .padding(top = 80.dp, start = 15.dp, end = 15.dp, bottom = 20.dp)
                     .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))
                     .testTag("AddSpotScreen")) {
-              Column(modifier = Modifier.matchParentSize()) {
-
-                // Close button
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                  IconButton(
-                      modifier = Modifier.padding(10.dp).testTag("CloseButton"),
-                      onClick = { alertIsDisplayed = true }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Close,
-                            contentDescription = "Close",
-                            tint = md_theme_light_onPrimary)
-                      }
-                }
-
-                // Title
+              Column(modifier = Modifier.matchParentSize().verticalScroll(rememberScrollState())) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().testTag("SpotTitle"),
-                    horizontalArrangement = Arrangement.Center) {
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically) {
+                      // Title
                       Text(
-                          text = "Add New Spot To Path",
-                          color = md_theme_orange,
+                          text = "Add Spot",
+                          color = Color.White,
                           fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                          fontWeight = FontWeight.Normal,
+                          fontWeight = FontWeight.Bold,
                           fontSize = 30.sp,
-                      )
+                          modifier = Modifier.padding(start = 130.dp).testTag("SpotTitle"))
+                      // Close button
+                      IconButton(
+                          modifier = Modifier.padding(10.dp).testTag("CloseButton"),
+                          onClick = { alertIsDisplayed = true }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Close,
+                                contentDescription = "Close",
+                                tint = md_theme_light_onPrimary)
+                          }
                     }
 
                 val expanded = remember { mutableStateOf(false) }
@@ -178,7 +177,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(top = 30.dp).testTag("SpotLocation"),
                     horizontalArrangement = Arrangement.Center) {
-                      TextField(
+                      OutlinedTextField(
                           enabled = recordViewModel.namePOI.value.isEmpty(),
                           modifier =
                               Modifier.padding(horizontal = 20.dp)
@@ -192,6 +191,9 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                             recordViewModel.getSuggestion(it) { latLng -> pos = latLng }
                             Log.d("Suggestion", pos.toString())
                             expanded.value = true
+                            if (it.isNotEmpty()) {
+                              isError = false
+                            }
                           },
                           label = {
                             Text("Point of Interest name", color = md_theme_light_onPrimary)
@@ -203,19 +205,29 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                                 tint = md_theme_orange)
                           },
                           colors =
-                              TextFieldDefaults.textFieldColors(
-                                  unfocusedLabelColor = md_theme_light_onPrimary,
-                                  focusedLabelColor = md_theme_orange,
+                              OutlinedTextFieldDefaults.colors(
+                                  unfocusedTextColor = md_theme_light_onPrimary,
+                                  unfocusedBorderColor =
+                                      if (recordViewModel.namePOI.value.isNotEmpty())
+                                          md_theme_light_error
+                                      else md_theme_light_onPrimary,
+                                  unfocusedLabelColor =
+                                      if (recordViewModel.namePOI.value.isNotEmpty())
+                                          md_theme_light_error
+                                      else md_theme_light_onPrimary,
                                   cursorColor = md_theme_orange,
-                                  backgroundColor =
-                                      if (!isError) md_theme_dark_gray else md_theme_dark_error,
-                                  focusedIndicatorColor = md_theme_orange,
+                                  focusedBorderColor = md_theme_light_onPrimary,
+                                  focusedLabelColor = md_theme_light_onPrimary,
+                                  disabledBorderColor = md_theme_light_secondary,
                               ),
-                          shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                           minLines = 1,
                           maxLines = 1,
                           isError = isError,
-                          placeholder = { if (isError) Text(placeHolderError) else Text("") },
+                          placeholder = {
+                            if (isError) Text(placeHolderError, color = md_theme_light_onPrimary)
+                            else Text("", color = md_theme_light_onPrimary)
+                          },
+                          textStyle = TextStyle(color = md_theme_light_onPrimary),
                       )
 
                       DropdownMenu(
@@ -252,7 +264,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                 Row(
                     modifier = Modifier.fillMaxWidth().testTag("SpotDescription"),
                     horizontalArrangement = Arrangement.Center) {
-                      TextField(
+                      OutlinedTextField(
                           modifier =
                               Modifier.padding(horizontal = 20.dp, vertical = 20.dp)
                                   .fillMaxWidth()
@@ -273,16 +285,17 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                                 tint = md_theme_orange)
                           },
                           colors =
-                              TextFieldDefaults.textFieldColors(
+                              OutlinedTextFieldDefaults.colors(
+                                  unfocusedTextColor = md_theme_light_onPrimary,
+                                  unfocusedBorderColor = md_theme_light_onPrimary,
                                   unfocusedLabelColor = md_theme_light_onPrimary,
-                                  focusedLabelColor = md_theme_orange,
                                   cursorColor = md_theme_orange,
-                                  backgroundColor = md_theme_dark_gray,
-                                  focusedIndicatorColor = md_theme_orange,
+                                  focusedBorderColor = md_theme_light_onPrimary,
+                                  focusedLabelColor = md_theme_light_onPrimary,
                               ),
-                          shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                           minLines = 5,
                           maxLines = 5,
+                          textStyle = TextStyle(color = md_theme_light_onPrimary),
                       )
                     }
 
@@ -368,14 +381,15 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
                           modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp),
                           colors =
                               ButtonDefaults.filledTonalButtonColors(
-                                  containerColor = md_theme_orange, contentColor = Color.White),
+                                  containerColor = md_theme_light_onPrimary,
+                                  contentColor = Color.White),
                       ) {
                         Text(
                             text = "Save",
                             fontSize = 24.sp,
                             fontFamily = Montserrat,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color.White)
+                            color = md_theme_light_black)
                       }
                     }
               }
@@ -462,7 +476,7 @@ fun InsertPictures(
                   .padding(horizontal = 20.dp, vertical = 5.dp)
                   .drawBehind {
                     drawRoundRect(
-                        color = md_theme_orange,
+                        color = md_theme_light_secondary,
                         style = stroke,
                         cornerRadius = CornerRadius(16.dp.toPx()))
                   }
@@ -482,7 +496,7 @@ fun InsertPictures(
                   horizontalArrangement = Arrangement.Center,
                   verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Outlined.Image,
+                        imageVector = Icons.Outlined.AddPhotoAlternate,
                         contentDescription = "Add Picture",
                         tint = md_theme_orange)
                   }
@@ -493,7 +507,7 @@ fun InsertPictures(
                   horizontalArrangement = Arrangement.Center) {
                     Text(
                         text = "Add new pictures (max. 5)",
-                        color = md_theme_light_onPrimary,
+                        color = md_theme_light_secondary,
                         fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                         fontWeight = FontWeight.Normal,
                         fontSize = 20.sp,
@@ -554,5 +568,5 @@ fun InsertPictures(
 @Composable
 fun AddSpotPreview() {
   AddSpot(RecordViewModel(), LatLng(46.519053, 6.568287))
-  //  AddSpot(RecordViewModel(), LatLng(46.519879, 6.560632))
+  //    AddSpot(RecordViewModel(), LatLng(46.519879, 6.560632))
 }
