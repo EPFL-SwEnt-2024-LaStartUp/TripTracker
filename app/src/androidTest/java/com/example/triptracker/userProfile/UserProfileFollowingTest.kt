@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.UserProfileRepository
 import com.example.triptracker.screens.userProfile.UserProfileFollowingScreen
 import com.example.triptracker.view.Navigation
@@ -48,7 +49,12 @@ class UserProfileFollowingTest {
   @Test
   fun componentsAreCorrectlyDisplayed() {
     // Have to repeat code to have specific mock data for each test!!
-    every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
+    every { mockUserProfileRepository.getAllUserProfiles(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<UserProfile>) -> Unit>(0)
+          callback(mockUserProfiles)
+        }
     every { mockViewModel.getUserProfileList() } returns mockUserProfiles
     // Setting up the test composition
     composeTestRule.setContent {
@@ -75,7 +81,12 @@ class UserProfileFollowingTest {
   @Test
   fun removeButtonWorks() {
     // Have to repeat code to have specific mock data for each test!!
-    every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
+    every { mockUserProfileRepository.getAllUserProfiles(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<UserProfile>) -> Unit>(0)
+          callback(mockUserProfiles)
+        }
     every { mockViewModel.getUserProfileList() } returns mockUserProfiles
     // Setting up the test composition
     composeTestRule.setContent {
@@ -99,7 +110,12 @@ class UserProfileFollowingTest {
 
   @Test
   fun backButtonWorks() {
-    every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
+    every { mockUserProfileRepository.getAllUserProfiles(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<UserProfile>) -> Unit>(0)
+          callback(mockUserProfiles)
+        }
     every { mockViewModel.getUserProfileList() } returns mockUserProfiles
     // Setting up the test composition
     composeTestRule.setContent {

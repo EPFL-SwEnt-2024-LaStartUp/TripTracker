@@ -1,6 +1,7 @@
 package com.example.triptracker.view.home
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -94,7 +94,7 @@ fun HomeScreen(
         if (isSearchActive) {
           Box(
               modifier =
-                  Modifier.padding(270.dp, 27.dp, 30.dp, 220.dp)
+                  Modifier.padding(290.dp, 25.dp, 25.dp, 235.dp)
                       .width(200.dp)
                       .testTag("DropDownBox")) {
                 DropdownMenu(
@@ -138,12 +138,10 @@ fun HomeScreen(
                 fontSize = 1.sp)
           }
           else -> {
-            val listState = rememberLazyListState()
             // will display the list of itineraries
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("ItineraryList"),
-                contentPadding = PaddingValues(16.dp),
-                state = listState) {
+                contentPadding = PaddingValues(16.dp)) {
                   items(itineraries) { itinerary ->
                     Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
                     DisplayItinerary(
@@ -190,6 +188,19 @@ fun SearchBarImplementation(
   val focusManager = LocalFocusManager.current
   // If the search bar is active (in focus or contains text), we'll consider it active.
   var isActive by remember { mutableStateOf(false) }
+  // Update the placeholder text based on the selected filter type
+  val placeholderText =
+      remember(selectedFilterType) {
+        when (selectedFilterType) {
+          FilterType.FLAME -> "Example: <500"
+          FilterType.PIN -> "Example: EPFL"
+          FilterType.TITLE -> "Find Itineraries"
+          FilterType.USERNAME -> "Search for a User"
+        }
+      }
+
+  // fixes the back button showing weird display
+  BackHandler { onBackClicked() }
 
   Box(modifier = Modifier.fillMaxWidth()) {
     SearchBar(
@@ -210,13 +221,12 @@ fun SearchBarImplementation(
         },
         leadingIcon = {
           if (isActive) {
-            androidx.compose.material.Icon(
+            Icon(
                 modifier = Modifier.clickable { onBackClicked() }.testTag("BackButton"),
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back")
           } else {
-            androidx.compose.material.Icon(
-                imageVector = Icons.Default.Search, contentDescription = "Menu")
+            Icon(imageVector = Icons.Default.Search, contentDescription = "Menu")
           }
         },
         trailingIcon = {
@@ -225,8 +235,10 @@ fun SearchBarImplementation(
                 modifier =
                     Modifier.clickable {
                           if (searchText.isEmpty()) {
-                            isActive = false // Deactivate the search bar if text is empty
+                            // if click on clear button when text is empty, go back to home screen
+                            onBackClicked()
                           } else {
+                            // only clear
                             searchText = "" // Clear the text but keep the search bar active
                             viewModel.setSearchQuery(searchText) // Reset search query
                           }
@@ -243,15 +255,16 @@ fun SearchBarImplementation(
           if (!activeState) { // When deactivating, clear the search text.
             searchText = ""
             viewModel.setSearchQuery("") // Reset search query
+            onSearchActivated(false)
           }
         },
         placeholder = {
           Text(
-              "Find Itineraries",
-              modifier = Modifier.padding(start = 10.dp).testTag("searchBarText"),
+              placeholderText,
+              modifier = Modifier.padding(start = 1.dp).testTag("searchBarText"),
               textAlign = TextAlign.Center,
               fontFamily = FontFamily(Font(R.font.montserrat_bold)),
-              fontSize = 21.sp,
+              fontSize = 20.sp,
               fontWeight = FontWeight.Medium,
               letterSpacing = 0.15.sp,
               color = md_theme_grey)
