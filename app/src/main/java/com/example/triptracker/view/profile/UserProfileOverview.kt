@@ -2,6 +2,7 @@ package com.example.triptracker.view.profile
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,12 +28,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -102,7 +103,7 @@ fun UserProfileOverview(
       Scaffold(
           topBar = {},
           bottomBar = { NavigationBar(navigation) },
-          modifier = Modifier.fillMaxSize().testTag("ProfileOverview")) { innerPadding ->
+          modifier = Modifier.fillMaxSize()) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
               Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
 
@@ -171,7 +172,9 @@ fun UserProfileOverview(
                     }
                 Column(
                     modifier =
-                        Modifier.align(Alignment.CenterVertically).padding(horizontal = 30.dp)) {
+                        Modifier.align(Alignment.CenterVertically)
+                            .padding(horizontal = 30.dp)
+                            .clickable { navigation.navController.navigate(Route.FOLLOWERS) }) {
                       Text(
                           text = "${profile.followers.size}",
                           modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -183,7 +186,9 @@ fun UserProfileOverview(
                     }
                 Column(
                     modifier =
-                        Modifier.align(Alignment.CenterVertically).padding(horizontal = 30.dp)) {
+                        Modifier.align(Alignment.CenterVertically)
+                            .padding(horizontal = 30.dp)
+                            .clickable { navigation.navController.navigate(Route.FOLLOWING) }) {
                       Text(
                           text = "${profile.following.size}",
                           modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -199,25 +204,25 @@ fun UserProfileOverview(
                   modifier =
                       Modifier.height(300.dp).width(350.dp).align(Alignment.CenterHorizontally)) {
                     ProfileButton(
-                        label = "Favorites",
+                        label = "Favourites",
                         icon = Icons.Outlined.FavoriteBorder,
                         onClick = { navigation.navController.navigate(Route.FAVORITES) },
-                        modifier = Modifier.align(Alignment.TopStart).testTag("FavoritesButton"))
+                        modifier = Modifier.align(Alignment.TopStart))
                     ProfileButton(
                         label = "Friends",
                         icon = Icons.Outlined.People,
-                        onClick = { navigation.navController.navigate(Route.FAVORITES) },
-                        modifier = Modifier.align(Alignment.TopEnd).testTag("FriendsButton"))
+                        onClick = { navigation.navController.navigate(Route.FRIENDS) },
+                        modifier = Modifier.align(Alignment.TopEnd))
                     ProfileButton(
                         label = "MyTrips",
                         icon = Icons.Outlined.BookmarkBorder,
                         onClick = { navigation.navController.navigate(Route.MYTRIPS) },
-                        modifier = Modifier.align(Alignment.BottomStart).testTag("MyTripsButton"))
+                        modifier = Modifier.align(Alignment.BottomStart))
                     ProfileButton(
                         label = "Settings",
                         icon = Icons.Outlined.Settings,
                         onClick = { navigation.navController.navigate(Route.FAVORITES) },
-                        modifier = Modifier.align(Alignment.BottomEnd).testTag("SettingsButton"))
+                        modifier = Modifier.align(Alignment.BottomEnd))
                   }
             }
           }
@@ -293,7 +298,6 @@ fun ProfileButton(
           modifier
               .height(130.dp)
               .width(160.dp)
-              .testTag("ProfileButton")
               .background(color = md_theme_light_dark, shape = RoundedCornerShape(16.dp))) {
         Column(modifier = Modifier.width(150.dp)) {
           Icon(
