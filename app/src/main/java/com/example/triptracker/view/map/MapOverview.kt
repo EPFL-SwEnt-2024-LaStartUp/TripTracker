@@ -35,14 +35,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.triptracker.model.location.popupState
 import com.example.triptracker.navigation.AllowLocationPermission
@@ -159,7 +156,7 @@ fun Map(
   var deviceLocation by remember { mutableStateOf(DEFAULT_LOCATION) }
   val coroutineScope = rememberCoroutineScope()
 
-  var mapPopupState by remember { mutableStateOf(popupState.DISPLAYITINERARY) }
+  var mapPopupState by remember { mutableStateOf(mapViewModel.popUpState) }
   val pathList by mapViewModel.pathList.observeAsState()
 
   val cameraPositionState = rememberCameraPositionState {
@@ -174,8 +171,8 @@ fun Map(
   }
   var visibleRegion: VisibleRegion?
 
-  var displayPopUp by remember { mutableStateOf(false) }
-  var displayPicturesPopUp by remember { mutableStateOf(false) }
+  val displayPopUp by remember { mutableStateOf(mapViewModel.displayPopUp) }
+  var displayPicturesPopUp by remember { mutableStateOf(mapViewModel.displayPicturePopUp) }
 
   var selectedPolyline by remember { mapViewModel.selectedPolylineState }
 
@@ -220,7 +217,7 @@ fun Map(
           selectedPolyline = mapViewModel.selectedPolylineState.value
 
           // display the path popup
-          displayPopUp = true
+          displayPopUp.value = true
         }
       }
     }
@@ -241,8 +238,8 @@ fun Map(
           uiSettings = ui,
           onMapClick = {
             selectedPolyline = mapViewModel.DUMMY_SELECTED_POLYLINE
-            displayPopUp = false
-            displayPicturesPopUp = false
+            displayPopUp.value = false
+            displayPicturesPopUp.value = false
           },
           onMapLoaded = {
             // decode the city name and update the top bar
@@ -265,7 +262,7 @@ fun Map(
                   onClick = {
                     selectedPolyline = MapViewModel.SelectedPolyline(location, latLngList[0])
                     mapPopupState = popupState.DISPLAYITINERARY
-                    displayPopUp = true
+                    displayPopUp.value = true
                   })
 
               // Display the start marker of the polyline and a thicker path when selected
@@ -290,9 +287,9 @@ fun Map(
                         // Display the pin information
                         mapViewModel.selectedPin.value = pin
 
-                        displayPicturesPopUp = true
+                        displayPicturesPopUp.value = true
 
-                        displayPopUp = false
+                        displayPopUp.value = false
 
                         true
                       }) {
@@ -322,8 +319,8 @@ fun Map(
           Box(modifier = Modifier.padding(horizontal = 35.dp, vertical = 65.dp)) {
             if (ui.myLocationButtonEnabled &&
                 properties.isMyLocationEnabled &&
-                !displayPopUp &&
-                !displayPicturesPopUp) {
+                !displayPopUp.value &&
+                !displayPicturesPopUp.value) {
               DisplayCenterLocationButton(
                   coroutineScope = coroutineScope,
                   deviceLocation = deviceLocation,
@@ -339,7 +336,7 @@ fun Map(
             }
           }
         }
-    if (displayPopUp) {
+    if (displayPopUp.value) {
 
       if (mapViewModel.selectedPolylineState.value != null) {
         // Display the itinerary of the selected polyline
@@ -352,7 +349,8 @@ fun Map(
                   DisplayItinerary(
                       itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
                       navigation = navigation,
-                      onClick = { mapPopupState = popupState.PATHOVERLAY })
+                      onClick = { mapPopupState = popupState.PATHOVERLAY },
+                      test = false)
                 }
           }
           popupState.DISPLAYPIN -> {
@@ -366,8 +364,8 @@ fun Map(
                       itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
                       onClick = {
                         mapPopupState = popupState.DISPLAYITINERARY
-                        displayPopUp = false
-                        displayPicturesPopUp = true
+                        displayPopUp.value = false
+                        displayPicturesPopUp.value = true
                         mapViewModel.selectedPin.value = it
                       })
                 }
@@ -376,7 +374,7 @@ fun Map(
       }
     }
 
-    if (displayPicturesPopUp) {
+    if (displayPicturesPopUp.value) {
       Box(
           modifier =
               Modifier.fillMaxWidth()
@@ -438,13 +436,13 @@ fun Map(
   }
 }
 
-@Preview
-@Composable
-// Start this screen to only see the overview of the map
-fun MapOverviewPreview(mapViewModel: MapViewModel = MapViewModel()) {
-  val context = LocalContext.current
-  val navController = rememberNavController()
-  val navigation = remember(navController) { Navigation(navController) }
-  //  MapOverview(mapViewModel, context, navigation, true, LatLng(46.8, 6.8))
-  MapOverview(mapViewModel, context, navigation, true, "")
-}
+// @Preview
+// @Composable
+//// Start this screen to only see the overview of the map
+// fun MapOverviewPreview(mapViewModel: MapViewModel = MapViewModel()) {
+//  val context = LocalContext.current
+//  val navController = rememberNavController()
+//  val navigation = remember(navController) { Navigation(navController) }
+//  //  MapOverview(mapViewModel, context, navigation, true, LatLng(46.8, 6.8))
+//  MapOverview(mapViewModel, context, navigation, true, "")
+// }
