@@ -18,6 +18,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.triptracker.R
+import com.example.triptracker.model.profile.Relationship
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
@@ -40,9 +46,25 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
 @Composable
 fun UserProfileFollowers(
     navigation: Navigation,
-    userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
-    userProfile: UserProfile
+    viewModel: UserProfileViewModel = UserProfileViewModel(),
 ) {
+    var userProfile by remember { mutableStateOf(UserProfile("")) }
+
+    val filteredList by viewModel.filteredUserProfileList.observeAsState(initial = emptyList())
+    var isSearchActive by remember { mutableStateOf(false) }
+    val isNoResultFound =
+        remember(filteredList, isSearchActive) {
+            isSearchActive && filteredList.isEmpty() && viewModel.searchQuery.value!!.isNotEmpty()
+        }
+
+    // val list = viewModel.userProfileList.value
+    val mockUser = viewModel.getUserProfile("barghornjeremy@gmail.com"
+    ) { itin ->
+        if (itin != null) {
+            userProfile = itin
+        }
+    }
+
   Scaffold(
       topBar = {
         Row(
@@ -87,8 +109,9 @@ fun UserProfileFollowers(
       bottomBar = { NavigationBar(navigation) },
       modifier = Modifier.fillMaxSize().testTag("FollowersScreen")) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).testTag("FollowersList")) {
-          // Display the list of following
-          FriendListView(userProfileViewModel, userProfile, true)
+            FriendSearchBar(viewModel = viewModel, onSearchActivated = { isActive -> isSearchActive = isActive })
+            // Display the list of following
+            FriendListView(viewModel = viewModel, userProfile = userProfile, relationship = Relationship.FOLLOWER, friendList = filteredList)
         }
       }
 }

@@ -74,6 +74,8 @@ class MainActivity : ComponentActivity() {
             composable(Route.RECORD) { RecordScreen(context, navigation) }
             composable(Route.PROFILE) { UserProfileOverview(navigation = navigation) }
             composable(Route.FRIENDS) { UserProfileFriends(navigation = navigation) }
+            composable(Route.FOLLOWERS) { UserProfileFriends(navigation = navigation) }
+            composable(Route.FOLLOWING) { UserProfileFriends(navigation = navigation) }
           }
         }
       }

@@ -51,7 +51,7 @@ class UserProfileFriendsTest {
             UserProfileFriends(
                 navigation = mockNav,
                 viewModel = mockViewModel,
-                userProfile = mockList.getUserProfiles()[2])
+                )
         }
         ComposeScreen.onComposeScreen<UserProfileFriendsScreen>(composeTestRule) {
 

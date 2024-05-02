@@ -45,8 +45,7 @@ class UserProfileFollowersTest {
     composeTestRule.setContent {
       UserProfileFollowers(
           navigation = mockNav,
-          userProfileViewModel = mockViewModel,
-          userProfile = mockList.getUserProfiles()[2])
+          viewModel = mockViewModel)
     }
     ComposeScreen.onComposeScreen<UserProfileFollowersScreen>(composeTestRule) {
       // Test the UI elements
@@ -71,8 +70,7 @@ class UserProfileFollowersTest {
     composeTestRule.setContent {
       UserProfileFollowers(
           navigation = mockNav,
-          userProfileViewModel = mockViewModel,
-          userProfile = mockList.getUserProfiles()[2])
+          viewModel = mockViewModel)
     }
     ComposeScreen.onComposeScreen<UserProfileFollowersScreen>(composeTestRule) {
       removeButton {
@@ -95,8 +93,7 @@ class UserProfileFollowersTest {
     composeTestRule.setContent {
       UserProfileFollowers(
           navigation = mockNav,
-          userProfileViewModel = mockViewModel,
-          userProfile = mockList.getUserProfiles()[2])
+          viewModel = mockViewModel)
     }
     ComposeScreen.onComposeScreen<UserProfileFollowersScreen>(composeTestRule) {
       // Test the UI elements

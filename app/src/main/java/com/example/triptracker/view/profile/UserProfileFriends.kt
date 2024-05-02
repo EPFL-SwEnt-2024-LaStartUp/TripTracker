@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.R
+import com.example.triptracker.model.profile.Relationship
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
@@ -48,10 +49,15 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
 fun UserProfileFriends(
     navigation: Navigation,
     viewModel: UserProfileViewModel = UserProfileViewModel(),
-    //userProfile: UserProfile
 ) {
     var userProfile by remember { mutableStateOf(UserProfile("")) }
 
+    val filteredList by viewModel.filteredUserProfileList.observeAsState(initial = emptyList())
+    var isSearchActive by remember { mutableStateOf(false) }
+    val isNoResultFound =
+        remember(filteredList, isSearchActive) {
+            isSearchActive && filteredList.isEmpty() && viewModel.searchQuery.value!!.isNotEmpty()
+        }
 
     // val list = viewModel.userProfileList.value
     val mockUser = viewModel.getUserProfile("barghornjeremy@gmail.com"
@@ -60,11 +66,7 @@ fun UserProfileFriends(
             userProfile = itin
         }
     }
-    val filteredList by viewModel.filteredUserProfileList.observeAsState(initial = emptyList())
-    var isSearchActive by remember { mutableStateOf(false) }
-    val isNoResultFound = remember(filteredList, isSearchActive) {
-        isSearchActive && filteredList.isEmpty() && viewModel.searchQuery.value!!.isNotEmpty()
-    }
+
     Scaffold(
         topBar = {
             Row(
@@ -109,13 +111,18 @@ fun UserProfileFriends(
             }
         },
         bottomBar = { NavigationBar(navigation) },
-        modifier = Modifier.fillMaxSize().testTag("FriendsFinderScreen")
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag("FriendsFinderScreen")
     ) { innerPadding ->
         Column(modifier = Modifier
             .padding(innerPadding)
+            .fillMaxSize()
             .testTag("FriendsList")
+
         ) {
-            FriendSearchBar(userProfile = userProfile, onSearchActivated = { isActive -> isSearchActive = isActive }, viewModel = viewModel, isNoResultFound = isNoResultFound)
+            FriendSearchBar(viewModel = viewModel, onSearchActivated = { isActive -> isSearchActive = isActive })
+            FriendListView(viewModel = viewModel, userProfile = userProfile, relationship = Relationship.FRIENDS, friendList = filteredList)
         }
 
     }
