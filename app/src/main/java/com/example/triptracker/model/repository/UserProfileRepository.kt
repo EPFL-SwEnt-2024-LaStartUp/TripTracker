@@ -90,13 +90,14 @@ open class UserProfileRepository {
     val birthdate =
         document.data?.get("birthdate") as? String
             ?: throw IllegalStateException("Birthdate is missing")
-      val follower =
+    val follower =
         document.data?.get("followers") as? List<String>
             ?: throw IllegalStateException("Followers is missing")
-      val following =
+    val following =
         document.data?.get("following") as? List<String>
             ?: throw IllegalStateException("Following is missing")
-    return UserProfile(document.id, name, surname, birthdate, username, profileImageUrl, follower, following)
+    return UserProfile(
+        document.id, name, surname, birthdate, username, profileImageUrl, follower, following)
   }
 
   /**
@@ -119,15 +120,23 @@ open class UserProfileRepository {
       val birthdate =
           document.data["birthdate"] as? String
               ?: throw IllegalStateException("Birthdate is missing")
-        val followers =
+      val followers =
           document.data["followers"] as? List<String>
               ?: throw IllegalStateException("Followers is missing")
-        val following =
-            document.data["following"] as? List<String>
-                ?: throw IllegalStateException("Following is missing")
+      val following =
+          document.data["following"] as? List<String>
+              ?: throw IllegalStateException("Following is missing")
 
       val userProfile =
-          UserProfile(document.id, name, surname, birthdate, username, profileImageUrl, followers, following)
+          UserProfile(
+              document.id,
+              name,
+              surname,
+              birthdate,
+              username,
+              profileImageUrl,
+              followers,
+              following)
       _userProfileList.add(userProfile)
     }
   }

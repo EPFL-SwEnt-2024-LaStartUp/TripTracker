@@ -84,14 +84,14 @@ fun FriendSearchBar(viewModel: UserProfileViewModel, onSearchActivated: (Boolean
               if (searchText.isNotEmpty()) {
                 IconButton(
                     onClick = {
-                        searchText = ""
-                        viewModel.setSearchQuery("")
+                      searchText = ""
+                      viewModel.setSearchQuery("")
                     }) {
-                  Icon(
-                      imageVector = Icons.Default.Close,
-                      contentDescription = "Clear",
-                      tint = Color.Gray)
-                }
+                      Icon(
+                          imageVector = Icons.Default.Close,
+                          contentDescription = "Clear",
+                          tint = Color.Gray)
+                    }
               }
             },
             singleLine = true,

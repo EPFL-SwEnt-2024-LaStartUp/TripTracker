@@ -65,8 +65,8 @@ fun FriendListView(
     relationship: Relationship,
     friendList: State<List<UserProfile>>
 ) {
-    // If there is no profile corresponding to the search query we display a message
-    // If we are in the friend finder view and the search query is empty we don't display profiles
+  // If there is no profile corresponding to the search query we display a message
+  // If we are in the friend finder view and the search query is empty we don't display profiles
   if (friendList.value.isEmpty() ||
       (relationship == Relationship.FRIENDS && viewModel.searchQuery.value == "")) {
     Column(
@@ -100,87 +100,84 @@ fun FriendListView(
             Modifier.fillMaxWidth().fillMaxHeight().padding(15.dp).testTag("FriendListScreen"),
         verticalArrangement = Arrangement.spacedBy(10.dp)) {
           items(friendList.value) { friend ->
-              // Display the user's profile
-              Box(
-                  modifier =
-                      Modifier.fillMaxWidth()
-                          .height(105.dp)
-                          .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
-                          .testTag("FriendProfile"),
-                  contentAlignment = Alignment.Center) {
-                    Row(
-                        modifier = Modifier.fillMaxHeight().padding(start = 20.dp, end = 20.dp),
-                        verticalAlignment = Alignment.CenterVertically) {
-                          // Image painter for loading from a URL
-                          val imagePainter =
-                              rememberAsyncImagePainter(model = friend.profileImageUrl)
+            // Display the user's profile
+            Box(
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .height(105.dp)
+                        .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
+                        .testTag("FriendProfile"),
+                contentAlignment = Alignment.Center) {
+                  Row(
+                      modifier = Modifier.fillMaxHeight().padding(start = 20.dp, end = 20.dp),
+                      verticalAlignment = Alignment.CenterVertically) {
+                        // Image painter for loading from a URL
+                        val imagePainter = rememberAsyncImagePainter(model = friend.profileImageUrl)
 
-                          Image(
-                              painter = imagePainter,
-                              contentDescription = "${userProfile.username}'s profile picture",
-                              contentScale = ContentScale.Crop,
-                              modifier =
-                                  Modifier.size(62.dp)
-                                      .clip(RoundedCornerShape(50))
-                                      .align(Alignment.CenterVertically))
-                          Column(
-                              modifier = Modifier.fillMaxHeight().padding(start = 15.dp),
-                              verticalArrangement = Arrangement.Center) {
+                        Image(
+                            painter = imagePainter,
+                            contentDescription = "${userProfile.username}'s profile picture",
+                            contentScale = ContentScale.Crop,
+                            modifier =
+                                Modifier.size(62.dp)
+                                    .clip(RoundedCornerShape(50))
+                                    .align(Alignment.CenterVertically))
+                        Column(
+                            modifier = Modifier.fillMaxHeight().padding(start = 15.dp),
+                            verticalArrangement = Arrangement.Center) {
+                              Text(
+                                  text = friend.username,
+                                  style =
+                                      TextStyle(
+                                          fontSize = 16.sp,
+                                          lineHeight = 16.sp,
+                                          fontFamily = FontFamily(Font(R.font.montserrat)),
+                                          fontWeight = FontWeight(600),
+                                          color = Color.White,
+                                          textAlign = TextAlign.Left,
+                                          letterSpacing = 0.5.sp),
+                                  overflow = TextOverflow.Ellipsis,
+                                  maxLines = 1)
+                              Row() {
                                 Text(
-                                    text = friend.username,
+                                    text = "${friend.name} ${friend.surname}",
                                     style =
                                         TextStyle(
-                                            fontSize = 16.sp,
+                                            fontSize = 14.sp,
                                             lineHeight = 16.sp,
                                             fontFamily = FontFamily(Font(R.font.montserrat)),
                                             fontWeight = FontWeight(600),
-                                            color = Color.White,
+                                            color = md_theme_dark_gray,
                                             textAlign = TextAlign.Left,
                                             letterSpacing = 0.5.sp),
                                     overflow = TextOverflow.Ellipsis,
                                     maxLines = 1)
-                                Row(
-
-                                    ) {
-                                      Text(
-                                          text = "${friend.name} ${friend.surname}",
-                                          style =
-                                              TextStyle(
-                                                  fontSize = 14.sp,
-                                                  lineHeight = 16.sp,
-                                                  fontFamily = FontFamily(Font(R.font.montserrat)),
-                                                  fontWeight = FontWeight(600),
-                                                  color = md_theme_dark_gray,
-                                                  textAlign = TextAlign.Left,
-                                                  letterSpacing = 0.5.sp),
-                                          overflow = TextOverflow.Ellipsis,
-                                          maxLines = 1)
-                                    }
                               }
-                          Column(
-                              modifier = Modifier.fillMaxWidth().width(95.dp),
-                              horizontalAlignment = Alignment.End,
-                          ) {
-                            if (relationship == Relationship.FOLLOWER) {
-                              // Display the remove follower button
-                              RemoveFriendButton(
-                                  remove = { viewModel.removeFollower(userProfile, friend) },
-                                  undoRemove = { viewModel.addFollower(userProfile, friend) },
-                                  relationship = relationship)
-                            } else if (relationship == Relationship.FOLLOWING) {
-                              RemoveFriendButton(
-                                  remove = { viewModel.removeFollower(friend, userProfile) },
-                                  undoRemove = { viewModel.addFollower(friend, userProfile) },
-                                  relationship = relationship)
-                            } else {
-                              RemoveFriendButton(
-                                  remove = { viewModel.addFollower(userProfile, friend) },
-                                  undoRemove = { viewModel.removeFollower(userProfile, friend) },
-                                  relationship = relationship)
                             }
+                        Column(
+                            modifier = Modifier.fillMaxWidth().width(95.dp),
+                            horizontalAlignment = Alignment.End,
+                        ) {
+                          if (relationship == Relationship.FOLLOWER) {
+                            // Display the remove follower button
+                            RemoveFriendButton(
+                                remove = { viewModel.removeFollower(userProfile, friend) },
+                                undoRemove = { viewModel.addFollower(userProfile, friend) },
+                                relationship = relationship)
+                          } else if (relationship == Relationship.FOLLOWING) {
+                            RemoveFriendButton(
+                                remove = { viewModel.removeFollower(friend, userProfile) },
+                                undoRemove = { viewModel.addFollower(friend, userProfile) },
+                                relationship = relationship)
+                          } else {
+                            RemoveFriendButton(
+                                remove = { viewModel.addFollower(userProfile, friend) },
+                                undoRemove = { viewModel.removeFollower(userProfile, friend) },
+                                relationship = relationship)
                           }
                         }
-                  }
+                      }
+                }
           }
         }
   }
@@ -215,10 +212,7 @@ fun RemoveFriendButton(remove: () -> Unit, undoRemove: () -> Unit, relationship:
       modifier = Modifier.height(40.dp).width(95.dp).testTag("RemoveButton"),
       contentPadding =
           PaddingValues( // Reduce the padding around the text
-              start = 2.dp,
-              top = 4.dp,
-              end = 2.dp,
-              bottom = 4.dp)) {
+              start = 2.dp, top = 4.dp, end = 2.dp, bottom = 4.dp)) {
         Text(
             text =
                 // Display the appropriate button text based on whether we are prompting

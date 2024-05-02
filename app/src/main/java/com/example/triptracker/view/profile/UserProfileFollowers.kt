@@ -50,7 +50,7 @@ fun UserProfileFollowers(
   val userMail: String = loggedUser.email ?: ""
   var userProfile by remember { mutableStateOf(UserProfile("")) }
   var readyToDisplay by remember { mutableStateOf(false) }
-    var isSearchActive by remember { mutableStateOf(false) }
+  var isSearchActive by remember { mutableStateOf(false) }
 
   // val list = viewModel.userProfileList.value
   viewModel.getUserProfile(userMail) { profile ->
@@ -65,20 +65,20 @@ fun UserProfileFollowers(
       Text("Loading...")
     }
     true -> {
-        var followersList: List<UserProfile> by remember { mutableStateOf(listOf<UserProfile>())}
-        userProfile.followers.forEach { follower ->
-            viewModel.getUserProfile(follower) { profile ->
-                if (profile != null) {
-                    // we check that the profile is not already in the following list
-                    if (!followersList.contains(profile)) {
-                        followersList += profile
-                    }
-                }
+      var followersList: List<UserProfile> by remember { mutableStateOf(listOf<UserProfile>()) }
+      userProfile.followers.forEach { follower ->
+        viewModel.getUserProfile(follower) { profile ->
+          if (profile != null) {
+            // we check that the profile is not already in the following list
+            if (!followersList.contains(profile)) {
+              followersList += profile
             }
+          }
         }
+      }
 
-        viewModel.setListToFilter(followersList)
-        var filteredList = viewModel.filteredUserProfileList.observeAsState(initial = emptyList())
+      viewModel.setListToFilter(followersList)
+      var filteredList = viewModel.filteredUserProfileList.observeAsState(initial = emptyList())
 
       Scaffold(
           topBar = {

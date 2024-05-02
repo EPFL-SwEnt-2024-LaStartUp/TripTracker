@@ -50,7 +50,7 @@ fun UserProfileFollowing(
   val userMail: String = loggedUser.email ?: ""
   var userProfile by remember { mutableStateOf(UserProfile("")) }
   var readyToDisplay by remember { mutableStateOf(false) }
-    var isSearchActive by remember { mutableStateOf(false) }
+  var isSearchActive by remember { mutableStateOf(false) }
 
   // val list = viewModel.userProfileList.value
   viewModel.getUserProfile(userMail) { profile ->
@@ -66,22 +66,22 @@ fun UserProfileFollowing(
       Text("Loading...")
     }
     true -> {
-        var followingList: List<UserProfile> by remember { mutableStateOf(listOf<UserProfile>())}
-        userProfile.following.forEach { following ->
-            viewModel.getUserProfile(following) { profile ->
-                if (profile != null) {
-                    // we check that the profile is not already in the following list
-                    if (!followingList.contains(profile)) {
-                        followingList += profile
-                    }
-                }
+      var followingList: List<UserProfile> by remember { mutableStateOf(listOf<UserProfile>()) }
+      userProfile.following.forEach { following ->
+        viewModel.getUserProfile(following) { profile ->
+          if (profile != null) {
+            // we check that the profile is not already in the following list
+            if (!followingList.contains(profile)) {
+              followingList += profile
             }
+          }
         }
+      }
 
-        viewModel.setListToFilter(followingList)
-        var filteredList = viewModel.filteredUserProfileList.observeAsState(initial = emptyList())
+      viewModel.setListToFilter(followingList)
+      var filteredList = viewModel.filteredUserProfileList.observeAsState(initial = emptyList())
 
-        Scaffold(
+      Scaffold(
           topBar = {
             Row(
                 modifier = Modifier.height(100.dp).fillMaxWidth(),

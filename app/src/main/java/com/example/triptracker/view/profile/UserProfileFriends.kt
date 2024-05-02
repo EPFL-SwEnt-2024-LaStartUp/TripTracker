@@ -52,7 +52,7 @@ fun UserProfileFriends(
   val userMail: String = loggedUser.email ?: ""
   var userProfile by remember { mutableStateOf(UserProfile("")) }
   var readyToDisplay by remember { mutableStateOf(false) }
-    var isSearchActive by remember { mutableStateOf(false) }
+  var isSearchActive by remember { mutableStateOf(false) }
 
   viewModel.getUserProfile(userMail) { profile ->
     if (profile != null) {
@@ -67,17 +67,15 @@ fun UserProfileFriends(
       Text("Loading...")
     }
     true -> {
-        val usersList by viewModel.userProfileList.observeAsState(initial = emptyList())
+      val usersList by viewModel.userProfileList.observeAsState(initial = emptyList())
 
-        viewModel.setListToFilter(usersList)
-        var filteredList = viewModel.filteredUserProfileList.observeAsState(initial = emptyList())
+      viewModel.setListToFilter(usersList)
+      var filteredList = viewModel.filteredUserProfileList.observeAsState(initial = emptyList())
 
-        Scaffold(
+      Scaffold(
           topBar = {
             Row(
-                modifier = Modifier
-                    .height(100.dp)
-                    .fillMaxWidth(),
+                modifier = Modifier.height(100.dp).fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start) {
                   // Button to navigate back to the user profile
@@ -105,21 +103,15 @@ fun UserProfileFriends(
                       // modifier = Modifier.weight(1f)
                       // .padding(horizontal = 16.dp)
                       modifier =
-                      Modifier
-                          .width(250.dp)
-                          .height(37.dp)
-                          .padding(5.dp)
-                          .testTag("FriendsFinderTitle"))
+                          Modifier.width(250.dp)
+                              .height(37.dp)
+                              .padding(5.dp)
+                              .testTag("FriendsFinderTitle"))
                 }
           },
           bottomBar = { NavigationBar(navigation) },
-          modifier = Modifier
-              .fillMaxSize()
-              .testTag("FriendsFinderScreen")) { innerPadding ->
-            Column(modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .testTag("FriendsList")) {
+          modifier = Modifier.fillMaxSize().testTag("FriendsFinderScreen")) { innerPadding ->
+            Column(modifier = Modifier.padding(innerPadding).fillMaxSize().testTag("FriendsList")) {
               FriendSearchBar(
                   viewModel = viewModel,
                   onSearchActivated = { isActive -> isSearchActive = isActive })
