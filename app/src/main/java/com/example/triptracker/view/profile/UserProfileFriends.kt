@@ -67,7 +67,6 @@ fun UserProfileFriends(
       Text("Loading...")
     }
     true -> {
-        viewModel.fetchAllUserProfiles()
         val usersList by viewModel.userProfileList.observeAsState(initial = emptyList())
 
         viewModel.setListToFilter(usersList)
