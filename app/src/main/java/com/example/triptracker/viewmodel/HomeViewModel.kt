@@ -12,7 +12,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryList
 import com.example.triptracker.model.repository.ItineraryRepository
-import com.example.triptracker.view.home.dummyProfile
 import kotlinx.coroutines.launch
 
 /** Enum class for filter types */
@@ -33,8 +32,8 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   private var itineraryInstance = ItineraryList(listOf())
   private var _itineraryList = MutableLiveData<List<Itinerary>>(emptyList())
   val itineraryList: LiveData<List<Itinerary>> = _itineraryList
-
   private val _searchQuery = MutableLiveData<String>("")
+
   val searchQuery: LiveData<String>
     get() = _searchQuery
 
@@ -45,6 +44,10 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   init {
     UserProfileViewModel().fetchAllUserProfiles { userProfileList = it }
   }
+  private val _userProfiles = MutableLiveData<Map<String, UserProfile>>()
+  private val userProfiles: LiveData<Map<String, UserProfile>> = _userProfiles
+
+  private val userProfileViewModel: UserProfileViewModel = UserProfileViewModel()
 
   val filteredItineraryList: LiveData<List<Itinerary>> =
       _searchQuery.switchMap { query ->
@@ -52,11 +55,12 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
           val filteredList =
               when (_selectedFilter.value) {
                 FilterType.TITLE -> filterByTitle(query)
-                FilterType.USERNAME -> filterByUsername(query)
+                FilterType.USERNAME -> filterByUsername(query) // now filters by user mail
                 FilterType.FLAME -> parseFlameQuery(query)
                 FilterType.PIN -> filterByPinName(query)
                 else -> emptyList()
               }
+
           if (filteredList != null) {
             emit(filteredList)
           }
@@ -84,26 +88,45 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
         mapProfileItinerary[profile.username] = itinerary
       }
     }
-    Log.d("USERPROFILETEST", mapProfileItinerary.toString())
 
     return mapProfileItinerary.filter { it.key.contains(query, ignoreCase = true) }.values.toList()
   }
 
-  private fun parseFlameQuery(query: String): List<Itinerary>? {
-    val regex = """([<>]=?)(\d+)""".toRegex()
+  private fun filterByUserMail(query: String) =
+      itineraryList.value?.filter { it.userMail.contains(query, ignoreCase = true) }
+
+  private fun parseFlameQuery(query: String): List<Itinerary> {
+    val regex = """^([<>]=?|=)(\d+)""".toRegex()
     val matchResult = regex.matchEntire(query)
+
     return matchResult?.let {
       val (operator, valueStr) = it.destructured
-      val value = valueStr.toIntOrNull()
+      val value = valueStr.toLongOrNull() ?: return emptyList()
       itineraryList.value?.filter {
         when (operator) {
-          "<" -> it.flameCount < value!!
-          "<=" -> it.flameCount <= value!!
-          ">" -> it.flameCount > value!!
-          ">=" -> it.flameCount >= value!!
-          "=" -> it.flameCount.toInt() == value!!
+          "<" -> it.flameCount < value
+          "<=" -> it.flameCount <= value
+          ">" -> it.flameCount > value
+          ">=" -> it.flameCount >= value
+          "=" -> it.flameCount == value
           else -> false
         }
+      }
+    } ?: emptyList()
+  }
+
+  private fun filterByFlame(query: String) {
+    itineraryList.value?.filter {
+      val regex = """^([<>]=?)(\d+)""".toRegex()
+      val matchResult = regex.matchEntire(query)
+      val flameCount = it.flameCount
+      when (matchResult?.groupValues?.get(1)) {
+        "<" -> flameCount < matchResult.groupValues[2].toLong()
+        "<=" -> flameCount <= matchResult.groupValues[2].toLong()
+        ">" -> flameCount > matchResult.groupValues[2].toLong()
+        ">=" -> flameCount >= matchResult.groupValues[2].toLong()
+        "=" -> flameCount == matchResult.groupValues[2].toLong()
+        else -> false
       }
     }
   }
