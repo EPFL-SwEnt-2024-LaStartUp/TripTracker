@@ -1,5 +1,6 @@
 package com.example.triptracker.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -53,8 +54,10 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
 
   /** Fetches all itineraries from the repository and stores them in the itineraryList LiveData */
   private fun fetchItineraries() {
+    Log.d("HomeViewModel", "Fetching itineraries")
     itineraryInstance.setItineraryList(repository.getAllItineraries())
     _itineraryList.value = itineraryInstance.getAllItineraries()
+    Log.d("HomeViewModel", repository.getAllItineraries().toString())
   }
 
   fun setSearchFilter(filterType: FilterType) {
