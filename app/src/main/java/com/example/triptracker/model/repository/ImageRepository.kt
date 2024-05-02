@@ -13,6 +13,7 @@ class ImageRepository {
 
   private val PICTURE_FOLDER = "pictures"
   private val PIN_PICTURES = "pin"
+  private val PROFILE_PICTURES = "profile"
 
   suspend fun addImageToFirebaseStorage(imageUri: Uri): Response<Uri> {
     return try {
@@ -20,6 +21,25 @@ class ImageRepository {
           storage.reference
               .child(PICTURE_FOLDER)
               .child(PIN_PICTURES)
+              .child(UUID.randomUUID().toString())
+              .putFile(imageUri)
+              .await()
+              .storage
+              .downloadUrl
+              .await()
+      Log.d("DOWNLOAD URL", downloadUrl.toString())
+      Response.Success(downloadUrl)
+    } catch (e: Exception) {
+      Response.Failure(e)
+    }
+  }
+
+  suspend fun addProfilePictureToFirebaseStorage(imageUri: Uri): Response<Uri> {
+    return try {
+      val downloadUrl =
+          storage.reference
+              .child(PICTURE_FOLDER)
+              .child(PROFILE_PICTURES)
               .child(UUID.randomUUID().toString())
               .putFile(imageUri)
               .await()
