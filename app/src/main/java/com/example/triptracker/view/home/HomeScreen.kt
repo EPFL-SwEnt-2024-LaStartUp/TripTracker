@@ -1,6 +1,7 @@
 package com.example.triptracker.view.home
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -190,7 +191,6 @@ fun SearchBarImplementation(
   val focusManager = LocalFocusManager.current
   // If the search bar is active (in focus or contains text), we'll consider it active.
   var isActive by remember { mutableStateOf(false) }
-
   // Update the placeholder text based on the selected filter type
   val placeholderText =
       remember(selectedFilterType) {
@@ -201,6 +201,9 @@ fun SearchBarImplementation(
           FilterType.USERNAME -> "Search for a User"
         }
       }
+
+  // fixes the back button showing weird display
+  BackHandler { onBackClicked() }
 
   Box(modifier = Modifier.fillMaxWidth()) {
     SearchBar(
@@ -255,6 +258,7 @@ fun SearchBarImplementation(
           if (!activeState) { // When deactivating, clear the search text.
             searchText = ""
             viewModel.setSearchQuery("") // Reset search query
+            onSearchActivated(false)
           }
         },
         placeholder = {

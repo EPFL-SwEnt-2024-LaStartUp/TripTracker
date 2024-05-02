@@ -41,6 +41,9 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   private val _selectedFilter = MutableLiveData<FilterType>(FilterType.TITLE)
   val selectedFilter: LiveData<FilterType> = _selectedFilter
 
+  private val _userProfiles = MutableLiveData<Map<String, UserProfile>>()
+  private val userProfiles: LiveData<Map<String, UserProfile>> = _userProfiles
+
   private val userProfileViewModel: UserProfileViewModel = UserProfileViewModel()
 
   val filteredItineraryList: LiveData<List<Itinerary>> =
@@ -49,7 +52,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
           val filteredList =
               when (_selectedFilter.value) {
                 FilterType.TITLE -> filterByTitle(query)
-                FilterType.USERNAME -> filterByUsername(query)
+                FilterType.USERNAME -> filterByUsername(query) // now filters by user mail
                 FilterType.FLAME -> parseFlameQuery(query)
                 FilterType.PIN -> filterByPinName(query)
                 else -> emptyList()
@@ -62,7 +65,10 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
       }
 
   init {
-    viewModelScope.launch { fetchItineraries() }
+    viewModelScope.launch {
+      fetchItineraries()
+      // fetchUserProfiles()
+    }
   }
 
   /** Fetches all itineraries from the repository and stores them in the itineraryList LiveData */
@@ -76,26 +82,30 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
 
   private fun filterByUsername(query: String) =
       itineraryList.value?.filter {
+        Log.d("ITIN", it.toString())
+        Log.d("UserMail", it.userMail)
         var readyToDisplay = false
         var profile = UserProfile("")
-        userProfileViewModel.getUserProfile(it.userMail) { itin ->
-          if (itin != null) {
-            profile = itin
+        userProfileViewModel.getUserProfile(it.userMail) { prof ->
+          if (prof != null) {
+            profile = prof
             readyToDisplay = true
           }
         }
-
-        Log.d("PROFILE", profile.toString())
         when (readyToDisplay) {
           false -> {
             Log.d("UserProfile", "User profile is null")
-            profile.name.contains("", ignoreCase = true)
+            false
           }
           else -> {
+            Log.d("PROFILE", profile.toString())
             profile.name.contains(query, ignoreCase = true)
           }
         }
       }
+
+  private fun filterByUserMail(query: String) =
+      itineraryList.value?.filter { it.userMail.contains(query, ignoreCase = true) }
 
   private fun parseFlameQuery(query: String): List<Itinerary> {
     val regex = """^([<>]=?|=)(\d+)""".toRegex()
