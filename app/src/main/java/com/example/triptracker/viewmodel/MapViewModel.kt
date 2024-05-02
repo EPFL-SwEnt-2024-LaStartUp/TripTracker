@@ -11,6 +11,7 @@ import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryList
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
+import com.example.triptracker.model.location.popupState
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -51,6 +52,12 @@ class MapViewModel(
   var selectedPolylineState = mutableStateOf<SelectedPolyline?>(null)
 
   var selectedPin = mutableStateOf<Pin?>(null)
+
+  val displayPopUp = mutableStateOf(false)
+
+  val displayPicturePopUp = mutableStateOf(false)
+
+  val popUpState = popupState.DISPLAYITINERARY
 
   init {
     viewModelScope.launch { getAllItineraries() }
