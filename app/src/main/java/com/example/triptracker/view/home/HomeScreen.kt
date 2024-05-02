@@ -94,9 +94,10 @@ fun HomeScreen(
         if (isSearchActive) {
           Box(
               modifier =
-                  Modifier.padding(270.dp, 27.dp, 30.dp, 220.dp)
-                      .width(200.dp)
-                      .testTag("DropDownBox")) {
+              Modifier
+                  .padding(270.dp, 25.dp, 25.dp, 235.dp)
+                  .width(200.dp)
+                  .testTag("DropDownBox")) {
                 DropdownMenu(
                     expanded = showFilterDropdown,
                     onDismissRequest = { showFilterDropdown = false },
@@ -117,11 +118,13 @@ fun HomeScreen(
                 Text(
                     text = selectedFilterType.name,
                     modifier =
-                        Modifier.clickable { showFilterDropdown = true }
-                            .background(
-                                MaterialTheme.colorScheme.surfaceVariant,
-                                shape = MaterialTheme.shapes.medium)
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                    Modifier
+                        .clickable { showFilterDropdown = true }
+                        .background(
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            shape = MaterialTheme.shapes.medium
+                        )
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                     fontFamily = FontFamily(Font(R.font.montserrat_semi_bold)),
                     fontSize = 12.sp,
                 )
@@ -129,19 +132,26 @@ fun HomeScreen(
         }
       },
       bottomBar = { NavigationBar(navigation) },
-      modifier = Modifier.fillMaxWidth().testTag("HomeScreen")) { innerPadding ->
+      modifier = Modifier
+          .fillMaxWidth()
+          .testTag("HomeScreen")) { innerPadding ->
         when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
           emptyList<Itinerary>() -> {
             Text(
                 text = "You do not have any itineraries yet.",
-                modifier = Modifier.padding(10.dp).testTag("NoItinerariesText"),
+                modifier = Modifier
+                    .padding(10.dp)
+                    .testTag("NoItinerariesText"),
                 fontSize = 1.sp)
           }
           else -> {
             val listState = rememberLazyListState()
             // will display the list of itineraries
             LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("ItineraryList"),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .testTag("ItineraryList"),
                 contentPadding = PaddingValues(16.dp),
                 state = listState) {
                   items(itineraries) { itinerary ->
@@ -191,12 +201,25 @@ fun SearchBarImplementation(
   // If the search bar is active (in focus or contains text), we'll consider it active.
   var isActive by remember { mutableStateOf(false) }
 
+    // Update the placeholder text based on the selected filter type
+    val placeholderText = remember(selectedFilterType) {
+        when (selectedFilterType) {
+            FilterType.FLAME -> "Example: <500"
+            FilterType.PIN -> "Example: EPFL"
+            FilterType.TITLE -> "Search an Itinerary"
+            FilterType.USERNAME -> "Search for a User"
+        }
+    }
+
+
+
   Box(modifier = Modifier.fillMaxWidth()) {
     SearchBar(
         modifier =
-            Modifier.fillMaxWidth()
-                .padding(horizontal = 30.dp, vertical = 5.dp)
-                .testTag("searchBar"),
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 30.dp, vertical = 5.dp)
+            .testTag("searchBar"),
         query = searchText,
         onQueryChange = { newText ->
           searchText = newText
@@ -210,12 +233,14 @@ fun SearchBarImplementation(
         },
         leadingIcon = {
           if (isActive) {
-            androidx.compose.material.Icon(
-                modifier = Modifier.clickable { onBackClicked() }.testTag("BackButton"),
+            Icon(
+                modifier = Modifier
+                    .clickable { onBackClicked() }
+                    .testTag("BackButton"),
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back")
           } else {
-            androidx.compose.material.Icon(
+            Icon(
                 imageVector = Icons.Default.Search, contentDescription = "Menu")
           }
         },
@@ -223,16 +248,17 @@ fun SearchBarImplementation(
           if (isActive) {
             Icon(
                 modifier =
-                    Modifier.clickable {
-                          if (searchText.isEmpty()) {
+                Modifier
+                    .clickable {
+                        if (searchText.isEmpty()) {
                             isActive = false // Deactivate the search bar if text is empty
-                          } else {
+                        } else {
                             searchText = "" // Clear the text but keep the search bar active
                             viewModel.setSearchQuery(searchText) // Reset search query
-                          }
-                          onSearchActivated(isActive)
                         }
-                        .testTag("ClearButton"),
+                        onSearchActivated(isActive)
+                    }
+                    .testTag("ClearButton"),
                 imageVector = Icons.Default.Close,
                 contentDescription = "Clear text field")
           }
@@ -247,11 +273,13 @@ fun SearchBarImplementation(
         },
         placeholder = {
           Text(
-              "Find Itineraries",
-              modifier = Modifier.padding(start = 10.dp).testTag("searchBarText"),
+              placeholderText,
+              modifier = Modifier
+                  .padding(start = 1.dp)
+                  .testTag("searchBarText"),
               textAlign = TextAlign.Center,
               fontFamily = FontFamily(Font(R.font.montserrat_bold)),
-              fontSize = 21.sp,
+              fontSize = 20.sp,
               fontWeight = FontWeight.Medium,
               letterSpacing = 0.15.sp,
               color = md_theme_grey)
@@ -263,7 +291,9 @@ fun SearchBarImplementation(
       if (isNoResultFound) {
         Text(
             "No results found",
-            modifier = Modifier.padding(16.dp).testTag("NoResultsFound"),
+            modifier = Modifier
+                .padding(16.dp)
+                .testTag("NoResultsFound"),
             fontFamily = FontFamily(Font(R.font.montserrat_regular)),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
@@ -293,10 +323,11 @@ fun SearchBarImplementation(
 fun ItineraryItem(itinerary: Itinerary, onItineraryClick: (String) -> Unit) {
   Row(
       modifier =
-          Modifier.fillMaxWidth()
-              .clickable { onItineraryClick(itinerary.id) }
-              .padding(16.dp)
-              .testTag("ItineraryItem")) {
+      Modifier
+          .fillMaxWidth()
+          .clickable { onItineraryClick(itinerary.id) }
+          .padding(16.dp)
+          .testTag("ItineraryItem")) {
         Text(text = itinerary.title, style = MaterialTheme.typography.bodyMedium)
       }
 }
