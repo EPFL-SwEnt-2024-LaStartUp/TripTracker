@@ -1,6 +1,5 @@
 package com.example.triptracker.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
@@ -11,7 +10,9 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryList
+import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.ItineraryRepository
+import com.example.triptracker.view.home.dummyProfile
 import kotlinx.coroutines.launch
 
 /** Enum class for filter types */
@@ -44,6 +45,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   init {
     UserProfileViewModel().fetchAllUserProfiles { userProfileList = it }
   }
+
   private val _userProfiles = MutableLiveData<Map<String, UserProfile>>()
   private val userProfiles: LiveData<Map<String, UserProfile>> = _userProfiles
 
