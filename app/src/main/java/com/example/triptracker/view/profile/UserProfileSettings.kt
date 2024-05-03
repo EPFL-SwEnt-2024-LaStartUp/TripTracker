@@ -28,10 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
@@ -259,10 +257,10 @@ fun SettingsElement(elementName: String, actions: @Composable () -> Unit = {}) {
       }
 }
 
-@Preview
-@Composable
-fun UserProfileSettingsPreview() {
-  val navController = rememberNavController()
-  val navigation = remember(navController) { Navigation(navController) }
-  UserProfileSettings(navigation = navigation)
-}
+// @Preview
+// @Composable
+// fun UserProfileSettingsPreview() {
+//  val navController = rememberNavController()
+//  val navigation = remember(navController) { Navigation(navController) }
+//  UserProfileSettings(navigation = navigation)
+// }
