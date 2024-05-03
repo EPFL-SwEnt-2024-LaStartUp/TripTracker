@@ -81,6 +81,7 @@ fun DisplayItinerary(
     readyToDisplay = true
     profile = dummyProfile
   }
+
   userProfileViewModel.getUserProfile(itinerary.userMail) { itin ->
     if (itin != null) {
       profile = itin
