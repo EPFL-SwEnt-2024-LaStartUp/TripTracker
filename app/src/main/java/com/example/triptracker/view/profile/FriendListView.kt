@@ -65,200 +65,198 @@ fun FriendListView(
     relationship: Relationship,
     friendList: State<List<UserProfile>>
 ) {
-    // If there is no profile corresponding to the search query we display a message
-    // If we are in the friend finder view and the search query is empty we don't display profiles
-    if (friendList.value.isEmpty() ||
-        (relationship == Relationship.FRIENDS && viewModel.searchQuery.value == "")) {
-        Column(
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text =
-                if (relationship == Relationship.FOLLOWER) {
+  // If there is no profile corresponding to the search query we display a message
+  // If we are in the friend finder view and the search query is empty we don't display profiles
+  if (friendList.value.isEmpty() ||
+      (relationship == Relationship.FRIENDS && viewModel.searchQuery.value == "")) {
+    Column(
+        modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally) {
+          Text(
+              text =
+                  if (relationship == Relationship.FOLLOWER) {
                     "No followers"
-                } else if (relationship == Relationship.FOLLOWING) {
+                  } else if (relationship == Relationship.FOLLOWING) {
                     "Not following anyone"
-                } else {
+                  } else {
                     "Start searching for friends"
-                },
-                style =
-                TextStyle(
-                    fontSize = 20.sp,
-                    lineHeight = 16.sp,
-                    fontFamily = FontFamily(Font(R.font.montserrat)),
-                    fontWeight = FontWeight(600),
-                    color = Color.Black,
-                    textAlign = TextAlign.Center,
-                    letterSpacing = 0.5.sp),
-                modifier = Modifier.fillMaxWidth().padding(10.dp))
+                  },
+              style =
+                  TextStyle(
+                      fontSize = 20.sp,
+                      lineHeight = 16.sp,
+                      fontFamily = FontFamily(Font(R.font.montserrat)),
+                      fontWeight = FontWeight(600),
+                      color = Color.Black,
+                      textAlign = TextAlign.Center,
+                      letterSpacing = 0.5.sp),
+              modifier = Modifier.fillMaxWidth().padding(10.dp))
         }
-    } else {
-        // Display the list of user's profiles
-        LazyColumn(
-            modifier =
+  } else {
+    // Display the list of user's profiles
+    LazyColumn(
+        modifier =
             Modifier.fillMaxWidth().fillMaxHeight().padding(15.dp).testTag("FriendListScreen"),
-            verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            items(friendList.value) { friend ->
-                // we do not prompt the profile of the current user
-                if (friend.mail != userProfile.mail) {
-                    // Display the user's profile
-                    Box(
-                        modifier =
-                        Modifier.fillMaxWidth()
-                            .height(105.dp)
-                            .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
-                            .testTag("FriendProfile"),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxHeight().padding(start = 20.dp, end = 20.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // Image painter for loading from a URL
-                            val imagePainter =
-                                rememberAsyncImagePainter(model = friend.profileImageUrl)
+        verticalArrangement = Arrangement.spacedBy(10.dp)) {
+          items(friendList.value) { friend ->
+            // we do not prompt the profile of the current user
+            if (friend.mail != userProfile.mail) {
+              // Display the user's profile
+              Box(
+                  modifier =
+                      Modifier.fillMaxWidth()
+                          .height(105.dp)
+                          .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
+                          .testTag("FriendProfile"),
+                  contentAlignment = Alignment.Center) {
+                    Row(
+                        modifier = Modifier.fillMaxHeight().padding(start = 20.dp, end = 20.dp),
+                        verticalAlignment = Alignment.CenterVertically) {
+                          // Image painter for loading from a URL
+                          val imagePainter =
+                              rememberAsyncImagePainter(model = friend.profileImageUrl)
 
-                            Image(
-                                painter = imagePainter,
-                                contentDescription = "${userProfile.username}'s profile picture",
-                                contentScale = ContentScale.Crop,
-                                modifier =
-                                Modifier.size(62.dp)
-                                    .clip(RoundedCornerShape(50))
-                                    .align(Alignment.CenterVertically)
-                            )
-                            Column(
-                                modifier = Modifier.fillMaxHeight().padding(start = 15.dp),
-                                verticalArrangement = Arrangement.Center
-                            ) {
+                          Image(
+                              painter = imagePainter,
+                              contentDescription = "${userProfile.username}'s profile picture",
+                              contentScale = ContentScale.Crop,
+                              modifier =
+                                  Modifier.size(62.dp)
+                                      .clip(RoundedCornerShape(50))
+                                      .align(Alignment.CenterVertically))
+                          Column(
+                              modifier = Modifier.fillMaxHeight().padding(start = 15.dp),
+                              verticalArrangement = Arrangement.Center) {
                                 Text(
                                     text = friend.username,
                                     style =
-                                    TextStyle(
-                                        fontSize = 16.sp,
-                                        lineHeight = 16.sp,
-                                        fontFamily = FontFamily(Font(R.font.montserrat)),
-                                        fontWeight = FontWeight(600),
-                                        color = Color.White,
-                                        textAlign = TextAlign.Left,
-                                        letterSpacing = 0.5.sp
-                                    ),
-                                    overflow = TextOverflow.Ellipsis,
-                                    maxLines = 1
-                                )
-                                Row() {
-                                    Text(
-                                        text = "${friend.name} ${friend.surname}",
-                                        style =
                                         TextStyle(
-                                            fontSize = 14.sp,
+                                            fontSize = 16.sp,
                                             lineHeight = 16.sp,
                                             fontFamily = FontFamily(Font(R.font.montserrat)),
                                             fontWeight = FontWeight(600),
-                                            color = md_theme_dark_gray,
+                                            color = Color.White,
                                             textAlign = TextAlign.Left,
-                                            letterSpacing = 0.5.sp
-                                        ),
-                                        overflow = TextOverflow.Ellipsis,
-                                        maxLines = 1
-                                    )
+                                            letterSpacing = 0.5.sp),
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1)
+                                Row() {
+                                  Text(
+                                      text = "${friend.name} ${friend.surname}",
+                                      style =
+                                          TextStyle(
+                                              fontSize = 14.sp,
+                                              lineHeight = 16.sp,
+                                              fontFamily = FontFamily(Font(R.font.montserrat)),
+                                              fontWeight = FontWeight(600),
+                                              color = md_theme_dark_gray,
+                                              textAlign = TextAlign.Left,
+                                              letterSpacing = 0.5.sp),
+                                      overflow = TextOverflow.Ellipsis,
+                                      maxLines = 1)
                                 }
-                            }
-                            Column(
-                                modifier = Modifier.fillMaxWidth().width(95.dp),
-                                horizontalAlignment = Alignment.End,
-                            ) {
-                                // Display the remove friend button
-                                RemoveFriendButton(
-                                    viewModel = viewModel,
-                                    userProfile = userProfile,
-                                    friend = friend,
-                                    relationship = relationship
-                                )
-
-                            }
+                              }
+                          Column(
+                              modifier = Modifier.fillMaxWidth().width(95.dp),
+                              horizontalAlignment = Alignment.End,
+                          ) {
+                            // Display the remove friend button
+                            RemoveFriendButton(
+                                viewModel = viewModel,
+                                userProfile = userProfile,
+                                friend = friend,
+                                relationship = relationship)
+                          }
                         }
-                    }
-                }
+                  }
             }
+          }
         }
-    }
+  }
 }
 
 /** This composable function displays a button to remove a follower. */
 @Composable
-fun RemoveFriendButton(viewModel: UserProfileViewModel, userProfile: UserProfile, friend: UserProfile, relationship: Relationship) {
-    // we fetch the last version of the user profile
-    var updatedUserProfile = userProfile.copy()
-    viewModel.getUserProfile(userProfile.mail) { profile ->
-        if (profile != null) {
-            updatedUserProfile = profile
+fun RemoveFriendButton(
+    viewModel: UserProfileViewModel,
+    userProfile: UserProfile,
+    friend: UserProfile,
+    relationship: Relationship
+) {
+  // we fetch the last version of the user profile
+  var updatedUserProfile = userProfile.copy()
+  viewModel.getUserProfile(userProfile.mail) { profile ->
+    if (profile != null) {
+      updatedUserProfile = profile
+    }
+  }
+  // we fetch the last version of the follower
+  var updatedFriend = friend.copy()
+  viewModel.getUserProfile(friend.mail) { profile ->
+    if (profile != null) {
+      updatedFriend = profile
+    }
+  }
+
+  // variable to keep track of whether the user and follower are connected (following/follower)
+  var areConnected by remember {
+    mutableStateOf(updatedUserProfile.following.contains(friend.mail))
+  }
+
+  if (relationship == Relationship.FOLLOWER) {
+    areConnected = updatedUserProfile.followers.contains(friend.mail)
+  }
+
+  Button(
+      onClick = {
+        if (relationship == Relationship.FRIENDS || relationship == Relationship.FOLLOWING) {
+          if (areConnected) {
+            viewModel.removeFollower(updatedFriend, updatedUserProfile)
+          } else {
+            viewModel.addFollower(updatedFriend, updatedUserProfile)
+          }
+        } else if (relationship == Relationship.FOLLOWER) {
+          if (areConnected) {
+            viewModel.removeFollower(updatedUserProfile, updatedFriend)
+          } else {
+            viewModel.addFollower(updatedUserProfile, updatedFriend)
+          }
         }
-    }
-    // we fetch the last version of the follower
-    var updatedFriend = friend.copy()
-    viewModel.getUserProfile(friend.mail) { profile ->
-        if (profile != null) {
-            updatedFriend = profile
-        }
-    }
-
-    // variable to keep track of whether the user and follower are connected (following/follower)
-    var areConnected by remember { mutableStateOf(updatedUserProfile.following.contains(friend.mail)) }
-
-    if (relationship == Relationship.FOLLOWER) {
-        areConnected = updatedUserProfile.followers.contains(friend.mail)
-    }
-
-    Button(
-        onClick = {
-            if (relationship == Relationship.FRIENDS || relationship == Relationship.FOLLOWING) {
-                if (areConnected) {
-                    viewModel.removeFollower(updatedFriend, updatedUserProfile)
-                } else {
-                    viewModel.addFollower(updatedFriend, updatedUserProfile)
-                }
-            } else if (relationship == Relationship.FOLLOWER) {
-                if (areConnected) {
-                    viewModel.removeFollower(updatedUserProfile, updatedFriend)
-                } else {
-                    viewModel.addFollower(updatedUserProfile, updatedFriend)
-                }
-            }
-            areConnected = !areConnected
-        },
-        colors =
-        if (areConnected) {
+        areConnected = !areConnected
+      },
+      colors =
+          if (areConnected) {
             ButtonDefaults.buttonColors(
                 containerColor = md_theme_orange, contentColor = md_theme_light_onPrimary)
-        } else {
+          } else {
             ButtonDefaults.buttonColors(
                 containerColor = md_theme_grey, contentColor = md_theme_light_onPrimary)
-        },
-        modifier = Modifier.height(40.dp).width(95.dp).testTag("RemoveButton"),
-        contentPadding =
-        PaddingValues( // Reduce the padding around the text
-            start = 2.dp, top = 4.dp, end = 2.dp, bottom = 4.dp)) {
+          },
+      modifier = Modifier.height(40.dp).width(95.dp).testTag("RemoveButton"),
+      contentPadding =
+          PaddingValues( // Reduce the padding around the text
+              start = 2.dp, top = 4.dp, end = 2.dp, bottom = 4.dp)) {
         Text(
             text =
-            // Display the appropriate button text based on whether we are prompting
-            // followers, following or profiles and whether the button have been toggled or not
-            //
-            if (relationship == Relationship.FOLLOWING || relationship == Relationship.FRIENDS) {
-                if (areConnected) "Following" else "Follow"
-            } else {
-                if (areConnected) "Remove" else "Undo"
-            },
+                // Display the appropriate button text based on whether we are prompting
+                // followers, following or profiles and whether the button have been toggled or not
+                //
+                if (relationship == Relationship.FOLLOWING ||
+                    relationship == Relationship.FRIENDS) {
+                  if (areConnected) "Following" else "Follow"
+                } else {
+                  if (areConnected) "Remove" else "Undo"
+                },
             modifier = Modifier.fillMaxWidth(),
             style =
-            TextStyle(
-                fontSize = 12.sp,
-                lineHeight = 12.sp,
-                fontFamily = FontFamily(Font(R.font.montserrat)),
-                fontWeight = FontWeight(500),
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                letterSpacing = 0.5.sp))
-    }
+                TextStyle(
+                    fontSize = 12.sp,
+                    lineHeight = 12.sp,
+                    fontFamily = FontFamily(Font(R.font.montserrat)),
+                    fontWeight = FontWeight(500),
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    letterSpacing = 0.5.sp))
+      }
 }
