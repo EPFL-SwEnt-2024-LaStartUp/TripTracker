@@ -50,6 +50,21 @@ open class UserProfileRepository {
   }
 
   /**
+   * This function returns all the user's profiles.
+   *
+   * @return List of all user's profiles
+   */
+  open fun getAllUserProfiles(callback: (List<UserProfile>) -> Unit) {
+    userProfileDb
+        .get()
+        .addOnSuccessListener { result ->
+          userProfileList(result)
+          callback(_userProfileList)
+        }
+        .addOnFailureListener { e -> Log.e(TAG, "Error getting all user's profiles", e) }
+  }
+
+  /**
    * This function returns the user profile corresponding to the mail
    *
    * @param email : mail of the user profile to return
