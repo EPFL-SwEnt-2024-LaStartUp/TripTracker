@@ -27,6 +27,7 @@ import com.example.triptracker.view.profile.UserProfileFollowing
 import com.example.triptracker.view.profile.UserProfileFriends
 import com.example.triptracker.view.profile.UserProfileMyTrips
 import com.example.triptracker.view.profile.UserProfileOverview
+import com.example.triptracker.view.profile.UserProfileSettings
 import com.example.triptracker.view.theme.TripTrackerTheme
 
 class MainActivity : ComponentActivity() {
@@ -94,6 +95,7 @@ class MainActivity : ComponentActivity() {
 
             composable(Route.FAVORITES) { UserProfileFavourite(navigation = navigation) }
             composable(Route.EDIT) { UserProfileEditScreen(navigation = navigation) }
+            composable(Route.SETTINGS) { UserProfileSettings(navigation) }
           }
         }
       }
