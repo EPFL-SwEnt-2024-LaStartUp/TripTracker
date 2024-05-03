@@ -22,6 +22,7 @@ import com.example.triptracker.view.map.MapOverview
 import com.example.triptracker.view.map.RecordScreen
 import com.example.triptracker.view.profile.UserProfileEditScreen
 import com.example.triptracker.view.profile.UserProfileOverview
+import com.example.triptracker.view.profile.UserProfileSettings
 import com.example.triptracker.view.theme.TripTrackerTheme
 
 class MainActivity : ComponentActivity() {
@@ -74,6 +75,7 @@ class MainActivity : ComponentActivity() {
             composable(Route.RECORD) { RecordScreen(context, navigation) }
             composable(Route.PROFILE) { UserProfileOverview(navigation = navigation) }
             composable(Route.EDIT) { UserProfileEditScreen(navigation = navigation) }
+            composable(Route.SETTINGS) { UserProfileSettings(navigation) }
           }
         }
       }

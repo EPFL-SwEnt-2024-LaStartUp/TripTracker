@@ -226,7 +226,7 @@ fun UserProfileOverview(
                     ProfileButton(
                         label = "Settings",
                         icon = Icons.Outlined.Settings,
-                        onClick = { navigation.navController.navigate(Route.FAVORITES) },
+                        onClick = { navigation.navController.navigate(Route.SETTINGS) },
                         modifier = Modifier.align(Alignment.BottomEnd).testTag("SettingsButton"))
                   }
             }
