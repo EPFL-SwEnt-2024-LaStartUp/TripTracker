@@ -21,14 +21,17 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
@@ -103,87 +106,28 @@ fun UserProfileSettings(navigation: Navigation) {
                 "Path Visibility",
                 actions = {
                   // Remember the state of the button to toggle between texts
-                  val (buttonState, setButtonState) = remember { mutableStateOf(0) }
-
-                  // Determine the text and background colors based on the state
-                  val buttonText: String
-                  val textColor: Color
-                  val backgroundColor: Color
-
-                  when (buttonState) {
-                    0 -> {
-                      buttonText = "Me"
-                      textColor = md_theme_dark_gray
-                      backgroundColor = md_theme_light_dark
-                    }
-                    1 -> {
-                      buttonText = "Friends"
-                      textColor = md_theme_dark_gray
-                      backgroundColor = md_theme_grey
-                    }
-                    else -> {
-                      buttonText = "Public"
-                      textColor = Color.White
-                      backgroundColor = md_theme_orange
-                    }
-                  }
-
-                  FilledTonalButton(
+                  val (buttonState, setButtonState) = remember { mutableIntStateOf(0) }
+                  TriStateButton(
+                      state1 = "Me",
+                      state2 = "Friends",
+                      state3 = "Public",
+                      state = buttonState,
                       modifier = Modifier.size(width = 94.dp, height = 35.dp),
-                      onClick = { setButtonState((buttonState + 1) % 3) },
-                      colors =
-                          ButtonDefaults.filledTonalButtonColors(
-                              containerColor = backgroundColor, contentColor = textColor)) {
-                        Text(
-                            text = buttonText,
-                            fontSize = 12.sp,
-                            fontFamily = Montserrat,
-                            fontWeight = FontWeight.Bold)
-                      }
+                      onClick = { setButtonState((buttonState + 1) % 3) })
                 })
             Divider()
             SettingsElement(
                 "Location",
                 actions = {
                   // Remember the state of the button to toggle between texts
-                  val (buttonState, setButtonState) = remember { mutableStateOf(0) }
-
-                  // Determine the text and background colors based on the state
-                  val buttonText: String
-                  val textColor: Color
-                  val backgroundColor: Color
-
-                  when (buttonState) {
-                    0 -> {
-                      buttonText = "Never"
-                      textColor = md_theme_dark_gray
-                      backgroundColor = md_theme_light_dark
-                    }
-                    1 -> {
-                      buttonText = "When the app is running"
-                      textColor = md_theme_dark_gray
-                      backgroundColor = md_theme_grey
-                    }
-                    else -> {
-                      buttonText = "Always"
-                      textColor = Color.White
-                      backgroundColor = md_theme_orange
-                    }
-                  }
-
-                  FilledTonalButton(
+                  val (buttonState, setButtonState) = remember { mutableIntStateOf(0) }
+                  TriStateButton(
+                      state1 = "Never",
+                      state2 = "When the app is running",
+                      state3 = "Always",
+                      state = buttonState,
                       modifier = Modifier.size(width = 208.dp, height = 35.dp),
-                      onClick = { setButtonState((buttonState + 1) % 3) },
-                      colors =
-                          ButtonDefaults.filledTonalButtonColors(
-                              containerColor = backgroundColor, contentColor = textColor)) {
-                        Text(
-                            text = buttonText,
-                            fontSize = 12.sp,
-                            fontFamily = Montserrat,
-                            fontWeight = FontWeight.Bold,
-                            color = textColor)
-                      }
+                      onClick = { setButtonState((buttonState + 1) % 3) })
                 })
 
             Spacer(modifier = Modifier.height(100.dp))
@@ -210,6 +154,7 @@ fun UserProfileSettings(navigation: Navigation) {
   }
 }
 
+/** Composable function to display a divider */
 @Composable
 fun Divider() {
   Spacer(modifier = Modifier.height(15.dp))
@@ -217,6 +162,11 @@ fun Divider() {
   Spacer(modifier = Modifier.height(15.dp))
 }
 
+/**
+ * Composable function to display a settings group name and its divider
+ *
+ * @param groupName: Name of the settings group
+ */
 @Composable
 fun SettingsGroup(groupName: String) {
   Text(
@@ -230,6 +180,68 @@ fun SettingsGroup(groupName: String) {
   Spacer(modifier = Modifier.height(15.dp))
 }
 
+/**
+ * Composable function to display a tri-state button
+ *
+ * @param state1: First state of the button
+ * @param state2: Second state of the button
+ * @param state3: Third state of the button
+ * @param onClick: Action to be performed on the button click
+ */
+@Composable
+fun TriStateButton(
+    state1: String,
+    state2: String,
+    state3: String,
+    state: Int,
+    modifier: Modifier,
+    onClick: () -> Unit
+) {
+
+  // Determine the text and background colors based on the state
+  val buttonText: String
+  val textColor: Color
+  val backgroundColor: Color
+
+  when (state) {
+    0 -> {
+      buttonText = state1
+      textColor = md_theme_dark_gray
+      backgroundColor = md_theme_light_dark
+    }
+    1 -> {
+      buttonText = state2
+      textColor = md_theme_dark_gray
+      backgroundColor = md_theme_grey
+    }
+    else -> {
+      buttonText = state3
+      textColor = Color.White
+      backgroundColor = md_theme_orange
+    }
+  }
+
+  FilledTonalButton(
+      modifier = modifier,
+      onClick = { onClick() },
+      colors =
+          ButtonDefaults.filledTonalButtonColors(
+              containerColor = backgroundColor, contentColor = textColor)) {
+        Text(
+            text = buttonText,
+            fontSize = 12.sp,
+            fontFamily = Montserrat,
+            fontWeight = FontWeight.Bold,
+            color = textColor)
+      }
+}
+
+/**
+ * Composable function to display a setting element line
+ *
+ * @param elementName: Name of the setting element
+ * @param actions: Actions to be performed on the setting element
+ */
 @Composable
 fun SettingsElement(elementName: String, actions: @Composable () -> Unit = {}) {
   Row(
@@ -247,10 +259,10 @@ fun SettingsElement(elementName: String, actions: @Composable () -> Unit = {}) {
       }
 }
 
-// @Preview
-// @Composable
-// fun UserProfileSettingsPreview() {
-//  val navController = rememberNavController()
-//  val navigation = remember(navController) { Navigation(navController) }
-//  UserProfileSettings(navigation = navigation)
-// }
+@Preview
+@Composable
+fun UserProfileSettingsPreview() {
+  val navController = rememberNavController()
+  val navigation = remember(navController) { Navigation(navController) }
+  UserProfileSettings(navigation = navigation)
+}
