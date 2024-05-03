@@ -66,3 +66,10 @@ data class UserProfileList(private var userProfileList: List<UserProfile>) {
     return userProfileList.size
   }
 }
+
+/** This enumeration class represents the different types of relationships */
+enum class Relationship {
+  FOLLOWER,
+  FOLLOWING,
+  FRIENDS
+}
