@@ -23,13 +23,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
@@ -41,6 +39,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -56,8 +55,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.model.repository.Response
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
@@ -65,46 +66,11 @@ import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_light_error
 import com.example.triptracker.view.theme.md_theme_orange
+import com.example.triptracker.viewmodel.UserProfileViewModel
+import com.example.triptracker.viewmodel.loggedUser
 import java.time.Instant
-import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-
-/**
- * This function retrieves the user profile from the database.
- *
- * @return user profile.
- */
-private fun retrieveProfile(): UserProfile {
-  // TODO: implement the retrieval of the ambient user profile
-  return UserProfile(
-      "jean.rousseau@epfl.ch",
-      "Jean-Jacques",
-      "Rousseau",
-      LocalDate.now().format(DateTimeFormatter.ISO_DATE),
-      "DarkSkyMan",
-      "profileImageUrl",
-      listOf(),
-      listOf())
-}
-
-/**
- * This function saves the user profile to the database.
- *
- * @param profile : user profile to be saved.
- */
-private fun updateProfile(
-    profile: UserProfile,
-    name: String,
-    surname: String,
-    mail: String,
-    birthdate: String,
-    username: String,
-    imageUrl: String?
-) {
-  // updateUserProfileInDb(profile)
-  // TODO: Implement saving the profile to the database
-}
 
 /**
  * This composable function displays the user profile edit screen.
@@ -112,245 +78,302 @@ private fun updateProfile(
  * @param navigation : Navigation object that manages the navigation in the application.
  */
 @Composable
-fun UserProfileEditScreen(navigation: Navigation) {
-  val profile = retrieveProfile()
+fun UserProfileEditScreen(
+    userProfileViewModel: UserProfileViewModel = viewModel(),
+    navigation: Navigation
+) {
+  val userMail: String = loggedUser.email ?: ""
+  var readyToDisplay by remember { mutableStateOf(false) }
+  var profile by remember { mutableStateOf(UserProfile("")) }
+  userProfileViewModel.getUserProfile(userMail) { fetch ->
+    if (fetch != null) {
+      profile = fetch
+      readyToDisplay = true
+    }
+  }
 
-  /* Mutable state variable that holds the name of the user profile */
-  var name by remember { mutableStateOf(profile.name) }
-  var isNameEmpty by remember { mutableStateOf(profile.name.isEmpty()) }
+  when (readyToDisplay) {
+    false -> {
+      Log.d("UserProfileEditScreen", "User profile is null")
+    }
+    true -> {
+      /* Mutable state variable that holds the name of the user profile */
+      var name by remember { mutableStateOf(profile.name) }
+      var isNameEmpty by remember { mutableStateOf(profile.name.isEmpty()) }
 
-  /* Mutable state variable that holds the surname of the user profile */
-  var surname by remember { mutableStateOf(profile.surname) }
-  var isSurnameEmpty by remember { mutableStateOf(profile.surname.isEmpty()) }
+      /* Mutable state variable that holds the surname of the user profile */
+      var surname by remember { mutableStateOf(profile.surname) }
+      var isSurnameEmpty by remember { mutableStateOf(profile.surname.isEmpty()) }
 
-  /* Mutable state variable that holds the mail of the user profile */
-  var mail by remember { mutableStateOf(profile.mail) }
-  var isMailEmpty by remember { mutableStateOf(profile.mail.isEmpty()) }
+      /* Mutable state variable that holds the mail of the user profile */
+      var mail by remember { mutableStateOf(profile.mail) }
+      var isMailEmpty by remember { mutableStateOf(profile.mail.isEmpty()) }
 
-  /* Mutable state variable that holds the birthdate of the user profile */
-  var birthdate by remember { mutableStateOf(profile.birthdate) }
-  var isBirthdateEmpty by remember { mutableStateOf(false) }
+      /* Mutable state variable that holds the birthdate of the user profile */
+      var birthdate by remember { mutableStateOf(profile.birthdate) }
+      var isBirthdateEmpty by remember { mutableStateOf(false) }
 
-  /* Mutable state variable that holds the username of the user profile */
-  var username by remember { mutableStateOf(profile.username) }
-  var isUsernameEmpty by remember { mutableStateOf(profile.username.isEmpty()) }
+      /* Mutable state variable that holds the username of the user profile */
+      var username by remember { mutableStateOf(profile.username) }
+      var isUsernameEmpty by remember { mutableStateOf(profile.username.isEmpty()) }
 
-  /* Mutable state variable that holds the image url of the user profile */
-  var imageUrl by remember { mutableStateOf(profile.profileImageUrl) }
-  var isImageUrlEmpty by remember { mutableStateOf(profile.profileImageUrl?.isEmpty()) }
+      /* Mutable state variable that holds the image url of the user profile */
+      var imageUrl by remember { mutableStateOf(profile.profileImageUrl) }
+      var isImageUrlEmpty by remember { mutableStateOf(profile.profileImageUrl?.isEmpty()) }
 
-  // Variable to store the state of the new profile picture
-  var selectedPicture by remember { mutableStateOf<Uri?>(null) }
-  // Launcher for the pick multiple media activity
-  val pickMedia =
-      rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { picture ->
-        // Callback is invoked after the user selects media items or closes the
-        // photo picker.
-        if (picture != null) {
-          Log.d("PhotoPicker", "One media selected.")
-          selectedPicture = picture
+      // Variable to store the state of the new profile picture
+      var selectedPicture by remember { mutableStateOf<Uri?>(null) }
+      // Launcher for the pick multiple media activity
+      val pickMedia =
+          rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { picture ->
+            // Callback is invoked after the user selects media items or closes the
+            // photo picker.
+            if (picture != null) {
+              Log.d("PhotoPicker", "One media selected.")
+              selectedPicture = picture
+            } else {
+              Log.d("PhotoPicker", "No media selected.")
+            }
+          }
+
+      /** This function updates the user profile in the database on save. */
+      fun updateProfile() {
+        if (selectedPicture != null) {
+          userProfileViewModel.addProfilePictureToStorage(selectedPicture!!) { resp ->
+            imageUrl =
+                if (resp is Response.Success) {
+                  resp.data!!.toString()
+                } else {
+                  imageUrl // Keep the old image if the new one could not be uploaded
+                }
+            userProfileViewModel.updateUserProfileInDb(
+                UserProfile(
+                    userMail,
+                    name,
+                    surname,
+                    birthdate,
+                    username,
+                    imageUrl,
+                    profile.followers,
+                    profile.following))
+          }
         } else {
-          Log.d("PhotoPicker", "No media selected.")
+          userProfileViewModel.updateUserProfileInDb(
+              UserProfile(
+                  userMail,
+                  name,
+                  surname,
+                  birthdate,
+                  username,
+                  imageUrl,
+                  profile.followers,
+                  profile.following))
         }
       }
 
-  Scaffold(
-      topBar = {},
-      bottomBar = { NavigationBar(navigation) },
-      modifier = Modifier.testTag("UserProfileEditScreen")) { innerPadding ->
-        Box(
-            modifier =
-                Modifier.fillMaxHeight()
-                    .padding(innerPadding)
-                    .padding(top = 30.dp, bottom = 30.dp, start = 25.dp, end = 25.dp)
-                    .fillMaxWidth()
-                    .background(md_theme_light_dark, shape = RoundedCornerShape(20.dp)),
-            contentAlignment = Alignment.TopCenter) {
-              Column(
-                  horizontalAlignment = Alignment.Start,
-                  verticalArrangement = Arrangement.SpaceEvenly) {
-                    Spacer(modifier = Modifier.height(25.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.17f),
-                        verticalAlignment = Alignment.CenterVertically) {
-                          Spacer(modifier = Modifier.width(25.dp))
-                          Box(modifier = Modifier.size(90.dp)) {
-                            Box(
-                                modifier =
-                                    Modifier.size(90.dp)
-                                        .background(Color.White, shape = CircleShape)) {
-                                  InsertPicture(pickMedia, selectedPicture)
-                                }
-                            // Position the small orange circle with a plus sign
-                            when (selectedPicture != null) {
-                              true -> {}
-                              false -> {
+      Scaffold(
+          topBar = {},
+          bottomBar = { NavigationBar(navigation) },
+          modifier = Modifier.testTag("UserProfileEditScreen")) { innerPadding ->
+            Box(
+                modifier =
+                    Modifier.fillMaxHeight()
+                        .padding(innerPadding)
+                        .padding(top = 30.dp, bottom = 30.dp, start = 25.dp, end = 25.dp)
+                        .fillMaxWidth()
+                        .background(md_theme_light_dark, shape = RoundedCornerShape(20.dp)),
+                contentAlignment = Alignment.TopCenter) {
+                  Column(
+                      horizontalAlignment = Alignment.Start,
+                      verticalArrangement = Arrangement.SpaceEvenly) {
+                        Spacer(modifier = Modifier.height(25.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.17f),
+                            verticalAlignment = Alignment.CenterVertically) {
+                              Spacer(modifier = Modifier.width(25.dp))
+                              Box(modifier = Modifier.size(90.dp)) {
                                 Box(
                                     modifier =
-                                        Modifier.size(24.dp)
-                                            .background(md_theme_orange, shape = CircleShape)
-                                            .align(Alignment.BottomEnd)) {
-                                      Icon(
-                                          imageVector = Icons.Default.Add,
-                                          contentDescription = "Add",
-                                          tint = Color.White,
-                                          modifier = Modifier.padding(4.dp))
+                                        Modifier.size(90.dp)
+                                            .background(Color.White, shape = CircleShape)) {
+                                      InsertPicture(pickMedia, selectedPicture, imageUrl)
                                     }
+                                // Position the small orange circle with a plus sign
+                                when (selectedPicture == null && imageUrl.isNullOrEmpty()) {
+                                  true -> {
+                                    Box(
+                                        modifier =
+                                            Modifier.size(24.dp)
+                                                .background(md_theme_orange, shape = CircleShape)
+                                                .align(Alignment.BottomEnd)) {
+                                          Icon(
+                                              imageVector = Icons.Default.Add,
+                                              contentDescription = "Add",
+                                              tint = Color.White,
+                                              modifier = Modifier.padding(4.dp))
+                                        }
+                                  }
+                                  false -> {}
+                                }
                               }
+                              Spacer(modifier = Modifier.width(25.dp))
+                              Column(
+                                  modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8f),
+                                  verticalArrangement = Arrangement.Center) {
+                                    Text(
+                                        text = "Username",
+                                        fontSize = 14.sp,
+                                        fontFamily = Montserrat,
+                                        fontWeight = FontWeight.Normal,
+                                        color = md_theme_grey)
+                                    OutlinedTextField(
+                                        value = username,
+                                        label = {},
+                                        onValueChange = {
+                                          username = it
+                                          isUsernameEmpty = it.isEmpty()
+                                        },
+                                        modifier =
+                                            Modifier.padding(bottom = 5.dp, end = 30.dp).weight(1f),
+                                        textStyle =
+                                            TextStyle(
+                                                color = Color.White,
+                                                fontSize = 16.sp,
+                                                fontFamily = Montserrat,
+                                                fontWeight = FontWeight.Normal),
+                                        colors =
+                                            OutlinedTextFieldDefaults.colors(
+                                                unfocusedTextColor = md_theme_grey,
+                                                unfocusedBorderColor =
+                                                    if (isUsernameEmpty) md_theme_light_error
+                                                    else md_theme_grey,
+                                                unfocusedLabelColor =
+                                                    if (isUsernameEmpty) md_theme_light_error
+                                                    else md_theme_grey,
+                                                cursorColor = md_theme_grey,
+                                                focusedBorderColor =
+                                                    if (isUsernameEmpty) md_theme_light_error
+                                                    else md_theme_grey,
+                                                focusedLabelColor = Color.White,
+                                            ))
+                                  }
                             }
-                          }
-                          Spacer(modifier = Modifier.width(25.dp))
-                          Column(
-                              modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8f),
-                              verticalArrangement = Arrangement.Center) {
-                                Text(
-                                    text = "Username",
-                                    fontSize = 14.sp,
-                                    fontFamily = Montserrat,
-                                    fontWeight = FontWeight.Normal,
-                                    color = md_theme_grey)
-                                OutlinedTextField(
-                                    value = username,
-                                    label = {},
-                                    onValueChange = {
-                                      username = it
-                                      isUsernameEmpty = it.isEmpty()
-                                    },
-                                    modifier =
-                                        Modifier.padding(bottom = 5.dp, end = 30.dp).weight(1f),
-                                    textStyle =
-                                        TextStyle(
-                                            color = Color.White,
-                                            fontSize = 16.sp,
-                                            fontFamily = Montserrat,
-                                            fontWeight = FontWeight.Normal),
-                                    colors =
-                                        OutlinedTextFieldDefaults.colors(
-                                            unfocusedTextColor = md_theme_grey,
-                                            unfocusedBorderColor =
-                                                if (isUsernameEmpty) md_theme_light_error
-                                                else md_theme_grey,
-                                            unfocusedLabelColor =
-                                                if (isUsernameEmpty) md_theme_light_error
-                                                else md_theme_grey,
-                                            cursorColor = md_theme_grey,
-                                            focusedBorderColor =
-                                                if (isUsernameEmpty) md_theme_light_error
-                                                else md_theme_grey,
-                                            focusedLabelColor = Color.White,
-                                        ))
-                              }
-                        }
-                    Spacer(modifier = Modifier.height(15.dp))
-                    ProfileEditTextField(
-                        "Name",
-                        name,
-                        {
-                          name = it
-                          isNameEmpty = it.isEmpty()
-                        },
-                        isNameEmpty)
-                    Spacer(modifier = Modifier.height(15.dp))
-                    ProfileEditTextField(
-                        "Surname",
-                        surname,
-                        {
-                          surname = it
-                          isSurnameEmpty = it.isEmpty()
-                        },
-                        isSurnameEmpty)
-                    Spacer(modifier = Modifier.height(15.dp))
-                    ProfileEditTextField(
-                        "Mail",
-                        mail,
-                        {
-                          mail = it
-                          isMailEmpty = it.isEmpty()
-                        },
-                        isMailEmpty)
-                    Spacer(modifier = Modifier.height(15.dp))
-
-                    val isOpen = remember { mutableStateOf(false) }
-                    Text(
-                        text = "Date of birth",
-                        fontSize = 14.sp,
-                        fontFamily = Montserrat,
-                        fontWeight = FontWeight.Normal,
-                        color = md_theme_grey,
-                        modifier = Modifier.padding(start = 30.dp, end = 30.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                      OutlinedTextField(
-                          readOnly = true,
-                          value = birthdate,
-                          label = {},
-                          onValueChange = {},
-                          modifier = Modifier.padding(bottom = 5.dp, start = 30.dp).weight(1f),
-                          textStyle =
-                              TextStyle(
-                                  color = Color.White,
-                                  fontSize = 16.sp,
-                                  fontFamily = Montserrat,
-                                  fontWeight = FontWeight.Normal),
-                          colors =
-                              OutlinedTextFieldDefaults.colors(
-                                  unfocusedTextColor = md_theme_grey,
-                                  unfocusedBorderColor =
-                                      if (isBirthdateEmpty) md_theme_light_error else md_theme_grey,
-                                  unfocusedLabelColor =
-                                      if (isBirthdateEmpty) md_theme_light_error else md_theme_grey,
-                                  cursorColor = md_theme_grey,
-                                  focusedBorderColor =
-                                      if (isBirthdateEmpty) md_theme_light_error else md_theme_grey,
-                                  focusedLabelColor = Color.White,
-                              ))
-                      IconButton(
-                          modifier = Modifier.padding(end = 30.dp),
-                          onClick = { isOpen.value = true } // show de dialog
-                          ) {
-                            Icon(
-                                imageVector = Icons.Default.CalendarMonth,
-                                contentDescription = "Calendar",
-                                tint = Color.Gray)
-                          }
-                    }
-
-                    if (isOpen.value) {
-                      Box(modifier = Modifier.testTag("CustomDatePickerDialog")) {
-                        CustomDatePickerDialog(
-                            onAccept = {
-                              isOpen.value = false // close dialog
-
-                              if (it != null) { // Set the date
-                                birthdate =
-                                    Instant.ofEpochMilli(it)
-                                        .atZone(ZoneId.of("UTC"))
-                                        .toLocalDate()
-                                        .format(DateTimeFormatter.ISO_DATE)
-                              }
+                        Spacer(modifier = Modifier.height(15.dp))
+                        ProfileEditTextField(
+                            "Name",
+                            name,
+                            {
+                              name = it
+                              isNameEmpty = it.isEmpty()
                             },
-                            onCancel = {
-                              isOpen.value = false // close dialog
-                            })
-                      }
-                    }
-                    Spacer(modifier = Modifier.height(25.dp))
-                    Box(
-                        modifier = Modifier.fillMaxWidth().fillMaxHeight(),
-                        contentAlignment = Alignment.Center) {
-                          SaveButton(
-                              canSave =
-                                  !isNameEmpty &&
-                                      !isSurnameEmpty &&
-                                      !isBirthdateEmpty &&
-                                      !isUsernameEmpty,
-                              action = {
-                                updateProfile(
-                                    profile, name, surname, mail, birthdate, username, imageUrl)
-                              })
+                            isNameEmpty)
+                        Spacer(modifier = Modifier.height(15.dp))
+                        ProfileEditTextField(
+                            "Surname",
+                            surname,
+                            {
+                              surname = it
+                              isSurnameEmpty = it.isEmpty()
+                            },
+                            isSurnameEmpty)
+                        Spacer(modifier = Modifier.height(15.dp))
+                        ProfileEditTextField(
+                            "Mail",
+                            mail,
+                            {
+                              mail = it
+                              isMailEmpty = it.isEmpty()
+                            },
+                            isMailEmpty,
+                            true)
+                        Spacer(modifier = Modifier.height(15.dp))
+
+                        val isOpen = remember { mutableStateOf(false) }
+                        Text(
+                            text = "Date of birth",
+                            fontSize = 14.sp,
+                            fontFamily = Montserrat,
+                            fontWeight = FontWeight.Normal,
+                            color = md_theme_grey,
+                            modifier = Modifier.padding(start = 30.dp, end = 30.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                          OutlinedTextField(
+                              readOnly = true,
+                              value = birthdate,
+                              label = {},
+                              onValueChange = {},
+                              modifier = Modifier.padding(bottom = 5.dp, start = 30.dp).weight(1f),
+                              textStyle =
+                                  TextStyle(
+                                      color = Color.White,
+                                      fontSize = 16.sp,
+                                      fontFamily = Montserrat,
+                                      fontWeight = FontWeight.Normal),
+                              colors =
+                                  OutlinedTextFieldDefaults.colors(
+                                      unfocusedTextColor = md_theme_grey,
+                                      unfocusedBorderColor =
+                                          if (isBirthdateEmpty) md_theme_light_error
+                                          else md_theme_grey,
+                                      unfocusedLabelColor =
+                                          if (isBirthdateEmpty) md_theme_light_error
+                                          else md_theme_grey,
+                                      cursorColor = md_theme_grey,
+                                      focusedBorderColor =
+                                          if (isBirthdateEmpty) md_theme_light_error
+                                          else md_theme_grey,
+                                      focusedLabelColor = Color.White,
+                                  ))
+                          IconButton(
+                              modifier = Modifier.padding(end = 30.dp),
+                              onClick = { isOpen.value = true } // show de dialog
+                              ) {
+                                Icon(
+                                    imageVector = Icons.Default.CalendarMonth,
+                                    contentDescription = "Calendar",
+                                    tint = Color.Gray)
+                              }
                         }
-                  }
-            }
-      }
+
+                        if (isOpen.value) {
+                          Box(modifier = Modifier.testTag("CustomDatePickerDialog")) {
+                            CustomDatePickerDialog(
+                                onAccept = {
+                                  isOpen.value = false // close dialog
+
+                                  if (it != null) { // Set the date
+                                    birthdate =
+                                        Instant.ofEpochMilli(it)
+                                            .atZone(ZoneId.of("UTC"))
+                                            .toLocalDate()
+                                            .format(DateTimeFormatter.ISO_DATE)
+                                  }
+                                },
+                                onCancel = {
+                                  isOpen.value = false // close dialog
+                                })
+                          }
+                        }
+                        Spacer(modifier = Modifier.height(25.dp))
+                        Box(
+                            modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                            contentAlignment = Alignment.Center) {
+                              SaveButton(
+                                  canSave =
+                                      !isNameEmpty &&
+                                          !isSurnameEmpty &&
+                                          !isBirthdateEmpty &&
+                                          !isUsernameEmpty,
+                                  action = {
+                                    updateProfile()
+                                    navigation.goBack()
+                                  })
+                            }
+                      }
+                }
+          }
+    }
+  }
 }
 
 /**
@@ -366,7 +389,8 @@ fun ProfileEditTextField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
-    isEmpty: Boolean
+    isEmpty: Boolean,
+    isReadOnly: Boolean = false,
 ) {
   Text(
       text = label,
@@ -377,6 +401,7 @@ fun ProfileEditTextField(
       modifier = Modifier.padding(start = 30.dp, end = 30.dp),
   )
   OutlinedTextField(
+      readOnly = isReadOnly,
       value = value,
       onValueChange = { onValueChange(it) },
       label = {},
@@ -406,33 +431,9 @@ fun ProfileEditTextField(
  */
 @Composable
 fun SaveButton(canSave: Boolean = true, action: () -> Unit = {}) {
-  val showDialog = remember { mutableStateOf(false) }
-
-  if (showDialog.value) {
-    AlertDialog(
-        modifier = Modifier.testTag("AlertDialog"),
-        backgroundColor = Color.White,
-        onDismissRequest = {},
-        title = { Text(text = "Profile saved! \uD83D\uDE0A", color = Color.Black) },
-        confirmButton = {
-          FilledTonalButton(
-              onClick = { showDialog.value = false },
-              colors = ButtonDefaults.filledTonalButtonColors(containerColor = md_theme_orange),
-              modifier = Modifier.width(108.dp).height(30.dp)) {
-                Text(
-                    text = "Go back",
-                    fontSize = 14.sp,
-                    fontFamily = Montserrat,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White)
-              }
-        })
-  }
-
   FilledTonalButton(
       onClick = {
         if (canSave) {
-          showDialog.value = true
           action()
         }
       },
@@ -483,23 +484,38 @@ fun CustomDatePickerDialog(onAccept: (Long?) -> Unit, onCancel: () -> Unit) {
 fun InsertPicture(
     pickMedia: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
     selectedPicture: Uri?,
+    oldPicture: String?
 ) {
   when (selectedPicture != null) {
     // when no picture was selected show the add picture icon
     false -> {
-      Box(
-          modifier =
-              Modifier.fillMaxSize().testTag("NoProfilePicture").clickable {
-                pickMedia.launch(
-                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
-              },
-          contentAlignment = Alignment.Center // Center the content
-          ) {
-            Icon(
-                imageVector = Icons.Outlined.Image,
-                contentDescription = "Add Picture",
-                tint = md_theme_orange)
-          }
+      if (!oldPicture.isNullOrEmpty()) {
+        Box(modifier = Modifier.fillMaxSize().testTag("ProfilePicture")) {
+          AsyncImage(
+              model = oldPicture,
+              contentDescription = "Profile picture",
+              modifier =
+                  Modifier.fillMaxSize().clip(CircleShape).clickable {
+                    pickMedia.launch(
+                        PickVisualMediaRequest(
+                            ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                  })
+        }
+      } else {
+        Box(
+            modifier =
+                Modifier.fillMaxSize().testTag("NoProfilePicture").clickable {
+                  pickMedia.launch(
+                      PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                },
+            contentAlignment = Alignment.Center // Center the content
+            ) {
+              Icon(
+                  imageVector = Icons.Outlined.Image,
+                  contentDescription = "Add Picture",
+                  tint = md_theme_orange)
+            }
+      }
     }
     // when a picture was selected show the picture
     true -> {
@@ -521,7 +537,7 @@ fun InsertPicture(
 // @Preview
 // @Composable
 // fun UserProfileEditScreenPreview() {
-//  val navController = rememberNavController()
-//  val navigation = remember(navController) { Navigation(navController) }
-//  UserProfileEditScreen(navigation)
+//   val navController = rememberNavController()
+//   val navigation = remember(navController) { Navigation(navController) }
+//   UserProfileEditScreen(navigation)
 // }

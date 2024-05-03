@@ -60,6 +60,11 @@
 //            secondArg<(UserProfile?) -> Unit>().invoke(mockUserProfiles[6])
 //          }
 //      every { setListToFilter(any()) } just Runs
+//      every { mockUserProfileRepository.getAllUserProfiles(any()) } answers {
+//          // Invoke the callback with mock data
+//          val callback = arg<(List<UserProfile>) -> Unit>(0)
+//          callback(mockUserProfiles)
+//        }
 //    }
 //
 //    // Setting up the test composition
