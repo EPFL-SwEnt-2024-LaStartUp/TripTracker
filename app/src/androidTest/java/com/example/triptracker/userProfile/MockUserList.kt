@@ -79,7 +79,7 @@ class MockUserList {
           profileImageUrl =
               "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-red-fluffy-cat-with-big-eyes-in-royalty-free-image-1701455126.jpg",
           followers = listOf("schifferlitheo@gmail.com", "barghornjeremy@gmail.com"),
-          following = emptyList())
+          following = listOf("schifferlitheo@gmail.com"))
 
   private val mockUsers =
       listOf(mockUser1, mockUser2, mockUser3, mockUser4, mockUser5, mockUser6, mockUser7)

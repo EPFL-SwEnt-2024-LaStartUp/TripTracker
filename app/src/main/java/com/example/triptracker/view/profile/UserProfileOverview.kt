@@ -105,7 +105,7 @@ fun UserProfileOverview(
       Scaffold(
           topBar = {},
           bottomBar = { NavigationBar(navigation) },
-          modifier = Modifier.fillMaxSize().testTag("ProfileOverview")) { innerPadding ->
+          modifier = Modifier.fillMaxSize()) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
               Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
 
@@ -181,7 +181,9 @@ fun UserProfileOverview(
                     }
                 Column(
                     modifier =
-                        Modifier.align(Alignment.CenterVertically).padding(horizontal = 30.dp)) {
+                        Modifier.align(Alignment.CenterVertically)
+                            .padding(horizontal = 30.dp)
+                            .clickable { navigation.navController.navigate(Route.FOLLOWERS) }) {
                       Text(
                           text = "${profile.followers.size}",
                           modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -193,7 +195,9 @@ fun UserProfileOverview(
                     }
                 Column(
                     modifier =
-                        Modifier.align(Alignment.CenterVertically).padding(horizontal = 30.dp)) {
+                        Modifier.align(Alignment.CenterVertically)
+                            .padding(horizontal = 30.dp)
+                            .clickable { navigation.navController.navigate(Route.FOLLOWING) }) {
                       Text(
                           text = "${profile.following.size}",
                           modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -209,20 +213,20 @@ fun UserProfileOverview(
                   modifier =
                       Modifier.height(300.dp).width(350.dp).align(Alignment.CenterHorizontally)) {
                     ProfileButton(
-                        label = "Favorites",
+                        label = "Favourites",
                         icon = Icons.Outlined.FavoriteBorder,
                         onClick = { navigation.navController.navigate(Route.FAVORITES) },
-                        modifier = Modifier.align(Alignment.TopStart).testTag("FavoritesButton"))
+                        modifier = Modifier.align(Alignment.TopStart))
                     ProfileButton(
                         label = "Friends",
                         icon = Icons.Outlined.People,
-                        onClick = { navigation.navController.navigate(Route.FAVORITES) },
-                        modifier = Modifier.align(Alignment.TopEnd).testTag("FriendsButton"))
+                        onClick = { navigation.navController.navigate(Route.FRIENDS) },
+                        modifier = Modifier.align(Alignment.TopEnd))
                     ProfileButton(
                         label = "MyTrips",
                         icon = Icons.Outlined.BookmarkBorder,
                         onClick = { navigation.navController.navigate(Route.MYTRIPS) },
-                        modifier = Modifier.align(Alignment.BottomStart).testTag("MyTripsButton"))
+                        modifier = Modifier.align(Alignment.BottomStart))
                     ProfileButton(
                         label = "Settings",
                         icon = Icons.Outlined.Settings,
