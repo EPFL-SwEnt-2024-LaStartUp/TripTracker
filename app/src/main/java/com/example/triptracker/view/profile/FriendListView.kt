@@ -32,17 +32,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.triptracker.R
 import com.example.triptracker.model.profile.Relationship
 import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
@@ -86,7 +84,7 @@ fun FriendListView(
                   TextStyle(
                       fontSize = 20.sp,
                       lineHeight = 16.sp,
-                      fontFamily = FontFamily(Font(R.font.montserrat)),
+                      fontFamily = Montserrat,
                       fontWeight = FontWeight(600),
                       color = Color.Black,
                       textAlign = TextAlign.Center,
@@ -134,7 +132,7 @@ fun FriendListView(
                                         TextStyle(
                                             fontSize = 16.sp,
                                             lineHeight = 16.sp,
-                                            fontFamily = FontFamily(Font(R.font.montserrat)),
+                                            fontFamily = Montserrat,
                                             fontWeight = FontWeight(600),
                                             color = Color.White,
                                             textAlign = TextAlign.Left,
@@ -148,7 +146,7 @@ fun FriendListView(
                                           TextStyle(
                                               fontSize = 14.sp,
                                               lineHeight = 16.sp,
-                                              fontFamily = FontFamily(Font(R.font.montserrat)),
+                                              fontFamily = Montserrat,
                                               fontWeight = FontWeight(600),
                                               color = md_theme_dark_gray,
                                               textAlign = TextAlign.Left,
@@ -253,7 +251,7 @@ fun RemoveFriendButton(
                 TextStyle(
                     fontSize = 12.sp,
                     lineHeight = 12.sp,
-                    fontFamily = FontFamily(Font(R.font.montserrat)),
+                    fontFamily = Montserrat,
                     fontWeight = FontWeight(500),
                     color = Color.White,
                     textAlign = TextAlign.Center,
