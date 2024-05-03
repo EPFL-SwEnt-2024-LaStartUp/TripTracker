@@ -3,6 +3,7 @@ package com.example.triptracker.userProfile
 import android.util.Log
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.UserProfileRepository
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import io.mockk.every
@@ -50,7 +51,12 @@ class UserProfileViewModelTest {
 
   @Test
   fun getUserProfileListTest() {
-    every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
+    every { mockUserProfileRepository.getAllUserProfiles(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<UserProfile>) -> Unit>(0)
+          callback(mockUserProfiles)
+        }
 
     every { mockUserProfileViewModel.getUserProfileList() } answers { mockUserProfiles }
 
