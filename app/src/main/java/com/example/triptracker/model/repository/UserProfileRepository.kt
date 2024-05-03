@@ -40,6 +40,20 @@ open class UserProfileRepository {
    *
    * @return List of all user's profiles
    */
+  open fun getAllUserProfiles(): List<UserProfile> {
+    userProfileDb
+        .get()
+        .addOnSuccessListener { result -> userProfileList(result) }
+        .addOnFailureListener { e -> Log.e(TAG, "Error getting all user's profiles", e) }
+    Log.d("UserProfileRepository", _userProfileList.toString())
+    return _userProfileList
+  }
+
+  /**
+   * This function returns all the user's profiles.
+   *
+   * @return List of all user's profiles
+   */
   open fun getAllUserProfiles(callback: (List<UserProfile>) -> Unit) {
     userProfileDb
         .get()
