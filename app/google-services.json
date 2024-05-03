@@ -14,6 +14,86 @@
       },
       "oauth_client": [
         {
+          "client_id": "273594028474-48q1lribvgb1mjs5f4rk40hjmuv5a4mf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.triptracker",
+            "certificate_hash": "0fd80aba713a66fd6b221c0fc1c6f1d6f39eb9b4"
+          }
+        },
+        {
+          "client_id": "273594028474-50sh8ludm22cj2a98mc528ntfqes92jl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.triptracker",
+            "certificate_hash": "abfd7ac80e19624c57bfad418d83a7aad09dbb66"
+          }
+        },
+        {
+          "client_id": "273594028474-ccru983ft57lnbqbnaj4bqijuekp7k0i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.triptracker",
+            "certificate_hash": "1995dffb74590d4fe157d793f0378b5191b0604a"
+          }
+        },
+        {
+          "client_id": "273594028474-emomgs79rnkvussnvrbcu92df8353noh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.triptracker",
+            "certificate_hash": "f09e2157b42b95595ab63c3d73f53c1b96040077"
+          }
+        },
+        {
+          "client_id": "273594028474-l9ldsimq70kf9n9braletm32ctp1r8rp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.triptracker",
+            "certificate_hash": "7c766e6e346e1132a99282182b781314ec103bd2"
+          }
+        },
+        {
+          "client_id": "273594028474-q6bdq09ch53ur08unu98948p8s33j4b0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.triptracker",
+            "certificate_hash": "99a72ecf22e5e729dd8ef723b17a295cbf90e633"
+          }
+        },
+        {
+          "client_id": "273594028474-r06gjuqel6c8kei940v18u4u5s8vrcb3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.triptracker",
+            "certificate_hash": "d8460380c41b1dd6fd316af7f2e6b1ef103f1f58"
+          }
+        },
+        {
+          "client_id": "273594028474-tl5vg4m3k2b8todq6ss315lsbub5moec.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.triptracker",
+            "certificate_hash": "661d59c13cd067aba916ea2a2ecdf76d597bee20"
+          }
+        },
+        {
+          "client_id": "273594028474-tnnsne1jeahfbo0chvdo3ppbd1qg8vi5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.triptracker",
+            "certificate_hash": "d3d1c8d26f1406639427904a6479a25435585b37"
+          }
+        },
+        {
+          "client_id": "273594028474-vtqnu8oom20npnjjo76rmmch0tdeu4jr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.triptracker",
+            "certificate_hash": "ca42b17dad0328c517e5aa6e7056788e37422df3"
+          }
+        },
+        {
           "client_id": "273594028474-f747m27ufsjs5ttqlnkvt0bmi2eev3g0.apps.googleusercontent.com",
           "client_type": 3
         }

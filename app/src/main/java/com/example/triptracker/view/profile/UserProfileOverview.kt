@@ -106,7 +106,7 @@ fun UserProfileOverview(
       Scaffold(
           topBar = {},
           bottomBar = { NavigationBar(navigation) },
-          modifier = Modifier.fillMaxSize()) { innerPadding ->
+          modifier = Modifier.fillMaxSize().testTag("ProfileOverview")) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
               Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
 
@@ -217,17 +217,21 @@ fun UserProfileOverview(
                         label = "Favourites",
                         icon = Icons.Outlined.FavoriteBorder,
                         onClick = { navigation.navController.navigate(Route.FAVORITES) },
-                        modifier = Modifier.align(Alignment.TopStart))
+                        modifier = Modifier.align(Alignment.TopStart).testTag("FavoritesButton"))
                     ProfileButton(
                         label = "Friends",
                         icon = Icons.Outlined.People,
                         onClick = { navigation.navController.navigate(Route.FRIENDS) },
-                        modifier = Modifier.align(Alignment.TopEnd))
+                        modifier = Modifier.align(Alignment.TopEnd).testTag("FriendsButton"))
                     ProfileButton(
                         label = "MyTrips",
                         icon = Icons.Outlined.BookmarkBorder,
-                        onClick = { navigation.navController.navigate(Route.MYTRIPS) },
-                        modifier = Modifier.align(Alignment.BottomStart))
+                        modifier = Modifier.align(Alignment.BottomStart).testTag("MyTripsButton"),
+                        onClick = {
+                          navigation.navController.navigate(
+                              "${Route.MYTRIPS}?username=${profile.username}")
+                        })
+
                     ProfileButton(
                         label = "Settings",
                         icon = Icons.Outlined.Settings,
