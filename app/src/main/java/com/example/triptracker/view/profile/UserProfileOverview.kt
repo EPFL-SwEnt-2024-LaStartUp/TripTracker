@@ -31,12 +31,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -106,7 +106,7 @@ fun UserProfileOverview(
       Scaffold(
           topBar = {},
           bottomBar = { NavigationBar(navigation) },
-          modifier = Modifier.fillMaxSize()) { innerPadding ->
+          modifier = Modifier.fillMaxSize().testTag("ProfileOverview")) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
               Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
 
@@ -125,6 +125,7 @@ fun UserProfileOverview(
                                   shape = CircleShape,
                                   ambientColor = md_theme_light_dark,
                                   spotColor = md_theme_light_dark)
+                              .padding(start = 15.dp)
                               .size(110.dp)
                               .clip(CircleShape),
                       contentScale = ContentScale.Crop)
@@ -133,11 +134,9 @@ fun UserProfileOverview(
                 // Other informations
                 Column() {
                   Row() {
-                    IconButton(
-                        modifier = Modifier.padding(start = 20.dp),
-                        onClick = { navigation.navController.navigate(Route.EDIT) }) {
-                          Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
-                        }
+                    IconButton(onClick = { navigation.navController.navigate(Route.EDIT) }) {
+                      Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
+                    }
                     Text(
                         text = profile.username, // I think we only show the pseudo here and keep
                         // birthdate
@@ -152,16 +151,17 @@ fun UserProfileOverview(
                                 textAlign = TextAlign.Right,
                                 letterSpacing = 0.5.sp,
                             ),
-                        modifier = Modifier.width(250.dp).height(37.dp).padding(top = 12.dp))
+                        modifier =
+                            Modifier.width(250.dp).height(37.dp).padding(top = 12.dp, end = 15.dp))
                   }
                   Text(
                       text = "Interests",
                       style = AppTypography.secondaryTitleStyle,
-                      modifier = Modifier.align(Alignment.End))
+                      modifier = Modifier.align(Alignment.End).padding(end = 15.dp))
                   Text(
                       text = "Hiking, Photography", // profile.interestsList
                       style = AppTypography.secondaryContentStyle,
-                      modifier = Modifier.align(Alignment.End))
+                      modifier = Modifier.align(Alignment.End).padding(end = 15.dp))
 
                   /*add more informations later if UserProfile is udpated*/
                 }
@@ -217,22 +217,26 @@ fun UserProfileOverview(
                         label = "Favourites",
                         icon = Icons.Outlined.FavoriteBorder,
                         onClick = { navigation.navController.navigate(Route.FAVORITES) },
-                        modifier = Modifier.align(Alignment.TopStart))
+                        modifier = Modifier.align(Alignment.TopStart).testTag("FavoritesButton"))
                     ProfileButton(
                         label = "Friends",
                         icon = Icons.Outlined.People,
                         onClick = { navigation.navController.navigate(Route.FRIENDS) },
-                        modifier = Modifier.align(Alignment.TopEnd))
+                        modifier = Modifier.align(Alignment.TopEnd).testTag("FriendsButton"))
                     ProfileButton(
                         label = "MyTrips",
                         icon = Icons.Outlined.BookmarkBorder,
-                        onClick = { navigation.navController.navigate(Route.MYTRIPS) },
-                        modifier = Modifier.align(Alignment.BottomStart))
+                        modifier = Modifier.align(Alignment.BottomStart).testTag("MyTripsButton"),
+                        onClick = {
+                          navigation.navController.navigate(
+                              "${Route.MYTRIPS}?username=${profile.username}")
+                        })
+
                     ProfileButton(
                         label = "Settings",
                         icon = Icons.Outlined.Settings,
-                        onClick = { navigation.navController.navigate(Route.FAVORITES) },
-                        modifier = Modifier.align(Alignment.BottomEnd))
+                        onClick = { navigation.navController.navigate(Route.SETTINGS) },
+                        modifier = Modifier.align(Alignment.BottomEnd).testTag("SettingsButton"))
                   }
             }
           }
@@ -308,6 +312,7 @@ fun ProfileButton(
           modifier
               .height(130.dp)
               .width(160.dp)
+              .testTag("ProfileButton")
               .background(color = md_theme_light_dark, shape = RoundedCornerShape(16.dp))) {
         Column(modifier = Modifier.width(150.dp)) {
           Icon(

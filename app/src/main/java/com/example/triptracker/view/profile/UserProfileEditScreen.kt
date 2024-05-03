@@ -50,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -499,7 +500,8 @@ fun InsertPicture(
                     pickMedia.launch(
                         PickVisualMediaRequest(
                             ActivityResultContracts.PickVisualMedia.ImageAndVideo))
-                  })
+                  },
+              contentScale = ContentScale.Crop)
         }
       } else {
         Box(
@@ -527,7 +529,8 @@ fun InsertPicture(
                 Modifier.fillMaxSize().clip(CircleShape).clickable {
                   pickMedia.launch(
                       PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
-                })
+                },
+            contentScale = ContentScale.Crop)
       }
     }
   }
