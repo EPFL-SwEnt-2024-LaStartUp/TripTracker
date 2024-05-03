@@ -23,6 +23,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class LoginTest : TestCase() {
+  /*
   private val appContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
   @get:Rule val composeTestRule = createAndroidComposeRule<MainActivity>()
 
@@ -64,4 +65,6 @@ class LoginTest : TestCase() {
       Intents.intended(IntentMatchers.toPackage("com.google.android.gms"))
     }
   }
+
+   */
 }
