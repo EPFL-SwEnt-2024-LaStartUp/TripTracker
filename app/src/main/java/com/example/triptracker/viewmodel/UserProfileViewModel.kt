@@ -8,6 +8,7 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.model.profile.UserProfileList
 import com.example.triptracker.model.repository.ImageRepository
 import com.example.triptracker.model.repository.Response
 import com.example.triptracker.model.repository.UserProfileRepository
@@ -22,8 +23,9 @@ class UserProfileViewModel(
     private val imageRepository: ImageRepository = ImageRepository(),
 ) : ViewModel() {
 
+  private var userProfileInstance = UserProfileList(listOf())
   private var _userProfileList = MutableLiveData<List<UserProfile>>()
-  private val userProfileList: LiveData<List<UserProfile>> = _userProfileList
+  val userProfileList: LiveData<List<UserProfile>> = _userProfileList
 
   private val _listToFilter = MutableLiveData<List<UserProfile>>()
   private val listToFilter: LiveData<List<UserProfile>> = _listToFilter
@@ -32,15 +34,17 @@ class UserProfileViewModel(
   val searchQuery: LiveData<String>
     get() = _searchQuery
 
+  init {
+    viewModelScope.launch { fetchAllUserProfiles() }
+  }
+
   /**
    * Fetches all user profiles from the repository and stores them in the userProfileList LiveData
    * could be used to display all user profiles in the UI not used in the current implementation
    */
-  fun fetchAllUserProfiles() {
-    viewModelScope.launch {
-      val profiles = userProfileRepository.getAllUserProfiles()
-      _userProfileList.postValue(profiles)
-    }
+  private fun fetchAllUserProfiles() {
+    userProfileInstance.setUserProfileList(userProfileRepository.getAllUserProfiles())
+    _userProfileList.value = userProfileInstance.getAllUserProfiles()
   }
 
   /**
