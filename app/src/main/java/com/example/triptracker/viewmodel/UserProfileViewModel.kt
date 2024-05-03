@@ -19,7 +19,7 @@ class UserProfileViewModel(
 ) : ViewModel() {
 
   private var _userProfileList = MutableLiveData<List<UserProfile>>()
-  val userProfileList: LiveData<List<UserProfile>> = _userProfileList
+  private val userProfileList: LiveData<List<UserProfile>> = _userProfileList
 
   private val _listToFilter = MutableLiveData<List<UserProfile>>()
   private val listToFilter: LiveData<List<UserProfile>> = _listToFilter

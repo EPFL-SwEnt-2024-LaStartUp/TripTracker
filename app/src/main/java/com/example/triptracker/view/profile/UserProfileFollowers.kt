@@ -47,6 +47,7 @@ import com.example.triptracker.viewmodel.loggedUser
 fun UserProfileFollowers(
     navigation: Navigation,
     userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
+    test: Boolean = false
 ) {
   val userMail: String = loggedUser.email ?: ""
   var userProfile by remember { mutableStateOf(UserProfile("")) }
