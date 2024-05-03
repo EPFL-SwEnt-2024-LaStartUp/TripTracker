@@ -2,6 +2,7 @@ package com.example.triptracker.userProfile
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.UserProfileRepository
 import com.example.triptracker.screens.userProfile.UserProfileFollowersScreen
 import com.example.triptracker.view.Navigation
@@ -39,7 +40,12 @@ class UserProfileFollowersTest {
 
   @Test
   fun componentsAreCorrectlyDisplayed() {
-    every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
+    every { mockUserProfileRepository.getAllUserProfiles(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<UserProfile>) -> Unit>(0)
+          callback(mockUserProfiles)
+        }
     every { mockViewModel.getUserProfileList() } returns mockUserProfiles
     // Setting up the test composition
     composeTestRule.setContent {
@@ -62,7 +68,6 @@ class UserProfileFollowersTest {
 
   @Test
   fun removeButtonWorks() {
-    every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
     every { mockViewModel.getUserProfileList() } returns mockUserProfiles
     // Setting up the test composition
     composeTestRule.setContent {
@@ -83,7 +88,12 @@ class UserProfileFollowersTest {
 
   @Test
   fun backButtonWorks() {
-    every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
+    every { mockUserProfileRepository.getAllUserProfiles(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<UserProfile>) -> Unit>(0)
+          callback(mockUserProfiles)
+        }
     every { mockViewModel.getUserProfileList() } returns mockUserProfiles
     // Setting up the test composition
     composeTestRule.setContent {

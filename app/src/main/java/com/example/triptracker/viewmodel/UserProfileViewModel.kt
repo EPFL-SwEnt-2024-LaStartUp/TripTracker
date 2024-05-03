@@ -1,5 +1,6 @@
 package com.example.triptracker.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,7 +8,8 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.profile.UserProfile
-import com.example.triptracker.model.profile.UserProfileList
+import com.example.triptracker.model.repository.ImageRepository
+import com.example.triptracker.model.repository.Response
 import com.example.triptracker.model.repository.UserProfileRepository
 import kotlinx.coroutines.launch
 
@@ -16,12 +18,12 @@ import kotlinx.coroutines.launch
  * for the UserProfile class
  */
 class UserProfileViewModel(
-    private val userProfileRepository: UserProfileRepository = UserProfileRepository()
+    private val userProfileRepository: UserProfileRepository = UserProfileRepository(),
+    private val imageRepository: ImageRepository = ImageRepository(),
 ) : ViewModel() {
 
-  private var userProfileInstance = UserProfileList(listOf())
   private var _userProfileList = MutableLiveData<List<UserProfile>>()
-  val userProfileList: LiveData<List<UserProfile>> = _userProfileList
+  private val userProfileList: LiveData<List<UserProfile>> = _userProfileList
 
   private val _listToFilter = MutableLiveData<List<UserProfile>>()
   private val listToFilter: LiveData<List<UserProfile>> = _listToFilter
@@ -30,17 +32,24 @@ class UserProfileViewModel(
   val searchQuery: LiveData<String>
     get() = _searchQuery
 
-  init {
-    viewModelScope.launch { fetchAllUserProfiles() }
-  }
-
   /**
    * Fetches all user profiles from the repository and stores them in the userProfileList LiveData
    * could be used to display all user profiles in the UI not used in the current implementation
    */
-  private fun fetchAllUserProfiles() {
-    userProfileInstance.setUserProfileList(userProfileRepository.getAllUserProfiles())
-    _userProfileList.value = userProfileInstance.getAllUserProfiles()
+  fun fetchAllUserProfiles() {
+    viewModelScope.launch {
+      val profiles = userProfileRepository.getAllUserProfiles()
+      _userProfileList.postValue(profiles)
+    }
+  }
+
+  /**
+   * This function returns the list of user's profiles.
+   *
+   * @param callback : callback function to handle the response
+   */
+  fun fetchAllUserProfiles(callback: (List<UserProfile>) -> Unit) {
+    viewModelScope.launch { userProfileRepository.getAllUserProfiles() { callback(it) } }
   }
 
   /** This function returns the list of user's profiles. */
@@ -147,5 +156,18 @@ class UserProfileViewModel(
    */
   fun setListToFilter(list: List<UserProfile>) {
     _listToFilter.value = list
+  }
+
+  /**
+   * This function adds a profile picture to the user profile.
+   *
+   * @param imageUri : Uri of the image to add
+   * @param callback : callback function to handle the response
+   */
+  fun addProfilePictureToStorage(imageUri: Uri, callback: (Response<Uri>) -> Unit) {
+    viewModelScope.launch {
+      val elem = imageRepository.addProfilePictureToFirebaseStorage(imageUri)
+      callback(elem)
+    }
   }
 }

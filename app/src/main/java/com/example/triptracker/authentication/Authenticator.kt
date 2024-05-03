@@ -19,6 +19,4 @@ interface Authenticator {
   fun signOut()
 
   fun delete()
-
-  fun isSignedIn(): Boolean
 }

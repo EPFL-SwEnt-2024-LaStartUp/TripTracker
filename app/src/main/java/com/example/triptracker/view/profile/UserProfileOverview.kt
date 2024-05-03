@@ -14,13 +14,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -127,24 +130,31 @@ fun UserProfileOverview(
                               .clip(CircleShape),
                       contentScale = ContentScale.Crop)
                 }
+
                 // Other informations
                 Column() {
-                  Text(
-                      text =
-                          profile
-                              .username, // I think we only show the pseudo here and keep birthdate
-                      // name and surname private.
-                      style =
-                          TextStyle(
-                              fontSize = sizeUsername,
-                              lineHeight = 16.sp,
-                              fontFamily = FontFamily(Font(R.font.montserrat)),
-                              fontWeight = FontWeight(700),
-                              color = md_theme_light_dark,
-                              textAlign = TextAlign.Right,
-                              letterSpacing = 0.5.sp,
-                          ),
-                      modifier = Modifier.width(250.dp).height(37.dp))
+                  Row() {
+                    IconButton(
+                        modifier = Modifier.padding(start = 20.dp),
+                        onClick = { navigation.navController.navigate(Route.EDIT) }) {
+                          Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
+                        }
+                    Text(
+                        text = profile.username, // I think we only show the pseudo here and keep
+                        // birthdate
+                        // name and surname private.
+                        style =
+                            TextStyle(
+                                fontSize = sizeUsername,
+                                lineHeight = 16.sp,
+                                fontFamily = FontFamily(Font(R.font.montserrat)),
+                                fontWeight = FontWeight(700),
+                                color = md_theme_light_dark,
+                                textAlign = TextAlign.Right,
+                                letterSpacing = 0.5.sp,
+                            ),
+                        modifier = Modifier.width(250.dp).height(37.dp).padding(top = 12.dp))
+                  }
                   Text(
                       text = "Interests",
                       style = AppTypography.secondaryTitleStyle,
