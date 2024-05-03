@@ -32,17 +32,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.triptracker.R
 import com.example.triptracker.model.profile.Relationship
 import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
@@ -86,7 +84,7 @@ fun FriendListView(
                   TextStyle(
                       fontSize = 20.sp,
                       lineHeight = 16.sp,
-                      fontFamily = FontFamily(Font(R.font.montserrat)),
+                      fontFamily = Montserrat,
                       fontWeight = FontWeight(600),
                       color = Color.Black,
                       textAlign = TextAlign.Center,
@@ -100,84 +98,77 @@ fun FriendListView(
             Modifier.fillMaxWidth().fillMaxHeight().padding(15.dp).testTag("FriendListScreen"),
         verticalArrangement = Arrangement.spacedBy(10.dp)) {
           items(friendList.value) { friend ->
-            // Display the user's profile
-            Box(
-                modifier =
-                    Modifier.fillMaxWidth()
-                        .height(105.dp)
-                        .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
-                        .testTag("FriendProfile"),
-                contentAlignment = Alignment.Center) {
-                  Row(
-                      modifier = Modifier.fillMaxHeight().padding(start = 20.dp, end = 20.dp),
-                      verticalAlignment = Alignment.CenterVertically) {
-                        // Image painter for loading from a URL
-                        val imagePainter = rememberAsyncImagePainter(model = friend.profileImageUrl)
+            // we do not prompt the profile of the current user
+            if (friend.mail != userProfile.mail) {
+              // Display the user's profile
+              Box(
+                  modifier =
+                      Modifier.fillMaxWidth()
+                          .height(105.dp)
+                          .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
+                          .testTag("FriendProfile"),
+                  contentAlignment = Alignment.Center) {
+                    Row(
+                        modifier = Modifier.fillMaxHeight().padding(start = 20.dp, end = 20.dp),
+                        verticalAlignment = Alignment.CenterVertically) {
+                          // Image painter for loading from a URL
+                          val imagePainter =
+                              rememberAsyncImagePainter(model = friend.profileImageUrl)
 
-                        Image(
-                            painter = imagePainter,
-                            contentDescription = "${userProfile.username}'s profile picture",
-                            contentScale = ContentScale.Crop,
-                            modifier =
-                                Modifier.size(62.dp)
-                                    .clip(RoundedCornerShape(50))
-                                    .align(Alignment.CenterVertically))
-                        Column(
-                            modifier = Modifier.fillMaxHeight().padding(start = 15.dp),
-                            verticalArrangement = Arrangement.Center) {
-                              Text(
-                                  text = friend.username,
-                                  style =
-                                      TextStyle(
-                                          fontSize = 16.sp,
-                                          lineHeight = 16.sp,
-                                          fontFamily = FontFamily(Font(R.font.montserrat)),
-                                          fontWeight = FontWeight(600),
-                                          color = Color.White,
-                                          textAlign = TextAlign.Left,
-                                          letterSpacing = 0.5.sp),
-                                  overflow = TextOverflow.Ellipsis,
-                                  maxLines = 1)
-                              Row() {
+                          Image(
+                              painter = imagePainter,
+                              contentDescription = "${userProfile.username}'s profile picture",
+                              contentScale = ContentScale.Crop,
+                              modifier =
+                                  Modifier.size(62.dp)
+                                      .clip(RoundedCornerShape(50))
+                                      .align(Alignment.CenterVertically))
+                          Column(
+                              modifier = Modifier.fillMaxHeight().padding(start = 15.dp),
+                              verticalArrangement = Arrangement.Center) {
                                 Text(
-                                    text = "${friend.name} ${friend.surname}",
+                                    text = friend.username,
                                     style =
                                         TextStyle(
-                                            fontSize = 14.sp,
+                                            fontSize = 16.sp,
                                             lineHeight = 16.sp,
-                                            fontFamily = FontFamily(Font(R.font.montserrat)),
+                                            fontFamily = Montserrat,
                                             fontWeight = FontWeight(600),
-                                            color = md_theme_dark_gray,
+                                            color = Color.White,
                                             textAlign = TextAlign.Left,
                                             letterSpacing = 0.5.sp),
                                     overflow = TextOverflow.Ellipsis,
                                     maxLines = 1)
+                                Row() {
+                                  Text(
+                                      text = "${friend.name} ${friend.surname}",
+                                      style =
+                                          TextStyle(
+                                              fontSize = 14.sp,
+                                              lineHeight = 16.sp,
+                                              fontFamily = Montserrat,
+                                              fontWeight = FontWeight(600),
+                                              color = md_theme_dark_gray,
+                                              textAlign = TextAlign.Left,
+                                              letterSpacing = 0.5.sp),
+                                      overflow = TextOverflow.Ellipsis,
+                                      maxLines = 1)
+                                }
                               }
-                            }
-                        Column(
-                            modifier = Modifier.fillMaxWidth().width(95.dp),
-                            horizontalAlignment = Alignment.End,
-                        ) {
-                          if (relationship == Relationship.FOLLOWER) {
-                            // Display the remove follower button
+                          Column(
+                              modifier = Modifier.fillMaxWidth().width(95.dp),
+                              horizontalAlignment = Alignment.End,
+                          ) {
+                            // Display the remove friend button
                             RemoveFriendButton(
-                                remove = { viewModel.removeFollower(userProfile, friend) },
-                                undoRemove = { viewModel.addFollower(userProfile, friend) },
-                                relationship = relationship)
-                          } else if (relationship == Relationship.FOLLOWING) {
-                            RemoveFriendButton(
-                                remove = { viewModel.removeFollower(friend, userProfile) },
-                                undoRemove = { viewModel.addFollower(friend, userProfile) },
-                                relationship = relationship)
-                          } else {
-                            RemoveFriendButton(
-                                remove = { viewModel.addFollower(userProfile, friend) },
-                                undoRemove = { viewModel.removeFollower(userProfile, friend) },
+                                viewModel = viewModel,
+                                userProfile = userProfile,
+                                friend = friend,
                                 relationship = relationship)
                           }
                         }
-                      }
-                }
+                  }
+            }
           }
         }
   }
@@ -185,24 +176,55 @@ fun FriendListView(
 
 /** This composable function displays a button to remove a follower. */
 @Composable
-fun RemoveFriendButton(remove: () -> Unit, undoRemove: () -> Unit, relationship: Relationship) {
-  // State to determine if the follower is removed and update the button text
-  var isToggled by remember { mutableStateOf(false) }
+fun RemoveFriendButton(
+    viewModel: UserProfileViewModel,
+    userProfile: UserProfile,
+    friend: UserProfile,
+    relationship: Relationship
+) {
+  // we fetch the last version of the user profile
+  var updatedUserProfile = userProfile.copy()
+  viewModel.getUserProfile(userProfile.mail) { profile ->
+    if (profile != null) {
+      updatedUserProfile = profile
+    }
+  }
+  // we fetch the last version of the follower
+  var updatedFriend = friend.copy()
+  viewModel.getUserProfile(friend.mail) { profile ->
+    if (profile != null) {
+      updatedFriend = profile
+    }
+  }
+
+  // variable to keep track of whether the user and follower are connected (following/follower)
+  var areConnected by remember {
+    mutableStateOf(updatedUserProfile.following.contains(friend.mail))
+  }
+
+  if (relationship == Relationship.FOLLOWER) {
+    areConnected = updatedUserProfile.followers.contains(friend.mail)
+  }
 
   Button(
       onClick = {
-        isToggled = !isToggled
-        // Remove the follower if the button is clicked
-        if (isToggled) {
-          remove()
+        if (relationship == Relationship.FRIENDS || relationship == Relationship.FOLLOWING) {
+          if (areConnected) {
+            viewModel.removeFollower(updatedFriend, updatedUserProfile)
+          } else {
+            viewModel.addFollower(updatedFriend, updatedUserProfile)
+          }
+        } else if (relationship == Relationship.FOLLOWER) {
+          if (areConnected) {
+            viewModel.removeFollower(updatedUserProfile, updatedFriend)
+          } else {
+            viewModel.addFollower(updatedUserProfile, updatedFriend)
+          }
         }
-        // Undo the removal if the button is clicked again
-        else {
-          undoRemove()
-        }
+        areConnected = !areConnected
       },
       colors =
-          if (!isToggled) {
+          if (areConnected) {
             ButtonDefaults.buttonColors(
                 containerColor = md_theme_orange, contentColor = md_theme_light_onPrimary)
           } else {
@@ -218,19 +240,18 @@ fun RemoveFriendButton(remove: () -> Unit, undoRemove: () -> Unit, relationship:
                 // Display the appropriate button text based on whether we are prompting
                 // followers, following or profiles and whether the button have been toggled or not
                 //
-                if (relationship == Relationship.FOLLOWER) {
-                  if (!isToggled) "Remove" else "Undo"
-                } else if (relationship == Relationship.FOLLOWING) {
-                  if (!isToggled) "Following" else "Follow"
+                if (relationship == Relationship.FOLLOWING ||
+                    relationship == Relationship.FRIENDS) {
+                  if (areConnected) "Following" else "Follow"
                 } else {
-                  if (!isToggled) "Follow" else "Following"
+                  if (areConnected) "Remove" else "Undo"
                 },
             modifier = Modifier.fillMaxWidth(),
             style =
                 TextStyle(
                     fontSize = 12.sp,
                     lineHeight = 12.sp,
-                    fontFamily = FontFamily(Font(R.font.montserrat)),
+                    fontFamily = Montserrat,
                     fontWeight = FontWeight(500),
                     color = Color.White,
                     textAlign = TextAlign.Center,
