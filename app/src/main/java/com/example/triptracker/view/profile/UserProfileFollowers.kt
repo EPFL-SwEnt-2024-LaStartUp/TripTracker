@@ -47,88 +47,88 @@ fun UserProfileFollowers(
     navigation: Navigation,
     viewModel: UserProfileViewModel = UserProfileViewModel(),
 ) {
-  val userMail: String = loggedUser.email ?: ""
-  var userProfile by remember { mutableStateOf(UserProfile("")) }
-  var readyToDisplay by remember { mutableStateOf(false) }
-  var isSearchActive by remember { mutableStateOf(false) }
+    val userMail: String = loggedUser.email ?: ""
+    var userProfile by remember { mutableStateOf(UserProfile("")) }
+    var readyToDisplay by remember { mutableStateOf(false) }
+    var isSearchActive by remember { mutableStateOf(false) }
 
-  // val list = viewModel.userProfileList.value
-  viewModel.getUserProfile(userMail) { profile ->
-    if (profile != null) {
-      userProfile = profile
-      readyToDisplay = true
-    }
-  }
-  when (readyToDisplay) {
-    false -> {
-      // Display a loading screen while the user profile is being fetched
-      Text("Loading...")
-    }
-    true -> {
-      var followersList: List<UserProfile> by remember { mutableStateOf(listOf<UserProfile>()) }
-      userProfile.followers.forEach { follower ->
-        viewModel.getUserProfile(follower) { profile ->
-          if (profile != null) {
-            // we check that the profile is not already in the following list
-            if (!followersList.contains(profile)) {
-              followersList += profile
-            }
-          }
+    // val list = viewModel.userProfileList.value
+    viewModel.getUserProfile(userMail) { profile ->
+        if (profile != null) {
+            userProfile = profile
+            readyToDisplay = true
         }
-      }
-
-      viewModel.setListToFilter(followersList)
-      var filteredList = viewModel.filteredUserProfileList.observeAsState(initial = emptyList())
-
-      Scaffold(
-          topBar = {
-            Row(
-                modifier = Modifier.height(100.dp).fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start) {
-                  Button(
-                      onClick = { navigation.goBack() },
-                      colors =
-                          ButtonDefaults.buttonColors(
-                              containerColor = Color.Transparent,
-                              contentColor = md_theme_light_dark),
-                      modifier = Modifier.testTag("GoBackButton")) {
-                        Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
-                      }
-
-                  Text(
-                      text = "Followers",
-                      style =
-                          TextStyle(
-                              fontSize = 24.sp,
-                              lineHeight = 16.sp,
-                              fontFamily = FontFamily(Font(R.font.montserrat)),
-                              fontWeight = FontWeight(700),
-                              color = Color.Black,
-                              textAlign = TextAlign.Start,
-                              letterSpacing = 0.5.sp,
-                          ),
-                      modifier =
-                          Modifier.width(250.dp)
-                              .height(37.dp)
-                              .padding(5.dp)
-                              .testTag("FollowersTitle"))
-                }
-          },
-          bottomBar = { NavigationBar(navigation) },
-          modifier = Modifier.fillMaxSize().testTag("FollowersScreen")) { innerPadding ->
-            Column(modifier = Modifier.padding(innerPadding).testTag("FollowersList")) {
-              FriendSearchBar(
-                  viewModel = viewModel,
-                  onSearchActivated = { isActive -> isSearchActive = isActive })
-              // Display the list of following
-              FriendListView(
-                  viewModel = viewModel,
-                  userProfile = userProfile,
-                  relationship = Relationship.FOLLOWER,
-                  friendList = filteredList)
-            }
-          }
     }
-  }
+    when (readyToDisplay) {
+        false -> {
+            // Display a loading screen while the user profile is being fetched
+            Text("Loading...")
+        }
+        true -> {
+            var followersList: List<UserProfile> by remember { mutableStateOf(listOf<UserProfile>()) }
+            userProfile.followers.forEach { follower ->
+                viewModel.getUserProfile(follower) { profile ->
+                    if (profile != null) {
+                        // we check that the profile is not already in the following list
+                        if (!followersList.contains(profile)) {
+                            followersList += profile
+                        }
+                    }
+                }
+            }
+
+            viewModel.setListToFilter(followersList)
+            var filteredList = viewModel.filteredUserProfileList.observeAsState(initial = emptyList())
+
+            Scaffold(
+                topBar = {
+                    Row(
+                        modifier = Modifier.height(100.dp).fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start) {
+                        Button(
+                            onClick = { navigation.goBack() },
+                            colors =
+                            ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = md_theme_light_dark),
+                            modifier = Modifier.testTag("GoBackButton")) {
+                            Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
+                        }
+
+                        Text(
+                            text = "Followers",
+                            style =
+                            TextStyle(
+                                fontSize = 24.sp,
+                                lineHeight = 16.sp,
+                                fontFamily = FontFamily(Font(R.font.montserrat)),
+                                fontWeight = FontWeight(700),
+                                color = Color.Black,
+                                textAlign = TextAlign.Start,
+                                letterSpacing = 0.5.sp,
+                            ),
+                            modifier =
+                            Modifier.width(250.dp)
+                                .height(37.dp)
+                                .padding(5.dp)
+                                .testTag("FollowersTitle"))
+                    }
+                },
+                bottomBar = { NavigationBar(navigation) },
+                modifier = Modifier.fillMaxSize().testTag("FollowersScreen")) { innerPadding ->
+                Column(modifier = Modifier.padding(innerPadding).testTag("FollowersList")) {
+                    FriendSearchBar(
+                        viewModel = viewModel,
+                        onSearchActivated = { isActive -> isSearchActive = isActive })
+                    // Display the list of following
+                    FriendListView(
+                        viewModel = viewModel,
+                        userProfile = userProfile,
+                        relationship = Relationship.FOLLOWER,
+                        friendList = filteredList)
+                }
+            }
+        }
+    }
 }

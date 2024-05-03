@@ -22,6 +22,8 @@ object Route {
   const val FOLLOWING = "following"
   const val MYTRIPS = "mytrips"
   const val SETTINGS = "settings"
+  const val FOLLOWERS = "followers"
+  const val FOLLOWING = "following"
   const val EDIT = "edit"
 
   const val ITINERARY_PREVIEW = "itinerary_preview"
