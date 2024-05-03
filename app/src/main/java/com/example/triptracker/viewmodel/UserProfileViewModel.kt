@@ -19,8 +19,8 @@ import kotlinx.coroutines.launch
  * for the UserProfile class
  */
 class UserProfileViewModel(
-    private val userProfileRepository: UserProfileRepository = UserProfileRepository(),
-    private val imageRepository: ImageRepository = ImageRepository(),
+  private val userProfileRepository: UserProfileRepository = UserProfileRepository(),
+  private val imageRepository: ImageRepository = ImageRepository(),
 ) : ViewModel() {
 
   private var userProfileInstance = UserProfileList(listOf())
@@ -141,17 +141,17 @@ class UserProfileViewModel(
    * @return filtered user profile list based on the search query
    */
   val filteredUserProfileList: LiveData<List<UserProfile>> =
-      _searchQuery.switchMap { query ->
-        liveData {
-          val filteredList =
-              listToFilter.value?.filter {
-                it.username.contains(query, ignoreCase = true) ||
+    _searchQuery.switchMap { query ->
+      liveData {
+        val filteredList =
+          listToFilter.value?.filter {
+            it.username.contains(query, ignoreCase = true) ||
                     it.surname.contains(query, ignoreCase = true) ||
                     it.name.contains(query, ignoreCase = true)
-              } ?: emptyList()
-          emit(filteredList)
-        }
+          } ?: emptyList()
+        emit(filteredList)
       }
+    }
 
   /**
    * Function used to set the list of user profiles that we want to filter using the search query.

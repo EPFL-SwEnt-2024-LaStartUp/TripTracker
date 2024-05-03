@@ -49,90 +49,90 @@ fun UserProfileFriends(
     navigation: Navigation,
     viewModel: UserProfileViewModel = UserProfileViewModel(),
 ) {
-  val userMail: String = loggedUser.email ?: ""
-  var userProfile by remember { mutableStateOf(UserProfile("")) }
-  var readyToDisplay by remember { mutableStateOf(false) }
-  var isSearchActive by remember { mutableStateOf(false) }
+    val userMail: String = loggedUser.email ?: ""
+    var userProfile by remember { mutableStateOf(UserProfile("")) }
+    var readyToDisplay by remember { mutableStateOf(false) }
+    var isSearchActive by remember { mutableStateOf(false) }
 
-  viewModel.getUserProfile(userMail) { profile ->
-    if (profile != null) {
-      userProfile = profile
-      readyToDisplay = true
+    viewModel.getUserProfile(userMail) { profile ->
+        if (profile != null) {
+            userProfile = profile
+            readyToDisplay = true
+        }
     }
-  }
 
-  when (readyToDisplay) {
-    false -> {
-      // Display a loading screen while the user profile is being fetched
-      Text("Loading...")
-    }
-    true -> {
-      val usersList by viewModel.userProfileList.observeAsState(initial = emptyList())
+    when (readyToDisplay) {
+        false -> {
+            // Display a loading screen while the user profile is being fetched
+            Text("Loading...")
+        }
+        true -> {
+            val usersList by viewModel.userProfileList.observeAsState(initial = emptyList())
 
-      viewModel.setListToFilter(usersList)
-      var filteredList = viewModel.filteredUserProfileList.observeAsState(initial = emptyList())
+            viewModel.setListToFilter(usersList)
+            var filteredList = viewModel.filteredUserProfileList.observeAsState(initial = emptyList())
 
-      Scaffold(
-          topBar = {
-            Row(
-                modifier = Modifier.height(100.dp).fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start) {
-                  // Button to navigate back to the user profile
-                  Button(
-                      onClick = { navigation.goBack() },
-                      colors =
-                          ButtonDefaults.buttonColors(
-                              containerColor = Color.Transparent,
-                              contentColor = md_theme_light_dark),
-                      modifier = Modifier.testTag("GoBackButton")) {
-                        Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
-                      }
-                  Text(
-                      text = "Friends Finder",
-                      style =
-                          TextStyle(
-                              fontSize = 24.sp,
-                              lineHeight = 16.sp,
-                              fontFamily = FontFamily(Font(R.font.montserrat)),
-                              fontWeight = FontWeight(700),
-                              color = Color.Black,
-                              textAlign = TextAlign.Start,
-                              letterSpacing = 0.5.sp,
-                          ),
-                      // modifier = Modifier.weight(1f)
-                      // .padding(horizontal = 16.dp)
-                      modifier =
-                          Modifier.width(250.dp)
-                              .height(37.dp)
-                              .padding(5.dp)
-                              .testTag("FriendsFinderTitle"))
+            Scaffold(
+                topBar = {
+                    Row(
+                        modifier = Modifier.height(100.dp).fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start) {
+                        // Button to navigate back to the user profile
+                        Button(
+                            onClick = { navigation.goBack() },
+                            colors =
+                            ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = md_theme_light_dark),
+                            modifier = Modifier.testTag("GoBackButton")) {
+                            Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                        Text(
+                            text = "Friends Finder",
+                            style =
+                            TextStyle(
+                                fontSize = 24.sp,
+                                lineHeight = 16.sp,
+                                fontFamily = FontFamily(Font(R.font.montserrat)),
+                                fontWeight = FontWeight(700),
+                                color = Color.Black,
+                                textAlign = TextAlign.Start,
+                                letterSpacing = 0.5.sp,
+                            ),
+                            // modifier = Modifier.weight(1f)
+                            // .padding(horizontal = 16.dp)
+                            modifier =
+                            Modifier.width(250.dp)
+                                .height(37.dp)
+                                .padding(5.dp)
+                                .testTag("FriendsFinderTitle"))
+                    }
+                },
+                bottomBar = { NavigationBar(navigation) },
+                modifier = Modifier.fillMaxSize().testTag("FriendsFinderScreen")) { innerPadding ->
+                Column(modifier = Modifier.padding(innerPadding).fillMaxSize().testTag("FriendsList")) {
+                    FriendSearchBar(
+                        viewModel = viewModel,
+                        onSearchActivated = { isActive -> isSearchActive = isActive })
+                    FriendListView(
+                        viewModel = viewModel,
+                        userProfile = userProfile,
+                        relationship = Relationship.FRIENDS,
+                        friendList = filteredList)
                 }
-          },
-          bottomBar = { NavigationBar(navigation) },
-          modifier = Modifier.fillMaxSize().testTag("FriendsFinderScreen")) { innerPadding ->
-            Column(modifier = Modifier.padding(innerPadding).fillMaxSize().testTag("FriendsList")) {
-              FriendSearchBar(
-                  viewModel = viewModel,
-                  onSearchActivated = { isActive -> isSearchActive = isActive })
-              FriendListView(
-                  viewModel = viewModel,
-                  userProfile = userProfile,
-                  relationship = Relationship.FRIENDS,
-                  friendList = filteredList)
             }
-          }
+        }
     }
-  }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun UserProfileFriendsPreview() {
-  val viewModel = UserProfileViewModel()
+    val viewModel = UserProfileViewModel()
 
-  val navController = rememberNavController()
-  val navigation = remember(navController) { Navigation(navController) }
+    val navController = rememberNavController()
+    val navigation = remember(navController) { Navigation(navController) }
 
-  UserProfileFriends(navigation, viewModel)
+    UserProfileFriends(navigation, viewModel)
 }
