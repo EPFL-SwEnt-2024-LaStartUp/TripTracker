@@ -40,9 +40,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.R
 import com.example.triptracker.authentication.AuthResponse
 import com.example.triptracker.authentication.GoogleAuthenticator
+import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.theme.md_theme_light_inverseSurface
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.viewmodel.LoginViewModel
+import com.example.triptracker.viewmodel.UserProfileViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
@@ -54,7 +56,11 @@ import com.google.android.gms.tasks.Task
  *   Displays the login screen or the user's information if they are already authenticated or an
  *   error screen if the login fails
  */
-fun LoginScreen(navigation: Navigation, loginViewModel: LoginViewModel = viewModel()) {
+fun LoginScreen(
+    navigation: Navigation,
+    loginViewModel: LoginViewModel = viewModel(),
+    profileViewModel: UserProfileViewModel = viewModel()
+) {
 
   val context = LocalContext.current
   val authenticator = GoogleAuthenticator()
@@ -73,7 +79,14 @@ fun LoginScreen(navigation: Navigation, loginViewModel: LoginViewModel = viewMod
                   val userName = googleSignInAccount.displayName
                   val email = googleSignInAccount.email
                   val photoUrl = googleSignInAccount.photoUrl?.toString()
-
+                  profileViewModel.addNewUserProfileToDb(
+                      UserProfile(
+                          email ?: "",
+                          userName ?: "",
+                          userName ?: "",
+                          userName ?: "",
+                          userName ?: "",
+                          photoUrl))
                   loginViewModel.onSignInResult(true, userName, email, photoUrl)
                 } else {
                   // googleSignInAccount is null, handle the case accordingly
