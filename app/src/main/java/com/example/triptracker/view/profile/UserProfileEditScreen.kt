@@ -58,7 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.example.triptracker.model.profile.AmbientUserProfile
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.Response
 import com.example.triptracker.view.Navigation
@@ -80,36 +80,36 @@ import java.time.format.DateTimeFormatter
  */
 @Composable
 fun UserProfileEditScreen(
-    userProfileViewModel: UserProfileViewModel = viewModel(),
     navigation: Navigation,
-    profile: UserProfile = AmbientUserProfile.current
+    profile: MutableUserProfile,
+    userProfileViewModel: UserProfileViewModel = viewModel(),
 ) {
 
-  val userMail by remember { mutableStateOf(profile.mail) }
-  var isUserMailEmpty by remember { mutableStateOf(profile.mail.isEmpty()) }
   /* Mutable state variable that holds the name of the user profile */
-  var name by remember { mutableStateOf(profile.name) }
-  var isNameEmpty by remember { mutableStateOf(profile.name.isEmpty()) }
+  var name by remember { mutableStateOf(profile.userProfile.value.name) }
+  var isNameEmpty by remember { mutableStateOf(profile.userProfile.value.name.isEmpty()) }
 
   /* Mutable state variable that holds the surname of the user profile */
-  var surname by remember { mutableStateOf(profile.surname) }
-  var isSurnameEmpty by remember { mutableStateOf(profile.surname.isEmpty()) }
+  var surname by remember { mutableStateOf(profile.userProfile.value.surname) }
+  var isSurnameEmpty by remember { mutableStateOf(profile.userProfile.value.surname.isEmpty()) }
 
   /* Mutable state variable that holds the mail of the user profile */
-  var mail by remember { mutableStateOf(profile.mail) }
-  var isMailEmpty by remember { mutableStateOf(profile.mail.isEmpty()) }
+  var mail by remember { mutableStateOf(profile.userProfile.value.mail) }
+  var isMailEmpty by remember { mutableStateOf(profile.userProfile.value.mail.isEmpty()) }
 
   /* Mutable state variable that holds the birthdate of the user profile */
-  var birthdate by remember { mutableStateOf(profile.birthdate) }
+  var birthdate by remember { mutableStateOf(profile.userProfile.value.birthdate) }
   var isBirthdateEmpty by remember { mutableStateOf(false) }
 
   /* Mutable state variable that holds the username of the user profile */
-  var username by remember { mutableStateOf(profile.username) }
-  var isUsernameEmpty by remember { mutableStateOf(profile.username.isEmpty()) }
+  var username by remember { mutableStateOf(profile.userProfile.value.username) }
+  var isUsernameEmpty by remember { mutableStateOf(profile.userProfile.value.username.isEmpty()) }
 
   /* Mutable state variable that holds the image url of the user profile */
-  var imageUrl by remember { mutableStateOf(profile.profileImageUrl) }
-  var isImageUrlEmpty by remember { mutableStateOf(profile.profileImageUrl?.isEmpty()) }
+  var imageUrl by remember { mutableStateOf(profile.userProfile.value.profileImageUrl) }
+  var isImageUrlEmpty by remember {
+    mutableStateOf(profile.userProfile.value.profileImageUrl?.isEmpty())
+  }
 
   // Variable to store the state of the new profile picture
   var selectedPicture by remember { mutableStateOf<Uri?>(null) }
@@ -136,28 +136,32 @@ fun UserProfileEditScreen(
             } else {
               imageUrl // Keep the old image if the new one could not be uploaded
             }
-        userProfileViewModel.updateUserProfileInDb(
+        val newProfile =
             UserProfile(
-                userMail,
+                mail,
                 name,
                 surname,
                 birthdate,
                 username,
                 imageUrl,
-                profile.followers,
-                profile.following))
+                profile.userProfile.value.followers,
+                profile.userProfile.value.following)
+        userProfileViewModel.updateUserProfileInDb(newProfile)
+        profile.userProfile.value = newProfile
       }
     } else {
-      userProfileViewModel.updateUserProfileInDb(
+      val newProfile =
           UserProfile(
-              userMail,
+              mail,
               name,
               surname,
               birthdate,
               username,
               imageUrl,
-              profile.followers,
-              profile.following))
+              profile.userProfile.value.followers,
+              profile.userProfile.value.following)
+      userProfileViewModel.updateUserProfileInDb(newProfile)
+      profile.userProfile.value = newProfile
     }
   }
 
@@ -387,6 +391,7 @@ fun ProfileEditTextField(
   )
   OutlinedTextField(
       readOnly = isReadOnly,
+      enabled = !isReadOnly,
       value = value,
       onValueChange = { onValueChange(it) },
       label = {},

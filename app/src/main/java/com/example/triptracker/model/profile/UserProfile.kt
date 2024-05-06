@@ -30,25 +30,25 @@ data class UserProfile(
     val following: List<String> = emptyList()
 )
 
+data class MutableUserProfile(
+    var userProfile: MutableState<UserProfile> = mutableStateOf(EMPTY_PROFILE)
+)
+
 @SuppressLint("CompositionLocalNaming")
-var AmbientUserProfile = compositionLocalOf<UserProfile> { error("No user profile provided") }
+var AmbientUserProfile = compositionLocalOf { MutableUserProfile() }
 
 @Composable
-fun ProvideUserProfile(
-    userProfileState: MutableState<UserProfile>,
-    content: @Composable () -> Unit
-) {
-  CompositionLocalProvider(AmbientUserProfile provides userProfileState.value) { content() }
+fun ProvideUserProfile(userProfileState: MutableUserProfile, content: @Composable () -> Unit) {
+  CompositionLocalProvider(AmbientUserProfile provides userProfileState) { content() }
 }
 
 val EMPTY_PROFILE =
-    mutableStateOf(
-        UserProfile(
-            "surname.name@gmail.com",
-            "Name",
-            "Surname",
-            "00/00/0000",
-            "Username",
-            "test.com",
-            emptyList(),
-            emptyList()))
+    UserProfile(
+        "surname.name@gmail.com",
+        "Name",
+        "Surname",
+        "00/00/0000",
+        "Username",
+        "test.com",
+        emptyList(),
+        emptyList())

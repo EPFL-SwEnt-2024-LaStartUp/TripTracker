@@ -48,7 +48,7 @@ fun UserProfileFriends(
     navigation: Navigation,
     userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
 ) {
-  val userProfile = AmbientUserProfile.current
+  val userProfile = AmbientUserProfile.current.userProfile.value
   var isSearchActive by remember { mutableStateOf(false) }
 
   val usersList by userProfileViewModel.userProfileList.observeAsState(initial = emptyList())

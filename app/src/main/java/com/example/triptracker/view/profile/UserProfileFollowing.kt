@@ -47,7 +47,7 @@ fun UserProfileFollowing(
     navigation: Navigation,
     userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
 ) {
-  val userProfile = AmbientUserProfile.current
+  val userProfile = AmbientUserProfile.current.userProfile.value
   var isSearchActive by remember { mutableStateOf(false) }
 
   var followingList: List<UserProfile> by remember { mutableStateOf(listOf<UserProfile>()) }

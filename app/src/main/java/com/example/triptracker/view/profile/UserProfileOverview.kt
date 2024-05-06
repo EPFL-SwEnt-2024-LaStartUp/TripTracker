@@ -46,7 +46,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.R
-import com.example.triptracker.model.profile.AmbientUserProfile
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
@@ -66,17 +66,20 @@ import com.example.triptracker.viewmodel.HomeViewModel
  * @param navigation: The navigation of the app to switch between different views
  */
 @Composable
-fun UserProfileOverview(homeViewModel: HomeViewModel = viewModel(), navigation: Navigation) {
-  val profile = AmbientUserProfile.current
+fun UserProfileOverview(
+    navigation: Navigation,
+    profile: MutableUserProfile,
+    homeViewModel: HomeViewModel = viewModel()
+) {
   val myTripsList = homeViewModel.filteredItineraryList
   var myTripsCount = 0
   myTripsList.observeForever(Observer { list -> myTripsCount = list.size })
 
   homeViewModel.setSearchFilter(FilterType.USERNAME)
   homeViewModel.setSearchQuery(
-      profile.username) // Filters the list of trips on user that created it
+      profile.userProfile.value.username) // Filters the list of trips on user that created it
   var sizeUsername = 24.sp
-  if (profile.username.length > 15) {
+  if (profile.userProfile.value.username.length > 15) {
     sizeUsername = 18.sp
   }
 
@@ -93,7 +96,7 @@ fun UserProfileOverview(homeViewModel: HomeViewModel = viewModel(), navigation: 
             // Profile picture
             Column() {
               AsyncImage(
-                  model = profile.profileImageUrl,
+                  model = profile.userProfile.value.profileImageUrl,
                   contentDescription = "Profile picture",
                   placeholder = painterResource(id = R.drawable.blankprofile),
                   modifier =
@@ -115,7 +118,9 @@ fun UserProfileOverview(homeViewModel: HomeViewModel = viewModel(), navigation: 
                   Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
                 }
                 Text(
-                    text = profile.username, // I think we only show the pseudo here and keep
+                    text =
+                        profile.userProfile.value
+                            .username, // I think we only show the pseudo here and keep
                     // birthdate
                     // name and surname private.
                     style =
@@ -162,7 +167,7 @@ fun UserProfileOverview(homeViewModel: HomeViewModel = viewModel(), navigation: 
                         .padding(horizontal = 30.dp)
                         .clickable { navigation.navController.navigate(Route.FOLLOWERS) }) {
                   Text(
-                      text = "${profile.followers.size}",
+                      text = "${profile.userProfile.value.followers.size}",
                       modifier = Modifier.align(Alignment.CenterHorizontally),
                       style = AppTypography.bigNumberStyle)
                   Text(
@@ -176,7 +181,7 @@ fun UserProfileOverview(homeViewModel: HomeViewModel = viewModel(), navigation: 
                         .padding(horizontal = 30.dp)
                         .clickable { navigation.navController.navigate(Route.FOLLOWING) }) {
                   Text(
-                      text = "${profile.following.size}",
+                      text = "${profile.userProfile.value.following.size}",
                       modifier = Modifier.align(Alignment.CenterHorizontally),
                       style = AppTypography.bigNumberStyle)
                   Text(
@@ -205,7 +210,7 @@ fun UserProfileOverview(homeViewModel: HomeViewModel = viewModel(), navigation: 
                     modifier = Modifier.align(Alignment.BottomStart).testTag("MyTripsButton"),
                     onClick = {
                       navigation.navController.navigate(
-                          "${Route.MYTRIPS}?username=${profile.username}")
+                          "${Route.MYTRIPS}?username=${profile.userProfile.value.username}")
                     })
 
                 ProfileButton(

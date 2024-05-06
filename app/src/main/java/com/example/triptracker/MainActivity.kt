@@ -7,14 +7,16 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.triptracker.authentication.GoogleAuthenticator
-import com.example.triptracker.model.profile.EMPTY_PROFILE
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.ProvideUserProfile
 import com.example.triptracker.navigation.LaunchPermissionRequest
 import com.example.triptracker.view.LoginScreen
@@ -57,13 +59,13 @@ class MainActivity : ComponentActivity() {
       val lastSignIn = GoogleAuthenticator().getSignedInAccount(applicationContext())
 
       // Create an empty profile
-      var profile = EMPTY_PROFILE
+      val profile = MutableUserProfile()
 
       if (lastSignIn != null) {
         // Fetch the user profile from the DB
         UserProfileViewModel().getUserProfile(lastSignIn.email.toString()) {
           if (it != null) {
-            profile.value = it
+            profile.userProfile.value = it
           }
         }
       }
@@ -86,7 +88,7 @@ class MainActivity : ComponentActivity() {
                 navController = navController,
                 startDestination = Route.LOGIN,
             ) {
-              composable(Route.LOGIN) { LoginScreen(navigation) }
+              composable(Route.LOGIN) { LoginScreen(navigation, profile) }
               composable(Route.HOME) { HomeScreen(navigation) }
               //            composable(Route.MAPS) { MapOverview(context = context, navigation =
               // navigation, selectedId = "") }
@@ -100,7 +102,9 @@ class MainActivity : ComponentActivity() {
                   }
 
               composable(Route.RECORD) { RecordScreen(context, navigation) }
-              composable(Route.PROFILE) { UserProfileOverview(navigation = navigation) }
+              composable(Route.PROFILE) {
+                UserProfileOverview(navigation = navigation, profile = profile)
+              }
               composable(Route.FRIENDS) { UserProfileFriends(navigation = navigation) }
               composable(Route.FOLLOWERS) { UserProfileFollowers(navigation = navigation) }
               composable(Route.FOLLOWING) { UserProfileFollowing(navigation = navigation) }
@@ -116,7 +120,9 @@ class MainActivity : ComponentActivity() {
                   }
 
               composable(Route.FAVORITES) { UserProfileFavourite(navigation = navigation) }
-              composable(Route.EDIT) { UserProfileEditScreen(navigation = navigation) }
+              composable(Route.EDIT) {
+                UserProfileEditScreen(navigation = navigation, profile = profile)
+              }
               composable(Route.SETTINGS) { UserProfileSettings(navigation) }
             }
           }
