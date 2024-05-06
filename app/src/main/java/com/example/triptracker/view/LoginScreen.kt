@@ -79,14 +79,20 @@ fun LoginScreen(
                   val userName = googleSignInAccount.displayName
                   val email = googleSignInAccount.email
                   val photoUrl = googleSignInAccount.photoUrl?.toString()
-                  profileViewModel.addNewUserProfileToDb(
-                      UserProfile(
-                          email ?: "",
-                          userName ?: "",
-                          userName ?: "",
-                          userName ?: "",
-                          userName ?: "",
-                          photoUrl))
+                  if (email != null) {
+                    profileViewModel.getUserProfile(email) { profile ->
+                      if (profile == null) {
+                        profileViewModel.addNewUserProfileToDb(
+                            UserProfile(
+                                email,
+                                userName ?: "",
+                                userName ?: "",
+                                userName ?: "",
+                                userName ?: "",
+                                photoUrl))
+                      }
+                    }
+                  }
                   loginViewModel.onSignInResult(true, userName, email, photoUrl)
                 } else {
                   // googleSignInAccount is null, handle the case accordingly
