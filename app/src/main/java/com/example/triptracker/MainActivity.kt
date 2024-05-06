@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -15,8 +14,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.triptracker.authentication.GoogleAuthenticator
-import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.EMPTY_PROFILE
+import com.example.triptracker.model.profile.ProvideUserProfile
 import com.example.triptracker.navigation.LaunchPermissionRequest
 import com.example.triptracker.view.LoginScreen
 import com.example.triptracker.view.Navigation
@@ -64,12 +63,12 @@ class MainActivity : ComponentActivity() {
         // Fetch the user profile from the DB
         UserProfileViewModel().getUserProfile(lastSignIn.email.toString()) {
           if (it != null) {
-            profile = it
+            profile.value = it
           }
         }
       }
       // Create ambient profile
-      CompositionLocalProvider(AmbientUserProfile provides profile) {
+      ProvideUserProfile(userProfileState = profile) {
 
         // Set the trip tracker theme
         TripTrackerTheme {

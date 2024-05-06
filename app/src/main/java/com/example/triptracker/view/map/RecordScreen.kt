@@ -463,7 +463,7 @@ fun Map(
                                     val title = viewModel.title.value
                                     val username =
                                         "barghornjeremy@gmail.com" // TODO : get username from user
-                                                                   // but not
+                                    // but not
                                     // implemented yet
                                     val meanLocation = meanLocation(viewModel.latLongList.toList())
                                     val location =

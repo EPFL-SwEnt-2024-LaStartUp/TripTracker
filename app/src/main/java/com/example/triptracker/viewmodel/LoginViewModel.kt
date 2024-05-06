@@ -7,10 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import com.example.triptracker.authentication.AuthResponse
 import com.example.triptracker.model.authentication.SignInResult
 
-object loggedUser {
-  var email: String? = ""
-}
-
+/**
+ * ViewModel for the login screen.
+ *
+ * @param application: Application context.
+ */
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
   private val _authResult = MutableLiveData<AuthResponse<SignInResult>>()
@@ -24,7 +25,6 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
   ) {
     _authResult.value =
         if (result) {
-          loggedUser.email = email
           AuthResponse.Success(SignInResult(userName, email, photoUrl))
         } else {
           AuthResponse.Error("Error")

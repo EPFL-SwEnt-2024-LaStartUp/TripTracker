@@ -1,7 +1,11 @@
 package com.example.triptracker.model.profile
 
 import android.annotation.SuppressLint
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.mutableStateOf
 
 /**
  * This data class represents a user's profile information.
@@ -27,15 +31,24 @@ data class UserProfile(
 )
 
 @SuppressLint("CompositionLocalNaming")
-val AmbientUserProfile = compositionLocalOf<UserProfile> { error("No user profile provided") }
+var AmbientUserProfile = compositionLocalOf<UserProfile> { error("No user profile provided") }
+
+@Composable
+fun ProvideUserProfile(
+    userProfileState: MutableState<UserProfile>,
+    content: @Composable () -> Unit
+) {
+  CompositionLocalProvider(AmbientUserProfile provides userProfileState.value) { content() }
+}
 
 val EMPTY_PROFILE =
-    UserProfile(
-        "surname.name@gmail.com",
-        "Name",
-        "Surname",
-        "00/00/0000",
-        "Username",
-        "test.com",
-        emptyList(),
-        emptyList())
+    mutableStateOf(
+        UserProfile(
+            "surname.name@gmail.com",
+            "Name",
+            "Surname",
+            "00/00/0000",
+            "Username",
+            "test.com",
+            emptyList(),
+            emptyList()))
