@@ -83,6 +83,7 @@ fun UserProfileEditScreen(
     navigation: Navigation,
     profile: MutableUserProfile,
     userProfileViewModel: UserProfileViewModel = viewModel(),
+    isCreated: Boolean = false
 ) {
 
   /* Mutable state variable that holds the name of the user profile */
@@ -357,7 +358,11 @@ fun UserProfileEditScreen(
                                       !isUsernameEmpty,
                               action = {
                                 updateProfile()
-                                navigation.goBack()
+                                if (!isCreated) {
+                                  navigation.goBack()
+                                } else {
+                                  navigation.navigateTo(navigation.getStartingDestination())
+                                }
                               })
                         }
                   }

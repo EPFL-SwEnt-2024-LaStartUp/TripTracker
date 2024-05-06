@@ -110,14 +110,11 @@ class MainActivity : ComponentActivity() {
               composable(Route.FOLLOWING) { UserProfileFollowing(navigation = navigation) }
 
               // add argument to the composable (username)
-              composable(
-                  "MYTRIPS?username={username}",
-                  arguments = listOf(navArgument("username") { defaultValue = "" })) {
-                      backStackEntry ->
-                    UserProfileMyTrips(
-                        navigation = navigation,
-                        username = backStackEntry.arguments?.getString("username") ?: "")
-                  }
+              composable(Route.MYTRIPS) {
+                UserProfileMyTrips(
+                    navigation = navigation,
+                )
+              }
 
               composable(Route.FAVORITES) { UserProfileFavourite(navigation = navigation) }
               composable(Route.EDIT) {

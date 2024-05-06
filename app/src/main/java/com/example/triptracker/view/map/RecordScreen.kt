@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
+import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
@@ -180,6 +181,8 @@ fun Map(
   }
 
   val mapIsLoaded = remember { mutableStateOf(false) }
+
+  val profile = AmbientUserProfile.current.userProfile.value
 
   val animatedBlur by
       animateDpAsState(
@@ -461,8 +464,7 @@ fun Map(
                                     // Add itinerary to database
                                     val id = itineraryRepository.getUID()
                                     val title = viewModel.title.value
-                                    val username =
-                                        "barghornjeremy@gmail.com" // TODO : get username from user
+                                    val username = profile.mail
                                     // but not
                                     // implemented yet
                                     val meanLocation = meanLocation(viewModel.latLongList.toList())

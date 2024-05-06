@@ -143,6 +143,11 @@ fun UserProfileSettings(navigation: Navigation) {
                       onClick = {
                         val context = MainActivity.applicationContext()
                         GoogleAuthenticator().signOut(context)
+                        // Go back to the main profile page
+                        navigation.goBack()
+                        // Go to the home screen per default when restarting the app
+                        navigation.navigateTo(navigation.getStartingDestination())
+                        // Go to the login screen
                         navigation.navController.navigate("login")
                       },
                       colors =

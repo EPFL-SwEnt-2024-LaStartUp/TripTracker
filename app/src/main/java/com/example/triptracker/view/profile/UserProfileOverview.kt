@@ -208,10 +208,7 @@ fun UserProfileOverview(
                     label = "MyTrips",
                     icon = Icons.Outlined.BookmarkBorder,
                     modifier = Modifier.align(Alignment.BottomStart).testTag("MyTripsButton"),
-                    onClick = {
-                      navigation.navController.navigate(
-                          "${Route.MYTRIPS}?username=${profile.userProfile.value.username}")
-                    })
+                    onClick = { navigation.navController.navigate(Route.MYTRIPS) })
 
                 ProfileButton(
                     label = "Settings",

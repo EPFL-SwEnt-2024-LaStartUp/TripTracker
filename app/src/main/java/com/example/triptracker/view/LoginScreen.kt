@@ -130,9 +130,7 @@ fun LoginScreen(
       navigation.navController.navigate(home)
     }
     is AuthResponse.Loading -> {
-      //      CompositionLocalProvider(AmbientUserProfile provides profile) {
-      UserProfileEditScreen(navigation = navigation, profile = profile)
-      //      }
+      UserProfileEditScreen(navigation = navigation, profile = profile, isCreated = true)
     }
     is AuthResponse.Error -> {
       LoginResponseFailure(message = response.errorMessage)
