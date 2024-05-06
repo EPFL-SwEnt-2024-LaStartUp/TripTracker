@@ -2,6 +2,7 @@ package com.example.triptracker.view
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -22,7 +23,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -41,7 +47,9 @@ import com.example.triptracker.R
 import com.example.triptracker.authentication.AuthResponse
 import com.example.triptracker.authentication.GoogleAuthenticator
 import com.example.triptracker.model.profile.AmbientUserProfile
+import com.example.triptracker.model.profile.EMPTY_PROFILE
 import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.view.profile.UserProfileEditScreen
 import com.example.triptracker.view.theme.md_theme_light_inverseSurface
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.viewmodel.LoginViewModel
@@ -49,6 +57,8 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 /**
@@ -65,6 +75,7 @@ fun LoginScreen(
 
   val context = applicationContext()
   val authenticator = GoogleAuthenticator()
+  var profile by remember { mutableStateOf(EMPTY_PROFILE.value) }
   val signInLauncher =
       rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result
         ->
@@ -76,45 +87,41 @@ fun LoginScreen(
               if (signInTask.isSuccessful) {
                 val googleSignInAccount = signInTask.result
                 if (googleSignInAccount != null) {
-                  val profile =
-                      UserProfile(
-                          googleSignInAccount.email ?: "",
-                          googleSignInAccount.familyName ?: "",
-                          googleSignInAccount.givenName ?: "",
-                          googleSignInAccount.displayName ?: "",
-                          googleSignInAccount.givenName ?: "",
-                          googleSignInAccount.photoUrl?.toString() ?: "",
-                          emptyList(),
-                          emptyList())
-                  AmbientUserProfile.provides(profile)
+                  profileViewModel.getUserProfile(googleSignInAccount.email ?: "") {
+                    if (it != null) {
+                      loginViewModel.onSignInResult(LoginViewModel.AuthStatus.LOGGED_IN)
+                    } else {
 
-                  //                  if (email != null) {
-                  //                    profileViewModel.getUserProfile(email) { profile ->
-                  //                      if (profile == null) {
-                  //                        profileViewModel.addNewUserProfileToDb(
-                  //                            UserProfile(
-                  //                                email,
-                  //                                userName ?: "",
-                  //                                userName ?: "",
-                  //                                userName ?: "",
-                  //                                userName ?: "",
-                  //                                photoUrl))
-                  //                      }
-                  //                    }
-                  //                  }
-                  //                  loginViewModel.onSignInResult(true, userName, email, photoUrl)
+                      val currentDate = LocalDate.now()
+                      val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+                      profile =
+                          UserProfile(
+                              googleSignInAccount.email ?: "",
+                              googleSignInAccount.familyName ?: "",
+                              googleSignInAccount.givenName ?: "",
+                              currentDate.format(formatter),
+                              (googleSignInAccount.givenName + "_" + googleSignInAccount.familyName)
+                                  ?: "",
+                              googleSignInAccount.photoUrl?.toString() ?: "",
+                              emptyList(),
+                              emptyList())
+
+                      loginViewModel.onSignInResult(LoginViewModel.AuthStatus.CREATE_ACCOUNT)
+                    }
+                  }
                 } else {
                   // googleSignInAccount is null, handle the case accordingly
-                  //                  loginViewModel.onSignInResult(false)
+                  loginViewModel.onSignInResult(LoginViewModel.AuthStatus.ERROR)
                 }
               } else {
                 // Sign-in failed
-                //                loginViewModel.onSignInResult(false)
+                loginViewModel.onSignInResult(LoginViewModel.AuthStatus.ERROR)
               }
             }
           }
         } else {
-          //          loginViewModel.onSignInResult(false)
+          loginViewModel.onSignInResult(LoginViewModel.AuthStatus.ERROR)
         }
       }
 
@@ -122,22 +129,25 @@ fun LoginScreen(
 
   val loginResult = loginViewModel.authResult.observeAsState()
 
-  if (authenticator.isSignedIn(context)) {
-    val home = navigation.getStartingDestination().route
-    navigation.navController.navigate(home)
-  } else {
-    when (val response = loginResult.value) {
-      is AuthResponse.Success -> {
-        //        val home = navigation.getStartingDestination().route
-        //        navigation.navController.navigate(home)
+  when (val response = loginResult.value) {
+    is AuthResponse.Success -> {
+      val home = navigation.getStartingDestination().route
+      navigation.navController.navigate(home)
+    }
+    is AuthResponse.Loading -> {
+      CompositionLocalProvider(AmbientUserProfile provides profile) {
+        Log.d("TREALALALAL", "UserProfile: $profile")
+        UserProfileEditScreen(navigation = navigation, profile = profile)
       }
-      is AuthResponse.Error -> {
-        LoginResponseFailure(message = response.errorMessage)
-      }
-      is AuthResponse.Loading -> {
-        LoginResponseFailure(message = "Loading")
-      }
-      else -> {
+    }
+    is AuthResponse.Error -> {
+      LoginResponseFailure(message = response.errorMessage)
+    }
+    else -> {
+      if (authenticator.isSignedIn(context)) {
+        val home = navigation.getStartingDestination().route
+        navigation.navController.navigate(home)
+      } else {
         Login(context, authenticator)
       }
     }

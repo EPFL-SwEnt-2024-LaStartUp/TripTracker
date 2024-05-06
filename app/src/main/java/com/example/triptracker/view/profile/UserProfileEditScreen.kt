@@ -81,9 +81,9 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun UserProfileEditScreen(
     userProfileViewModel: UserProfileViewModel = viewModel(),
-    navigation: Navigation
+    navigation: Navigation,
+    profile: UserProfile = AmbientUserProfile.current
 ) {
-  val profile = AmbientUserProfile.current
 
   val userMail by remember { mutableStateOf(profile.mail) }
   var isUserMailEmpty by remember { mutableStateOf(profile.mail.isEmpty()) }
