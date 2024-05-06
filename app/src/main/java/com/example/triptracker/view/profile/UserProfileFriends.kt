@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,7 +40,6 @@ import com.example.triptracker.model.profile.Relationship
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
-import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import com.example.triptracker.viewmodel.loggedUser
 
@@ -47,14 +47,14 @@ import com.example.triptracker.viewmodel.loggedUser
 @Composable
 fun UserProfileFriends(
     navigation: Navigation,
-    viewModel: UserProfileViewModel = UserProfileViewModel(),
+    userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
 ) {
   val userMail: String = loggedUser.email ?: ""
   var userProfile by remember { mutableStateOf(UserProfile("")) }
   var readyToDisplay by remember { mutableStateOf(false) }
   var isSearchActive by remember { mutableStateOf(false) }
 
-  viewModel.getUserProfile(userMail) { profile ->
+  userProfileViewModel.getUserProfile(userMail) { profile ->
     if (profile != null) {
       userProfile = profile
       readyToDisplay = true
@@ -67,10 +67,11 @@ fun UserProfileFriends(
       Text("Loading...")
     }
     true -> {
-      val usersList by viewModel.userProfileList.observeAsState(initial = emptyList())
+      val usersList by userProfileViewModel.userProfileList.observeAsState(initial = emptyList())
 
-      viewModel.setListToFilter(usersList)
-      var filteredList = viewModel.filteredUserProfileList.observeAsState(initial = emptyList())
+      userProfileViewModel.setListToFilter(usersList)
+      var filteredList =
+          userProfileViewModel.filteredUserProfileList.observeAsState(initial = emptyList())
 
       Scaffold(
           topBar = {
@@ -84,7 +85,7 @@ fun UserProfileFriends(
                       colors =
                           ButtonDefaults.buttonColors(
                               containerColor = Color.Transparent,
-                              contentColor = md_theme_light_dark),
+                              contentColor = MaterialTheme.colorScheme.onSurface),
                       modifier = Modifier.testTag("GoBackButton")) {
                         Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
                       }
@@ -96,7 +97,7 @@ fun UserProfileFriends(
                               lineHeight = 16.sp,
                               fontFamily = FontFamily(Font(R.font.montserrat)),
                               fontWeight = FontWeight(700),
-                              color = Color.Black,
+                              color = MaterialTheme.colorScheme.onSurface,
                               textAlign = TextAlign.Start,
                               letterSpacing = 0.5.sp,
                           ),
@@ -113,10 +114,10 @@ fun UserProfileFriends(
           modifier = Modifier.fillMaxSize().testTag("FriendsFinderScreen")) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding).fillMaxSize().testTag("FriendsList")) {
               FriendSearchBar(
-                  viewModel = viewModel,
+                  viewModel = userProfileViewModel,
                   onSearchActivated = { isActive -> isSearchActive = isActive })
               FriendListView(
-                  viewModel = viewModel,
+                  viewModel = userProfileViewModel,
                   userProfile = userProfile,
                   relationship = Relationship.FRIENDS,
                   friendList = filteredList)
