@@ -507,4 +507,58 @@ class RecordTest {
 
     composeTestRule.onNodeWithText("Save").performClick()
   }
+
+  @Test
+  fun testClickOnCloseWhenInDescription() {
+    every { mockViewModel.isRecording() } returns false
+    every { mockViewModel.isPaused.value } returns false
+    every { mockViewModel.isInDescription() } returns true
+    every { mockViewModel.addSpotClicked.value } returns false
+    every { mockViewModel.description.value } returns "Description"
+    every { mockViewModel.title.value } returns "Title"
+
+    every { mockViewModel.latLongList } returns listOf()
+    every { mockViewModel.namePOI.value } returns "Name"
+    every { mockViewModel.displayNameDropDown.value } returns "Name"
+
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+
+    composeTestRule.setContent {
+      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+    }
+
+    // Go to RecordScreen
+    composeTestRule.onNodeWithTag("RecordScreen").assertExists()
+    composeTestRule.onNodeWithTag("RecordScreen").performClick()
+
+    composeTestRule.onNodeWithTag("CloseButton").assertExists()
+    // composeTestRule.onNodeWithText("CloseButton").assertExists()
+  }
+
+  @Test
+  fun testRecordTextIsDisplayed() {
+    every { mockViewModel.isRecording() } returns true
+    every { mockViewModel.isPaused.value } returns false
+    every { mockViewModel.isInDescription() } returns false
+    every { mockViewModel.addSpotClicked.value } returns false
+    every { mockViewModel.description.value } returns "Description"
+    every { mockViewModel.title.value } returns "Title"
+    every { mockViewModel.startDate.value } returns "2021-10-10"
+    every { mockViewModel.endDate.value } returns "2021-10-10"
+    every { mockViewModel.latLongList } returns listOf()
+    every { mockViewModel.namePOI.value } returns "Name"
+    every { mockViewModel.displayNameDropDown.value } returns "Name"
+
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+
+    composeTestRule.setContent {
+      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+    }
+
+    // Go to RecordScreen
+    composeTestRule.onNodeWithTag("RecordScreen").assertExists()
+    composeTestRule.onNodeWithTag("RecordScreen").performClick()
+
+    composeTestRule.onNodeWithTag("RecordText").assertExists()
+  }
 }
