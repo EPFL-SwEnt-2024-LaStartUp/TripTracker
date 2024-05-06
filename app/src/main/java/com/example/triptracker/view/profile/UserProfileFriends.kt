@@ -43,7 +43,12 @@ import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import com.example.triptracker.viewmodel.loggedUser
 
-/** This composable function displays the friends search view */
+/**
+ * This composable function displays the friends search view
+ *
+ * @param navigation : the navigation object to navigate to other screens.
+ * @param userProfileViewModel : the view model to handle the user profile.
+ */
 @Composable
 fun UserProfileFriends(
     navigation: Navigation,

@@ -41,7 +41,12 @@ import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import com.example.triptracker.viewmodel.loggedUser
 
-/** This composable function displays the user's following list. */
+/**
+ * This composable function displays the user's following list.
+ *
+ * @param navigation : the navigation object to navigate to other screens.
+ * @param userProfileViewModel : the view model to handle the user profile.
+ */
 @Composable
 fun UserProfileFollowers(
     navigation: Navigation,
