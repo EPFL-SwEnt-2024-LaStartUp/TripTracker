@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -28,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
@@ -43,7 +43,6 @@ import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_grey
-import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.UserProfileViewModel
@@ -86,7 +85,7 @@ fun FriendListView(
                       lineHeight = 16.sp,
                       fontFamily = Montserrat,
                       fontWeight = FontWeight(600),
-                      color = Color.Black,
+                      color = MaterialTheme.colorScheme.onSurface,
                       textAlign = TextAlign.Center,
                       letterSpacing = 0.5.sp),
               modifier = Modifier.fillMaxWidth().padding(10.dp))
@@ -105,7 +104,9 @@ fun FriendListView(
                   modifier =
                       Modifier.fillMaxWidth()
                           .height(105.dp)
-                          .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
+                          .background(
+                              MaterialTheme.colorScheme.onBackground,
+                              shape = RoundedCornerShape(35.dp))
                           .testTag("FriendProfile"),
                   contentAlignment = Alignment.Center) {
                     Row(
@@ -134,7 +135,7 @@ fun FriendListView(
                                             lineHeight = 16.sp,
                                             fontFamily = Montserrat,
                                             fontWeight = FontWeight(600),
-                                            color = Color.White,
+                                            color = MaterialTheme.colorScheme.surface,
                                             textAlign = TextAlign.Left,
                                             letterSpacing = 0.5.sp),
                                     overflow = TextOverflow.Ellipsis,
@@ -253,7 +254,7 @@ fun RemoveFriendButton(
                     lineHeight = 12.sp,
                     fontFamily = Montserrat,
                     fontWeight = FontWeight(500),
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.surface,
                     textAlign = TextAlign.Center,
                     letterSpacing = 0.5.sp))
       }
