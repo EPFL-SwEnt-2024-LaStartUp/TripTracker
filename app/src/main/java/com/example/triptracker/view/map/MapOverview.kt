@@ -178,6 +178,9 @@ fun Map(
 
   // When the camera is moving, the city name is updated in the top bar with geo decoding
   LaunchedEffect(cameraPositionState.isMoving) {
+    mapViewModel.reverseDecode(
+        cameraPositionState.position.target.latitude.toFloat(),
+        cameraPositionState.position.target.longitude.toFloat())
     // Get the visible region of the map
     visibleRegion = cameraPositionState.projection?.visibleRegion
     // Get the filtered paths based on the visible region of the map asynchronously

@@ -253,6 +253,11 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.activity:activity-ktx:1.8.2")
 
+    // ----------       Ambient user     ------------
+  implementation("androidx.compose.runtime:runtime:1.6.7")
+  implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
+  implementation("androidx.compose.runtime:runtime-rxjava2:1.6.7")
+
 }
 
 tasks.withType<Test> {

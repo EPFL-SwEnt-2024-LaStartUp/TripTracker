@@ -7,12 +7,16 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.triptracker.authentication.GoogleAuthenticator
+import com.example.triptracker.model.profile.AmbientUserProfile
+import com.example.triptracker.model.profile.EMPTY_PROFILE
 import com.example.triptracker.navigation.LaunchPermissionRequest
 import com.example.triptracker.view.LoginScreen
 import com.example.triptracker.view.Navigation
@@ -29,6 +33,7 @@ import com.example.triptracker.view.profile.UserProfileMyTrips
 import com.example.triptracker.view.profile.UserProfileOverview
 import com.example.triptracker.view.profile.UserProfileSettings
 import com.example.triptracker.view.theme.TripTrackerTheme
+import com.example.triptracker.viewmodel.UserProfileViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -48,54 +53,73 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContent {
-      // Set the trip tracker theme
-      TripTrackerTheme {
-        // A surface container using the 'background' color from the theme
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-          // Instance of NavController
-          val navController = rememberNavController()
-          val navigation = remember(navController) { Navigation(navController) }
-          val context: Context = applicationContext()
 
-          LaunchPermissionRequest(context)
+      // Get the last signed in account
+      val lastSignIn = GoogleAuthenticator().getSignedInAccount(applicationContext())
 
-          // List of destinations for in app navigation
-          NavHost(
-              navController = navController,
-              startDestination = Route.LOGIN,
-          ) {
-            composable(Route.LOGIN) { LoginScreen(navigation) }
-            composable(Route.HOME) { HomeScreen(navigation) }
-            //            composable(Route.MAPS) { MapOverview(context = context, navigation =
-            // navigation, selectedId = "") }
-            composable(
-                "MAPS?id={id}", arguments = listOf(navArgument("id") { defaultValue = "" })) {
-                    backStackEntry ->
-                  MapOverview(
-                      context = context,
-                      navigation = navigation,
-                      selectedId = backStackEntry.arguments?.getString("id") ?: "")
-                }
+      // Create an empty profile
+      var profile = EMPTY_PROFILE
 
-            composable(Route.RECORD) { RecordScreen(context, navigation) }
-            composable(Route.PROFILE) { UserProfileOverview(navigation = navigation) }
-            composable(Route.FRIENDS) { UserProfileFriends(navigation = navigation) }
-            composable(Route.FOLLOWERS) { UserProfileFollowers(navigation = navigation) }
-            composable(Route.FOLLOWING) { UserProfileFollowing(navigation = navigation) }
+      if (lastSignIn != null) {
+        // Fetch the user profile from the DB
+        UserProfileViewModel().getUserProfile(lastSignIn.email.toString()) {
+          if (it != null) {
+            profile = it
+          }
+        }
+      }
+      // Create ambient profile
+      CompositionLocalProvider(AmbientUserProfile provides profile) {
 
-            // add argument to the composable (username)
-            composable(
-                "MYTRIPS?username={username}",
-                arguments = listOf(navArgument("username") { defaultValue = "" })) { backStackEntry
-                  ->
-                  UserProfileMyTrips(
-                      navigation = navigation,
-                      username = backStackEntry.arguments?.getString("username") ?: "")
-                }
+        // Set the trip tracker theme
+        TripTrackerTheme {
+          // A surface container using the 'background' color from the theme
+          Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            // Instance of NavController
+            val navController = rememberNavController()
+            val navigation = remember(navController) { Navigation(navController) }
+            val context: Context = applicationContext()
 
-            composable(Route.FAVORITES) { UserProfileFavourite(navigation = navigation) }
-            composable(Route.EDIT) { UserProfileEditScreen(navigation = navigation) }
-            composable(Route.SETTINGS) { UserProfileSettings(navigation) }
+            LaunchPermissionRequest(context)
+
+            // List of destinations for in app navigation
+            NavHost(
+                navController = navController,
+                startDestination = Route.LOGIN,
+            ) {
+              composable(Route.LOGIN) { LoginScreen(navigation) }
+              composable(Route.HOME) { HomeScreen(navigation) }
+              //            composable(Route.MAPS) { MapOverview(context = context, navigation =
+              // navigation, selectedId = "") }
+              composable(
+                  "MAPS?id={id}", arguments = listOf(navArgument("id") { defaultValue = "" })) {
+                      backStackEntry ->
+                    MapOverview(
+                        context = context,
+                        navigation = navigation,
+                        selectedId = backStackEntry.arguments?.getString("id") ?: "")
+                  }
+
+              composable(Route.RECORD) { RecordScreen(context, navigation) }
+              composable(Route.PROFILE) { UserProfileOverview(navigation = navigation) }
+              composable(Route.FRIENDS) { UserProfileFriends(navigation = navigation) }
+              composable(Route.FOLLOWERS) { UserProfileFollowers(navigation = navigation) }
+              composable(Route.FOLLOWING) { UserProfileFollowing(navigation = navigation) }
+
+              // add argument to the composable (username)
+              composable(
+                  "MYTRIPS?username={username}",
+                  arguments = listOf(navArgument("username") { defaultValue = "" })) {
+                      backStackEntry ->
+                    UserProfileMyTrips(
+                        navigation = navigation,
+                        username = backStackEntry.arguments?.getString("username") ?: "")
+                  }
+
+              composable(Route.FAVORITES) { UserProfileFavourite(navigation = navigation) }
+              composable(Route.EDIT) { UserProfileEditScreen(navigation = navigation) }
+              composable(Route.SETTINGS) { UserProfileSettings(navigation) }
+            }
           }
         }
       }

@@ -39,4 +39,15 @@ class GoogleAuthenticator(
     //    TODO("Not yet implemented")
 
   }
+
+  /**
+   * Checks if a user is signed in using Google sign-in.
+   *
+   * @param context The context of the application.
+   */
+  override fun isSignedIn(context: Context): Boolean {
+    return GoogleSignIn.getLastSignedInAccount(context) != null
+  }
+
+  fun getSignedInAccount(context: Context) = GoogleSignIn.getLastSignedInAccount(context)
 }

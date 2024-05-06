@@ -461,7 +461,9 @@ fun Map(
                                     // Add itinerary to database
                                     val id = itineraryRepository.getUID()
                                     val title = viewModel.title.value
-                                    val username = "lomimi" // TODO : get username from user but not
+                                    val username =
+                                        "barghornjeremy@gmail.com" // TODO : get username from user
+                                                                   // but not
                                     // implemented yet
                                     val meanLocation = meanLocation(viewModel.latLongList.toList())
                                     val location =

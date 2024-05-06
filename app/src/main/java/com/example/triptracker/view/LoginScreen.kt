@@ -64,7 +64,6 @@ fun LoginScreen(
 
   val context = LocalContext.current
   val authenticator = GoogleAuthenticator()
-
   val signInLauncher =
       rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result
         ->
@@ -112,6 +111,18 @@ fun LoginScreen(
   authenticator.signInLauncher = signInLauncher
 
   val loginResult = loginViewModel.authResult.observeAsState()
+
+  val isSignedIn = authenticator.isSignedIn(context)
+  when (isSignedIn) {
+    true -> {
+      val home = navigation.getStartingDestination().route
+      navigation.navController.navigate(home)
+    }
+    false -> {
+      Login(context, authenticator)
+    }
+  }
+
   when (val response = loginResult.value) {
     is AuthResponse.Success -> {
       val home = navigation.getStartingDestination().route

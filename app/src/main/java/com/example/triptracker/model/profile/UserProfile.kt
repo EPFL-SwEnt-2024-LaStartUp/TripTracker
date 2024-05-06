@@ -1,5 +1,8 @@
 package com.example.triptracker.model.profile
 
+import android.annotation.SuppressLint
+import androidx.compose.runtime.compositionLocalOf
+
 /**
  * This data class represents a user's profile information.
  *
@@ -22,3 +25,17 @@ data class UserProfile(
     val followers: List<String> = emptyList(),
     val following: List<String> = emptyList()
 )
+
+@SuppressLint("CompositionLocalNaming")
+val AmbientUserProfile = compositionLocalOf<UserProfile> { error("No user profile provided") }
+
+val EMPTY_PROFILE =
+    UserProfile(
+        "surname.name@gmail.com",
+        "Name",
+        "Surname",
+        "00/00/0000",
+        "Username",
+        "test.com",
+        emptyList(),
+        emptyList())
