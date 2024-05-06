@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +38,6 @@ import com.example.triptracker.model.profile.Relationship
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
-import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import com.example.triptracker.viewmodel.loggedUser
 
@@ -45,7 +45,7 @@ import com.example.triptracker.viewmodel.loggedUser
 @Composable
 fun UserProfileFollowers(
     navigation: Navigation,
-    viewModel: UserProfileViewModel = UserProfileViewModel(),
+    userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
 ) {
   val userMail: String = loggedUser.email ?: ""
   var userProfile by remember { mutableStateOf(UserProfile("")) }
@@ -53,7 +53,7 @@ fun UserProfileFollowers(
   var isSearchActive by remember { mutableStateOf(false) }
 
   // val list = viewModel.userProfileList.value
-  viewModel.getUserProfile(userMail) { profile ->
+  userProfileViewModel.getUserProfile(userMail) { profile ->
     if (profile != null) {
       userProfile = profile
       readyToDisplay = true
@@ -67,7 +67,7 @@ fun UserProfileFollowers(
     true -> {
       var followersList: List<UserProfile> by remember { mutableStateOf(listOf<UserProfile>()) }
       userProfile.followers.forEach { follower ->
-        viewModel.getUserProfile(follower) { profile ->
+        userProfileViewModel.getUserProfile(follower) { profile ->
           if (profile != null) {
             // we check that the profile is not already in the following list
             if (!followersList.contains(profile)) {
@@ -77,8 +77,9 @@ fun UserProfileFollowers(
         }
       }
 
-      viewModel.setListToFilter(followersList)
-      var filteredList = viewModel.filteredUserProfileList.observeAsState(initial = emptyList())
+      userProfileViewModel.setListToFilter(followersList)
+      var filteredList =
+          userProfileViewModel.filteredUserProfileList.observeAsState(initial = emptyList())
 
       Scaffold(
           topBar = {
@@ -91,7 +92,7 @@ fun UserProfileFollowers(
                       colors =
                           ButtonDefaults.buttonColors(
                               containerColor = Color.Transparent,
-                              contentColor = md_theme_light_dark),
+                              contentColor = MaterialTheme.colorScheme.onSurface),
                       modifier = Modifier.testTag("GoBackButton")) {
                         Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
                       }
@@ -104,7 +105,7 @@ fun UserProfileFollowers(
                               lineHeight = 16.sp,
                               fontFamily = FontFamily(Font(R.font.montserrat)),
                               fontWeight = FontWeight(700),
-                              color = Color.Black,
+                              color = MaterialTheme.colorScheme.onSurface,
                               textAlign = TextAlign.Start,
                               letterSpacing = 0.5.sp,
                           ),
@@ -119,11 +120,11 @@ fun UserProfileFollowers(
           modifier = Modifier.fillMaxSize().testTag("FollowersScreen")) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding).testTag("FollowersList")) {
               FriendSearchBar(
-                  viewModel = viewModel,
+                  viewModel = userProfileViewModel,
                   onSearchActivated = { isActive -> isSearchActive = isActive })
               // Display the list of following
               FriendListView(
-                  viewModel = viewModel,
+                  viewModel = userProfileViewModel,
                   userProfile = userProfile,
                   relationship = Relationship.FOLLOWER,
                   friendList = filteredList)

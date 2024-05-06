@@ -45,7 +45,7 @@ class UserProfileFriendsTest {
     composeTestRule.setContent {
       UserProfileFriends(
           navigation = mockNav,
-          viewModel = mockViewModel,
+          userProfileViewModel = mockViewModel,
       )
     }
     ComposeScreen.onComposeScreen<UserProfileFriendsScreen>(composeTestRule) {}
