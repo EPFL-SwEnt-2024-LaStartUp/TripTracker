@@ -26,7 +26,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -37,9 +36,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.triptracker.MainActivity.Companion.applicationContext
 import com.example.triptracker.R
 import com.example.triptracker.authentication.AuthResponse
 import com.example.triptracker.authentication.GoogleAuthenticator
+import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.theme.md_theme_light_inverseSurface
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
@@ -62,7 +63,7 @@ fun LoginScreen(
     profileViewModel: UserProfileViewModel = viewModel()
 ) {
 
-  val context = LocalContext.current
+  val context = applicationContext()
   val authenticator = GoogleAuthenticator()
   val signInLauncher =
       rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result
@@ -85,7 +86,7 @@ fun LoginScreen(
                           googleSignInAccount.photoUrl?.toString() ?: "",
                           emptyList(),
                           emptyList())
-                  //                    AmbientUserProfile.current = profile
+                  AmbientUserProfile.provides(profile)
 
                   //                  if (email != null) {
                   //                    profileViewModel.getUserProfile(email) { profile ->

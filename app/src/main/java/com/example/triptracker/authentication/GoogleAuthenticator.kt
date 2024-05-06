@@ -29,15 +29,8 @@ class GoogleAuthenticator(
     signInLauncher?.launch(signInIntent)
   }
 
-  override fun signOut() {
-    //    AuthUI.getInstance().signOut(context).addOnCompleteListener {
-    //      // ...
-    //    }
-  }
-
-  override fun delete() {
-    //    TODO("Not yet implemented")
-
+  override fun signOut(context: Context) {
+    GoogleSignIn.getClient(context, GoogleSignInOptions.DEFAULT_SIGN_IN).signOut()
   }
 
   /**

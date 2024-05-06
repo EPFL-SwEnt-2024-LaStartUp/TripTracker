@@ -16,9 +16,7 @@ interface Authenticator {
 
   fun signIn(signInIntent: Intent)
 
-  fun signOut()
-
-  fun delete()
+  fun signOut(context: Context)
 
   fun isSignedIn(context: Context): Boolean
 }

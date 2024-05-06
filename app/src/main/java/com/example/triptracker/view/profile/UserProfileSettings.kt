@@ -31,6 +31,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.triptracker.MainActivity
+import com.example.triptracker.authentication.GoogleAuthenticator
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
@@ -138,7 +140,11 @@ fun UserProfileSettings(navigation: Navigation) {
                 actions = {
                   FilledTonalButton(
                       modifier = Modifier.size(width = 120.dp, height = 35.dp),
-                      onClick = {},
+                      onClick = {
+                        val context = MainActivity.applicationContext()
+                        GoogleAuthenticator().signOut(context)
+                        navigation.navController.navigate("login")
+                      },
                       colors =
                           ButtonDefaults.filledTonalButtonColors(
                               containerColor = md_theme_grey, contentColor = md_theme_dark_gray)) {
