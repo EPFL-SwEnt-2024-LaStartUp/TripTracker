@@ -1,6 +1,7 @@
 package com.example.triptracker.userProfile
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.repository.UserProfileRepository
 import com.example.triptracker.screens.userProfile.UserProfileFriendsScreen
@@ -29,6 +30,7 @@ class UserProfileFriendsTest {
 
   private val mockList = MockUserList()
   private val mockUserProfiles = mockList.getUserProfiles()
+  private val liveDataMockUserProfiles = MutableLiveData(mockUserProfiles)
 
   @Before
   fun setUp() { // Mocking necessary components
@@ -40,7 +42,7 @@ class UserProfileFriendsTest {
   @Test
   fun componentAreCorrectlyDisplayed() {
     every { mockUserProfileRepository.getAllUserProfiles() } returns mockUserProfiles
-    every { mockViewModel.getUserProfileList() } returns mockUserProfiles
+    every { mockViewModel.getUserProfileList() } returns liveDataMockUserProfiles.value!!
     // Setting up the test composition
     composeTestRule.setContent {
       UserProfileFriends(

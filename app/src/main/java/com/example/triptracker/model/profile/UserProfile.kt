@@ -30,18 +30,25 @@ data class UserProfile(
     val following: List<String> = emptyList()
 )
 
+/** This data class represents a mutable user's profile information. */
 data class MutableUserProfile(
     var userProfile: MutableState<UserProfile> = mutableStateOf(EMPTY_PROFILE)
 )
 
+/**
+ * CompositionLocal for providing the user's profile information. This will be global information
+ * that can be accessed by any composable function.
+ */
 @SuppressLint("CompositionLocalNaming")
 var AmbientUserProfile = compositionLocalOf { MutableUserProfile() }
 
+/** Composable function to provide the user's profile information. */
 @Composable
 fun ProvideUserProfile(userProfileState: MutableUserProfile, content: @Composable () -> Unit) {
   CompositionLocalProvider(AmbientUserProfile provides userProfileState) { content() }
 }
 
+/** Empty profile object to be used as a default value. */
 val EMPTY_PROFILE =
     UserProfile(
         "surname.name@gmail.com",
