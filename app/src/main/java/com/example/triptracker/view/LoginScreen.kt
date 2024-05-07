@@ -22,11 +22,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -37,10 +38,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.triptracker.MainActivity.Companion.applicationContext
 import com.example.triptracker.R
 import com.example.triptracker.authentication.AuthResponse
 import com.example.triptracker.authentication.GoogleAuthenticator
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.view.profile.UserProfileEditScreen
 import com.example.triptracker.view.theme.md_theme_light_inverseSurface
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.viewmodel.LoginViewModel
@@ -48,6 +52,8 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 /**
@@ -58,13 +64,13 @@ import com.google.android.gms.tasks.Task
  */
 fun LoginScreen(
     navigation: Navigation,
+    profile: MutableUserProfile,
     loginViewModel: LoginViewModel = viewModel(),
     profileViewModel: UserProfileViewModel = viewModel()
 ) {
 
-  val context = LocalContext.current
+  val context = applicationContext()
   val authenticator = GoogleAuthenticator()
-
   val signInLauncher =
       rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result
         ->
@@ -76,55 +82,66 @@ fun LoginScreen(
               if (signInTask.isSuccessful) {
                 val googleSignInAccount = signInTask.result
                 if (googleSignInAccount != null) {
-                  val userName = googleSignInAccount.displayName
-                  val email = googleSignInAccount.email
-                  val photoUrl = googleSignInAccount.photoUrl?.toString()
-                  if (email != null) {
-                    profileViewModel.getUserProfile(email) { profile ->
-                      if (profile == null) {
-                        profileViewModel.addNewUserProfileToDb(
-                            UserProfile(
-                                email,
-                                userName ?: "",
-                                userName ?: "",
-                                userName ?: "",
-                                userName ?: "",
-                                photoUrl))
-                      }
+                  profileViewModel.getUserProfile(googleSignInAccount.email ?: "") {
+                    if (it != null) {
+                      loginViewModel.onSignInResult(LoginViewModel.AuthStatus.LOGGED_IN)
+                    } else {
+
+                      val currentDate = LocalDate.now()
+                      val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+                      profile.userProfile.value =
+                          UserProfile(
+                              googleSignInAccount.email ?: "",
+                              googleSignInAccount.familyName ?: "",
+                              googleSignInAccount.givenName ?: "",
+                              currentDate.format(formatter),
+                              (googleSignInAccount.givenName + "_" + googleSignInAccount.familyName)
+                                  ?: "",
+                              googleSignInAccount.photoUrl?.toString() ?: "",
+                              emptyList(),
+                              emptyList())
+
+                      loginViewModel.onSignInResult(LoginViewModel.AuthStatus.CREATE_ACCOUNT)
                     }
                   }
-                  loginViewModel.onSignInResult(true, userName, email, photoUrl)
                 } else {
                   // googleSignInAccount is null, handle the case accordingly
-                  loginViewModel.onSignInResult(false)
+                  loginViewModel.onSignInResult(LoginViewModel.AuthStatus.ERROR)
                 }
               } else {
                 // Sign-in failed
-                loginViewModel.onSignInResult(false)
+                loginViewModel.onSignInResult(LoginViewModel.AuthStatus.ERROR)
               }
             }
           }
         } else {
-          loginViewModel.onSignInResult(false)
+          loginViewModel.onSignInResult(LoginViewModel.AuthStatus.ERROR)
         }
       }
 
   authenticator.signInLauncher = signInLauncher
 
   val loginResult = loginViewModel.authResult.observeAsState()
+
   when (val response = loginResult.value) {
     is AuthResponse.Success -> {
       val home = navigation.getStartingDestination().route
       navigation.navController.navigate(home)
     }
+    is AuthResponse.Loading -> {
+      UserProfileEditScreen(navigation = navigation, profile = profile, isCreated = true)
+    }
     is AuthResponse.Error -> {
       LoginResponseFailure(message = response.errorMessage)
     }
-    is AuthResponse.Loading -> {
-      LoginResponseFailure(message = "Loading")
-    }
     else -> {
-      Login(context, authenticator)
+      if (authenticator.isSignedIn(context)) {
+        val home = navigation.getStartingDestination().route
+        navigation.navController.navigate(home)
+      } else {
+        Login(context, authenticator)
+      }
     }
   }
 }
@@ -192,46 +209,6 @@ fun Login(
   }
 }
 
-// @Composable
-/// **
-// * @param result: SignInResult object containing the user's information to be displayed
-// * @param onSignOut: Function to sign out the user Displays the user's information and a button to
-// *   sign out
-// */
-// fun LoginResponseOk(result: SignInResult, onSignOut: () -> Unit, navigation: Navigation) {
-//  Column(
-//      modifier = Modifier.fillMaxSize(),
-//      verticalArrangement = Arrangement.Center,
-//      horizontalAlignment = Alignment.CenterHorizontally) {
-//        if (result.imageUrl != null) {
-//          AsyncImage(
-//              model = result.imageUrl,
-//              contentDescription = "Profile picture",
-//              modifier = Modifier.size(150.dp).clip(CircleShape),
-//              contentScale = ContentScale.Crop)
-//          Spacer(modifier = Modifier.height(16.dp))
-//        }
-//        if (result.name != null) {
-//          Text(
-//              text = result.name,
-//              textAlign = TextAlign.Center,
-//              fontSize = 36.sp,
-//              fontWeight = FontWeight.SemiBold)
-//          Spacer(modifier = Modifier.height(16.dp))
-//        }
-//        androidx.compose.material.Button(
-//            onClick = {
-//              navigation.navController.navigate(Route.HOME)
-//            } /* TODO logic to navigate to overview screen : onNavigateTo */) {
-//              androidx.compose.material.Text(text = "Go to overview")
-//            }
-//        // UNCOMMENT THIS CODE IF YOU WANT TO ADD A SIGN OUT BUTTON
-//        androidx.compose.material.Button(onClick = onSignOut) {
-//          androidx.compose.material.Text(text = "Sign out")
-//        }
-//      }
-// }
-
 @Composable
 /**
  * @param message: String containing the error message to be displayed Displays an error message
@@ -244,9 +221,3 @@ fun LoginResponseFailure(message: String) {
     }
   }
 }
-
-// @Preview
-// @Composable
-// fun PreviewLoginResponseFailure() {
-//  LoginResponseFailure("Error")
-// }

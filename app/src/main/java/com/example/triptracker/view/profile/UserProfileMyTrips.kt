@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
@@ -49,19 +50,18 @@ import com.example.triptracker.viewmodel.HomeViewModel
  * @param homeViewModel ViewModel for the home screen.
  * @param navigation Navigation object for navigating between screens.
  * @param test Boolean flag for testing.
- * @param username Username of the user.
  */
 @Composable
 fun UserProfileMyTrips(
     homeViewModel: HomeViewModel = viewModel(),
     navigation: Navigation,
     test: Boolean = false,
-    username: String = ""
 ) {
 
+  val profile = AmbientUserProfile.current.userProfile.value
   // Set search filter and query in the ViewModel
   homeViewModel.setSearchFilter(FilterType.USERNAME)
-  homeViewModel.setSearchQuery(username)
+  homeViewModel.setSearchQuery(profile.username)
 
   // Observe the filtered itinerary list from the ViewModel
   val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())

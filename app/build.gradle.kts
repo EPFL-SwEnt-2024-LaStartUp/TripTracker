@@ -190,7 +190,7 @@ dependencies {
   implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
   implementation("com.firebaseui:firebase-ui-auth:7.2.0")
   implementation("com.google.firebase:firebase-database-ktx:20.3.0")
-  implementation("com.google.firebase:firebase-firestore:24.10.0")
+  implementation("com.google.firebase:firebase-firestore:25.0.0")
   implementation("com.google.android.play:core-ktx:1.7.0")
   implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
   implementation("com.google.android.gms:play-services-auth:19.2.0")
@@ -252,6 +252,10 @@ dependencies {
     implementation("androidx.activity:activity:1.8.2")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.activity:activity-ktx:1.8.2")
+
+    // ----------       Ambient user     ------------
+  implementation("androidx.compose.runtime:runtime:1.6.7")
+  implementation("androidx.compose.runtime:runtime-rxjava2:1.6.7")
 
 }
 
