@@ -29,14 +29,18 @@ class GoogleAuthenticator(
     signInLauncher?.launch(signInIntent)
   }
 
-  override fun signOut() {
-    //    AuthUI.getInstance().signOut(context).addOnCompleteListener {
-    //      // ...
-    //    }
+  override fun signOut(context: Context) {
+    GoogleSignIn.getClient(context, GoogleSignInOptions.DEFAULT_SIGN_IN).signOut()
   }
 
-  override fun delete() {
-    //    TODO("Not yet implemented")
-
+  /**
+   * Checks if a user is signed in using Google sign-in.
+   *
+   * @param context The context of the application.
+   */
+  override fun isSignedIn(context: Context): Boolean {
+    return GoogleSignIn.getLastSignedInAccount(context) != null
   }
+
+  fun getSignedInAccount(context: Context) = GoogleSignIn.getLastSignedInAccount(context)
 }

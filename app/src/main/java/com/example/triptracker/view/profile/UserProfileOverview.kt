@@ -1,6 +1,5 @@
 package com.example.triptracker.view.profile
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -28,8 +27,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
@@ -49,7 +46,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.R
-import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
@@ -58,8 +55,6 @@ import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
-import com.example.triptracker.viewmodel.UserProfileViewModel
-import com.example.triptracker.viewmodel.loggedUser
 
 /* Visual preview without any logic */
 
@@ -72,176 +67,159 @@ import com.example.triptracker.viewmodel.loggedUser
  */
 @Composable
 fun UserProfileOverview(
-    userProfileViewModel: UserProfileViewModel = viewModel(),
-    homeViewModel: HomeViewModel = viewModel(),
-    navigation: Navigation
+    navigation: Navigation,
+    profile: MutableUserProfile,
+    homeViewModel: HomeViewModel = viewModel()
 ) {
-  val userMail: String = loggedUser.email ?: ""
-  var readyToDisplay by remember { mutableStateOf(false) }
-  var profile by remember { mutableStateOf(UserProfile("")) }
   val myTripsList = homeViewModel.filteredItineraryList
   var myTripsCount = 0
   myTripsList.observeForever(Observer { list -> myTripsCount = list.size })
 
-  userProfileViewModel.getUserProfile(userMail) { fetch ->
-    if (fetch != null) {
-      profile = fetch
-      readyToDisplay = true
-    }
+  val MAX_PROFILE_NAME_LENGTH = 15
+
+  homeViewModel.setSearchFilter(FilterType.USERNAME)
+  homeViewModel.setSearchQuery(
+      profile.userProfile.value.username) // Filters the list of trips on user that created it
+  var sizeUsername = 24.sp
+  if (profile.userProfile.value.username.length > MAX_PROFILE_NAME_LENGTH) {
+    sizeUsername = 18.sp
   }
 
-  when (readyToDisplay) {
-    false -> {
-      Log.d("UserProfile", "User profile is null")
-    }
-    true -> {
-      homeViewModel.setSearchFilter(FilterType.USERNAME)
-      homeViewModel.setSearchQuery(
-          profile.username) // Filters the list of trips on user that created it
-      var sizeUsername = 24.sp
-      if (profile.username.length > 15) {
-        sizeUsername = 18.sp
-      }
+  Scaffold(
+      topBar = {},
+      bottomBar = { NavigationBar(navigation) },
+      modifier = Modifier.fillMaxSize().testTag("ProfileOverview")) { innerPadding ->
+        Column(modifier = Modifier.padding(innerPadding)) {
+          Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
 
-      Scaffold(
-          topBar = {},
-          bottomBar = { NavigationBar(navigation) },
-          modifier = Modifier.fillMaxSize().testTag("ProfileOverview")) { innerPadding ->
-            Column(modifier = Modifier.padding(innerPadding)) {
-              Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
-
-              // Profile picture and name (later maybe more informations depending of data classes
-              // updates
-              Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                // Profile picture
-                Column() {
-                  AsyncImage(
-                      model = profile.profileImageUrl,
-                      contentDescription = "Profile picture",
-                      placeholder = painterResource(id = R.drawable.blankprofile),
-                      modifier =
-                          Modifier.shadow(
-                                  elevation = 15.dp,
-                                  shape = CircleShape,
-                                  ambientColor = md_theme_light_dark,
-                                  spotColor = md_theme_light_dark)
-                              .padding(start = 15.dp)
-                              .size(110.dp)
-                              .clip(CircleShape),
-                      contentScale = ContentScale.Crop)
-                }
-
-                // Other informations
-                Column() {
-                  Row() {
-                    IconButton(onClick = { navigation.navController.navigate(Route.EDIT) }) {
-                      Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
-                    }
-                    Text(
-                        text = profile.username, // I think we only show the pseudo here and keep
-                        // birthdate
-                        // name and surname private.
-                        style =
-                            TextStyle(
-                                fontSize = sizeUsername,
-                                lineHeight = 16.sp,
-                                fontFamily = FontFamily(Font(R.font.montserrat)),
-                                fontWeight = FontWeight(700),
-                                color = md_theme_light_dark,
-                                textAlign = TextAlign.Right,
-                                letterSpacing = 0.5.sp,
-                            ),
-                        modifier =
-                            Modifier.width(250.dp).height(37.dp).padding(top = 12.dp, end = 15.dp))
-                  }
-                  Text(
-                      text = "Interests",
-                      style = AppTypography.secondaryTitleStyle,
-                      modifier = Modifier.align(Alignment.End).padding(end = 15.dp))
-                  Text(
-                      text = "Hiking, Photography", // profile.interestsList
-                      style = AppTypography.secondaryContentStyle,
-                      modifier = Modifier.align(Alignment.End).padding(end = 15.dp))
-
-                  /*add more informations later if UserProfile is udpated*/
-                }
-              }
-              // Number of trips, followers and following when implemented in the data classes
-              Row(modifier = Modifier.height(225.dp).align(Alignment.CenterHorizontally)) {
-                Column(
-                    modifier =
-                        Modifier.align(Alignment.CenterVertically).padding(horizontal = 40.dp)) {
-                      Text(
-                          text = "${myTripsCount}", // Call to the filtered Itinerarylist
-                          modifier = Modifier.align(Alignment.CenterHorizontally),
-                          style = AppTypography.bigNumberStyle)
-                      Text(
-                          text = "Trips",
-                          modifier = Modifier.align(Alignment.CenterHorizontally),
-                          style = AppTypography.categoryTextStyle)
-                    }
-                Column(
-                    modifier =
-                        Modifier.align(Alignment.CenterVertically)
-                            .padding(horizontal = 30.dp)
-                            .clickable { navigation.navController.navigate(Route.FOLLOWERS) }) {
-                      Text(
-                          text = "${profile.followers.size}",
-                          modifier = Modifier.align(Alignment.CenterHorizontally),
-                          style = AppTypography.bigNumberStyle)
-                      Text(
-                          text = "Followers",
-                          modifier = Modifier.align(Alignment.CenterHorizontally),
-                          style = AppTypography.categoryTextStyle)
-                    }
-                Column(
-                    modifier =
-                        Modifier.align(Alignment.CenterVertically)
-                            .padding(horizontal = 30.dp)
-                            .clickable { navigation.navController.navigate(Route.FOLLOWING) }) {
-                      Text(
-                          text = "${profile.following.size}",
-                          modifier = Modifier.align(Alignment.CenterHorizontally),
-                          style = AppTypography.bigNumberStyle)
-                      Text(
-                          text = "Following",
-                          modifier = Modifier.align(Alignment.CenterHorizontally),
-                          style = AppTypography.categoryTextStyle)
-                    }
-              }
-              // Favourites, Friends, Settings and MyTrips tiles
-              Box(
+          // Profile picture and name (later maybe more informations depending of data classes
+          // updates
+          Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+            // Profile picture
+            Column() {
+              AsyncImage(
+                  model = profile.userProfile.value.profileImageUrl,
+                  contentDescription = "Profile picture",
+                  placeholder = painterResource(id = R.drawable.blankprofile),
                   modifier =
-                      Modifier.height(300.dp).width(350.dp).align(Alignment.CenterHorizontally)) {
-                    ProfileButton(
-                        label = "Favourites",
-                        icon = Icons.Outlined.FavoriteBorder,
-                        onClick = { navigation.navController.navigate(Route.FAVORITES) },
-                        modifier = Modifier.align(Alignment.TopStart).testTag("FavoritesButton"))
-                    ProfileButton(
-                        label = "Friends",
-                        icon = Icons.Outlined.People,
-                        onClick = { navigation.navController.navigate(Route.FRIENDS) },
-                        modifier = Modifier.align(Alignment.TopEnd).testTag("FriendsButton"))
-                    ProfileButton(
-                        label = "MyTrips",
-                        icon = Icons.Outlined.BookmarkBorder,
-                        modifier = Modifier.align(Alignment.BottomStart).testTag("MyTripsButton"),
-                        onClick = {
-                          navigation.navController.navigate(
-                              "${Route.MYTRIPS}?username=${profile.username}")
-                        })
+                      Modifier.shadow(
+                              elevation = 15.dp,
+                              shape = CircleShape,
+                              ambientColor = md_theme_light_dark,
+                              spotColor = md_theme_light_dark)
+                          .padding(start = 15.dp)
+                          .size(110.dp)
+                          .clip(CircleShape),
+                  contentScale = ContentScale.Crop)
+            }
 
-                    ProfileButton(
-                        label = "Settings",
-                        icon = Icons.Outlined.Settings,
-                        onClick = { navigation.navController.navigate(Route.SETTINGS) },
-                        modifier = Modifier.align(Alignment.BottomEnd).testTag("SettingsButton"))
-                  }
+            // Other informations
+            Column() {
+              Row() {
+                IconButton(onClick = { navigation.navController.navigate(Route.EDIT) }) {
+                  Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
+                }
+                Text(
+                    text =
+                        profile.userProfile.value
+                            .username, // I think we only show the pseudo here and keep
+                    // birthdate
+                    // name and surname private.
+                    style =
+                        TextStyle(
+                            fontSize = sizeUsername,
+                            lineHeight = 16.sp,
+                            fontFamily = FontFamily(Font(R.font.montserrat)),
+                            fontWeight = FontWeight(700),
+                            color = md_theme_light_dark,
+                            textAlign = TextAlign.Right,
+                            letterSpacing = 0.5.sp,
+                        ),
+                    modifier =
+                        Modifier.width(250.dp).height(37.dp).padding(top = 12.dp, end = 15.dp))
+              }
+              Text(
+                  text = "Interests",
+                  style = AppTypography.secondaryTitleStyle,
+                  modifier = Modifier.align(Alignment.End).padding(end = 15.dp))
+              Text(
+                  text = "Hiking, Photography", // profile.interestsList
+                  style = AppTypography.secondaryContentStyle,
+                  modifier = Modifier.align(Alignment.End).padding(end = 15.dp))
+
+              /*add more informations later if UserProfile is udpated*/
             }
           }
-    }
-  }
+          // Number of trips, followers and following when implemented in the data classes
+          Row(modifier = Modifier.height(225.dp).align(Alignment.CenterHorizontally)) {
+            Column(
+                modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 40.dp)) {
+                  Text(
+                      text = "${myTripsCount}", // Call to the filtered Itinerarylist
+                      modifier = Modifier.align(Alignment.CenterHorizontally),
+                      style = AppTypography.bigNumberStyle)
+                  Text(
+                      text = "Trips",
+                      modifier = Modifier.align(Alignment.CenterHorizontally),
+                      style = AppTypography.categoryTextStyle)
+                }
+            Column(
+                modifier =
+                    Modifier.align(Alignment.CenterVertically)
+                        .padding(horizontal = 30.dp)
+                        .clickable { navigation.navController.navigate(Route.FOLLOWERS) }) {
+                  Text(
+                      text = "${profile.userProfile.value.followers.size}",
+                      modifier = Modifier.align(Alignment.CenterHorizontally),
+                      style = AppTypography.bigNumberStyle)
+                  Text(
+                      text = "Followers",
+                      modifier = Modifier.align(Alignment.CenterHorizontally),
+                      style = AppTypography.categoryTextStyle)
+                }
+            Column(
+                modifier =
+                    Modifier.align(Alignment.CenterVertically)
+                        .padding(horizontal = 30.dp)
+                        .clickable { navigation.navController.navigate(Route.FOLLOWING) }) {
+                  Text(
+                      text = "${profile.userProfile.value.following.size}",
+                      modifier = Modifier.align(Alignment.CenterHorizontally),
+                      style = AppTypography.bigNumberStyle)
+                  Text(
+                      text = "Following",
+                      modifier = Modifier.align(Alignment.CenterHorizontally),
+                      style = AppTypography.categoryTextStyle)
+                }
+          }
+          // Favourites, Friends, Settings and MyTrips tiles
+          Box(
+              modifier =
+                  Modifier.height(300.dp).width(350.dp).align(Alignment.CenterHorizontally)) {
+                ProfileButton(
+                    label = "Favourites",
+                    icon = Icons.Outlined.FavoriteBorder,
+                    onClick = { navigation.navController.navigate(Route.FAVORITES) },
+                    modifier = Modifier.align(Alignment.TopStart).testTag("FavoritesButton"))
+                ProfileButton(
+                    label = "Friends",
+                    icon = Icons.Outlined.People,
+                    onClick = { navigation.navController.navigate(Route.FRIENDS) },
+                    modifier = Modifier.align(Alignment.TopEnd).testTag("FriendsButton"))
+                ProfileButton(
+                    label = "MyTrips",
+                    icon = Icons.Outlined.BookmarkBorder,
+                    modifier = Modifier.align(Alignment.BottomStart).testTag("MyTripsButton"),
+                    onClick = { navigation.navController.navigate(Route.MYTRIPS) })
+
+                ProfileButton(
+                    label = "Settings",
+                    icon = Icons.Outlined.Settings,
+                    onClick = { navigation.navController.navigate(Route.SETTINGS) },
+                    modifier = Modifier.align(Alignment.BottomEnd).testTag("SettingsButton"))
+              }
+        }
+      }
 }
 
 object AppTypography {

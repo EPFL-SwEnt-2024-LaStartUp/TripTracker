@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.profile.ProfileButton
@@ -55,7 +56,7 @@ class UserProfileOverviewTest {
 
     composeTestRule.setContent {
       UserProfileOverview(
-          userProfileViewModel = userProfilevm, homeViewModel = homevm, navigation = mockNavigation)
+          profile = MutableUserProfile(), navigation = mockNavigation, homeViewModel = homevm)
     }
 
     composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
@@ -65,7 +66,7 @@ class UserProfileOverviewTest {
   fun emptyProfile() {
     composeTestRule.setContent {
       UserProfileOverview(
-          userProfileViewModel = userProfilevm, homeViewModel = homevm, navigation = mockNavigation)
+          profile = MutableUserProfile(), navigation = mockNavigation, homeViewModel = homevm)
     }
   }
 
@@ -94,7 +95,7 @@ class UserProfileOverviewTest {
 
     composeTestRule.setContent {
       UserProfileOverview(
-          userProfileViewModel = userProfilevm, homeViewModel = homevm, navigation = mockNavigation)
+          profile = MutableUserProfile(), navigation = mockNavigation, homeViewModel = homevm)
     }
 
     composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
@@ -121,7 +122,7 @@ class UserProfileOverviewTest {
 
     composeTestRule.setContent {
       UserProfileOverview(
-          userProfileViewModel = userProfilevm, homeViewModel = homevm, navigation = mockNavigation)
+          profile = MutableUserProfile(), navigation = mockNavigation, homeViewModel = homevm)
     }
     composeTestRule.onNodeWithTag("FavoritesButton").performClick()
     composeTestRule.onNodeWithTag("FriendsButton").performClick()

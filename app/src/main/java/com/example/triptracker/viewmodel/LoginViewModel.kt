@@ -7,27 +7,28 @@ import androidx.lifecycle.MutableLiveData
 import com.example.triptracker.authentication.AuthResponse
 import com.example.triptracker.model.authentication.SignInResult
 
-object loggedUser {
-  var email: String? = ""
-}
-
+/**
+ * ViewModel for the login screen.
+ *
+ * @param application: Application context.
+ */
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
+
+  enum class AuthStatus {
+    LOGGED_IN,
+    CREATE_ACCOUNT,
+    ERROR
+  }
 
   private val _authResult = MutableLiveData<AuthResponse<SignInResult>>()
   val authResult: LiveData<AuthResponse<SignInResult>> = _authResult
 
-  fun onSignInResult(
-      result: Boolean,
-      userName: String? = "",
-      email: String? = "",
-      photoUrl: String? = ""
-  ) {
+  fun onSignInResult(result: AuthStatus) {
     _authResult.value =
-        if (result) {
-          loggedUser.email = email
-          AuthResponse.Success(SignInResult(userName, email, photoUrl))
-        } else {
-          AuthResponse.Error("Error")
+        when (result) {
+          AuthStatus.LOGGED_IN -> AuthResponse.Success()
+          AuthStatus.CREATE_ACCOUNT -> AuthResponse.Loading()
+          AuthStatus.ERROR -> AuthResponse.Error("Error")
         }
   }
 }
