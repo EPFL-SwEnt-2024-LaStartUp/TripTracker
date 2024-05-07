@@ -78,6 +78,7 @@ open class UserProfileRepository {
         .addOnSuccessListener { document ->
           if (document.exists()) {
             val userProfile = userProfile(document)
+            Log.d(TAG, "User profile found for email: $email")
             onResult(userProfile)
           } else {
             Log.d(TAG, "No user profile found for email: $email")
@@ -111,8 +112,11 @@ open class UserProfileRepository {
     val following =
         document.data?.get("following") as? List<String>
             ?: throw IllegalStateException("Following is missing")
+    val favoritesPaths =
+        document.data?.get("favoritesPaths") as? List<String>
+            ?: throw IllegalStateException("FavoritesPaths is missing")
     return UserProfile(
-        document.id, name, surname, birthdate, username, profileImageUrl, follower, following)
+        document.id, name, surname, birthdate, username, profileImageUrl, follower, following, favoritesPaths)
   }
 
   /**
@@ -141,6 +145,9 @@ open class UserProfileRepository {
       val following =
           document.data["following"] as? List<String>
               ?: throw IllegalStateException("Following is missing")
+      val favoritesPaths =
+          document.data["favoritesPaths"] as? List<String>
+              ?: throw IllegalStateException("FavoritesPaths is missing for user: ${username}")
 
       val userProfile =
           UserProfile(
@@ -151,7 +158,8 @@ open class UserProfileRepository {
               username,
               profileImageUrl,
               followers,
-              following)
+              following,
+              favoritesPaths)
       _userProfileList.add(userProfile)
     }
   }

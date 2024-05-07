@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.profile.AmbientUserProfile
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
@@ -56,12 +57,13 @@ fun UserProfileMyTrips(
     homeViewModel: HomeViewModel = viewModel(),
     navigation: Navigation,
     test: Boolean = false,
+    userProfile: MutableUserProfile
 ) {
 
-  val profile = AmbientUserProfile.current.userProfile.value
+  //val profile = AmbientUserProfile.current.userProfile.value
   // Set search filter and query in the ViewModel
   homeViewModel.setSearchFilter(FilterType.USERNAME)
-  homeViewModel.setSearchQuery(profile.username)
+  homeViewModel.setSearchQuery(userProfile.userProfile.value.username)
 
   // Observe the filtered itinerary list from the ViewModel
   val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
@@ -107,6 +109,7 @@ fun UserProfileMyTrips(
                           navigation = navigation,
                           onClick = { navigation.navigateTo(Route.MAPS, itinerary.id) },
                           test = test,
+                          profile = userProfile,
                       )
                     }
                   }

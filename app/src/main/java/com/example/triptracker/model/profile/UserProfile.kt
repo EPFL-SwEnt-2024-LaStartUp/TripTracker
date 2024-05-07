@@ -27,7 +27,8 @@ data class UserProfile(
     val username: String = "",
     val profileImageUrl: String? = null,
     val followers: List<String> = emptyList(),
-    val following: List<String> = emptyList()
+    val following: List<String> = emptyList(),
+    val favoritesPaths: List<String> = emptyList(),
 )
 
 /** This data class represents a mutable user's profile information. */
@@ -57,5 +58,6 @@ val EMPTY_PROFILE =
         "00/00/0000",
         "Username",
         "your-profile-pic.url",
+        emptyList(),
         emptyList(),
         emptyList())
