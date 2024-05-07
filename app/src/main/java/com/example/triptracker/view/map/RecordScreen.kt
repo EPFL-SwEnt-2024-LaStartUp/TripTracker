@@ -21,10 +21,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
@@ -263,15 +266,48 @@ fun Map(
     }
 
     // Display gradient for top bar
-    Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
-      Text(
-          text = "Record",
-          modifier = Modifier.padding(30.dp).align(Alignment.TopCenter),
-          fontSize = 24.sp,
-          fontFamily = Montserrat,
-          fontWeight = FontWeight.SemiBold,
-          color = md_theme_light_dark)
-    }
+    Box(
+        modifier =
+            Modifier.matchParentSize()
+                .background(gradient)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)) {
+          Row(
+              modifier =
+                  Modifier.fillMaxWidth().padding(horizontal = 10.dp).align(Alignment.TopCenter),
+              horizontalArrangement = Arrangement.SpaceBetween) {
+                if (viewModel.isInDescription()) {
+                  IconButton(
+                      onClick = {
+                        viewModel.stopDescription()
+                        viewModel.resetRecording()
+                        localLatLngList.clear()
+                      },
+                      modifier =
+                          Modifier.size(50.dp)
+                              .align(Alignment.CenterVertically)
+                              .testTag("CloseButton"),
+                  ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close",
+                        tint = md_theme_light_dark,
+                        modifier = Modifier.size(30.dp))
+                  }
+                } else {
+                  Spacer(modifier = Modifier.width(50.dp))
+                }
+                // Display the record text
+                Text(
+                    text = "Record",
+                    modifier = Modifier.padding(30.dp).testTag("RecordText"),
+                    fontSize = 24.sp,
+                    fontFamily = Montserrat,
+                    fontWeight = FontWeight.SemiBold,
+                    color = md_theme_light_dark)
+                Spacer(modifier = Modifier.width(50.dp))
+              }
+        }
 
     // Display start window
     if (!viewModel.isInDescription()) {
@@ -280,7 +316,7 @@ fun Map(
       // Button to center on device location
       Row(
           modifier = Modifier.align(Alignment.BottomCenter),
-          horizontalArrangement = Arrangement.Center) {
+          horizontalArrangement = Arrangement.SpaceBetween) {
             if (ui.myLocationButtonEnabled && properties.isMyLocationEnabled) {
               Box(modifier = Modifier.padding(horizontal = 0.dp, vertical = 60.dp)) {
                 DisplayCenterLocationButton(
@@ -300,7 +336,11 @@ fun Map(
                     viewModel.startRecording()
                   }
                 },
-                modifier = Modifier.padding(50.dp).fillMaxWidth(0.6f).fillMaxHeight(0.1f),
+                modifier =
+                    Modifier.padding(50.dp)
+                        .fillMaxWidth(0.6f)
+                        .fillMaxHeight(0.1f)
+                        .align(Alignment.CenterVertically),
                 colors =
                     ButtonDefaults.filledTonalButtonColors(
                         containerColor = md_theme_orange, contentColor = md_theme_light_onPrimary),
@@ -312,8 +352,8 @@ fun Map(
                   fontWeight = FontWeight.SemiBold,
                   color = md_theme_light_onPrimary)
             }
+            Spacer(modifier = Modifier.width(50.dp))
           }
-      Spacer(modifier = Modifier.width(50.dp))
     }
 
     var isTitleEmpty by remember { mutableStateOf(false) }
@@ -334,7 +374,8 @@ fun Map(
               contentAlignment = Alignment.TopCenter) {
                 Column(
                     horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.SpaceEvenly) {
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.verticalScroll(rememberScrollState())) {
                       Text(
                           text = "Congrats on the trip !",
                           fontSize = 36.sp,
@@ -557,7 +598,7 @@ fun StartWindow(viewModel: RecordViewModel, context: Context) {
               enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
               exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)) {
                 // Display the timer
-                Box(modifier = Modifier.fillMaxHeight(0.35f).fillMaxWidth()) {
+                Box(modifier = Modifier.fillMaxHeight(0.35f).fillMaxWidth().padding(top = 60.dp)) {
                   Box(
                       modifier =
                           Modifier.fillMaxWidth(0.9f)
@@ -592,11 +633,11 @@ fun StartWindow(viewModel: RecordViewModel, context: Context) {
               enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
               exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Bottom)) {
                 // Display the pause/resume button and add spot button
-                Box(modifier = Modifier.fillMaxHeight(0.5f).fillMaxWidth()) {
+                Box(modifier = Modifier.height(200.dp).fillMaxWidth()) {
                   Box(
                       modifier =
                           Modifier.fillMaxWidth(0.9f)
-                              .fillMaxHeight(0.45f)
+                              .fillMaxHeight(0.55f)
                               .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
                               .align(Alignment.Center)) {
                         Row(
