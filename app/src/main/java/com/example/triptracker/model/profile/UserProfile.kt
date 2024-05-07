@@ -56,6 +56,6 @@ val EMPTY_PROFILE =
         "Surname",
         "00/00/0000",
         "Username",
-        "test.com",
+        "your-profile-pic.url",
         emptyList(),
         emptyList())

@@ -75,11 +75,13 @@ fun UserProfileOverview(
   var myTripsCount = 0
   myTripsList.observeForever(Observer { list -> myTripsCount = list.size })
 
+  val MAX_PROFILE_NAME_LENGTH = 15
+
   homeViewModel.setSearchFilter(FilterType.USERNAME)
   homeViewModel.setSearchQuery(
       profile.userProfile.value.username) // Filters the list of trips on user that created it
   var sizeUsername = 24.sp
-  if (profile.userProfile.value.username.length > 15) {
+  if (profile.userProfile.value.username.length > MAX_PROFILE_NAME_LENGTH) {
     sizeUsername = 18.sp
   }
 
