@@ -112,14 +112,26 @@ open class UserProfileRepository {
     val following =
         document.data?.get("following") as? List<String>
             ?: throw IllegalStateException("Following is missing")
+      //if favoritesPaths doesn't exist create the fiald in the database
     val favoritesPaths =
         document.data?.get("favoritesPaths") as? List<String>
-            ?: throw IllegalStateException("FavoritesPaths is missing")
+            ?: createFavoritesPaths(document.id)
+
     return UserProfile(
         document.id, name, surname, birthdate, username, profileImageUrl, follower, following, favoritesPaths)
   }
 
-  /**
+    private fun createFavoritesPaths(id: String): List<String> {
+        val favoritesPaths = mutableListOf<String>()
+        userProfileDb
+            .document(id)
+            .update("favoritesPaths", favoritesPaths)
+            .addOnSuccessListener { Log.d(TAG, "FavoritesPaths created successfully") }
+            .addOnFailureListener { e -> Log.e(TAG, "Error creating FavoritesPaths", e) }
+        return favoritesPaths
+    }
+
+    /**
    * This function converts the QuerySnapshot to a list of user's profiles.
    *
    * @param taskSnapshot : QuerySnapshot to convert to a list of user's profiles
@@ -147,7 +159,7 @@ open class UserProfileRepository {
               ?: throw IllegalStateException("Following is missing")
       val favoritesPaths =
           document.data["favoritesPaths"] as? List<String>
-              ?: throw IllegalStateException("FavoritesPaths is missing for user: ${username}")
+              ?: createFavoritesPaths(document.id)
 
       val userProfile =
           UserProfile(

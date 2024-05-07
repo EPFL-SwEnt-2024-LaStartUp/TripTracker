@@ -133,15 +133,15 @@ fun DisplayItinerary(
                 }
 
                 Spacer(modifier = Modifier.width(120.dp))
-                Log.e("AA", itinerary.id)
-                Log.e("AA", profile.userProfile.value.favoritesPaths.toString())
                 if(profile.userProfile.value.favoritesPaths.contains(itinerary.id)){
                     // If the user has favorited this itinerary, display a star orange
                     Icon(
                         imageVector = Icons.Outlined.Star,
                         contentDescription = "Star",
                         tint = md_theme_orange,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(20.dp).clickable {
+                            userProfileViewModel.removeFavorite(profile, itinerary.id)
+                        }
                     )
                 }else{
                     // If the user has not favorited this itinerary, display a star grey
@@ -149,7 +149,9 @@ fun DisplayItinerary(
                         imageVector = Icons.Outlined.Star,
                         contentDescription = "Star",
                         tint = md_theme_grey,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(20.dp).clickable {
+                            userProfileViewModel.addFavorite(profile, itinerary.id)
+                        }
                     )
 
                 }
