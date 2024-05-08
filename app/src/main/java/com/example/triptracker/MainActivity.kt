@@ -7,10 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -33,6 +32,7 @@ import com.example.triptracker.view.profile.UserProfileFriends
 import com.example.triptracker.view.profile.UserProfileMyTrips
 import com.example.triptracker.view.profile.UserProfileOverview
 import com.example.triptracker.view.profile.UserProfileSettings
+import com.example.triptracker.view.profile.UserView
 import com.example.triptracker.view.theme.TripTrackerTheme
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
@@ -105,10 +105,24 @@ class MainActivity : ComponentActivity() {
               composable(Route.PROFILE) {
                 UserProfileOverview(navigation = navigation, profile = profile)
               }
-              composable(Route.FRIENDS) { UserProfileFriends(navigation = navigation) }
-              composable(Route.FOLLOWERS) { UserProfileFollowers(navigation = navigation) }
-              composable(Route.FOLLOWING) { UserProfileFollowing(navigation = navigation) }
-
+              composable(Route.FRIENDS) {
+                UserProfileFriends(navigation = navigation, profile = profile)
+              }
+              composable(Route.FOLLOWERS) {
+                UserProfileFollowers(navigation = navigation, profile = profile)
+              }
+              composable(Route.FOLLOWING) {
+                UserProfileFollowing(navigation = navigation, profile = profile)
+              }
+              composable(
+                  Route.USER + "/{userMail}",
+                  arguments = listOf(navArgument("userMail") { type = NavType.StringType })) {
+                      backStackEntry ->
+                    UserView(
+                        navigation = navigation,
+                        profile = profile,
+                        userMail = backStackEntry.arguments?.getString("userMail") ?: "")
+                  }
               // add argument to the composable (username)
               composable(Route.MYTRIPS) {
                 UserProfileMyTrips(

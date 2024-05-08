@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.Relationship
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
@@ -62,10 +63,13 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
 fun FriendListView(
     navigation: Navigation,
     viewModel: UserProfileViewModel,
-    profile: UserProfile,
+    profile: MutableUserProfile,
     relationship: Relationship,
     friendList: State<List<UserProfile>>
 ) {
+
+  val userProfile by remember { mutableStateOf(profile) }
+
   // If there is no profile corresponding to the search query we display a message
   // If we are in the friend finder view and the search query is empty we don't display profiles
   if (friendList.value.isEmpty() ||
@@ -102,7 +106,7 @@ fun FriendListView(
         verticalArrangement = Arrangement.spacedBy(10.dp)) {
           items(friendList.value) { friend ->
             // we do not prompt the profile of the current user
-            if (friend.mail != profile.mail) {
+            if (friend.mail != userProfile.userProfile.value.mail) {
               // Display the user's profile
               Box(
                   modifier =
@@ -170,7 +174,7 @@ fun FriendListView(
                             // Display the remove friend button
                             RemoveFriendButton(
                                 viewModel = viewModel,
-                                userProfile = profile,
+                                profile = profile,
                                 friend = friend,
                                 relationship = relationship)
                           }
@@ -186,17 +190,12 @@ fun FriendListView(
 @Composable
 fun RemoveFriendButton(
     viewModel: UserProfileViewModel,
-    userProfile: UserProfile,
+    profile: MutableUserProfile,
     friend: UserProfile,
     relationship: Relationship
 ) {
-  // we fetch the last version of the user profile
-  var updatedUserProfile = userProfile.copy()
-  viewModel.getUserProfile(userProfile.mail) { profile ->
-    if (profile != null) {
-      updatedUserProfile = profile
-    }
-  }
+  val userProfile by remember { mutableStateOf(profile) }
+
   // we fetch the last version of the follower
   var updatedFriend = friend.copy()
   viewModel.getUserProfile(friend.mail) { profile ->
@@ -207,26 +206,26 @@ fun RemoveFriendButton(
 
   // variable to keep track of whether the user and follower are connected (following/follower)
   var areConnected by remember {
-    mutableStateOf(updatedUserProfile.following.contains(friend.mail))
+    mutableStateOf(userProfile.userProfile.value.following.contains(friend.mail))
   }
 
   if (relationship == Relationship.FOLLOWER) {
-    areConnected = updatedUserProfile.followers.contains(friend.mail)
+    areConnected = userProfile.userProfile.value.followers.contains(friend.mail)
   }
 
   Button(
       onClick = {
         if (relationship == Relationship.FRIENDS || relationship == Relationship.FOLLOWING) {
           if (areConnected) {
-            viewModel.removeFollower(updatedFriend, updatedUserProfile)
+            viewModel.removeFollower(updatedFriend, userProfile.userProfile.value)
           } else {
-            viewModel.addFollower(updatedFriend, updatedUserProfile)
+            viewModel.addFollower(updatedFriend, userProfile.userProfile.value)
           }
         } else if (relationship == Relationship.FOLLOWER) {
           if (areConnected) {
-            viewModel.removeFollower(updatedUserProfile, updatedFriend)
+            viewModel.removeFollower(userProfile.userProfile.value, updatedFriend)
           } else {
-            viewModel.addFollower(updatedUserProfile, updatedFriend)
+            viewModel.addFollower(userProfile.userProfile.value, updatedFriend)
           }
         }
         areConnected = !areConnected

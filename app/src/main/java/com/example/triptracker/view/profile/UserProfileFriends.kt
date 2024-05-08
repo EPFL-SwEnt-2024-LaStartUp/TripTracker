@@ -31,12 +31,10 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.R
-import com.example.triptracker.model.profile.AmbientUserProfile
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.Relationship
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
@@ -51,9 +49,11 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
 @Composable
 fun UserProfileFriends(
     navigation: Navigation,
+    profile: MutableUserProfile,
     userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
 ) {
-  val userProfile = AmbientUserProfile.current.userProfile.value
+  val userProfile by remember { mutableStateOf(profile) }
+
   var isSearchActive by remember { mutableStateOf(false) }
 
   val usersList by userProfileViewModel.userProfileList.observeAsState(initial = emptyList())
@@ -106,21 +106,11 @@ fun UserProfileFriends(
               viewModel = userProfileViewModel,
               onSearchActivated = { isActive -> isSearchActive = isActive })
           FriendListView(
+              navigation = navigation,
               viewModel = userProfileViewModel,
-              userProfile = userProfile,
+              profile = userProfile,
               relationship = Relationship.FRIENDS,
               friendList = filteredList)
         }
       }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun UserProfileFriendsPreview() {
-  val viewModel = UserProfileViewModel()
-
-  val navController = rememberNavController()
-  val navigation = remember(navController) { Navigation(navController) }
-
-  UserProfileFriends(navigation, viewModel)
 }

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -38,15 +37,14 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.triptracker.R
-import com.example.triptracker.model.profile.AmbientUserProfile
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
@@ -71,36 +69,29 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
 @Composable
 fun UserView(
     navigation: Navigation,
+    profile: MutableUserProfile,
     userMail: String,
     userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
     homeViewModel: HomeViewModel = viewModel()
 ) {
-  val loggedUserMail = AmbientUserProfile.current.userProfile.value.mail
-  var readyToDisplayLogged by remember { mutableStateOf(false) }
-  var readyToDisplayPrompted by remember { mutableStateOf(false) }
+  var readyToDisplay by remember { mutableStateOf(false) }
 
-  var loggedUser by remember { mutableStateOf(UserProfile("")) }
-  userProfileViewModel.getUserProfile(loggedUserMail) { profile ->
-    if (profile != null) {
-      loggedUser = profile
-      readyToDisplayLogged = true
-    }
-  }
+  val loggedUser by remember { mutableStateOf(profile) }
   var displayedUser by remember { mutableStateOf(UserProfile("")) }
   userProfileViewModel.getUserProfile(userMail) { profile ->
     if (profile != null) {
       displayedUser = profile
-      readyToDisplayPrompted = true
+      readyToDisplay = true
     }
   }
 
-  when (readyToDisplayLogged && readyToDisplayPrompted) {
+  when (readyToDisplay) {
     false -> {
       WaitingScreen()
     }
     true -> {
       var areConnected by remember {
-        mutableStateOf(loggedUser.following.contains(displayedUser.mail))
+        mutableStateOf(loggedUser.userProfile.value.following.contains(displayedUser.mail))
       }
 
       val myTripsList = homeViewModel.filteredItineraryList
@@ -139,10 +130,7 @@ fun UserView(
                               letterSpacing = 0.5.sp,
                           ),
                       modifier =
-                          Modifier.width(250.dp)
-                              .height(37.dp)
-                              .padding(5.dp)
-                              .testTag("FollowersTitle"))
+                          Modifier.weight(1f).height(37.dp).padding(5.dp).testTag("UsernameTitle"))
                 }
           },
           bottomBar = { NavigationBar(navigation) },
@@ -168,12 +156,13 @@ fun UserView(
                                   contentScale = ContentScale.Crop,
                                   modifier =
                                       Modifier.clip(CircleShape)
-                                          .size(120.dp)
+                                          .size(130.dp)
                                           .shadow(
                                               elevation = 15.dp,
                                               shape = CircleShape,
                                               ambientColor = md_theme_light_dark,
-                                              spotColor = md_theme_light_dark))
+                                              spotColor = md_theme_light_dark)
+                                          .testTag("ProfilePicture"))
                             }
                         Column(
                             modifier = Modifier.fillMaxWidth(0.70f).wrapContentHeight(),
@@ -184,38 +173,46 @@ fun UserView(
                               style =
                                   TextStyle(
                                       fontSize = 24.sp,
-                                      lineHeight = 16.sp,
-                                      fontFamily = FontFamily(Font(R.font.montserrat)),
+                                      lineHeight = 25.sp,
+                                      fontFamily = Montserrat,
                                       fontWeight = FontWeight(700),
                                       color = md_theme_light_dark,
                                       textAlign = TextAlign.Right,
                                       letterSpacing = 0.5.sp,
                                   ),
-                              modifier = Modifier.padding(bottom = 20.dp))
+                              overflow = TextOverflow.Ellipsis,
+                              maxLines = 2,
+                              modifier = Modifier.padding(bottom = 20.dp).testTag("NameAndSurname"))
                           Text(
                               text = "Interests",
                               style = AppTypography.secondaryTitleStyle,
-                              modifier = Modifier.align(Alignment.End))
+                              modifier = Modifier.align(Alignment.End).testTag("InterestTitle"))
                           Text(
                               text = "Hiking, Photography", // profile.interestsList
                               style = AppTypography.secondaryContentStyle,
-                              modifier = Modifier.align(Alignment.End).padding(bottom = 20.dp))
+                              modifier =
+                                  Modifier.align(Alignment.End)
+                                      .padding(bottom = 20.dp)
+                                      .testTag("InterestsList"))
                           Text(
                               text = "Travel Style",
                               style = AppTypography.secondaryTitleStyle,
-                              modifier = Modifier.align(Alignment.End))
+                              modifier = Modifier.align(Alignment.End).testTag("TravelStyleTitle"))
                           Text(
                               text = "Adventure, Cultural", // profile.travelStyleList
                               style = AppTypography.secondaryContentStyle,
-                              modifier = Modifier.align(Alignment.End).padding(bottom = 20.dp))
+                              modifier =
+                                  Modifier.align(Alignment.End)
+                                      .padding(bottom = 20.dp)
+                                      .testTag("TravelStyleList"))
                           Text(
                               text = "Languages",
                               style = AppTypography.secondaryTitleStyle,
-                              modifier = Modifier.align(Alignment.End))
+                              modifier = Modifier.align(Alignment.End).testTag("LanguagesTitle"))
                           Text(
                               text = "English, Spanish", // profile.languagesList
                               style = AppTypography.secondaryContentStyle,
-                              modifier = Modifier.align(Alignment.End))
+                              modifier = Modifier.align(Alignment.End).testTag("LanguagesList"))
                         }
                       }
                   Row(
@@ -224,10 +221,13 @@ fun UserView(
                         Button(
                             onClick = {
                               if (areConnected) {
-                                userProfileViewModel.removeFollower(displayedUser, loggedUser)
+                                userProfileViewModel.removeFollower(
+                                    displayedUser, loggedUser.userProfile.value)
                               } else {
-                                userProfileViewModel.addFollower(displayedUser, loggedUser)
+                                userProfileViewModel.addFollower(
+                                    displayedUser, loggedUser.userProfile.value)
                               }
+                              areConnected = !areConnected
                             },
                             colors =
                                 if (areConnected) {
@@ -239,7 +239,8 @@ fun UserView(
                                       containerColor = md_theme_grey,
                                       contentColor = md_theme_light_onPrimary)
                                 },
-                            modifier = Modifier.height(40.dp).fillMaxWidth(),
+                            modifier =
+                                Modifier.height(40.dp).fillMaxWidth().testTag("FollowingButton"),
                         ) {
                           Text(
                               text = if (areConnected) "Following" else "Follow",
@@ -258,11 +259,13 @@ fun UserView(
                     Column(modifier = Modifier.align(Alignment.CenterVertically).padding(40.dp)) {
                       Text(
                           text = "$tripCount", // Call to the filtered Itinerarylist
-                          modifier = Modifier.align(Alignment.CenterHorizontally),
+                          modifier =
+                              Modifier.align(Alignment.CenterHorizontally).testTag("TripsCount"),
                           style = AppTypography.bigNumberStyle)
                       Text(
                           text = "Trips",
-                          modifier = Modifier.align(Alignment.CenterHorizontally),
+                          modifier =
+                              Modifier.align(Alignment.CenterHorizontally).testTag("TripsTitle"),
                           style = AppTypography.categoryTextStyle)
                     }
                     Column(
@@ -271,11 +274,15 @@ fun UserView(
                                 .padding(horizontal = 30.dp)) {
                           Text(
                               text = "${displayedUser.followers.size}",
-                              modifier = Modifier.align(Alignment.CenterHorizontally),
+                              modifier =
+                                  Modifier.align(Alignment.CenterHorizontally)
+                                      .testTag("FollowersCount"),
                               style = AppTypography.bigNumberStyle)
                           Text(
                               text = "Followers",
-                              modifier = Modifier.align(Alignment.CenterHorizontally),
+                              modifier =
+                                  Modifier.align(Alignment.CenterHorizontally)
+                                      .testTag("FollowersTitle"),
                               style = AppTypography.categoryTextStyle)
                         }
                     Column(
@@ -284,11 +291,15 @@ fun UserView(
                                 .padding(horizontal = 30.dp)) {
                           Text(
                               text = "${displayedUser.following.size}",
-                              modifier = Modifier.align(Alignment.CenterHorizontally),
+                              modifier =
+                                  Modifier.align(Alignment.CenterHorizontally)
+                                      .testTag("FollowingCount"),
                               style = AppTypography.bigNumberStyle)
                           Text(
                               text = "Following",
-                              modifier = Modifier.align(Alignment.CenterHorizontally),
+                              modifier =
+                                  Modifier.align(Alignment.CenterHorizontally)
+                                      .testTag("FollowingTitle"),
                               style = AppTypography.categoryTextStyle)
                         }
                   }
@@ -296,10 +307,4 @@ fun UserView(
           }
     }
   }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun UserViewPreview() {
-  UserView(Navigation(navController = rememberNavController()), "schifferlitheo@gmail.com")
 }
