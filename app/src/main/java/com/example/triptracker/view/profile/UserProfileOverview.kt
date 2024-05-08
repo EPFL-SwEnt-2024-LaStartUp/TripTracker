@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,12 +28,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -40,10 +43,12 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.profile.MutableUserProfile
@@ -65,6 +70,14 @@ import com.example.triptracker.viewmodel.HomeViewModel
  * @param userProfileViewModel: The view model of the UserProfile
  * @param navigation: The navigation of the app to switch between different views
  */
+@Preview
+@Composable
+fun UserProfilePreview() {
+  val navController = rememberNavController()
+  val navigation = remember(navController) { Navigation(navController) }
+  UserProfileOverview(navigation = navigation, profile = MutableUserProfile())
+}
+
 @Composable
 fun UserProfileOverview(
     navigation: Navigation,
@@ -90,7 +103,10 @@ fun UserProfileOverview(
       bottomBar = { NavigationBar(navigation) },
       modifier = Modifier.fillMaxSize().testTag("ProfileOverview")) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-          Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
+          Row(
+              modifier =
+                  Modifier.height((LocalConfiguration.current.screenHeightDp * 0.098f).dp)
+                      .fillMaxSize()) {}
 
           // Profile picture and name (later maybe more informations depending of data classes
           // updates
@@ -108,7 +124,7 @@ fun UserProfileOverview(
                               ambientColor = md_theme_light_dark,
                               spotColor = md_theme_light_dark)
                           .padding(start = 15.dp)
-                          .size(110.dp)
+                          .size((LocalConfiguration.current.screenHeightDp * 0.11f).dp)
                           .clip(CircleShape),
                   contentScale = ContentScale.Crop)
             }
@@ -136,66 +152,85 @@ fun UserProfileOverview(
                             letterSpacing = 0.5.sp,
                         ),
                     modifier =
-                        Modifier.width(250.dp).height(37.dp).padding(top = 12.dp, end = 15.dp))
+                        Modifier.width((LocalConfiguration.current.screenHeightDp * 0.67f).dp)
+                            .height((LocalConfiguration.current.screenHeightDp * 0.05f).dp)
+                            .padding(
+                                top = (LocalConfiguration.current.screenHeightDp * 0.012f).dp,
+                                end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp))
               }
               Text(
                   text = "Interests",
                   style = AppTypography.secondaryTitleStyle,
-                  modifier = Modifier.align(Alignment.End).padding(end = 15.dp))
+                  modifier =
+                      Modifier.align(Alignment.End)
+                          .padding(end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp))
               Text(
                   text = "Hiking, Photography", // profile.interestsList
                   style = AppTypography.secondaryContentStyle,
-                  modifier = Modifier.align(Alignment.End).padding(end = 15.dp))
+                  modifier =
+                      Modifier.align(Alignment.End)
+                          .padding(end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp))
 
               /*add more informations later if UserProfile is udpated*/
             }
           }
           // Number of trips, followers and following when implemented in the data classes
-          Row(modifier = Modifier.height(225.dp).align(Alignment.CenterHorizontally)) {
-            Column(
-                modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 40.dp)) {
-                  Text(
-                      text = "${myTripsCount}", // Call to the filtered Itinerarylist
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.bigNumberStyle)
-                  Text(
-                      text = "Trips",
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.categoryTextStyle)
-                }
-            Column(
-                modifier =
-                    Modifier.align(Alignment.CenterVertically)
-                        .padding(horizontal = 30.dp)
-                        .clickable { navigation.navController.navigate(Route.FOLLOWERS) }) {
-                  Text(
-                      text = "${profile.userProfile.value.followers.size}",
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.bigNumberStyle)
-                  Text(
-                      text = "Followers",
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.categoryTextStyle)
-                }
-            Column(
-                modifier =
-                    Modifier.align(Alignment.CenterVertically)
-                        .padding(horizontal = 30.dp)
-                        .clickable { navigation.navController.navigate(Route.FOLLOWING) }) {
-                  Text(
-                      text = "${profile.userProfile.value.following.size}",
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.bigNumberStyle)
-                  Text(
-                      text = "Following",
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.categoryTextStyle)
-                }
-          }
+          Row(
+              modifier =
+                  Modifier.height((LocalConfiguration.current.screenHeightDp * 0.3f).dp)
+                      .align(Alignment.CenterHorizontally)) {
+                Column(
+                    modifier =
+                        Modifier.align(Alignment.CenterVertically)
+                            .padding(
+                                horizontal =
+                                    (LocalConfiguration.current.screenWidthDp * 0.067f).dp)) {
+                      Text(
+                          text = "${myTripsCount}", // Call to the filtered Itinerarylist
+                          modifier = Modifier.align(Alignment.CenterHorizontally),
+                          style = AppTypography.bigNumberStyle)
+                      Text(
+                          text = "Trips",
+                          modifier = Modifier.align(Alignment.CenterHorizontally),
+                          style = AppTypography.categoryTextStyle)
+                    }
+                Column(
+                    modifier =
+                        Modifier.align(Alignment.CenterVertically)
+                            .padding(
+                                horizontal = (LocalConfiguration.current.screenWidthDp * 0.067f).dp)
+                            .clickable { navigation.navController.navigate(Route.FOLLOWERS) }) {
+                      Text(
+                          text = "${profile.userProfile.value.followers.size}",
+                          modifier = Modifier.align(Alignment.CenterHorizontally),
+                          style = AppTypography.bigNumberStyle)
+                      Text(
+                          text = "Followers",
+                          modifier = Modifier.align(Alignment.CenterHorizontally),
+                          style = AppTypography.categoryTextStyle)
+                    }
+                Column(
+                    modifier =
+                        Modifier.align(Alignment.CenterVertically)
+                            .padding(
+                                horizontal = (LocalConfiguration.current.screenWidthDp * 0.067f).dp)
+                            .clickable { navigation.navController.navigate(Route.FOLLOWING) }) {
+                      Text(
+                          text = "${profile.userProfile.value.following.size}",
+                          modifier = Modifier.align(Alignment.CenterHorizontally),
+                          style = AppTypography.bigNumberStyle)
+                      Text(
+                          text = "Following",
+                          modifier = Modifier.align(Alignment.CenterHorizontally),
+                          style = AppTypography.categoryTextStyle)
+                    }
+              }
           // Favourites, Friends, Settings and MyTrips tiles
           Box(
               modifier =
-                  Modifier.height(300.dp).width(350.dp).align(Alignment.CenterHorizontally)) {
+                  Modifier.height((LocalConfiguration.current.screenHeightDp * 0.37f).dp)
+                      .width((LocalConfiguration.current.screenWidthDp * 0.9f).dp)
+                      .align(Alignment.CenterHorizontally)) {
                 ProfileButton(
                     label = "Favourites",
                     icon = Icons.Outlined.FavoriteBorder,
@@ -288,11 +323,11 @@ fun ProfileButton(
       colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
       modifier =
           modifier
-              .height(130.dp)
-              .width(160.dp)
+              .height((LocalConfiguration.current.screenHeightDp * 0.17f).dp)
+              .width((LocalConfiguration.current.screenWidthDp * 0.425f).dp)
               .testTag("ProfileButton")
               .background(color = md_theme_light_dark, shape = RoundedCornerShape(16.dp))) {
-        Column(modifier = Modifier.width(150.dp)) {
+        Column(modifier = Modifier.fillMaxWidth()) {
           Icon(
               icon,
               contentDescription = "$label icon",
