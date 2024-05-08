@@ -45,6 +45,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
 
   init {
     UserProfileViewModel().fetchAllUserProfiles { userProfileList = it }
+    calculateFlameCounts()
   }
 
   private val _userProfiles = MutableLiveData<Map<String, UserProfile>>()
@@ -147,5 +148,25 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
 
   fun setSearchFilter(filterType: FilterType) {
     _selectedFilter.value = filterType
+  }
+
+  /**
+   * Calculate the flame count for each itinerary and update the itineraryList the flame count is
+   * calculated as 2 * saves + clicks + 5 * numStarts as number of user that started the itinerary
+   * is presumably much smaller than the number of users that saved it and even less than the number
+   * of clicks and more valuable.
+   */
+  fun calculateFlameCounts() {
+    _itineraryList.value?.map { itinerary ->
+      itinerary.copy(flameCount = 2 * itinerary.saves + itinerary.clicks + 5 * itinerary.numStarts)
+    }
+  }
+
+  /**
+   * Filter the itinerary list by trending itineraries based on the flame count The trending
+   * itineraries are sorted in descending order of flame count
+   */
+  fun filterByTrending() {
+    _itineraryList.value?.sortedByDescending { itinerary -> itinerary.flameCount }
   }
 }

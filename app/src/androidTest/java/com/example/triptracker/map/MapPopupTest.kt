@@ -60,6 +60,9 @@ class MapPopupTest {
             "Jack",
             Location(34.5, 34.5, "jo"),
             0,
+            0,
+            0,
+            0,
             "start",
             "end",
             listOf(

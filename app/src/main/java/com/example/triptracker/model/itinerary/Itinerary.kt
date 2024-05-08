@@ -22,11 +22,14 @@ data class Itinerary(
     val userMail: String,
     val location: Location,
     val flameCount: Long,
+    val saves: Long,
+    val clicks: Long,
+    val numStarts: Long, // the number of times the trip has been started
     val startDateAndTime: String,
     val endDateAndTime: String,
     val pinnedPlaces:
         List<Pin>, // For now implemented as a list of Pins, Pin.kt defined in model/location
-    val description: String,
+    val description: String = "", // description of the trip, set to empty string by default
     val route: List<LatLng>
     // val participants : List<User> TODO : need to add the friends who are part of the trip as a
     // class Friend

@@ -96,6 +96,9 @@ open class ItineraryRepository {
               userMail = document.getString("userMail") ?: "",
               location = location,
               flameCount = document.getLong("flameCount") ?: 0L,
+              saves = document.getLong("saves") ?: 0L,
+              clicks = document.getLong("clicks") ?: 0L,
+              numStarts = document.getLong("numStarts") ?: 0L,
               startDateAndTime = document.getString("startDateAndTime") ?: "",
               endDateAndTime = document.getString("endDateAndTime") ?: "",
               pinnedPlaces = pinnedPlaces,
@@ -125,6 +128,9 @@ open class ItineraryRepository {
                     "longitude" to itinerary.location.longitude,
                     "name" to itinerary.location.name),
             "flameCount" to itinerary.flameCount,
+            "saves" to itinerary.saves, // Added saves field to Itinerary class
+            "clicks" to itinerary.clicks, // Added clicks field to Itinerary class
+            "numStarts" to itinerary.numStarts, // Added numStarts field to Itinerary class
             "startDateAndTime" to itinerary.startDateAndTime,
             "endDateAndTime" to itinerary.endDateAndTime,
             "pinnedPlaces" to
@@ -163,6 +169,9 @@ open class ItineraryRepository {
                     "longitude" to itinerary.location.longitude,
                     "name" to itinerary.location.name),
             "flameCount" to itinerary.flameCount,
+            "saves" to itinerary.saves, // Added saves field to Itinerary class
+            "clicks" to itinerary.clicks, // Added clicks field to Itinerary class,
+            "numStarts" to itinerary.numStarts, // Added numStarts field to Itinerary class
             "startDateAndTime" to itinerary.startDateAndTime,
             "endDateAndTime" to itinerary.endDateAndTime,
             "pinnedPlaces" to
