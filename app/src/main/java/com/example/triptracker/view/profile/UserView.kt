@@ -221,11 +221,11 @@ fun UserView(
                         Button(
                             onClick = {
                               if (areConnected) {
-                                userProfileViewModel.removeFollower(
-                                    displayedUser, loggedUser.userProfile.value)
+                                userProfileViewModel.removeFollowing(
+                                    loggedUser, displayedUser)
                               } else {
-                                userProfileViewModel.addFollower(
-                                    displayedUser, loggedUser.userProfile.value)
+                                userProfileViewModel.addFollowing(
+                                    loggedUser, displayedUser)
                               }
                               areConnected = !areConnected
                             },

@@ -217,15 +217,15 @@ fun RemoveFriendButton(
       onClick = {
         if (relationship == Relationship.FRIENDS || relationship == Relationship.FOLLOWING) {
           if (areConnected) {
-            viewModel.removeFollower(updatedFriend, userProfile.userProfile.value)
+            viewModel.removeFollowing(userProfile, updatedFriend)
           } else {
-            viewModel.addFollower(updatedFriend, userProfile.userProfile.value)
+            viewModel.addFollowing(userProfile, updatedFriend)
           }
         } else if (relationship == Relationship.FOLLOWER) {
           if (areConnected) {
-            viewModel.removeFollower(userProfile.userProfile.value, updatedFriend)
+            viewModel.removeFollower(userProfile, updatedFriend)
           } else {
-            viewModel.addFollower(userProfile.userProfile.value, updatedFriend)
+            viewModel.addFollower(userProfile, updatedFriend)
           }
         }
         areConnected = !areConnected

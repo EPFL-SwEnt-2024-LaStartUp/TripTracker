@@ -3,6 +3,7 @@ package com.example.triptracker.userProfile
 import android.util.Log
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.UserProfileRepository
 import com.example.triptracker.viewmodel.UserProfileViewModel
@@ -117,10 +118,9 @@ class UserProfileViewModelTest {
         }
 
     val mockViewModel = UserProfileViewModel(mockUserProfileRepository)
-    val user = mockList.getUserProfiles()[0]
     val follower = mockList.getUserProfiles()[1]
 
-    mockViewModel.addFollower(user, follower)
+    mockViewModel.addFollower(MutableUserProfile(), follower)
     verify {
       Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
     }
@@ -134,10 +134,9 @@ class UserProfileViewModelTest {
         }
 
     val mockViewModel = UserProfileViewModel(mockUserProfileRepository)
-    val user = mockList.getUserProfiles()[0]
     val following = mockList.getUserProfiles()[1]
 
-    mockViewModel.addFollower(following, user)
+    mockViewModel.addFollowing(MutableUserProfile(), following)
     verify {
       Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
     }
@@ -151,10 +150,9 @@ class UserProfileViewModelTest {
         }
 
     val mockViewModel = UserProfileViewModel(mockUserProfileRepository)
-    val user = mockList.getUserProfiles()[0]
     val follower = mockList.getUserProfiles()[1]
 
-    mockViewModel.removeFollower(user, follower)
+    mockViewModel.removeFollower(MutableUserProfile(), follower)
     verify {
       Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
     }
@@ -168,10 +166,9 @@ class UserProfileViewModelTest {
         }
 
     val mockViewModel = UserProfileViewModel(mockUserProfileRepository)
-    val user = mockList.getUserProfiles()[0]
     val following = mockList.getUserProfiles()[1]
 
-    mockViewModel.removeFollower(following, user)
+    mockViewModel.removeFollowing(MutableUserProfile(), following)
     verify {
       Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
     }

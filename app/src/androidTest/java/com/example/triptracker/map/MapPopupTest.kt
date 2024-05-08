@@ -44,8 +44,10 @@ class MapPopupTest {
           }
       coEvery { addNewUserProfileToDb(any()) } just Runs
       coEvery { updateUserProfileInDb(any()) } just Runs
-      coEvery { addFollower(any(), any()) } just Runs
-      coEvery { removeFollower(any(), any()) } just Runs
+      coEvery { addFollowing(any(), any()) } just Runs
+        coEvery { addFollowing(any(), any()) } just Runs
+      coEvery { removeFollowing(any(), any()) } just Runs
+        coEvery { removeFollower(any(), any()) } just Runs
       coEvery { removeUserProfileInDb(any()) } just Runs
     }
   }
