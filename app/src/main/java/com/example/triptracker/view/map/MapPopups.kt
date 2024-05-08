@@ -49,6 +49,7 @@ import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
+import com.example.triptracker.model.profile.EMPTY_PROFILE
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
@@ -182,7 +183,7 @@ fun DisplayStartScreen() {
       Itinerary(
           "1",
           "Jetbrains Island",
-          "json@kotlin.com",
+          "sd.shurtugal@gmail.com",
           loc,
           500,
           "4",
@@ -201,13 +202,24 @@ fun DisplayStartScreen() {
           emptyList(),
           emptyList(),
       )
-  StartScreen(itin, profile, onClick = {})
+  StartScreen(itin, profile, UserProfileViewModel(), onClick = {})
 }
 
 @Composable
-fun StartScreen(itinerary: Itinerary, profile: UserProfile, onClick: (Pin) -> Unit) {
+fun StartScreen(
+    itinerary: Itinerary,
+    profile: UserProfile,
+    uservm: UserProfileViewModel,
+    onClick: (Pin) -> Unit
+) {
   // The size of the user's avatar/profile picture
   val avatarSize = 30.dp
+  var userofpost: UserProfile = EMPTY_PROFILE
+  uservm.getUserProfile(itinerary.userMail) { itin ->
+    if (itin != null) {
+      userofpost = itin
+    }
+  }
 
   Box(
       modifier =
@@ -235,7 +247,7 @@ fun StartScreen(itinerary: Itinerary, profile: UserProfile, onClick: (Pin) -> Un
 
             Spacer(modifier = Modifier.width(15.dp))
             Text(
-                text = itinerary.userMail,
+                text = userofpost.name,
                 fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                 //                wrapContentHeight(align = Alignment.CenterVertically),
                 fontWeight = FontWeight.Normal,

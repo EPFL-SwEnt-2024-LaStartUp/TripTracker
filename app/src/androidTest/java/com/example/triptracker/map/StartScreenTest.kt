@@ -11,6 +11,7 @@ import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.map.StartScreen
+import com.example.triptracker.viewmodel.UserProfileViewModel
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,6 +19,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class StartScreenTest {
 
+  val userViewModel = UserProfileViewModel()
   val pin1 = Pin(50.05186463055543, 14.43129605385369, "HQ", "Jetbrains HQ", emptyList())
   val pin2 = Pin(50.0792573623994, 14.418225529534855, "U Fleku", "Oldest restaurant", emptyList())
   val pin3 = Pin(50.08731011666294, 14.420438033846013, "Clock", "Astronomical Clock", emptyList())
@@ -52,7 +54,7 @@ class StartScreenTest {
   @Test
   fun userAvatarIsDisplayed() {
     composeTestRule.setContent {
-      StartScreen(itinerary = sampleItinerary, profile = profile, onClick = {})
+      StartScreen(itinerary = sampleItinerary, profile = profile, userViewModel, onClick = {})
     }
     composeTestRule.onNodeWithTag("ProfilePic").assertIsDisplayed()
   }
@@ -60,7 +62,7 @@ class StartScreenTest {
   @Test
   fun usernameIsDisplayed() {
     composeTestRule.setContent {
-      StartScreen(itinerary = sampleItinerary, profile = profile, onClick = {})
+      StartScreen(itinerary = sampleItinerary, profile = profile, userViewModel, onClick = {})
     }
     composeTestRule.onNodeWithTag("Username").assertTextEquals("json@kotlin.com")
   }
@@ -68,7 +70,7 @@ class StartScreenTest {
   @Test
   fun itineraryTitleIsDisplayed() {
     composeTestRule.setContent {
-      StartScreen(itinerary = sampleItinerary, profile = profile, onClick = {})
+      StartScreen(itinerary = sampleItinerary, profile = profile, userViewModel, onClick = {})
     }
     composeTestRule.onNodeWithTag("Title").assertTextEquals(sampleItinerary.title)
   }
@@ -76,7 +78,7 @@ class StartScreenTest {
   @Test
   fun flameCountIsDisplayed() {
     composeTestRule.setContent {
-      StartScreen(itinerary = sampleItinerary, profile = profile, onClick = {})
+      StartScreen(itinerary = sampleItinerary, profile = profile, userViewModel, onClick = {})
     }
     composeTestRule.onNodeWithText("${sampleItinerary.flameCount}🔥").assertIsDisplayed()
   }
@@ -84,7 +86,7 @@ class StartScreenTest {
   @Test
   fun startButtonIsDisplayedAndClickable() {
     composeTestRule.setContent {
-      StartScreen(itinerary = sampleItinerary, profile = profile, onClick = {})
+      StartScreen(itinerary = sampleItinerary, profile = profile, userViewModel, onClick = {})
     }
     composeTestRule.onNodeWithText("Start").assertIsDisplayed()
   }
