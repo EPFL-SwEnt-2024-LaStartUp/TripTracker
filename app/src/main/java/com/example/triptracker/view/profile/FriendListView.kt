@@ -2,6 +2,7 @@ package com.example.triptracker.view.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +41,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.triptracker.model.profile.Relationship
 import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.view.Navigation
+import com.example.triptracker.view.Route
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_grey
@@ -51,14 +54,15 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
  * This composable function displays the user's followers or following list.
  *
  * @param viewModel : ViewModel for the UserProfile class
- * @param userProfile : the profile of the current user
+ * @param profile : the profile of the current user
  * @param relationship : the relationship between the current user and the friend
  * @param friendList : List of friends' email to display
  */
 @Composable
 fun FriendListView(
+    navigation: Navigation,
     viewModel: UserProfileViewModel,
-    userProfile: UserProfile,
+    profile: UserProfile,
     relationship: Relationship,
     friendList: State<List<UserProfile>>
 ) {
@@ -98,7 +102,7 @@ fun FriendListView(
         verticalArrangement = Arrangement.spacedBy(10.dp)) {
           items(friendList.value) { friend ->
             // we do not prompt the profile of the current user
-            if (friend.mail != userProfile.mail) {
+            if (friend.mail != profile.mail) {
               // Display the user's profile
               Box(
                   modifier =
@@ -107,7 +111,10 @@ fun FriendListView(
                           .background(
                               MaterialTheme.colorScheme.onBackground,
                               shape = RoundedCornerShape(35.dp))
-                          .testTag("FriendProfile"),
+                          .testTag("FriendProfile")
+                          .clickable {
+                            navigation.navController.navigate(Route.USER + "/${friend.mail}")
+                          },
                   contentAlignment = Alignment.Center) {
                     Row(
                         modifier = Modifier.fillMaxHeight().padding(start = 20.dp, end = 20.dp),
@@ -118,7 +125,7 @@ fun FriendListView(
 
                           Image(
                               painter = imagePainter,
-                              contentDescription = "${userProfile.username}'s profile picture",
+                              contentDescription = "${friend.username}'s profile picture",
                               contentScale = ContentScale.Crop,
                               modifier =
                                   Modifier.size(62.dp)
@@ -163,7 +170,7 @@ fun FriendListView(
                             // Display the remove friend button
                             RemoveFriendButton(
                                 viewModel = viewModel,
-                                userProfile = userProfile,
+                                userProfile = profile,
                                 friend = friend,
                                 relationship = relationship)
                           }
