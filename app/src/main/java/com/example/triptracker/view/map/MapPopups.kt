@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -30,11 +32,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.viewmodel.MapPopupViewModel
@@ -68,12 +75,17 @@ fun PathOverlaySheet(
     else -> {
       Box(
           modifier =
-              Modifier.fillMaxWidth()
-                  .fillMaxHeight()
-                  .background(
-                      color = md_theme_light_black,
-                      shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp))) {
-            Column(modifier = Modifier.fillMaxWidth().testTag("PathOverlaySheet").padding(25.dp)) {
+          Modifier
+              .fillMaxWidth()
+              .fillMaxHeight()
+              .background(
+                  color = md_theme_light_black,
+                  shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp)
+              )) {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .testTag("PathOverlaySheet")
+                .padding(25.dp)) {
               Text(
                   text = profile.username + "'s Path",
                   color = md_theme_light_onPrimary,
@@ -103,14 +115,18 @@ fun PathOverlaySheet(
 fun PathItem(pinnedPlace: Pin, onClick: (Pin) -> Unit) {
   Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.clickable { onClick(pinnedPlace) }.testTag("PathItem")) {
+      modifier = Modifier
+          .clickable { onClick(pinnedPlace) }
+          .testTag("PathItem")) {
         Icon(
             painter =
                 painterResource(
                     id = R.drawable.ic_gps_fixed), // Replace with your actual pin icon resource
             contentDescription = "Location pin",
             tint = Color.White)
-        Column(modifier = Modifier.weight(1f).padding(start = 16.dp)) {
+        Column(modifier = Modifier
+            .weight(1f)
+            .padding(start = 16.dp)) {
           Text(text = pinnedPlace.name, color = Color.White)
           // Fetch address
           AddressText(
@@ -135,4 +151,62 @@ fun AddressText(mpv: MapPopupViewModel, latitude: Float, longitude: Float) {
   LaunchedEffect(key1 = latitude, key2 = longitude) { mpv.fetchAddressForPin(latitude, longitude) }
 
   Text(text = address, color = Color.White, modifier = Modifier.testTag("AddressText"))
+}
+
+@Preview
+@Composable
+fun DisplayStartScreen() {
+  // test itin
+  val loc = Location(0.0, 0.0, "")
+  val itin = Itinerary("", "", "", loc, 0, "", "", emptyList(), "", emptyList())
+  val profile = UserProfile("")
+  StartScreen(itin, profile, onClick = {})
+}
+
+@Composable
+fun StartScreen(itinerary: Itinerary, profile: UserProfile, onClick: (Pin) -> Unit) {
+
+  Box(
+      modifier =
+      Modifier
+          .fillMaxWidth()
+          .fillMaxHeight()
+          .background(
+              color = md_theme_light_black,
+              shape =
+              RoundedCornerShape(
+                  topStart = 35.dp,
+                  topEnd = 35.dp,
+                  bottomStart = 35.dp,
+                  bottomEnd = 35.dp
+              )
+          )) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .testTag("PathOverlaySheet")
+            .padding(25.dp)) {
+          Text(
+              text = profile.username + "'s Path",
+              color = md_theme_light_onPrimary,
+              modifier = Modifier.padding(end = 10.dp))
+          Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        Button(
+
+            onClick = { /* Do something! */},
+            modifier =
+            Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 40.dp)
+                .height(56.dp) // Set a specific height for the button to make it larger
+                .fillMaxWidth(fraction = 0.5f), // Make the button fill 90% of the width
+            shape = RoundedCornerShape(35.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color(0xFFF06F24),
+            ) // Rounded corners with a radius of 12.dp
+        ) {
+          Text("Start", fontSize = 24.sp, color = Color.White, fontFamily = Montserrat, fontWeight = FontWeight.Bold)
+        }
+      }
 }
