@@ -89,7 +89,7 @@ class MainActivity : ComponentActivity() {
                 startDestination = Route.LOGIN,
             ) {
               composable(Route.LOGIN) { LoginScreen(navigation, profile) }
-              composable(Route.HOME) { HomeScreen(navigation) }
+              composable(Route.HOME) { HomeScreen(navigation, profile) }
               //            composable(Route.MAPS) { MapOverview(context = context, navigation =
               // navigation, selectedId = "") }
               composable(
@@ -98,7 +98,8 @@ class MainActivity : ComponentActivity() {
                     MapOverview(
                         context = context,
                         navigation = navigation,
-                        selectedId = backStackEntry.arguments?.getString("id") ?: "")
+                        selectedId = backStackEntry.arguments?.getString("id") ?: "",
+                        userProfile = profile)
                   }
 
               composable(Route.RECORD) { RecordScreen(context, navigation) }
@@ -127,10 +128,13 @@ class MainActivity : ComponentActivity() {
               composable(Route.MYTRIPS) {
                 UserProfileMyTrips(
                     navigation = navigation,
+                    userProfile = profile,
                 )
               }
 
-              composable(Route.FAVORITES) { UserProfileFavourite(navigation = navigation) }
+              composable(Route.FAVORITES) {
+                UserProfileFavourite(navigation = navigation, userProfile = profile)
+              }
               composable(Route.EDIT) {
                 UserProfileEditScreen(navigation = navigation, profile = profile)
               }

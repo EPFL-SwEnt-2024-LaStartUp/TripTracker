@@ -78,6 +78,7 @@ open class UserProfileRepository {
         .addOnSuccessListener { document ->
           if (document.exists()) {
             val userProfile = userProfile(document)
+            Log.d(TAG, "User profile found for email: $email")
             onResult(userProfile)
           } else {
             Log.d(TAG, "No user profile found for email: $email")
@@ -111,8 +112,30 @@ open class UserProfileRepository {
     val following =
         document.data?.get("following") as? List<String>
             ?: throw IllegalStateException("Following is missing")
+    // if favoritesPaths doesn't exist create the fiald in the database
+    val favoritesPaths =
+        document.data?.get("favoritesPaths") as? List<String> ?: createFavoritesPaths(document.id)
+
     return UserProfile(
-        document.id, name, surname, birthdate, username, profileImageUrl, follower, following)
+        document.id,
+        name,
+        surname,
+        birthdate,
+        username,
+        profileImageUrl,
+        follower,
+        following,
+        favoritesPaths)
+  }
+
+  private fun createFavoritesPaths(id: String): List<String> {
+    val favoritesPaths = mutableListOf<String>()
+    userProfileDb
+        .document(id)
+        .update("favoritesPaths", favoritesPaths)
+        .addOnSuccessListener { Log.d(TAG, "FavoritesPaths created successfully") }
+        .addOnFailureListener { e -> Log.e(TAG, "Error creating FavoritesPaths", e) }
+    return favoritesPaths
   }
 
   /**
@@ -141,6 +164,8 @@ open class UserProfileRepository {
       val following =
           document.data["following"] as? List<String>
               ?: throw IllegalStateException("Following is missing")
+      val favoritesPaths =
+          document.data["favoritesPaths"] as? List<String> ?: createFavoritesPaths(document.id)
 
       val userProfile =
           UserProfile(
@@ -151,7 +176,8 @@ open class UserProfileRepository {
               username,
               profileImageUrl,
               followers,
-              following)
+              following,
+              favoritesPaths)
       _userProfileList.add(userProfile)
     }
   }
