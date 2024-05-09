@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -50,7 +51,6 @@ import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
-import com.example.triptracker.model.profile.EMPTY_PROFILE
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
@@ -169,6 +169,7 @@ fun DisplayStartScreen() {
           "Jetbrains HQ",
           listOf(
               "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
+              "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
               "https://cdn-vsh.prague.eu/object/254/u-fleku-01.jpg"))
   val pin2 =
       Pin(
@@ -215,8 +216,9 @@ fun StartScreen(
     onClick: (Pin) -> Unit
 ) {
   // The size of the user's avatar/profile picture
-  val avatarSize = 30.dp
-  var userofpost: UserProfile = EMPTY_PROFILE
+  val avatarSize = 35.dp
+  var userofpost by remember { mutableStateOf(UserProfile("")) }
+
   uservm.getUserProfile(itinerary.userMail) { itin ->
     if (itin != null) {
       userofpost = itin
@@ -239,7 +241,7 @@ fun StartScreen(
           Row(modifier = Modifier.fillMaxWidth()) {
             // change the image to the user's profile picture
             AsyncImage(
-                model = profile.profileImageUrl,
+                model = userofpost.profileImageUrl,
                 contentDescription = "User Avatar",
                 modifier =
                     Modifier.size(avatarSize)
@@ -255,12 +257,15 @@ fun StartScreen(
                 fontWeight = FontWeight.Normal,
                 fontSize = 18.sp,
                 color = md_theme_grey,
-                modifier = Modifier.testTag("Username"))
-            Spacer(modifier = Modifier.width(120.dp))
+                modifier =
+                    Modifier.testTag("Username")
+                        .wrapContentHeight(align = Alignment.CenterVertically))
+            Spacer(Modifier.weight(1f))
+
             Icon(
                 imageVector = Icons.Outlined.Star,
                 contentDescription = "Star",
-                Modifier.size(30.dp))
+                Modifier.size(40.dp))
           }
           Spacer(modifier = Modifier.height(20.dp))
           Text(

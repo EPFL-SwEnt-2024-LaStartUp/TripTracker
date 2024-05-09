@@ -12,7 +12,10 @@ import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.map.StartScreen
 import com.example.triptracker.viewmodel.UserProfileViewModel
+import io.mockk.Runs
+import io.mockk.coEvery
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.just
 import io.mockk.mockk
 import org.junit.Before
 import org.junit.Rule
@@ -29,6 +32,21 @@ class StartScreenTest {
   @Before
   fun setUp() {
     userViewModel = mockk(relaxed = true)
+
+    userViewModel = mockk {
+      coEvery { fetchAllUserProfiles(any()) } just io.mockk.Runs
+      coEvery { getUserProfileList() } returns listOf()
+      coEvery { getUserProfile(any(), any()) } coAnswers
+          {
+            secondArg<(UserProfile?) -> Unit>()
+                .invoke(UserProfile("polfuentescam@gmail.com", "Pol", "", ""))
+          }
+      coEvery { addNewUserProfileToDb(any()) } just io.mockk.Runs
+      coEvery { updateUserProfileInDb(any()) } just io.mockk.Runs
+      coEvery { addFollower(any(), any()) } just io.mockk.Runs
+      coEvery { removeFollower(any(), any()) } just io.mockk.Runs
+      coEvery { removeUserProfileInDb(any()) } just io.mockk.Runs
+    }
   }
 
   val pin1 = Pin(50.05186463055543, 14.43129605385369, "HQ", "Jetbrains HQ", emptyList())
@@ -68,17 +86,13 @@ class StartScreenTest {
     composeTestRule.onNodeWithTag("ProfilePic").assertIsDisplayed()
   }
 
-  // Commented out because the username is not displayed in the StartScreen
-  // Name not being fetched from DB
-  /*
   @Test
   fun usernameIsDisplayed() {
     composeTestRule.setContent {
       StartScreen(itinerary = sampleItinerary, profile = profile, userViewModel, onClick = {})
     }
-    composeTestRule.onNodeWithTag("Username").assertTextEquals("json@kotlin.com")
+    composeTestRule.onNodeWithTag("Username").assertTextEquals("Pol")
   }
-  */
 
   @Test
   fun itineraryTitleIsDisplayed() {
