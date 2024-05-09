@@ -237,7 +237,42 @@ open class ItineraryRepository {
         .get()
         .addOnSuccessListener { document ->
           if (document.exists()) {
-            val itinerary = document.toObject(Itinerary::class.java)
+            val locationData = document.data?.get("location") as Map<*, *>
+            val location =
+                Location(
+                    locationData["latitude"] as Double,
+                    locationData["longitude"] as Double,
+                    locationData["name"] as String)
+            val pinnedPlacesData =
+                document.data!!["pinnedPlaces"] as? List<Map<String, Any>> ?: emptyList()
+            val pinnedPlaces: List<Pin> =
+                pinnedPlacesData.map { pinData ->
+                  // Assuming Pin class has a constructor that takes these fields:
+                  Pin(
+                      pinData["latitude"] as? Double ?: 0.0,
+                      pinData["longitude"] as? Double ?: 0.0,
+                      pinData["name"] as? String ?: "",
+                      pinData["description"] as? String ?: "",
+                      pinData["image-url"] as? List<String> ?: emptyList())
+                }
+            val routeData = document.data!!["route"] as? List<Map<String, Any>> ?: emptyList()
+            val route: List<LatLng> = convertMapToLatLng(routeData)
+
+            val itinerary =
+                Itinerary(
+                    id = document.id,
+                    title = document.getString("title") ?: "",
+                    userMail = document.getString("userMail") ?: "",
+                    location = location,
+                    flameCount = document.getLong("flameCount") ?: 0L,
+                    saves = document.getLong("saves") ?: 0L,
+                    clicks = document.getLong("clicks") ?: 0L,
+                    numStarts = document.getLong("numStarts") ?: 0L,
+                    startDateAndTime = document.getString("startDateAndTime") ?: "",
+                    endDateAndTime = document.getString("endDateAndTime") ?: "",
+                    pinnedPlaces = pinnedPlaces,
+                    description = document.getString("description") ?: "",
+                    route = route)
             callback(itinerary)
           } else {
             callback(null)

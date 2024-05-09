@@ -186,13 +186,17 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
 
   /** Increment the save count of the itinerary with the given id */
   fun incrementSaveCount(itineraryId: String) {
-    viewModelScope.launch { repository.incrementField(itineraryId, "saves")
-      updateFlameCount(itineraryId)}
+    viewModelScope.launch {
+      repository.incrementField(itineraryId, "saves")
+      updateFlameCount(itineraryId)
+    }
   }
 
   /** Increment the flame count of the itinerary with the given id */
   fun incrementNumStarts(itineraryId: String) {
-    viewModelScope.launch { repository.incrementField(itineraryId, "numStarts")
-      updateFlameCount(itineraryId)}
+    viewModelScope.launch {
+      repository.incrementField(itineraryId, "numStarts")
+      updateFlameCount(itineraryId)
+    }
   }
 }
