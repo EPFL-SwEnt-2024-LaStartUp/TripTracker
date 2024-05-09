@@ -71,9 +71,6 @@ fun LoginScreen(
   val context = applicationContext()
   val authenticator = GoogleAuthenticator()
 
-  // No null values are allowed for the profile or the app will crash
-  val defaultProfileUrl =
-      "https://www.google.com/url?sa=i&url=https%3A%2F%2Fmedium.com%2Finsider-coub%2Fdefault-avatars-4275c0e41f62&psig=AOvVaw0oebP_LJzFLpe1XvRBTLlM&ust=1715331300099000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPCl8ZmZgIYDFQAAAAAdAAAAABAE"
   val signInLauncher =
       rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result
         ->
@@ -102,7 +99,8 @@ fun LoginScreen(
                               currentDate.format(formatter),
                               (googleSignInAccount.givenName + "_" + googleSignInAccount.familyName)
                                   ?: "",
-                              googleSignInAccount.photoUrl?.toString() ?: defaultProfileUrl,
+                              // No null values are allowed for the profile or the app will crash
+                              googleSignInAccount.photoUrl?.toString() ?: "defaultProfile.com",
                               emptyList(),
                               emptyList())
 
@@ -221,7 +219,10 @@ fun Login(
 fun LoginResponseFailure(message: String) {
   Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
     Card(modifier = Modifier.padding(16.dp)) {
-      Text(text = message, fontWeight = FontWeight.Bold, modifier = Modifier.padding(16.dp))
+      Text(
+          text = "$message : Restart the app and try to sign in again.",
+          fontWeight = FontWeight.Bold,
+          modifier = Modifier.padding(16.dp))
     }
   }
 }
