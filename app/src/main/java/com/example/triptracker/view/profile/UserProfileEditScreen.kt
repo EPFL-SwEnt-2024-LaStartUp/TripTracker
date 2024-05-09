@@ -222,6 +222,7 @@ fun UserProfileEditScreen(
                                     fontWeight = FontWeight.Normal,
                                     color = md_theme_grey)
                                 OutlinedTextField(
+                                    singleLine = true,
                                     value = username,
                                     label = {},
                                     onValueChange = {
@@ -397,6 +398,7 @@ fun ProfileEditTextField(
   OutlinedTextField(
       readOnly = isReadOnly,
       enabled = !isReadOnly,
+      singleLine = true,
       value = value,
       onValueChange = { onValueChange(it) },
       label = {},
