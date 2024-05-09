@@ -19,7 +19,8 @@ class UserProfileTest {
           username = "AliceS",
           profileImageUrl = "stupid-image-url.com",
           following = emptyList(),
-          followers = emptyList())
+          followers = emptyList(),
+          favoritesPaths = emptyList())
 
   private val userProfile2 =
       UserProfile(
@@ -48,6 +49,7 @@ class UserProfileTest {
     assertEquals("stupid-image-url.com", userProfile1.profileImageUrl)
     assertEquals(emptyList<UserProfile>(), userProfile1.following)
     assertEquals(emptyList<UserProfile>(), userProfile1.followers)
+    assertEquals(emptyList<String>(), userProfile1.favoritesPaths)
   }
 
   @Test
@@ -60,6 +62,7 @@ class UserProfileTest {
     assertEquals(null, userProfile2.profileImageUrl)
     assertEquals(emptyList<UserProfile>(), userProfile2.following)
     assertEquals(emptyList<UserProfile>(), userProfile2.followers)
+    assertEquals(emptyList<String>(), userProfile2.favoritesPaths)
   }
 
   @Test
@@ -72,5 +75,6 @@ class UserProfileTest {
     assertEquals(null, userProfile3.profileImageUrl)
     assertEquals(emptyList<UserProfile>(), userProfile3.following)
     assertEquals(emptyList<UserProfile>(), userProfile3.followers)
+    assertEquals(emptyList<String>(), userProfile3.favoritesPaths)
   }
 }

@@ -68,9 +68,9 @@ fun LoginScreen(
     loginViewModel: LoginViewModel = viewModel(),
     profileViewModel: UserProfileViewModel = viewModel()
 ) {
-
   val context = applicationContext()
   val authenticator = GoogleAuthenticator()
+
   val signInLauncher =
       rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result
         ->
@@ -84,6 +84,7 @@ fun LoginScreen(
                 if (googleSignInAccount != null) {
                   profileViewModel.getUserProfile(googleSignInAccount.email ?: "") {
                     if (it != null) {
+                      profile.userProfile.value = it
                       loginViewModel.onSignInResult(LoginViewModel.AuthStatus.LOGGED_IN)
                     } else {
 
@@ -98,7 +99,8 @@ fun LoginScreen(
                               currentDate.format(formatter),
                               (googleSignInAccount.givenName + "_" + googleSignInAccount.familyName)
                                   ?: "",
-                              googleSignInAccount.photoUrl?.toString() ?: "",
+                              // No null values are allowed for the profile or the app will crash
+                              googleSignInAccount.photoUrl?.toString() ?: "defaultProfile.com",
                               emptyList(),
                               emptyList())
 
@@ -217,7 +219,10 @@ fun Login(
 fun LoginResponseFailure(message: String) {
   Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
     Card(modifier = Modifier.padding(16.dp)) {
-      Text(text = message, fontWeight = FontWeight.Bold, modifier = Modifier.padding(16.dp))
+      Text(
+          text = "$message : Restart the app and try to sign in again.",
+          fontWeight = FontWeight.Bold,
+          modifier = Modifier.padding(16.dp))
     }
   }
 }

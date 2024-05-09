@@ -21,7 +21,8 @@ enum class FilterType {
   TITLE,
   USERNAME,
   FLAME,
-  PIN
+  PIN,
+  FAVORTIES
 }
 
 /**
@@ -62,6 +63,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
                 FilterType.USERNAME -> filterByUsername(query) // now filters by user mail
                 FilterType.FLAME -> parseFlameQuery(query)
                 FilterType.PIN -> filterByPinName(query)
+                FilterType.FAVORTIES -> filterByFavorite(query)
                 else -> emptyList()
               }
 
@@ -78,9 +80,21 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
     _itineraryList.value = itineraryInstance.getAllItineraries()
   }
 
+  /**
+   * Filter itineraries by title
+   *
+   * @param query the query to filter by
+   * @return a list of itineraries that match the query
+   */
   private fun filterByTitle(query: String) =
       itineraryList.value?.filter { it.title.contains(query, ignoreCase = true) }
 
+  /**
+   * Filter itineraries by username
+   *
+   * @param query the query to filter by
+   * @return a list of itineraries that match the query
+   */
   private fun filterByUsername(query: String): List<Itinerary> {
     val mapProfileItinerary = mutableMapOf<String, Itinerary>()
     itineraryList.value?.forEach { itinerary ->
@@ -93,9 +107,21 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
     return mapProfileItinerary.filter { it.key.contains(query, ignoreCase = true) }.values.toList()
   }
 
+  /**
+   * Filter itineraries by user mail
+   *
+   * @param query the query to filter by
+   * @return a list of itineraries that match the query
+   */
   private fun filterByUserMail(query: String) =
       itineraryList.value?.filter { it.userMail.contains(query, ignoreCase = true) }
 
+  /**
+   * Parse itineraries by flame count
+   *
+   * @param query the query to filter by
+   * @return a list of itineraries that match the query
+   */
   private fun parseFlameQuery(query: String): List<Itinerary> {
     val regex = """^([<>]=?|=)(\d+)""".toRegex()
     val matchResult = regex.matchEntire(query)
@@ -116,6 +142,11 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
     } ?: emptyList()
   }
 
+  /**
+   * Filter itineraries by flame count
+   *
+   * @param query the query to filter by
+   */
   private fun filterByFlame(query: String) {
     itineraryList.value?.filter {
       val regex = """^([<>]=?)(\d+)""".toRegex()
@@ -132,15 +163,43 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
     }
   }
 
+  /**
+   * Filter itineraries by pin name
+   *
+   * @param query the query to filter by
+   * @return a list of itineraries that match the query
+   */
   private fun filterByPinName(query: String) =
       itineraryList.value?.filter {
         it.pinnedPlaces.any { pin -> pin.name.contains(query, ignoreCase = true) }
       }
 
+  /**
+   * Filter itineraries by favorite
+   *
+   * @param usermail the usermail to filter by
+   * @return a list of itineraries that match the query
+   */
+  private fun filterByFavorite(usermail: String): List<Itinerary> {
+    val userProfile = userProfileList.firstOrNull { it.mail == usermail } ?: return emptyList()
+    return _itineraryList.value?.filter { userProfile.favoritesPaths.contains(it.id) }
+        ?: emptyList()
+  }
+
+  /**
+   * Set the search query
+   *
+   * @param query the query to filter by
+   */
   fun setSearchQuery(query: String) {
     _searchQuery.value = query
   }
 
+  /**
+   * Set the search filter
+   *
+   * @param filterType the filter to apply
+   */
   fun setSearchFilter(filterType: FilterType) {
     _selectedFilter.value = filterType
   }

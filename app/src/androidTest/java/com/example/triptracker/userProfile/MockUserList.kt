@@ -56,7 +56,8 @@ class MockUserList {
           "Lomimi",
           "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRrfhlD13rGYJRmde04FRLNn2AT3uApwbvOcEfa5pAdMkQA3q8w",
           emptyList(),
-          emptyList())
+          emptyList(),
+          listOf("1"))
 
   private val mockUser6 =
       UserProfile(
