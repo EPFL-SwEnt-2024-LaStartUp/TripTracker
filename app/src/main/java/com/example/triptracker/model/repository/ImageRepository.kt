@@ -30,6 +30,7 @@ class ImageRepository {
       Log.d("DOWNLOAD URL", downloadUrl.toString())
       Response.Success(downloadUrl)
     } catch (e: Exception) {
+      Log.d("DOWNLOAD URL", e.toString())
       Response.Failure(e)
     }
   }
@@ -49,6 +50,7 @@ class ImageRepository {
       Log.d("DOWNLOAD URL", downloadUrl.toString())
       Response.Success(downloadUrl)
     } catch (e: Exception) {
+      Log.d("DOWNLOAD URL", e.toString())
       Response.Failure(e)
     }
   }

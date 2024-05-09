@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
@@ -112,6 +113,8 @@ fun UserProfileEditScreen(
     mutableStateOf(profile.userProfile.value.profileImageUrl?.isEmpty())
   }
 
+  var isLoading by remember { mutableStateOf(false) }
+
   // Variable to store the state of the new profile picture
   var selectedPicture by remember { mutableStateOf<Uri?>(null) }
   // Launcher for the pick multiple media activity
@@ -120,15 +123,23 @@ fun UserProfileEditScreen(
         // Callback is invoked after the user selects media items or closes the
         // photo picker.
         if (picture != null) {
-          Log.d("PhotoPicker", "One media selected.")
+          Log.d("PhotoPicker", picture.toString())
           selectedPicture = picture
         } else {
           Log.d("PhotoPicker", "No media selected.")
         }
       }
 
-  /** This function updates the user profile in the database on save. */
-  fun updateProfile() {
+  /**
+   * his function updates the user profile in the database on save.
+   *
+   * @param navigation : Navigation object that manages the navigation in the application.
+   * @param isCreated : Boolean indicating if the user profile is created. Navigation needs to be
+   *   used after the callback else the view will be destroyed and resulting in a crash of the
+   *   upload of the picture.
+   */
+  fun updateProfile(navigation: Navigation, isCreated: Boolean) {
+    isLoading = true
     if (selectedPicture != null) {
       userProfileViewModel.addProfilePictureToStorage(selectedPicture!!) { resp ->
         imageUrl =
@@ -139,30 +150,43 @@ fun UserProfileEditScreen(
             }
         val newProfile =
             UserProfile(
-                mail,
-                name,
-                surname,
-                birthdate,
-                username,
-                imageUrl,
+                mail = mail,
+                name = name,
+                surname = surname,
+                birthdate = birthdate,
+                username = username,
+                profileImageUrl = imageUrl,
                 profile.userProfile.value.followers,
                 profile.userProfile.value.following)
+        Log.d("TRALALALALALL", newProfile.toString())
         userProfileViewModel.updateUserProfileInDb(newProfile)
         profile.userProfile.value = newProfile
+        if (!isCreated) {
+          navigation.goBack()
+        } else {
+          navigation.navigateTo(navigation.getStartingDestination())
+        }
+        isLoading = false
       }
     } else {
       val newProfile =
           UserProfile(
-              mail,
-              name,
-              surname,
-              birthdate,
-              username,
-              imageUrl,
+              mail = mail,
+              name = name,
+              surname = surname,
+              birthdate = birthdate,
+              username = username,
+              profileImageUrl = imageUrl,
               profile.userProfile.value.followers,
               profile.userProfile.value.following)
       userProfileViewModel.updateUserProfileInDb(newProfile)
       profile.userProfile.value = newProfile
+      if (!isCreated) {
+        navigation.goBack()
+      } else {
+        navigation.navigateTo(navigation.getStartingDestination())
+      }
+      isLoading = false
     }
   }
 
@@ -178,6 +202,18 @@ fun UserProfileEditScreen(
                     .fillMaxWidth()
                     .background(md_theme_light_dark, shape = RoundedCornerShape(20.dp)),
             contentAlignment = Alignment.TopCenter) {
+
+              // Loading bar for when the save button is clicked
+              when (isLoading) {
+                true -> {
+                  CircularProgressIndicator(
+                      modifier = Modifier.width(64.dp).align(Alignment.Center),
+                      color = md_theme_orange,
+                      trackColor = md_theme_grey,
+                  )
+                }
+                false -> {}
+              }
               Column(
                   horizontalAlignment = Alignment.Start,
                   verticalArrangement = Arrangement.SpaceEvenly) {
@@ -357,14 +393,7 @@ fun UserProfileEditScreen(
                                       !isSurnameEmpty &&
                                       !isBirthdateEmpty &&
                                       !isUsernameEmpty,
-                              action = {
-                                updateProfile()
-                                if (!isCreated) {
-                                  navigation.goBack()
-                                } else {
-                                  navigation.navigateTo(navigation.getStartingDestination())
-                                }
-                              })
+                              action = { updateProfile(navigation, isCreated) })
                         }
                   }
             }
