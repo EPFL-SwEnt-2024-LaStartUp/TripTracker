@@ -198,9 +198,9 @@ fun RemoveFriendButton(
 
   // we fetch the last version of the follower
   var updatedFriend = friend.copy()
-  viewModel.getUserProfile(friend.mail) { profile ->
-    if (profile != null) {
-      updatedFriend = profile
+  viewModel.getUserProfile(friend.mail) { fetchedUser ->
+    if (fetchedUser != null) {
+      updatedFriend = fetchedUser
     }
   }
 
