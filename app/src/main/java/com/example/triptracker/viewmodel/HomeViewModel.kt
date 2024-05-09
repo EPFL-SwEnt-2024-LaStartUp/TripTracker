@@ -157,9 +157,11 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    * of clicks and more valuable.
    */
   fun calculateFlameCounts() {
-    _itineraryList.value?.map { itinerary ->
-      itinerary.copy(flameCount = 2 * itinerary.saves + itinerary.clicks + 5 * itinerary.numStarts)
-    }
+    _itineraryList.value =
+        _itineraryList.value?.map { itinerary ->
+          itinerary.copy(
+              flameCount = 2 * itinerary.saves + itinerary.clicks + 5 * itinerary.numStarts)
+        }
   }
 
   /**
@@ -167,6 +169,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    * itineraries are sorted in descending order of flame count
    */
   fun filterByTrending() {
-    _itineraryList.value?.sortedByDescending { itinerary -> itinerary.flameCount }
+    _itineraryList.value =
+        _itineraryList.value?.sortedByDescending { itinerary -> itinerary.flameCount }
   }
 }
