@@ -113,7 +113,14 @@ fun MapOverview(
           bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
               innerPadding ->
             Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-              Map(mapViewModel, context, mapProperties, uiSettings, navigation, selectedId, userProfile)
+              Map(
+                  mapViewModel,
+                  context,
+                  mapProperties,
+                  uiSettings,
+                  navigation,
+                  selectedId,
+                  userProfile)
             }
           }
     }
@@ -357,8 +364,7 @@ fun Map(
                       navigation = navigation,
                       onClick = { mapPopupState = popupState.PATHOVERLAY },
                       test = false,
-                      profile = userProfile
-                  )
+                      profile = userProfile)
                 }
           }
           popupState.DISPLAYPIN -> {

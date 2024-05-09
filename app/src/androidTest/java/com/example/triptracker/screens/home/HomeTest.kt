@@ -16,6 +16,7 @@ import androidx.test.espresso.action.ViewActions.pressKey
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.itinerary.MockItineraryList
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.model.repository.UserProfileRepository
 import com.example.triptracker.userProfile.MockUserList
@@ -53,6 +54,7 @@ class HomeTest {
   @RelaxedMockK private lateinit var mockUserProfileRepository: UserProfileRepository
   @RelaxedMockK private lateinit var mockUserProfileViewModel: UserProfileViewModel
   // private lateinit var mockUserProfileViewModel: UserProfileViewModel
+  @RelaxedMockK private lateinit var mockProfile: MutableUserProfile
 
   val mockList = MockItineraryList()
   val mockItineraries = mockList.getItineraries()
@@ -81,6 +83,7 @@ class HomeTest {
     mockUserProfileViewModel = mockk(relaxUnitFun = true)
 
     MockKAnnotations.init(this, relaxUnitFun = true)
+    mockProfile = mockk(relaxUnitFun = true)
 
     // Log.d("ItineraryList", mockViewModel.itineraryList.value.toString())
     every { mockNav.getTopLevelDestinations()[0] } returns
@@ -95,9 +98,11 @@ class HomeTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
+    every { mockProfile.userProfile.value } returns mockUsers[0]
     // Setting up the test composition
     composeTestRule.setContent {
-      HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      HomeScreen(
+          navigation = mockNav, homeViewModel = mockViewModel, test = true, profile = mockProfile)
     }
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
       // Test the UI elements
@@ -121,10 +126,12 @@ class HomeTest {
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
     every { mockNav.getTopLevelDestinations()[1] } returns
         TopLevelDestination(Route.MAPS, Icons.Outlined.Place, "Maps")
+    every { mockProfile.userProfile.value } returns mockUsers[0]
 
     // Setting up the test composition
     composeTestRule.setContent {
-      HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      HomeScreen(
+          navigation = mockNav, homeViewModel = mockViewModel, test = true, profile = mockProfile)
     }
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
       itinerary {
@@ -139,9 +146,11 @@ class HomeTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
+    every { mockProfile.userProfile.value } returns mockUsers[0]
     // Setting up the test composition
     composeTestRule.setContent {
-      HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      HomeScreen(
+          navigation = mockNav, homeViewModel = mockViewModel, test = true, profile = mockProfile)
     }
     // Mock dependencies
     // Check all components are displayed correctly
@@ -155,9 +164,11 @@ class HomeTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
+    every { mockProfile.userProfile.value } returns mockUsers[0]
     // Setting up the test composition
     composeTestRule.setContent {
-      HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      HomeScreen(
+          navigation = mockNav, homeViewModel = mockViewModel, test = true, profile = mockProfile)
     }
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
       searchBar {
@@ -178,9 +189,11 @@ class HomeTest {
     every { mockViewModel.filteredItineraryList } returns
         MutableLiveData(listOf(mockItineraries[0]))
     every { mockViewModel.searchQuery } returns MutableLiveData("tr")
+    every { mockProfile.userProfile.value } returns mockUsers[0]
     // Setting up the test composition
     composeTestRule.setContent {
-      HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      HomeScreen(
+          navigation = mockNav, homeViewModel = mockViewModel, test = true, profile = mockProfile)
     }
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
       searchBar {
@@ -200,9 +213,11 @@ class HomeTest {
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
     every { mockNav.getTopLevelDestinations()[1] } returns
         TopLevelDestination(Route.MAPS, Icons.Outlined.Place, "Maps")
+    every { mockProfile.userProfile.value } returns mockUsers[0]
     // Setting up the test composition
     composeTestRule.setContent {
-      HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      HomeScreen(
+          navigation = mockNav, homeViewModel = mockViewModel, test = true, profile = mockProfile)
     }
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) { itinerary { performClick() } }
   }
@@ -212,8 +227,10 @@ class HomeTest {
     every { mockItineraryRepository.getAllItineraries() } returns emptyList()
     every { mockViewModel.itineraryList } returns MutableLiveData(null)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
+    every { mockProfile.userProfile.value } returns mockUsers[0]
     composeTestRule.setContent {
-      HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      HomeScreen(
+          navigation = mockNav, homeViewModel = mockViewModel, test = true, profile = mockProfile)
     }
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
       Log.d("ItineraryListInTestnoItToDisplay", mockViewModel.itineraryList.value.toString())
@@ -226,9 +243,11 @@ class HomeTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
+    every { mockProfile.userProfile.value } returns mockUsers[0]
     // Setting up the test composition
     composeTestRule.setContent {
-      HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      HomeScreen(
+          navigation = mockNav, homeViewModel = mockViewModel, test = true, profile = mockProfile)
     }
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) { profilePic { performClick() } }
   }
@@ -245,12 +264,14 @@ class HomeTest {
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns filteredItineraryLiveData
     every { mockViewModel.searchQuery } returns MutableLiveData("Tr")
+    every { mockProfile.userProfile.value } returns mockUsers[0]
 
     // This Log.d("FilteredItineraryList", mockViewModel.filteredItineraryList.value.toString())
     // correctly shows [Itinerary(id=1, title=Trip to Paris, username=User1,...)]
 
     composeTestRule.setContent {
-      HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      HomeScreen(
+          navigation = mockNav, homeViewModel = mockViewModel, test = true, profile = mockProfile)
     }
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
       // Check that the search bar is displayed
@@ -280,9 +301,11 @@ class HomeTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
+    every { mockProfile.userProfile.value } returns mockUsers[0]
     // Setting up the test composition
     composeTestRule.setContent {
-      HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      HomeScreen(
+          navigation = mockNav, homeViewModel = mockViewModel, test = true, profile = mockProfile)
     }
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
       searchBar {
@@ -307,8 +330,10 @@ class HomeTest {
       every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
       every { mockViewModel.filteredItineraryList } returns MutableLiveData(emptyList())
       every { mockViewModel.searchQuery } returns MutableLiveData("test")
+      every { mockProfile.userProfile.value } returns mockUsers[0]
       composeTestRule.setContent {
-        HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+        HomeScreen(
+            navigation = mockNav, homeViewModel = mockViewModel, test = true, profile = mockProfile)
       }
       ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
         searchBar {
@@ -340,8 +365,10 @@ class HomeTest {
       every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
       every { mockViewModel.filteredItineraryList } returns MutableLiveData(emptyList())
       every { mockViewModel.searchQuery } returns MutableLiveData("test")
+      every { mockProfile.userProfile.value } returns mockUsers[0]
       composeTestRule.setContent {
-        HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+        HomeScreen(
+            navigation = mockNav, homeViewModel = mockViewModel, test = true, profile = mockProfile)
       }
       ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
         searchBar {

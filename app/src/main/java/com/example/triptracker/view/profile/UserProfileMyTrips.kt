@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.model.itinerary.Itinerary
-import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
@@ -60,7 +59,7 @@ fun UserProfileMyTrips(
     userProfile: MutableUserProfile
 ) {
 
-  //val profile = AmbientUserProfile.current.userProfile.value
+  // val profile = AmbientUserProfile.current.userProfile.value
   // Set search filter and query in the ViewModel
   homeViewModel.setSearchFilter(FilterType.USERNAME)
   homeViewModel.setSearchQuery(userProfile.userProfile.value.username)

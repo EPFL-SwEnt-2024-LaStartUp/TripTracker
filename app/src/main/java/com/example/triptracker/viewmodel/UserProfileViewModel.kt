@@ -182,7 +182,6 @@ class UserProfileViewModel(
    * @param profile : user profile to update
    * @param id : id of the favorite to remove
    */
-
   fun removeFavorite(profile: MutableUserProfile, id: String) {
     val favorites = profile.userProfile.value.favoritesPaths.toMutableList()
     favorites.remove(id)
@@ -196,12 +195,10 @@ class UserProfileViewModel(
    * @param profile : user profile to update
    * @param id : id of the favorite to add
    */
-
   fun addFavorite(profile: MutableUserProfile, id: String) {
     val favorites = profile.userProfile.value.favoritesPaths.toMutableList()
     favorites.add(id)
     profile.userProfile.value = profile.userProfile.value.copy(favoritesPaths = favorites)
     updateUserProfileInDb(profile.userProfile.value)
   }
-
 }

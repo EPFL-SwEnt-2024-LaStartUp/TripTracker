@@ -100,8 +100,7 @@ class MainActivity : ComponentActivity() {
                         navigation = navigation,
                         selectedId = backStackEntry.arguments?.getString("id") ?: "",
                         userProfile = profile)
-                    }
-
+                  }
 
               composable(Route.RECORD) { RecordScreen(context, navigation) }
               composable(Route.PROFILE) {
@@ -119,7 +118,9 @@ class MainActivity : ComponentActivity() {
                 )
               }
 
-              composable(Route.FAVORITES) { UserProfileFavourite(navigation = navigation) }
+              composable(Route.FAVORITES) {
+                UserProfileFavourite(navigation = navigation, userProfile = profile)
+              }
               composable(Route.EDIT) {
                 UserProfileEditScreen(navigation = navigation, profile = profile)
               }

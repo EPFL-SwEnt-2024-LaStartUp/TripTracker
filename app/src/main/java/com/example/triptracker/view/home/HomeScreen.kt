@@ -80,7 +80,6 @@ fun HomeScreen(
         isSearchActive && filteredList.isEmpty() && homeViewModel.searchQuery.value!!.isNotEmpty()
       }
 
-
   Scaffold(
       topBar = {
         // Assuming a SearchBar composable is defined elsewhere
@@ -152,8 +151,7 @@ fun HomeScreen(
                         navigation = navigation,
                         onClick = { navigation.navigateTo(Route.MAPS, itinerary.id) },
                         test = test,
-                        profile = profile
-                        )
+                        profile = profile)
                   }
                 }
             /*
@@ -201,6 +199,7 @@ fun SearchBarImplementation(
           FilterType.PIN -> "Example: EPFL"
           FilterType.TITLE -> "Find Itineraries"
           FilterType.USERNAME -> "Search for a User"
+          FilterType.FAVORTIES -> "No favorites yet"
         }
       }
 
