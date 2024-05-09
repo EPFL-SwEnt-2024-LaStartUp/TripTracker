@@ -6,6 +6,7 @@ import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
 
@@ -204,6 +205,73 @@ open class ItineraryRepository {
         .delete()
         .addOnSuccessListener { Log.d(TAG, "Itinerary removed successfully") }
         .addOnFailureListener { e -> Log.e(TAG, "Error removing itinerary", e) }
+  }
+
+  /**
+   * Increment a field in the itinerary document
+   *
+   * @param itineraryId Id of the itinerary document
+   * @param fieldName Name of the field to increment
+   * @return Unit
+   */
+  fun incrementField(itineraryId: String, fieldName: String) {
+    val itineraryRef = itineraryDb.document(itineraryId)
+    db.runTransaction { transaction ->
+          val snapshot = transaction.get(itineraryRef)
+          val currentCount = snapshot.getLong(fieldName) ?: 0
+          transaction.update(itineraryRef, fieldName, currentCount + 1)
+        }
+        .addOnSuccessListener { Log.d(TAG, "Field incremented successfully") }
+        .addOnFailureListener { e -> Log.e(TAG, "Error incrementing field", e) }
+  }
+
+  /**
+   * Get an itinerary by ID
+   *
+   * @param itineraryId Id of the itinerary
+   * @param callback Callback function to call with the itinerary object
+   */
+  fun getItineraryById(itineraryId: String, callback: (Itinerary?) -> Unit) {
+    itineraryDb
+        .document(itineraryId)
+        .get()
+        .addOnSuccessListener { document ->
+          if (document.exists()) {
+            val itinerary = document.toObject(Itinerary::class.java)
+            callback(itinerary)
+          } else {
+            callback(null)
+          }
+        }
+        .addOnFailureListener { e ->
+          Log.e(TAG, "Error fetching itinerary by ID", e)
+          callback(null)
+        }
+  }
+
+  /**
+   * Uses a Firestore transaction to safely update a field in the itinerary document.
+   *
+   * @param itineraryId The ID of the itinerary to update.
+   * @param fieldName The name of the field to update.
+   * @param newValue The new value to set for the field.
+   */
+  fun updateField(itineraryId: String, fieldName: String, newValue: Any) {
+    val itineraryRef = db.collection("itineraries").document(itineraryId)
+
+    db.runTransaction { transaction ->
+          val snapshot = transaction.get(itineraryRef)
+          if (snapshot.exists()) {
+            transaction.update(itineraryRef, fieldName, newValue)
+          } else {
+            throw FirebaseFirestoreException(
+                "Itinerary not found", FirebaseFirestoreException.Code.ABORTED)
+          }
+        }
+        .addOnSuccessListener {
+          Log.d(TAG, "Transaction successfully committed for field: $fieldName")
+        }
+        .addOnFailureListener { e -> Log.e(TAG, "Transaction failed for field: $fieldName", e) }
   }
 
   /**

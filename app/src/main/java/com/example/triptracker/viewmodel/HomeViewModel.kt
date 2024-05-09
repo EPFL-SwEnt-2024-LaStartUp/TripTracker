@@ -45,7 +45,6 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
 
   init {
     UserProfileViewModel().fetchAllUserProfiles { userProfileList = it }
-    calculateFlameCounts()
   }
 
   private val _userProfiles = MutableLiveData<Map<String, UserProfile>>()
@@ -151,25 +150,49 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   }
 
   /**
-   * Calculate the flame count for each itinerary and update the itineraryList the flame count is
-   * calculated as 2 * saves + clicks + 5 * numStarts as number of user that started the itinerary
-   * is presumably much smaller than the number of users that saved it and even less than the number
-   * of clicks and more valuable.
-   */
-  fun calculateFlameCounts() {
-    _itineraryList.value =
-        _itineraryList.value?.map { itinerary ->
-          itinerary.copy(
-              flameCount = 2 * itinerary.saves + itinerary.clicks + 5 * itinerary.numStarts)
-        }
-  }
-
-  /**
    * Filter the itinerary list by trending itineraries based on the flame count The trending
    * itineraries are sorted in descending order of flame count
    */
   fun filterByTrending() {
     _itineraryList.value =
         _itineraryList.value?.sortedByDescending { itinerary -> itinerary.flameCount }
+  }
+
+  /**
+   * Calculate the flame count for each itinerary and update the itineraryList the flame count is
+   * calculated as 2 * saves + clicks + 5 * numStarts as number of user that started the itinerary
+   * is presumably much smaller than the number of users that saved it and even less than the number
+   * of clicks and more valuable. updates the db field flameCount
+   *
+   * @param itineraryId the id of the itinerary to update
+   */
+  private fun updateFlameCount(itineraryId: String) {
+    repository.getItineraryById(itineraryId) { itinerary ->
+      if (itinerary != null) {
+        val newFlameCount = 2 * itinerary.saves + itinerary.clicks + 5 * itinerary.numStarts
+        repository.updateField(itineraryId, "flameCount", newFlameCount)
+      }
+    }
+  }
+
+  /** Increment the click count of the itinerary with the given id */
+  fun incrementClickCount(itineraryId: String) {
+    viewModelScope.launch {
+      repository.incrementField(itineraryId, "clicks")
+      // update flame count after incrementing click count
+      updateFlameCount(itineraryId)
+    }
+  }
+
+  /** Increment the save count of the itinerary with the given id */
+  fun incrementSaveCount(itineraryId: String) {
+    viewModelScope.launch { repository.incrementField(itineraryId, "saves")
+      updateFlameCount(itineraryId)}
+  }
+
+  /** Increment the flame count of the itinerary with the given id */
+  fun incrementNumStarts(itineraryId: String) {
+    viewModelScope.launch { repository.incrementField(itineraryId, "numStarts")
+      updateFlameCount(itineraryId)}
   }
 }
