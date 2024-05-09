@@ -130,6 +130,9 @@ fun UserProfileEditScreen(
         }
       }
 
+  /** Alpha value for the screen depending on loading state */
+  val alpha = if (!isLoading) 1f else 0.9f
+
   /**
    * his function updates the user profile in the database on save.
    *
@@ -200,7 +203,7 @@ fun UserProfileEditScreen(
                     .padding(innerPadding)
                     .padding(top = 30.dp, bottom = 30.dp, start = 25.dp, end = 25.dp)
                     .fillMaxWidth()
-                    .background(md_theme_light_dark, shape = RoundedCornerShape(20.dp)),
+                    .background(md_theme_light_dark.copy(alpha), shape = RoundedCornerShape(20.dp)),
             contentAlignment = Alignment.TopCenter) {
 
               // Loading bar for when the save button is clicked
