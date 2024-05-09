@@ -45,6 +45,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
 
   init {
     UserProfileViewModel().fetchAllUserProfiles { userProfileList = it }
+    viewModelScope.launch { fetchItineraries() }
   }
 
   private val _userProfiles = MutableLiveData<Map<String, UserProfile>>()
@@ -70,16 +71,11 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
         }
       }
 
-  init {
-    viewModelScope.launch { fetchItineraries() }
-  }
-
   /** Fetches all itineraries from the repository and stores them in the itineraryList LiveData */
   private fun fetchItineraries() {
     Log.d("HomeViewModel", "Fetching itineraries")
     itineraryInstance.setItineraryList(repository.getAllItineraries())
     _itineraryList.value = itineraryInstance.getAllItineraries()
-    Log.d("HomeViewModel", repository.getAllItineraries().toString())
   }
 
   private fun filterByTitle(query: String) =
@@ -158,6 +154,10 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
         _itineraryList.value?.sortedByDescending { itinerary -> itinerary.flameCount }
   }
 
+  private fun calculateFlameCounts(saves: Long, clicks: Long, numStarts: Long): Long {
+    return 2 * saves + clicks + 5 * numStarts
+  }
+
   /**
    * Calculate the flame count for each itinerary and update the itineraryList the flame count is
    * calculated as 2 * saves + clicks + 5 * numStarts as number of user that started the itinerary
@@ -169,7 +169,8 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   private fun updateFlameCount(itineraryId: String) {
     repository.getItineraryById(itineraryId) { itinerary ->
       if (itinerary != null) {
-        val newFlameCount = 2 * itinerary.saves + itinerary.clicks + 5 * itinerary.numStarts
+        val newFlameCount =
+            calculateFlameCounts(itinerary.saves, itinerary.clicks, itinerary.numStarts)
         repository.updateField(itineraryId, "flameCount", newFlameCount)
       }
     }
@@ -188,6 +189,17 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   fun incrementSaveCount(itineraryId: String) {
     viewModelScope.launch {
       repository.incrementField(itineraryId, "saves")
+      val updatedList =
+          _itineraryList.value?.map { itinerary ->
+            if (itinerary.id == itineraryId) {
+              itinerary.copy(saves = itinerary.saves + 1)
+            } else {
+              itinerary
+            }
+          }
+      if (updatedList != null) {
+        _itineraryList = MutableLiveData(updatedList)
+      }
       updateFlameCount(itineraryId)
     }
   }
