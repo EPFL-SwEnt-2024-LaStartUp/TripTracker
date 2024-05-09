@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -167,7 +168,8 @@ fun DisplayStartScreen() {
           "HQ",
           "Jetbrains HQ",
           listOf(
-              "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg"))
+              "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
+              "https://cdn-vsh.prague.eu/object/254/u-fleku-01.jpg"))
   val pin2 =
       Pin(
           50.0792573623994,
@@ -175,7 +177,7 @@ fun DisplayStartScreen() {
           "U Fleku",
           "Oldest restaurant",
           listOf(
-              "https://www.minecraft.net/content/dam/games/minecraft/key-art/Player-Parent-Onboarding_Carousel-Before-You-Begin_Create-a-Minecraft-Acct_1280x768.jpg"))
+              "https://d3dqioy2sca31t.cloudfront.net/Projects/cms/production/000/033/186/slideshow/aa3cc8bc14fc3f93c823f6aa5743874e/slide-czech-republic-prague-old-town-hall.jpg"))
   val pin3 = Pin(50.08731011666294, 14.420438033846013, "Clock", "Astronomical Clock", emptyList())
 
   val loc = Location(50.05186463055543, 14.43129605385369, "HQ")
@@ -183,7 +185,7 @@ fun DisplayStartScreen() {
       Itinerary(
           "1",
           "Jetbrains Island",
-          "sd.shurtugal@gmail.com",
+          "polfuentescam@gmail.com",
           loc,
           500,
           "4",
@@ -290,7 +292,12 @@ fun StartScreen(
           LazyRow {
             items(itinerary.pinnedPlaces) { pin ->
               for (image in pin.image_url) {
-                AsyncImage(model = image, contentDescription = pin.description)
+                AsyncImage(
+                    model = image,
+                    contentDescription = pin.description,
+                    modifier = Modifier.clip(RoundedCornerShape(corner = CornerSize(12.dp))))
+
+                Spacer(modifier = Modifier.width(15.dp))
               }
             }
           }
