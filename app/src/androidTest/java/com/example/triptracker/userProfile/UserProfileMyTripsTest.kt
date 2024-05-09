@@ -67,7 +67,7 @@ class UserProfileMyTripsTest {
           homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
     }
     composeTestRule.onNodeWithTag("UserProfileMyTripsScreen").assertExists()
-    composeTestRule.onNodeWithTag("MyTripsTitle").assertExists()
+    composeTestRule.onNodeWithTag("ScreenTitle").assertExists()
     composeTestRule.onNodeWithTag("GoBackButton").assertExists()
   }
 
@@ -81,7 +81,7 @@ class UserProfileMyTripsTest {
       UserProfileMyTrips(
           homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
     }
-    composeTestRule.onNodeWithTag("NoTripsText").assertExists()
+    composeTestRule.onNodeWithTag("NoDataText").assertExists()
   }
 
   // catch the firestore error
@@ -100,7 +100,7 @@ class UserProfileMyTripsTest {
         UserProfileMyTrips(
             homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
       }
-      composeTestRule.onNodeWithTag("MyTripsList").assertExists()
+      composeTestRule.onNodeWithTag("DataList").assertExists()
     } catch (e: Exception) {
       TestCase.assertTrue("Test failed due to exception: ${e.message}", true)
     }
@@ -120,6 +120,6 @@ class UserProfileMyTripsTest {
       UserProfileMyTrips(
           homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
     }
-    composeTestRule.onNodeWithTag("MyTripsList").assertExists()
+    composeTestRule.onNodeWithTag("DataList").assertExists()
   }
 }

@@ -66,8 +66,8 @@ class UserProfileFavouritesTest {
           homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
     }
     composeTestRule.onNodeWithTag("UserProfileFavouriteScreen").assertExists()
-    composeTestRule.onNodeWithTag("FavouritesTitle").assertExists()
-    composeTestRule.onNodeWithTag("FavouritesBackButton").assertExists()
+    composeTestRule.onNodeWithTag("ScreenTitle").assertExists()
+    composeTestRule.onNodeWithTag("GoBackButton").assertExists()
   }
 
   @Test
@@ -80,7 +80,7 @@ class UserProfileFavouritesTest {
       UserProfileFavourite(
           homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
     }
-    composeTestRule.onNodeWithTag("NoFavouritesText").assertExists()
+    composeTestRule.onNodeWithTag("NoDataText").assertExists()
   }
 
   @Test
@@ -96,7 +96,7 @@ class UserProfileFavouritesTest {
         UserProfileFavourite(
             homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
       }
-      composeTestRule.onNodeWithTag("FavouritesList").assertExists()
+      composeTestRule.onNodeWithTag("DataList").assertExists()
     } catch (e: Exception) {
       // assert true
       Log.d("UserProfileFavouritesTest", "Error: ${e.message}")
@@ -116,6 +116,6 @@ class UserProfileFavouritesTest {
       UserProfileFavourite(
           homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
     }
-    composeTestRule.onNodeWithTag("FavouritesList").assertExists()
+    composeTestRule.onNodeWithTag("DataList").assertExists()
   }
 }
