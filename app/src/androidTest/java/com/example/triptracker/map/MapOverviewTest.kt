@@ -12,7 +12,9 @@ import androidx.test.rule.GrantPermissionRule
 import com.example.triptracker.itinerary.MockItineraryList
 import com.example.triptracker.model.itinerary.ItineraryList
 import com.example.triptracker.model.location.popupState
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.userProfile.MockUserList
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.map.MapOverview
 import com.example.triptracker.viewmodel.MapViewModel
@@ -42,12 +44,17 @@ class MapOverviewTest : TestCase() {
   @RelaxedMockK private lateinit var mockViewModel: MapViewModel
   @RelaxedMockK private lateinit var mockViewModelProfile: UserProfileViewModel
   @RelaxedMockK private lateinit var mockNavigation: Navigation
+  @RelaxedMockK private lateinit var mockProfile: MutableUserProfile
+
+  val mockUserList = MockUserList()
+  val mockUsers = mockUserList.getUserProfiles()
 
   @Before
   fun setUp() {
     mockViewModel = mockk(relaxed = true)
     mockNavigation = mockk(relaxed = true)
     mockViewModelProfile = mockk(relaxed = true)
+    mockProfile = mockk(relaxed = true)
   }
 
   @Test
@@ -59,13 +66,15 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.pathList.value } returns ItineraryList(itineraryList)
     every { mockViewModel.displayPopUp.value } returns false
     every { mockViewModel.displayPicturePopUp.value } returns false
+    every { mockProfile.userProfile.value } returns mockUsers[0]
 
     composeTestRule.setContent {
       MapOverview(
           mapViewModel = mockViewModel,
           context = appContext,
           navigation = mockNavigation,
-          selectedId = "")
+          selectedId = "",
+          userProfile = mockProfile)
     }
 
     // Verify that the dependencies are properly initialized
@@ -81,6 +90,7 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.selectedPin.value } returns itineraryList[0].pinnedPlaces[0]
     every { mockViewModel.displayPopUp.value } returns false
     every { mockViewModel.displayPicturePopUp.value } returns false
+    every { mockProfile.userProfile.value } returns mockUsers[0]
 
     composeTestRule.setContent {
       MapOverview(
@@ -88,7 +98,8 @@ class MapOverviewTest : TestCase() {
           context = appContext,
           navigation = mockNavigation,
           checkLocationPermission = false,
-          selectedId = "1")
+          selectedId = "1",
+          userProfile = mockProfile)
     }
 
     // Verify that the map is not shown
@@ -110,9 +121,14 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.pathList.value } returns ItineraryList(itineraryList)
     every { mockViewModel.displayPopUp.value } returns false
     every { mockViewModel.displayPicturePopUp.value } returns false
+    every { mockProfile.userProfile.value } returns mockUsers[0]
 
     composeTestRule.setContent {
-      MapOverview(mapViewModel = mockViewModel, context = appContext, navigation = mockNavigation)
+      MapOverview(
+          mapViewModel = mockViewModel,
+          context = appContext,
+          navigation = mockNavigation,
+          userProfile = mockProfile)
     }
 
     // Verify that the dependencies are properly called
@@ -134,6 +150,7 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.pathList.value } returns ItineraryList(itineraryList)
     every { mockViewModel.displayPopUp.value } returns false
     every { mockViewModel.displayPicturePopUp.value } returns false
+    every { mockProfile.userProfile.value } returns mockUsers[0]
 
     composeTestRule.setContent {
       MapOverview(
@@ -141,7 +158,8 @@ class MapOverviewTest : TestCase() {
           context = appContext,
           navigation = mockNavigation,
           checkLocationPermission = true,
-          selectedId = "")
+          selectedId = "",
+          userProfile = mockProfile)
     }
 
     // Verify that the dependencies are properly called
@@ -160,6 +178,7 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.pathList.value } returns ItineraryList(itineraryList)
     every { mockViewModel.displayPopUp.value } returns false
     every { mockViewModel.displayPicturePopUp.value } returns false
+    every { mockProfile.userProfile.value } returns mockUsers[0]
 
     composeTestRule.setContent {
       MapOverview(
@@ -167,7 +186,8 @@ class MapOverviewTest : TestCase() {
           context = appContext,
           navigation = mockNavigation,
           checkLocationPermission = false,
-          selectedId = "1")
+          selectedId = "1",
+          userProfile = mockProfile)
     }
 
     // Verify that the map is not shown
@@ -193,8 +213,13 @@ class MapOverviewTest : TestCase() {
       every { mockViewModel.pathList.value } returns ItineraryList(itineraryList)
       every { mockViewModel.displayPopUp.value } returns true
       every { mockViewModel.displayPicturePopUp.value } returns false
+      every { mockProfile.userProfile.value } returns mockUsers[0]
       composeTestRule.setContent {
-        MapOverview(mapViewModel = mockViewModel, context = appContext, navigation = mockNavigation)
+        MapOverview(
+            mapViewModel = mockViewModel,
+            context = appContext,
+            navigation = mockNavigation,
+            userProfile = mockProfile)
       }
     } catch (e: Exception) {
       // If any exception occurs, fail the test
@@ -220,6 +245,7 @@ class MapOverviewTest : TestCase() {
       every { mockViewModel.pathList.value } returns ItineraryList(itineraryList)
       every { mockViewModel.displayPopUp.value } returns true
       every { mockViewModel.displayPicturePopUp.value } returns false
+      every { mockProfile.userProfile.value } returns mockUsers[0]
 
       composeTestRule.setContent {
         MapOverview(
@@ -227,7 +253,8 @@ class MapOverviewTest : TestCase() {
             context = appContext,
             navigation = mockNavigation,
             checkLocationPermission = true,
-            selectedId = "")
+            selectedId = "",
+            userProfile = mockProfile)
       }
 
       composeTestRule.onNodeWithTag("MapOverview").assertExists()
@@ -260,6 +287,7 @@ class MapOverviewTest : TestCase() {
       every { mockViewModel.displayPopUp.value } returns true
       every { mockViewModel.popUpState } returns popupState.PATHOVERLAY
       every { mockViewModel.displayPicturePopUp.value } returns false
+      every { mockProfile.userProfile.value } returns mockUsers[0]
 
       composeTestRule.setContent {
         MapOverview(
@@ -267,7 +295,8 @@ class MapOverviewTest : TestCase() {
             context = appContext,
             navigation = mockNavigation,
             checkLocationPermission = true,
-            selectedId = "")
+            selectedId = "",
+            userProfile = mockProfile)
       }
 
       composeTestRule.onNodeWithTag("MapOverview").assertExists()
@@ -300,9 +329,14 @@ class MapOverviewTest : TestCase() {
         }
     every { mockViewModel.displayPopUp.value } returns false
     every { mockViewModel.displayPicturePopUp.value } returns true
+    every { mockProfile.userProfile.value } returns mockUsers[0]
 
     composeTestRule.setContent {
-      MapOverview(mapViewModel = mockViewModel, context = appContext, navigation = mockNavigation)
+      MapOverview(
+          mapViewModel = mockViewModel,
+          context = appContext,
+          navigation = mockNavigation,
+          userProfile = mockProfile)
     }
 
     composeTestRule.onNodeWithTag("MapOverview").assertExists()
@@ -333,6 +367,7 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.displayPicturePopUp.value } returns false
 
     every { mockViewModel.pathList } returns MutableLiveData()
+    every { mockProfile.userProfile.value } returns mockUsers[0]
 
     composeTestRule.setContent {
       val coroutineScope = rememberCoroutineScope()
@@ -348,7 +383,8 @@ class MapOverviewTest : TestCase() {
           mapViewModel = mockViewModel,
           context = appContext,
           navigation = mockNavigation,
-          selectedId = "1")
+          selectedId = "1",
+          userProfile = mockProfile)
 
       // Trigger the LaunchedEffect
       coroutineScope.launch {
