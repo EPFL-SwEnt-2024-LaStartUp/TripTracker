@@ -3,6 +3,7 @@ package com.example.triptracker.model.repository
 import android.net.Uri
 import android.util.Log
 import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.firebase.storage.storage
 import java.util.UUID
 import kotlinx.coroutines.tasks.await
@@ -10,6 +11,7 @@ import kotlinx.coroutines.tasks.await
 class ImageRepository {
 
   private val storage = Firebase.storage
+  private val auth = Firebase.auth.currentUser
 
   private val PICTURE_FOLDER = "pictures"
   private val PIN_PICTURES = "pin"
@@ -30,6 +32,7 @@ class ImageRepository {
       Log.d("DOWNLOAD URL", downloadUrl.toString())
       Response.Success(downloadUrl)
     } catch (e: Exception) {
+      Log.d("DOWNLOAD URL", e.toString())
       Response.Failure(e)
     }
   }
@@ -49,6 +52,7 @@ class ImageRepository {
       Log.d("DOWNLOAD URL", downloadUrl.toString())
       Response.Success(downloadUrl)
     } catch (e: Exception) {
+      Log.d("DOWNLOAD URL", e.toString())
       Response.Failure(e)
     }
   }
