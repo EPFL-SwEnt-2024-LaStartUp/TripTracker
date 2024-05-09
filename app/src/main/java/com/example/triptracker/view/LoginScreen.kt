@@ -68,9 +68,12 @@ fun LoginScreen(
     loginViewModel: LoginViewModel = viewModel(),
     profileViewModel: UserProfileViewModel = viewModel()
 ) {
-
   val context = applicationContext()
   val authenticator = GoogleAuthenticator()
+
+  // No null values are allowed for the profile or the app will crash
+  val defaultProfileUrl =
+      "https://www.google.com/url?sa=i&url=https%3A%2F%2Fmedium.com%2Finsider-coub%2Fdefault-avatars-4275c0e41f62&psig=AOvVaw0oebP_LJzFLpe1XvRBTLlM&ust=1715331300099000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPCl8ZmZgIYDFQAAAAAdAAAAABAE"
   val signInLauncher =
       rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result
         ->
@@ -84,6 +87,7 @@ fun LoginScreen(
                 if (googleSignInAccount != null) {
                   profileViewModel.getUserProfile(googleSignInAccount.email ?: "") {
                     if (it != null) {
+                      profile.userProfile.value = it
                       loginViewModel.onSignInResult(LoginViewModel.AuthStatus.LOGGED_IN)
                     } else {
 
@@ -98,7 +102,7 @@ fun LoginScreen(
                               currentDate.format(formatter),
                               (googleSignInAccount.givenName + "_" + googleSignInAccount.familyName)
                                   ?: "",
-                              googleSignInAccount.photoUrl?.toString() ?: "",
+                              googleSignInAccount.photoUrl?.toString() ?: defaultProfileUrl,
                               emptyList(),
                               emptyList())
 
