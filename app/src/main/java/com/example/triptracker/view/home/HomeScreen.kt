@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
@@ -63,6 +64,7 @@ import com.example.triptracker.viewmodel.HomeViewModel
 @Composable
 fun HomeScreen(
     navigation: Navigation,
+    profile: MutableUserProfile,
     homeViewModel: HomeViewModel = viewModel(),
     test: Boolean = false
 ) {
@@ -148,7 +150,8 @@ fun HomeScreen(
                         itinerary = itinerary,
                         navigation = navigation,
                         onClick = { navigation.navigateTo(Route.MAPS, itinerary.id) },
-                        test = test)
+                        test = test,
+                        profile = profile)
                   }
                 }
             /*
@@ -196,6 +199,7 @@ fun SearchBarImplementation(
           FilterType.PIN -> "Example: EPFL"
           FilterType.TITLE -> "Find Itineraries"
           FilterType.USERNAME -> "Search for a User"
+          FilterType.FAVORTIES -> "No favorites yet"
         }
       }
 

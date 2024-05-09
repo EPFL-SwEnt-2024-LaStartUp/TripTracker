@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.profile.UserProfileList
 import com.example.triptracker.model.repository.ImageRepository
@@ -173,5 +174,31 @@ class UserProfileViewModel(
       val elem = imageRepository.addProfilePictureToFirebaseStorage(imageUri)
       callback(elem)
     }
+  }
+
+  /**
+   * This function removes the given favorite path from the user profile.
+   *
+   * @param profile : user profile to update
+   * @param id : id of the favorite to remove
+   */
+  fun removeFavorite(profile: MutableUserProfile, id: String) {
+    val favorites = profile.userProfile.value.favoritesPaths.toMutableList()
+    favorites.remove(id)
+    profile.userProfile.value = profile.userProfile.value.copy(favoritesPaths = favorites)
+    updateUserProfileInDb(profile.userProfile.value)
+  }
+
+  /**
+   * This function adds the given favorite path to the user profile.
+   *
+   * @param profile : user profile to update
+   * @param id : id of the favorite to add
+   */
+  fun addFavorite(profile: MutableUserProfile, id: String) {
+    val favorites = profile.userProfile.value.favoritesPaths.toMutableList()
+    favorites.add(id)
+    profile.userProfile.value = profile.userProfile.value.copy(favoritesPaths = favorites)
+    updateUserProfileInDb(profile.userProfile.value)
   }
 }
