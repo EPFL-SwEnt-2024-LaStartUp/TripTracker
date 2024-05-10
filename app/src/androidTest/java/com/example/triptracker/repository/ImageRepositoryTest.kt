@@ -22,13 +22,16 @@ class ImageRepositoryTest {
     val imageUri = Uri.parse("app/src/main/res/drawable/triptrackerlogo.png")
 
     // Mock the behavior of the addImageToFirebaseStorage method
-    coEvery { mockImageRepository.addImageToFirebaseStorage(imageUri) } returns
-        Response.Success(imageUri)
+    coEvery {
+      mockImageRepository.addImageToFirebaseStorage(mockImageRepository.pinPictures, imageUri)
+    } returns Response.Success(imageUri)
 
     // Call the method on the mock object
-    mockImageRepository.addImageToFirebaseStorage(imageUri)
+    mockImageRepository.addImageToFirebaseStorage(mockImageRepository.pinPictures, imageUri)
 
     // Verify that the method was called
-    coVerify { mockImageRepository.addImageToFirebaseStorage(imageUri) }
+    coVerify {
+      mockImageRepository.addImageToFirebaseStorage(mockImageRepository.pinPictures, imageUri)
+    }
   }
 }

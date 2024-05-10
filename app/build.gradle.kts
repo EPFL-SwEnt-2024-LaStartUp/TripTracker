@@ -137,126 +137,119 @@ fun DependencyHandlerScope.globalTestImplementation(dep: Any) {
 }
 
 dependencies {
-  implementation("androidx.core:core-ktx:1.12.0")
-  implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-  implementation("androidx.activity:activity-compose:1.8.2")
-  implementation("androidx.compose.ui:ui:1.4.0")
-  implementation("androidx.compose.ui:ui-tooling-preview:1.4.0")
-  implementation("androidx.compose.material:material:1.1.1")
-  // This material3 version enables having
-  // a waiting screen animation (See WaitingScreen.kt in view)
-  implementation("androidx.compose.material3:material3-android:1.2.0-rc01")
-  implementation("androidx.navigation:navigation-compose:2.6.0-rc01")
 
-  implementation("com.google.maps.android:maps-compose:4.3.0")
-  implementation("com.google.maps.android:maps-compose-utils:4.3.0")
-
-  implementation("com.google.android.gms:play-services-maps:18.1.0")
-  implementation("com.google.android.material:material:1.10.0")
-  implementation("androidx.appcompat:appcompat:1.6.1")
-  implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-  implementation("androidx.navigation:navigation-fragment-ktx:2.7.5")
-  implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
-  implementation(platform("androidx.compose:compose-bom:2023.08.00"))
+  // --------------- Android Compose ----------------
+  implementation(platform("androidx.compose:compose-bom:2024.04.00"))
+  implementation("androidx.compose.ui:ui")
   implementation("androidx.compose.ui:ui-graphics")
-  implementation("com.google.android.gms:play-services-auth:20.6.0")
+  implementation("androidx.compose.ui:ui-tooling-preview")
 
-  implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
-  implementation("com.google.firebase:firebase-database-ktx:20.3.0")
-  implementation("com.google.firebase:firebase-auth:22.3.1")
-  testImplementation("junit:junit:4.13.2")
-  androidTestImplementation("androidx.test.ext:junit:1.1.5")
-  androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-  androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.0")
-  androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
-  debugImplementation("androidx.compose.ui:ui-tooling:1.4.0")
-  debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.0")
+  implementation("androidx.compose.material:material")
 
-  androidTestImplementation("com.kaspersky.android-components:kaspresso:1.4.3")
-  // Allure support
-  androidTestImplementation("com.kaspersky.android-components:kaspresso-allure-support:1.4.3")
-  // Jetpack Compose support
-  androidTestImplementation("com.kaspersky.android-components:kaspresso-compose-support:1.4.1")
+  // Material3
+  implementation("androidx.compose.material3:material3")
+  implementation("androidx.compose.material3:material3-android")
+  implementation("androidx.compose.material:material-icons-extended") // extra icons
+
+  // Ambiant user and live data
+  implementation("androidx.compose.runtime:runtime")
+  implementation("androidx.compose.runtime:runtime-rxjava2")
+  implementation("androidx.compose.runtime:runtime-livedata")
+
+  // Testing compose
+  androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+  debugImplementation("androidx.compose.ui:ui-tooling")
+  debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+
+  // --------------- AndroidActivity ----------------
+  val activityVersion = "1.8.2"
+  implementation("androidx.activity:activity:$activityVersion")
+  implementation("androidx.activity:activity-compose:$activityVersion")
+  implementation("androidx.activity:activity-ktx:$activityVersion")
+
+
+  // --------------- Navigation ----------------
+  val navVersion = "2.7.7"
+  implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
+  implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
+  implementation("androidx.navigation:navigation-compose:$navVersion")
 
   implementation("androidx.fragment:fragment:1.5.5")
 
-  implementation("com.squareup.okhttp3:okhttp:3.10.0")
+  // Testing navigation
+  androidTestImplementation("androidx.navigation:navigation-testing:$navVersion")
 
-  testImplementation("org.mockito:mockito-core:3.11.2")
-  testImplementation("org.mockito:mockito-inline:2.13.0")
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
-  // ----------       Firebase     ------------
-  implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
-  implementation("com.firebaseui:firebase-ui-auth:7.2.0")
-  implementation("com.google.firebase:firebase-database-ktx:20.3.0")
-  implementation("com.google.firebase:firebase-firestore:25.0.0")
-  implementation("com.google.android.play:core-ktx:1.7.0")
-  implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
-  implementation("com.google.android.gms:play-services-auth:19.2.0")
-
-  // ----------       Firebase Storage     ------------
-  // Import the BoM for the Firebase platform
-  implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
-
-  // Add the dependency for the Cloud Storage library
-  // When using the BoM, you don't specify versions in Firebase library dependencies
-  implementation("com.google.firebase:firebase-storage")
-
-  // ----------       Navigation     ------------
-  implementation("androidx.navigation:navigation-compose:2.6.0-rc01")
-
-  // live data
-  implementation("androidx.compose.runtime:runtime-livedata:1.1.0")
-
-  // Async Image
-  implementation("io.coil-kt:coil-compose:2.6.0")
-
-  val nav_version = "2.7.7"
-
-  // Kotlin
-  implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
-  implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
-
-  // Testing Navigation
-  androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
-
-  // OkHTTP
-  implementation("com.squareup.okhttp3:okhttp:4.12.0")
-
-  // tests
-  // Dependency for using Intents in instrumented tests
-  androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
-
-  // Dependencies for using MockK in instrumented tests
-  testImplementation("io.mockk:mockk:1.13.10")
-  testImplementation("io.mockk:mockk-agent:1.13.10")
-  androidTestImplementation("io.mockk:mockk-android:1.13.10")
-  androidTestImplementation("io.mockk:mockk-agent:1.13.10")
-
-  // --------- Kaspresso test framework ----------
-  globalTestImplementation(libs.kaspresso)
-  globalTestImplementation(libs.kaspresso.compose)
-
-  // ----------       Robolectric     ------------
-  testImplementation(libs.robolectric)
-
-  // ----------       Location     ------------
+  // --------------- Location ----------------
   implementation("com.google.android.gms:play-services-location:21.2.0")
   implementation("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
 
-    // ----------       Icons     ------------
-    implementation("androidx.compose.material:material-icons-extended:1.6.0-alpha05")
 
-    // ----------       Image picker     ------------
-    implementation("androidx.activity:activity:1.8.2")
-    implementation("androidx.activity:activity-compose:1.8.2")
-    implementation("androidx.activity:activity-ktx:1.8.2")
+  // --------------- Firebase ----------------
+  // When using the BoM, you don't specify versions in Firebase library dependencies
+  implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+  implementation("com.google.firebase:firebase-storage")
+  implementation("com.google.firebase:firebase-firestore")
+  implementation("com.google.firebase:firebase-analytics")
+  implementation("com.google.firebase:firebase-auth-ktx")
+  implementation("com.google.firebase:firebase-database-ktx")
 
-    // ----------       Ambient user     ------------
-  implementation("androidx.compose.runtime:runtime:1.6.7")
-  implementation("androidx.compose.runtime:runtime-rxjava2:1.6.7")
+  implementation("com.google.android.play:core-ktx:1.8.1")
+  implementation("androidx.core:core-ktx:1.12.0")
+  implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
+  
+  // --------------- Google Authentication ----------------
+  implementation("com.google.android.gms:play-services-auth:21.1.0")
 
+  // --------------- Google Maps ----------------
+  val mapsVersion = "4.3.3"
+  implementation("com.google.maps.android:maps-compose:$mapsVersion")
+  implementation("com.google.maps.android:maps-compose-utils:$mapsVersion")
+  implementation("com.google.android.gms:play-services-maps:18.2.0")
+
+  // --------------- Coil ----------------
+  // Async Image
+  implementation("io.coil-kt:coil-compose:2.6.0")
+
+  // --------------- OkHttp ----------------
+  implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+  // --------------- JSON ----------------
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+
+  // --------------- Espresso ----------------
+  val espressoVersion = "3.5.1"
+  androidTestImplementation("androidx.test.espresso:espresso-core:$espressoVersion")
+  androidTestImplementation("androidx.test.espresso:espresso-intents:$espressoVersion")
+
+  // --------------- Kaspresso ----------------
+  val kaspressoVersion = "1.4.3"
+  androidTestImplementation("com.kaspersky.android-components:kaspresso:$kaspressoVersion")
+  androidTestImplementation("com.kaspersky.android-components:kaspresso-allure-support:$kaspressoVersion")
+  androidTestImplementation("com.kaspersky.android-components:kaspresso-compose-support:$kaspressoVersion")
+
+  // --------------- Robolectric ----------------
+  testImplementation(libs.robolectric)
+
+  // --------------- Mockk ----------------
+  val mockVersion = "1.13.10"
+  testImplementation("io.mockk:mockk:$mockVersion")
+  testImplementation("io.mockk:mockk-android:$mockVersion")
+  testImplementation("io.mockk:mockk-agent:$mockVersion")
+  androidTestImplementation("io.mockk:mockk-android:$mockVersion")
+  androidTestImplementation("io.mockk:mockk-agent:$mockVersion")
+
+  // --------------- Mockito ----------------
+  testImplementation("org.mockito:mockito-android:5.11.0")
+
+  // --------------- JUnit ---------------
+  testImplementation("junit:junit:4.13.2")
+  androidTestImplementation("androidx.test.ext:junit:1.1.5")
+}
+
+configurations.all {
+  resolutionStrategy.force("com.google.protobuf:protobuf-javalite:3.22.3")
 }
 
 tasks.withType<Test> {

@@ -21,8 +21,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -115,6 +117,8 @@ fun UserProfileEditScreen(
 
   var isLoading by remember { mutableStateOf(false) }
 
+  val scrollState = rememberScrollState()
+
   // Variable to store the state of the new profile picture
   var selectedPicture by remember { mutableStateOf<Uri?>(null) }
   // Launcher for the pick multiple media activity
@@ -129,6 +133,9 @@ fun UserProfileEditScreen(
           Log.d("PhotoPicker", "No media selected.")
         }
       }
+
+  /** Alpha value for the screen depending on loading state */
+  val alpha = if (!isLoading) 1f else 0.9f
 
   /**
    * his function updates the user profile in the database on save.
@@ -200,7 +207,7 @@ fun UserProfileEditScreen(
                     .padding(innerPadding)
                     .padding(top = 30.dp, bottom = 30.dp, start = 25.dp, end = 25.dp)
                     .fillMaxWidth()
-                    .background(md_theme_light_dark, shape = RoundedCornerShape(20.dp)),
+                    .background(md_theme_light_dark.copy(alpha), shape = RoundedCornerShape(20.dp)),
             contentAlignment = Alignment.TopCenter) {
 
               // Loading bar for when the save button is clicked
@@ -215,6 +222,7 @@ fun UserProfileEditScreen(
                 false -> {}
               }
               Column(
+                  modifier = Modifier.fillMaxSize().verticalScroll(scrollState),
                   horizontalAlignment = Alignment.Start,
                   verticalArrangement = Arrangement.SpaceEvenly) {
                     Spacer(modifier = Modifier.height(25.dp))
@@ -252,12 +260,14 @@ fun UserProfileEditScreen(
                               modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8f),
                               verticalArrangement = Arrangement.Center) {
                                 Text(
+                                    modifier = Modifier.padding(end = 30.dp),
                                     text = "Username",
                                     fontSize = 14.sp,
                                     fontFamily = Montserrat,
                                     fontWeight = FontWeight.Normal,
                                     color = md_theme_grey)
                                 OutlinedTextField(
+                                    singleLine = true,
                                     value = username,
                                     label = {},
                                     onValueChange = {
@@ -265,7 +275,7 @@ fun UserProfileEditScreen(
                                       isUsernameEmpty = it.isEmpty()
                                     },
                                     modifier =
-                                        Modifier.padding(bottom = 5.dp, end = 30.dp).weight(1f),
+                                        Modifier.height(65.dp).padding(bottom = 5.dp, end = 30.dp),
                                     textStyle =
                                         TextStyle(
                                             color = Color.White,
@@ -289,7 +299,7 @@ fun UserProfileEditScreen(
                                         ))
                               }
                         }
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                     ProfileEditTextField(
                         "Name",
                         name,
@@ -298,7 +308,7 @@ fun UserProfileEditScreen(
                           isNameEmpty = it.isEmpty()
                         },
                         isNameEmpty)
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                     ProfileEditTextField(
                         "Surname",
                         surname,
@@ -307,7 +317,7 @@ fun UserProfileEditScreen(
                           isSurnameEmpty = it.isEmpty()
                         },
                         isSurnameEmpty)
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                     ProfileEditTextField(
                         "Mail",
                         mail,
@@ -317,7 +327,7 @@ fun UserProfileEditScreen(
                         },
                         isMailEmpty,
                         true)
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     val isOpen = remember { mutableStateOf(false) }
                     Text(
@@ -333,7 +343,10 @@ fun UserProfileEditScreen(
                           value = birthdate,
                           label = {},
                           onValueChange = {},
-                          modifier = Modifier.padding(bottom = 5.dp, start = 30.dp).weight(1f),
+                          modifier =
+                              Modifier.height(65.dp)
+                                  .padding(bottom = 5.dp, start = 30.dp)
+                                  .weight(1f),
                           textStyle =
                               TextStyle(
                                   color = Color.White,
@@ -426,10 +439,14 @@ fun ProfileEditTextField(
   OutlinedTextField(
       readOnly = isReadOnly,
       enabled = !isReadOnly,
+      singleLine = true,
       value = value,
       onValueChange = { onValueChange(it) },
       label = {},
-      modifier = Modifier.fillMaxWidth(1f).padding(bottom = 5.dp, start = 30.dp, end = 30.dp),
+      modifier =
+          Modifier.height(65.dp)
+              .fillMaxWidth(1f)
+              .padding(bottom = 5.dp, start = 30.dp, end = 30.dp),
       textStyle =
           TextStyle(
               color = Color.White,

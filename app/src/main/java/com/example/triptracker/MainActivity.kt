@@ -15,12 +15,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.triptracker.MainActivity.Companion.applicationContext
 import com.example.triptracker.authentication.GoogleAuthenticator
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.ProvideUserProfile
 import com.example.triptracker.navigation.LaunchPermissionRequest
 import com.example.triptracker.view.LoginScreen
 import com.example.triptracker.view.Navigation
+import com.example.triptracker.view.OfflineScreen
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.home.HomeScreen
 import com.example.triptracker.view.map.MapOverview
@@ -125,6 +127,8 @@ class MainActivity : ComponentActivity() {
                 UserProfileEditScreen(navigation = navigation, profile = profile)
               }
               composable(Route.SETTINGS) { UserProfileSettings(navigation) }
+
+              composable(Route.OFFLINE) { OfflineScreen() { navigation.retryNavigateTo() } }
             }
           }
         }
