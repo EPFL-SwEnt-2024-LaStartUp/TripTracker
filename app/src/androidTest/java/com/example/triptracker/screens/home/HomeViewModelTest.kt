@@ -6,6 +6,7 @@ import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.viewmodel.HomeViewModel
+import com.example.triptracker.viewmodel.IncrementableField
 import io.mockk.*
 import io.mockk.junit4.MockKRule
 import junit.framework.TestCase.assertEquals
@@ -69,8 +70,8 @@ class HomeViewModelTest {
   fun incrementClickCountUpdatesCountsCorrectly() = runBlockingTest {
     val itineraryId = "1"
     val initialClicks = liveData.value?.find { it.id == itineraryId }?.clicks ?: 0
-    every { repository.incrementField(itineraryId, "saves") } just Runs
-    every { repository.updateField(itineraryId, "flameCount", any()) } just Runs
+    every { repository.incrementField(itineraryId, IncrementableField.SAVES) } just Runs
+    every { repository.updateField(itineraryId, IncrementableField.FLAME_COUNT, any()) } just Runs
 
     homeViewModel.incrementClickCount(itineraryId)
 
@@ -83,8 +84,8 @@ class HomeViewModelTest {
     val itineraryId = "1"
     val initialSaves = liveData.value?.find { it.id == itineraryId }?.saves ?: 0
 
-    every { repository.incrementField(itineraryId, "saves") } just Runs
-    every { repository.updateField(itineraryId, "flameCount", any()) } just Runs
+    every { repository.incrementField(itineraryId, IncrementableField.SAVES) } just Runs
+    every { repository.updateField(itineraryId, IncrementableField.FLAME_COUNT, any()) } just Runs
 
     homeViewModel.incrementSaveCount(itineraryId)
 
@@ -97,8 +98,8 @@ class HomeViewModelTest {
     val itineraryId = "1"
     val initialNumStarts = liveData.value?.find { it.id == itineraryId }?.numStarts ?: 0
 
-    every { repository.incrementField(itineraryId, "numStarts") } just Runs
-    every { repository.updateField(itineraryId, "flameCount", any()) } just Runs
+    every { repository.incrementField(itineraryId, IncrementableField.NUM_STARTS) } just Runs
+    every { repository.updateField(itineraryId, IncrementableField.FLAME_COUNT, any()) } just Runs
 
     homeViewModel.incrementNumStarts(itineraryId)
 

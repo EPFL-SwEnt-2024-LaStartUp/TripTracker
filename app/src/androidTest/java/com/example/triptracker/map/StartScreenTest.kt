@@ -61,8 +61,11 @@ class StartScreenTest {
           "polfuentescam@gmail.com",
           loc,
           500,
-          "4",
-          "5",
+          4,
+          5,
+          3,
+          "2024-04-24",
+          "2024-04-25",
           listOf(pin1, pin2, pin3),
           "test",
           emptyList())
