@@ -22,9 +22,9 @@ data class Itinerary(
     val userMail: String,
     val location: Location,
     val flameCount: Long,
-    val saves: Long,
-    val clicks: Long,
-    val numStarts: Long, // the number of times the trip has been started
+    val saves: Long, // the number of times the trip has been saved by users
+    val clicks: Long, // the number of times the trip has been clicked on by users
+    val numStarts: Long, // the number of times the trip has been started by users
     val startDateAndTime: String,
     val endDateAndTime: String,
     val pinnedPlaces:
