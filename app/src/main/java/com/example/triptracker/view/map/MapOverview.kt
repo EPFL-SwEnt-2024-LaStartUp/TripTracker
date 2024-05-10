@@ -363,11 +363,9 @@ fun Map(
                   DisplayItinerary(
                       itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
                       navigation = navigation,
-                      onClick = { mapPopupState = popupState.PATHOVERLAY },
+                      onClick = { mapPopupState = popupState.DISPLAYPIN },
                       test = false,
                       profile = userProfile)
-                      onClick = { mapPopupState = popupState.DISPLAYPIN },
-                      test = false)
                 }
           }
           popupState.DISPLAYPIN -> {
