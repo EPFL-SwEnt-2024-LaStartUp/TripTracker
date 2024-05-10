@@ -358,15 +358,12 @@ fun Map(
                 }
           }
           popupState.DISPLAYPIN -> {
-              Box(
-                  modifier =
-                  Modifier.fillMaxHeight().fillMaxWidth().align(Alignment.BottomCenter)) {
-                  StartScreen(
-                      itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                      uservm = UserProfileViewModel(),
-                      onClick = { mapPopupState = popupState.PATHOVERLAY }
-                  )
-              }
+            Box(modifier = Modifier.fillMaxHeight().fillMaxWidth().align(Alignment.BottomCenter)) {
+              StartScreen(
+                  itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                  uservm = UserProfileViewModel(),
+                  onClick = { mapPopupState = popupState.PATHOVERLAY })
+            }
           }
           popupState.PATHOVERLAY -> {
             Box(

@@ -45,13 +45,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
-import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.theme.Montserrat
@@ -159,16 +157,11 @@ fun AddressText(mpv: MapPopupViewModel, latitude: Float, longitude: Float) {
   Text(text = address, color = Color.White, modifier = Modifier.testTag("AddressText"))
 }
 
-
 @Composable
-fun StartScreen(
-    itinerary: Itinerary,
-    uservm: UserProfileViewModel,
-    onClick: () -> Unit
-) {
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-    val screenHeight = configuration.screenHeightDp.dp
+fun StartScreen(itinerary: Itinerary, uservm: UserProfileViewModel, onClick: () -> Unit) {
+  val configuration = LocalConfiguration.current
+  val screenWidth = configuration.screenWidthDp.dp
+  val screenHeight = configuration.screenHeightDp.dp
 
   // The size of the user's avatar/profile picture
   val avatarSize = 35.dp
@@ -244,9 +237,8 @@ fun StartScreen(
           LazyColumn(
               modifier =
                   Modifier.padding(top = 10.dp, start = 10.dp, end = 10.dp, bottom = 40.dp)
-                      .size(screenWidth, screenHeight * 0.08f)
-          ) {
-                    items(itinerary.pinnedPlaces) { pin ->
+                      .size(screenWidth, screenHeight * 0.08f)) {
+                items(itinerary.pinnedPlaces) { pin ->
                   Text(text = "• ${pin.name}", color = md_theme_grey, fontSize = 20.sp)
                   Spacer(modifier = Modifier.height(3.dp))
                 }
@@ -258,39 +250,34 @@ fun StartScreen(
                 AsyncImage(
                     model = image,
                     contentDescription = pin.description,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(corner = CornerSize(14.dp)))
-                        .size(screenWidth * 0.9f, screenHeight * 0.3f)
-
-                )
+                    modifier =
+                        Modifier.clip(RoundedCornerShape(corner = CornerSize(14.dp)))
+                            .size(screenWidth * 0.9f, screenHeight * 0.3f))
 
                 Spacer(modifier = Modifier.width(20.dp))
               }
             }
           }
-            Button(
-                onClick = { onClick() },
-                modifier =
-                Modifier
-                    .padding(bottom = 30.dp, top = 10.dp)
-                    .align(Alignment.CenterHorizontally)
-                    .height(56.dp) // Set a specific height for the button to make it larger
-                    .fillMaxWidth(fraction = 0.5f), // Make the button fill 90% of the width
-                shape = RoundedCornerShape(35.dp),
-                colors =
-                ButtonDefaults.buttonColors(
-                    backgroundColor = Color(0xFFF06F24),
-                ) // Rounded corners with a radius of 12.dp
-            ) {
+          Button(
+              onClick = { onClick() },
+              modifier =
+                  Modifier.padding(bottom = 30.dp, top = 10.dp)
+                      .align(Alignment.CenterHorizontally)
+                      .height(56.dp) // Set a specific height for the button to make it larger
+                      .fillMaxWidth(fraction = 0.5f), // Make the button fill 90% of the width
+              shape = RoundedCornerShape(35.dp),
+              colors =
+                  ButtonDefaults.buttonColors(
+                      backgroundColor = Color(0xFFF06F24),
+                  ) // Rounded corners with a radius of 12.dp
+              ) {
                 Text(
                     "Start",
                     fontSize = 24.sp,
                     color = Color.White,
                     fontFamily = Montserrat,
                     fontWeight = FontWeight.Bold)
-            }
+              }
         }
-
-
       }
 }
