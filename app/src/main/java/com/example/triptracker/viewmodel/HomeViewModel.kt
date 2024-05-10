@@ -215,7 +215,8 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
 
   /**
    * Filter the itinerary list by trending itineraries based on the flame count The trending
-   * itineraries are sorted in descending order of flame count
+   * itineraries are sorted in descending order of flame count Filtered list is stored in the
+   * itineraryList LiveData
    */
   fun filterByTrending() {
     _itineraryList.value =
