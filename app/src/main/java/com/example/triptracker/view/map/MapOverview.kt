@@ -56,6 +56,7 @@ import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_light_outline
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.MapViewModel
+import com.example.triptracker.viewmodel.UserProfileViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.VisibleRegion
@@ -362,13 +363,18 @@ fun Map(
                   DisplayItinerary(
                       itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
                       navigation = navigation,
-                      onClick = { mapPopupState = popupState.PATHOVERLAY },
+                      onClick = { mapPopupState = popupState.DISPLAYPIN },
                       test = false,
                       profile = userProfile)
                 }
           }
           popupState.DISPLAYPIN -> {
-            // called detailed view Theo
+            Box(modifier = Modifier.fillMaxHeight().fillMaxWidth().align(Alignment.BottomCenter)) {
+              StartScreen(
+                  itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                  uservm = UserProfileViewModel(),
+                  onClick = { mapPopupState = popupState.PATHOVERLAY })
+            }
           }
           popupState.PATHOVERLAY -> {
             Box(
