@@ -81,7 +81,7 @@ class StartScreenTest {
   @Test
   fun userAvatarIsDisplayed() {
     composeTestRule.setContent {
-      StartScreen(itinerary = sampleItinerary, profile = profile, userViewModel, onClick = {})
+      StartScreen(itinerary = sampleItinerary, userViewModel, onClick = {})
     }
     composeTestRule.onNodeWithTag("ProfilePic").assertIsDisplayed()
   }
@@ -89,7 +89,7 @@ class StartScreenTest {
   @Test
   fun usernameIsDisplayed() {
     composeTestRule.setContent {
-      StartScreen(itinerary = sampleItinerary, profile = profile, userViewModel, onClick = {})
+      StartScreen(itinerary = sampleItinerary, userViewModel, onClick = {})
     }
     composeTestRule.onNodeWithTag("Username").assertTextEquals("Pol")
   }
@@ -97,7 +97,7 @@ class StartScreenTest {
   @Test
   fun itineraryTitleIsDisplayed() {
     composeTestRule.setContent {
-      StartScreen(itinerary = sampleItinerary, profile = profile, userViewModel, onClick = {})
+      StartScreen(itinerary = sampleItinerary, userViewModel, onClick = {})
     }
     composeTestRule.onNodeWithTag("Title").assertTextEquals(sampleItinerary.title)
   }
@@ -105,7 +105,7 @@ class StartScreenTest {
   @Test
   fun flameCountIsDisplayed() {
     composeTestRule.setContent {
-      StartScreen(itinerary = sampleItinerary, profile = profile, userViewModel, onClick = {})
+      StartScreen(itinerary = sampleItinerary, userViewModel, onClick = {})
     }
     composeTestRule.onNodeWithText("${sampleItinerary.flameCount}🔥").assertIsDisplayed()
   }
@@ -113,7 +113,7 @@ class StartScreenTest {
   @Test
   fun startButtonIsDisplayedAndClickable() {
     composeTestRule.setContent {
-      StartScreen(itinerary = sampleItinerary, profile = profile, userViewModel, onClick = {})
+      StartScreen(itinerary = sampleItinerary, userViewModel, onClick = {})
     }
     composeTestRule.onNodeWithText("Start").assertIsDisplayed()
   }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -157,64 +159,17 @@ fun AddressText(mpv: MapPopupViewModel, latitude: Float, longitude: Float) {
   Text(text = address, color = Color.White, modifier = Modifier.testTag("AddressText"))
 }
 
-@Preview
-@Composable
-fun DisplayStartScreen() {
-  // test itin
-  val pin1 =
-      Pin(
-          50.05186463055543,
-          14.43129605385369,
-          "HQ",
-          "Jetbrains HQ",
-          listOf(
-              "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
-              "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
-              "https://cdn-vsh.prague.eu/object/254/u-fleku-01.jpg"))
-  val pin2 =
-      Pin(
-          50.0792573623994,
-          14.418225529534855,
-          "U Fleku",
-          "Oldest restaurant",
-          listOf(
-              "https://d3dqioy2sca31t.cloudfront.net/Projects/cms/production/000/033/186/slideshow/aa3cc8bc14fc3f93c823f6aa5743874e/slide-czech-republic-prague-old-town-hall.jpg"))
-  val pin3 = Pin(50.08731011666294, 14.420438033846013, "Clock", "Astronomical Clock", emptyList())
-
-  val loc = Location(50.05186463055543, 14.43129605385369, "HQ")
-  val itin =
-      Itinerary(
-          "1",
-          "Jetbrains Island",
-          "polfuentescam@gmail.com",
-          loc,
-          500,
-          "4",
-          "5",
-          listOf(pin1, pin2, pin3),
-          "test",
-          emptyList())
-  val profile =
-      UserProfile(
-          "pol@gmail.com",
-          "Foo",
-          "Fighter",
-          "29/12/1999",
-          "",
-          "",
-          emptyList(),
-          emptyList(),
-      )
-  StartScreen(itin, profile, UserProfileViewModel(), onClick = {})
-}
 
 @Composable
 fun StartScreen(
     itinerary: Itinerary,
-    profile: UserProfile,
     uservm: UserProfileViewModel,
-    onClick: (Pin) -> Unit
+    onClick: () -> Unit
 ) {
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val screenHeight = configuration.screenHeightDp.dp
+
   // The size of the user's avatar/profile picture
   val avatarSize = 35.dp
   var userofpost by remember { mutableStateOf(UserProfile("")) }
@@ -246,6 +201,7 @@ fun StartScreen(
                 modifier =
                     Modifier.size(avatarSize)
                         .clip(CircleShape)
+                        .sizeIn(maxWidth = 20.dp)
                         .testTag("ProfilePic")
                         .clickable { /* TODO bring user to profile page */})
 
@@ -285,10 +241,12 @@ fun StartScreen(
                       bottom = 20.dp,
                       top = 10.dp,
                   ))
-          Column(
+          LazyColumn(
               modifier =
-                  Modifier.padding(top = 10.dp, start = 10.dp, end = 10.dp, bottom = 50.dp)) {
-                for (pin in itinerary.pinnedPlaces) {
+                  Modifier.padding(top = 10.dp, start = 10.dp, end = 10.dp, bottom = 40.dp)
+                      .size(screenWidth, screenHeight * 0.08f)
+          ) {
+                    items(itinerary.pinnedPlaces) { pin ->
                   Text(text = "• ${pin.name}", color = md_theme_grey, fontSize = 20.sp)
                   Spacer(modifier = Modifier.height(3.dp))
                 }
@@ -300,33 +258,39 @@ fun StartScreen(
                 AsyncImage(
                     model = image,
                     contentDescription = pin.description,
-                    modifier = Modifier.clip(RoundedCornerShape(corner = CornerSize(12.dp))))
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(corner = CornerSize(14.dp)))
+                        .size(screenWidth * 0.9f, screenHeight * 0.3f)
 
-                Spacer(modifier = Modifier.width(15.dp))
+                )
+
+                Spacer(modifier = Modifier.width(20.dp))
               }
             }
           }
-        }
-
-        Button(
-            onClick = { /* Do something! */},
-            modifier =
-                Modifier.align(Alignment.BottomCenter)
-                    .padding(bottom = 40.dp)
+            Button(
+                onClick = { onClick() },
+                modifier =
+                Modifier
+                    .padding(bottom = 30.dp, top = 10.dp)
+                    .align(Alignment.CenterHorizontally)
                     .height(56.dp) // Set a specific height for the button to make it larger
                     .fillMaxWidth(fraction = 0.5f), // Make the button fill 90% of the width
-            shape = RoundedCornerShape(35.dp),
-            colors =
+                shape = RoundedCornerShape(35.dp),
+                colors =
                 ButtonDefaults.buttonColors(
                     backgroundColor = Color(0xFFF06F24),
                 ) // Rounded corners with a radius of 12.dp
             ) {
-              Text(
-                  "Start",
-                  fontSize = 24.sp,
-                  color = Color.White,
-                  fontFamily = Montserrat,
-                  fontWeight = FontWeight.Bold)
+                Text(
+                    "Start",
+                    fontSize = 24.sp,
+                    color = Color.White,
+                    fontFamily = Montserrat,
+                    fontWeight = FontWeight.Bold)
             }
+        }
+
+
       }
 }
