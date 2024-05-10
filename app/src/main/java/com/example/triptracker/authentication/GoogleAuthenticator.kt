@@ -5,6 +5,8 @@ import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 /** Implementation of the Authenticator interface for Google sign-in. */
 class GoogleAuthenticator(
@@ -30,6 +32,7 @@ class GoogleAuthenticator(
   }
 
   override fun signOut(context: Context) {
+    Firebase.auth.signOut()
     GoogleSignIn.getClient(context, GoogleSignInOptions.DEFAULT_SIGN_IN).signOut()
   }
 
