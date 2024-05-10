@@ -157,6 +157,7 @@ fun AddressText(mpv: MapPopupViewModel, latitude: Float, longitude: Float) {
   Text(text = address, color = Color.White, modifier = Modifier.testTag("AddressText"))
 }
 
+/*
 @Preview
 @Composable
 fun DisplayStartScreen() {
@@ -207,6 +208,7 @@ fun DisplayStartScreen() {
       )
   StartScreen(itin, profile, UserProfileViewModel(), onClick = {})
 }
+*/
 
 @Composable
 fun StartScreen(
