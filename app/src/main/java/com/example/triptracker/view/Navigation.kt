@@ -9,7 +9,7 @@ import androidx.compose.material.icons.outlined.RadioButtonChecked
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.example.triptracker.isDeviceConnectedToInternet
+import com.example.triptracker.model.network.Connection
 
 /** Destinations used in the app. */
 object Route {
@@ -56,6 +56,12 @@ private val TOP_LEVEL_DESTINATIONS =
  */
 class Navigation(val navController: NavHostController) {
 
+  /**
+   * Connection object to check if the device is connected to the internet. Relevant here since the
+   * connection influences the navigation behavior.
+   */
+  private val connection = Connection()
+
   /** Current destination, helpful notably for the navigation bar */
   private var currentDestination: TopLevelDestination = getStartingDestination()
 
@@ -63,9 +69,15 @@ class Navigation(val navController: NavHostController) {
   private var nextDestination: TopLevelDestination? = null
 
   fun navigateTo(destination: TopLevelDestination, isRetry: Boolean = false) {
-    if (isDeviceConnectedToInternet()) {
-      // Reset next destination
-      nextDestination = null
+    if (connection.isDeviceConnectedToInternet()) {
+
+      if (isRetry) {
+        Log.d("Navigation", "Successfully reconnected to the internet")
+        // Reset next destination
+        nextDestination = null
+        goBack()
+      }
+
       navController.navigate(destination.route) {
         currentDestination = destination
         // reset the id when navigating normally so that the state is not saved
@@ -82,8 +94,8 @@ class Navigation(val navController: NavHostController) {
       }
     } else {
       Log.d("Navigation", "No internet connection")
-      nextDestination = destination
       if (!isRetry) {
+        nextDestination = destination
         navController.navigate(Route.OFFLINE)
       }
     }
@@ -108,7 +120,7 @@ class Navigation(val navController: NavHostController) {
     }
   }
 
-  /** Retry the navigation to the next destination */
+  /** Retry the navigation to the next destination when not connected to internet */
   fun retryNavigateTo() {
     if (nextDestination != null) {
       navigateTo(nextDestination!!, isRetry = true)

@@ -1,9 +1,6 @@
 package com.example.triptracker
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,7 +22,7 @@ import com.example.triptracker.model.profile.ProvideUserProfile
 import com.example.triptracker.navigation.LaunchPermissionRequest
 import com.example.triptracker.view.LoginScreen
 import com.example.triptracker.view.Navigation
-import com.example.triptracker.view.NoConnectionScreen
+import com.example.triptracker.view.OfflineScreen
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.home.HomeScreen
 import com.example.triptracker.view.map.MapOverview
@@ -131,26 +128,11 @@ class MainActivity : ComponentActivity() {
               }
               composable(Route.SETTINGS) { UserProfileSettings(navigation) }
 
-              composable(Route.OFFLINE) { NoConnectionScreen() { navigation.retryNavigateTo() } }
+              composable(Route.OFFLINE) { OfflineScreen() { navigation.retryNavigateTo() } }
             }
           }
         }
       }
     }
   }
-}
-
-/**
- * @param context (Context): Context of the application
- * @return Boolean: True if the device is connected to the internet, false otherwise
- * @brief Function to check if the device is connected to the internet
- */
-@SuppressLint("ServiceCast")
-fun isDeviceConnectedToInternet(context: Context = applicationContext()): Boolean {
-  val connectivityManager =
-      context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-  val network = connectivityManager.activeNetwork ?: return false
-  val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
-  return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
 }
