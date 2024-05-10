@@ -96,13 +96,13 @@ fun UserView(
     }
   }
 
-    homeViewModel.setSearchFilter(FilterType.USERNAME)
-    homeViewModel.setSearchQuery(displayedUser.username)
+  homeViewModel.setSearchFilter(FilterType.USERNAME)
+  homeViewModel.setSearchQuery(displayedUser.username)
 
-    // Observe the filtered itinerary list from the ViewModel
-    val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
+  // Observe the filtered itinerary list from the ViewModel
+  val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
 
-    when (readyToDisplay) {
+  when (readyToDisplay) {
     false -> {
       WaitingScreen()
     }
@@ -155,241 +155,227 @@ fun UserView(
             Column(
                 modifier = Modifier.padding(innerPadding).fillMaxHeight(1f).fillMaxWidth(1f),
                 horizontalAlignment = Alignment.CenterHorizontally) {
-                Column (
-                    modifier = Modifier.wrapContentHeight().fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                  Column(
+                      modifier = Modifier.wrapContentHeight().fillMaxWidth(),
+                      verticalArrangement = Arrangement.Center,
+                      horizontalAlignment = Alignment.CenterHorizontally) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(20.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.Top) {
+                              Column(
+                                  modifier = Modifier.fillMaxWidth(0.30f).wrapContentHeight(),
+                                  horizontalAlignment = Alignment.Start) {
+                                    val imagePainter =
+                                        rememberAsyncImagePainter(
+                                            model = displayedUser.profileImageUrl)
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(20.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Top
-                    ) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(0.30f).wrapContentHeight(),
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            val imagePainter =
-                                rememberAsyncImagePainter(model = displayedUser.profileImageUrl)
-
-                            Image(
-                                painter = imagePainter,
-                                contentDescription =
-                                "${displayedUser.username}'s profile picture",
-                                contentScale = ContentScale.Crop,
-                                modifier =
-                                Modifier.clip(CircleShape)
-                                    .size(130.dp)
-                                    .shadow(
-                                        elevation = 15.dp,
-                                        shape = CircleShape,
-                                        ambientColor = md_theme_light_dark,
-                                        spotColor = md_theme_light_dark
-                                    )
-                                    .testTag("ProfilePicture")
-                            )
-                        }
-                        Column(
-                            modifier = Modifier.fillMaxWidth(0.70f).wrapContentHeight(),
-                            horizontalAlignment = Alignment.End,
-                        ) {
-                            Text(
-                                text = "${displayedUser.name} ${displayedUser.surname}",
-                                style =
-                                TextStyle(
-                                    fontSize = 24.sp,
-                                    lineHeight = 25.sp,
-                                    fontFamily = Montserrat,
-                                    fontWeight = FontWeight(700),
-                                    color = md_theme_light_dark,
-                                    textAlign = TextAlign.Right,
-                                    letterSpacing = 0.5.sp,
-                                ),
-                                overflow = TextOverflow.Ellipsis,
-                                maxLines = 2,
-                                modifier = Modifier.padding(bottom = 20.dp)
-                                    .testTag("NameAndSurname")
-                            )
-                            Text(
-                                text = "Interests",
-                                style = AppTypography.secondaryTitleStyle,
-                                modifier = Modifier.align(Alignment.End).testTag("InterestTitle")
-                            )
-                            Text(
-                                text = "Hiking, Photography", // profile.interestsList
-                                style = AppTypography.secondaryContentStyle,
-                                modifier =
-                                Modifier.align(Alignment.End)
-                                    .padding(bottom = 20.dp)
-                                    .testTag("InterestsList")
-                            )
-                            Text(
-                                text = "Travel Style",
-                                style = AppTypography.secondaryTitleStyle,
-                                modifier = Modifier.align(Alignment.End).testTag("TravelStyleTitle")
-                            )
-                            Text(
-                                text = "Adventure, Cultural", // profile.travelStyleList
-                                style = AppTypography.secondaryContentStyle,
-                                modifier =
-                                Modifier.align(Alignment.End)
-                                    .padding(bottom = 20.dp)
-                                    .testTag("TravelStyleList")
-                            )
-                            Text(
-                                text = "Languages",
-                                style = AppTypography.secondaryTitleStyle,
-                                modifier = Modifier.align(Alignment.End).testTag("LanguagesTitle")
-                            )
-                            Text(
-                                text = "English, Spanish", // profile.languagesList
-                                style = AppTypography.secondaryContentStyle,
-                                modifier = Modifier.align(Alignment.End).testTag("LanguagesList")
-                            )
-                        }
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(start = 40.dp, end = 40.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Button(
-                            onClick = {
-                                if (areConnected) {
-                                    userProfileViewModel.removeFollowing(loggedUser, displayedUser)
-                                } else {
-                                    userProfileViewModel.addFollowing(loggedUser, displayedUser)
-                                }
-                                areConnected = !areConnected
-                            },
-                            colors =
-                            if (areConnected) {
-                                ButtonDefaults.buttonColors(
-                                    containerColor = md_theme_orange,
-                                    contentColor = md_theme_light_onPrimary
-                                )
-                            } else {
-                                ButtonDefaults.buttonColors(
-                                    containerColor = md_theme_grey,
-                                    contentColor = md_theme_light_onPrimary
-                                )
-                            },
+                                    Image(
+                                        painter = imagePainter,
+                                        contentDescription =
+                                            "${displayedUser.username}'s profile picture",
+                                        contentScale = ContentScale.Crop,
+                                        modifier =
+                                            Modifier.clip(CircleShape)
+                                                .size(130.dp)
+                                                .shadow(
+                                                    elevation = 15.dp,
+                                                    shape = CircleShape,
+                                                    ambientColor = md_theme_light_dark,
+                                                    spotColor = md_theme_light_dark)
+                                                .testTag("ProfilePicture"))
+                                  }
+                              Column(
+                                  modifier = Modifier.fillMaxWidth(0.70f).wrapContentHeight(),
+                                  horizontalAlignment = Alignment.End,
+                              ) {
+                                Text(
+                                    text = "${displayedUser.name} ${displayedUser.surname}",
+                                    style =
+                                        TextStyle(
+                                            fontSize = 24.sp,
+                                            lineHeight = 25.sp,
+                                            fontFamily = Montserrat,
+                                            fontWeight = FontWeight(700),
+                                            color = md_theme_light_dark,
+                                            textAlign = TextAlign.Right,
+                                            letterSpacing = 0.5.sp,
+                                        ),
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 2,
+                                    modifier =
+                                        Modifier.padding(bottom = 20.dp).testTag("NameAndSurname"))
+                                Text(
+                                    text = "Interests",
+                                    style = AppTypography.secondaryTitleStyle,
+                                    modifier =
+                                        Modifier.align(Alignment.End).testTag("InterestTitle"))
+                                Text(
+                                    text = "Hiking, Photography", // profile.interestsList
+                                    style = AppTypography.secondaryContentStyle,
+                                    modifier =
+                                        Modifier.align(Alignment.End)
+                                            .padding(bottom = 20.dp)
+                                            .testTag("InterestsList"))
+                                Text(
+                                    text = "Travel Style",
+                                    style = AppTypography.secondaryTitleStyle,
+                                    modifier =
+                                        Modifier.align(Alignment.End).testTag("TravelStyleTitle"))
+                                Text(
+                                    text = "Adventure, Cultural", // profile.travelStyleList
+                                    style = AppTypography.secondaryContentStyle,
+                                    modifier =
+                                        Modifier.align(Alignment.End)
+                                            .padding(bottom = 20.dp)
+                                            .testTag("TravelStyleList"))
+                                Text(
+                                    text = "Languages",
+                                    style = AppTypography.secondaryTitleStyle,
+                                    modifier =
+                                        Modifier.align(Alignment.End).testTag("LanguagesTitle"))
+                                Text(
+                                    text = "English, Spanish", // profile.languagesList
+                                    style = AppTypography.secondaryContentStyle,
+                                    modifier =
+                                        Modifier.align(Alignment.End).testTag("LanguagesList"))
+                              }
+                            }
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(start = 40.dp, end = 40.dp),
+                            horizontalArrangement = Arrangement.Center) {
+                              Button(
+                                  onClick = {
+                                    if (areConnected) {
+                                      userProfileViewModel.removeFollowing(
+                                          loggedUser, displayedUser)
+                                    } else {
+                                      userProfileViewModel.addFollowing(loggedUser, displayedUser)
+                                    }
+                                    areConnected = !areConnected
+                                  },
+                                  colors =
+                                      if (areConnected) {
+                                        ButtonDefaults.buttonColors(
+                                            containerColor = md_theme_orange,
+                                            contentColor = md_theme_light_onPrimary)
+                                      } else {
+                                        ButtonDefaults.buttonColors(
+                                            containerColor = md_theme_grey,
+                                            contentColor = md_theme_light_onPrimary)
+                                      },
+                                  modifier =
+                                      Modifier.height(40.dp)
+                                          .fillMaxWidth()
+                                          .testTag("FollowingButton"),
+                              ) {
+                                Text(
+                                    text = if (areConnected) "Following" else "Follow",
+                                    style =
+                                        TextStyle(
+                                            fontSize = 12.sp,
+                                            lineHeight = 12.sp,
+                                            fontFamily = Montserrat,
+                                            fontWeight = FontWeight(500),
+                                            color = MaterialTheme.colorScheme.surface,
+                                            textAlign = TextAlign.Center,
+                                            letterSpacing = 0.5.sp))
+                              }
+                            }
+                        Row(
                             modifier =
-                            Modifier.height(40.dp).fillMaxWidth().testTag("FollowingButton"),
-                        ) {
-                            Text(
-                                text = if (areConnected) "Following" else "Follow",
-                                style =
-                                TextStyle(
-                                    fontSize = 12.sp,
-                                    lineHeight = 12.sp,
-                                    fontFamily = Montserrat,
-                                    fontWeight = FontWeight(500),
-                                    color = MaterialTheme.colorScheme.surface,
-                                    textAlign = TextAlign.Center,
-                                    letterSpacing = 0.5.sp
-                                )
-                            )
-                        }
-                    }
-                    Row(
-                        modifier = Modifier.wrapContentHeight().align(Alignment.CenterHorizontally)
-                    ) {
-                        Column(
-                            modifier = Modifier.align(Alignment.CenterVertically).padding(40.dp)
-                        ) {
-                            Text(
-                                text = "$tripCount", // Call to the filtered Itinerarylist
-                                modifier =
-                                Modifier.align(Alignment.CenterHorizontally).testTag("TripsCount"),
-                                style = AppTypography.bigNumberStyle
-                            )
-                            Text(
-                                text = "Trips",
-                                modifier =
-                                Modifier.align(Alignment.CenterHorizontally).testTag("TripsTitle"),
-                                style = AppTypography.categoryTextStyle
-                            )
-                        }
-                        Column(
-                            modifier =
-                            Modifier.align(Alignment.CenterVertically)
-                                .padding(horizontal = 30.dp)
-                        ) {
-                            Text(
-                                text = "${displayedUser.followers.size}",
-                                modifier =
-                                Modifier.align(Alignment.CenterHorizontally)
-                                    .testTag("FollowersCount"),
-                                style = AppTypography.bigNumberStyle
-                            )
-                            Text(
-                                text = "Followers",
-                                modifier =
-                                Modifier.align(Alignment.CenterHorizontally)
-                                    .testTag("FollowersTitle"),
-                                style = AppTypography.categoryTextStyle
-                            )
-                        }
-                        Column(
-                            modifier =
-                            Modifier.align(Alignment.CenterVertically)
-                                .padding(horizontal = 30.dp)
-                        ) {
-                            Text(
-                                text = "${displayedUser.following.size}",
-                                modifier =
-                                Modifier.align(Alignment.CenterHorizontally)
-                                    .testTag("FollowingCount"),
-                                style = AppTypography.bigNumberStyle
-                            )
-                            Text(
-                                text = "Following",
-                                modifier =
-                                Modifier.align(Alignment.CenterHorizontally)
-                                    .testTag("FollowingTitle"),
-                                style = AppTypography.categoryTextStyle
-                            )
-                        }
-                    }
-                }
-                when (filteredList) {
+                                Modifier.wrapContentHeight().align(Alignment.CenterHorizontally)) {
+                              Column(
+                                  modifier =
+                                      Modifier.align(Alignment.CenterVertically).padding(40.dp)) {
+                                    Text(
+                                        text = "$tripCount", // Call to the filtered Itinerarylist
+                                        modifier =
+                                            Modifier.align(Alignment.CenterHorizontally)
+                                                .testTag("TripsCount"),
+                                        style = AppTypography.bigNumberStyle)
+                                    Text(
+                                        text = "Trips",
+                                        modifier =
+                                            Modifier.align(Alignment.CenterHorizontally)
+                                                .testTag("TripsTitle"),
+                                        style = AppTypography.categoryTextStyle)
+                                  }
+                              Column(
+                                  modifier =
+                                      Modifier.align(Alignment.CenterVertically)
+                                          .padding(horizontal = 30.dp)) {
+                                    Text(
+                                        text = "${displayedUser.followers.size}",
+                                        modifier =
+                                            Modifier.align(Alignment.CenterHorizontally)
+                                                .testTag("FollowersCount"),
+                                        style = AppTypography.bigNumberStyle)
+                                    Text(
+                                        text = "Followers",
+                                        modifier =
+                                            Modifier.align(Alignment.CenterHorizontally)
+                                                .testTag("FollowersTitle"),
+                                        style = AppTypography.categoryTextStyle)
+                                  }
+                              Column(
+                                  modifier =
+                                      Modifier.align(Alignment.CenterVertically)
+                                          .padding(horizontal = 30.dp)) {
+                                    Text(
+                                        text = "${displayedUser.following.size}",
+                                        modifier =
+                                            Modifier.align(Alignment.CenterHorizontally)
+                                                .testTag("FollowingCount"),
+                                        style = AppTypography.bigNumberStyle)
+                                    Text(
+                                        text = "Following",
+                                        modifier =
+                                            Modifier.align(Alignment.CenterHorizontally)
+                                                .testTag("FollowingTitle"),
+                                        style = AppTypography.categoryTextStyle)
+                                  }
+                            }
+                      }
+                  when (filteredList) {
                     // If the displayed user doesn't have any itineraries we display a message
                     emptyList<Itinerary>() -> {
-                        // Display a message when the list is empty
-                        Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(),
-                            contentAlignment = Alignment.Center) {
+                      // Display a message when the list is empty
+                      Box(
+                          modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                          contentAlignment = Alignment.Center) {
                             Text(
-                                text = "${displayedUser.name} ${displayedUser.surname} does not have any trips yet",
+                                text =
+                                    "${displayedUser.name} ${displayedUser.surname} does not have any trips yet",
                                 modifier =
-                                Modifier.padding(30.dp).align(Alignment.Center).testTag("NoTripsText"),
+                                    Modifier.padding(30.dp)
+                                        .align(Alignment.Center)
+                                        .testTag("NoTripsText"),
                                 fontSize = 16.sp,
                                 fontFamily = Montserrat,
                                 fontWeight = FontWeight.SemiBold,
                                 color = md_theme_grey)
-                        }
+                          }
                     }
                     else -> {
-                        // Display the list of itineraries when the list is not empty
-                        val listState = rememberLazyListState()
-                        LazyColumn(
-                            modifier =
-                            Modifier.fillMaxWidth().fillMaxHeight()
-                                .testTag("MyTripsList"),
-                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
-                            state = listState) {
+                      // Display the list of itineraries when the list is not empty
+                      val listState = rememberLazyListState()
+                      LazyColumn(
+                          modifier = Modifier.fillMaxWidth().fillMaxHeight().testTag("MyTripsList"),
+                          contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
+                          state = listState) {
                             items(filteredList) { itinerary ->
-                                Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
-                                DisplayItinerary(
-                                    itinerary = itinerary,
-                                    navigation = navigation,
-                                    onClick = { navigation.navigateTo(Route.MAPS, itinerary.id) },
-                                    test = test,
-                                )
+                              Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
+                              DisplayItinerary(
+                                  itinerary = itinerary,
+                                  navigation = navigation,
+                                  onClick = { navigation.navigateTo(Route.MAPS, itinerary.id) },
+                                  test = test,
+                                  profile = profile)
                             }
-                        }
+                          }
                     }
-                }
+                  }
                 }
           }
     }
