@@ -66,8 +66,7 @@ fun DisplayItinerary(
     boxHeight: Dp = 200.dp,
     userProfileViewModel: UserProfileViewModel = viewModel(),
     onClick: () -> Unit,
-    test: Boolean = false,
-    profile: MutableUserProfile
+    profile: MutableUserProfile,
     homeViewModel: HomeViewModel = viewModel(),
     test: Boolean = false
 ) {
@@ -154,17 +153,16 @@ fun DisplayItinerary(
                           modifier =
                               Modifier.size(20.dp).clickable {
                                 userProfileViewModel.addFavorite(profile, itinerary.id)
+                                homeViewModel.incrementSaveCount(
+                                    itinerary.id) // when click on grey star, increment save count
                               })
                     }
                   }
-                Spacer(modifier = Modifier.width(120.dp))
-                Icon(
-                    imageVector = Icons.Outlined.Star,
-                    contentDescription = "Star",
-                    Modifier.size(20.dp).clickable {
-                      homeViewModel.incrementSaveCount(itinerary.id)
-                    })
-              }
+              Spacer(modifier = Modifier.width(120.dp))
+              Icon(
+                  imageVector = Icons.Outlined.Star,
+                  contentDescription = "Star",
+                  Modifier.size(20.dp).clickable { homeViewModel.incrementSaveCount(itinerary.id) })
               Spacer(modifier = Modifier.height(5.dp))
               Log.d("ItineraryRoute", itinerary.route.toString())
               Text(
