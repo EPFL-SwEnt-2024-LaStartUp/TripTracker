@@ -76,7 +76,7 @@ fun DisplayItinerary(
   // The padding around the box
   val paddingAround = 15.dp
   // The size of the user's avatar/profile picture
-  val avatarSize = 20.dp
+  val avatarSize = 25.dp
 
   // var readyToDisplay by remember { mutableStateOf(true) }
   // var profile by remember { mutableStateOf(UserProfile("")) }
@@ -128,7 +128,7 @@ fun DisplayItinerary(
                           text = profile.userProfile.value.username, // userProfile.username,
                           fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                           fontWeight = FontWeight.Normal,
-                          fontSize = 14.sp,
+                          fontSize = 16.sp,
                           color = md_theme_grey,
                           modifier = Modifier.testTag("Username"))
                     }

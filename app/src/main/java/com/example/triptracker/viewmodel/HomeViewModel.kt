@@ -1,8 +1,6 @@
 package com.example.triptracker.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,6 +21,13 @@ enum class FilterType {
   FLAME,
   PIN,
   FAVORTIES
+}
+
+enum class IncrementableField {
+  FLAME_COUNT,
+  SAVES,
+  CLICKS,
+  NUM_STARTS
 }
 
 /**
@@ -230,7 +235,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
       if (itinerary != null) {
         val newFlameCount =
             calculateFlameCounts(itinerary.saves, itinerary.clicks, itinerary.numStarts)
-        repository.updateField(itineraryId, "flameCount", newFlameCount)
+        repository.updateField(itineraryId, IncrementableField.FLAME_COUNT, newFlameCount)
       }
     }
   }
@@ -238,7 +243,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   /** Increment the click count of the itinerary with the given id */
   fun incrementClickCount(itineraryId: String) {
     viewModelScope.launch {
-      repository.incrementField(itineraryId, "clicks")
+      repository.incrementField(itineraryId, IncrementableField.CLICKS)
       // update flame count after incrementing click count
       updateFlameCount(itineraryId)
     }
@@ -247,7 +252,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   /** Increment the save count of the itinerary with the given id */
   fun incrementSaveCount(itineraryId: String) {
     viewModelScope.launch {
-      repository.incrementField(itineraryId, "saves")
+      repository.incrementField(itineraryId, IncrementableField.SAVES)
       val updatedList =
           _itineraryList.value?.map { itinerary ->
             if (itinerary.id == itineraryId) {
@@ -266,7 +271,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   /** Increment the flame count of the itinerary with the given id */
   fun incrementNumStarts(itineraryId: String) {
     viewModelScope.launch {
-      repository.incrementField(itineraryId, "numStarts")
+      repository.incrementField(itineraryId, IncrementableField.NUM_STARTS)
       updateFlameCount(itineraryId)
     }
   }

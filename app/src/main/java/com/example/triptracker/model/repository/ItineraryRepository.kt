@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
+import com.example.triptracker.viewmodel.IncrementableField
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -214,12 +215,19 @@ open class ItineraryRepository {
    * @param fieldName Name of the field to increment
    * @return Unit
    */
-  fun incrementField(itineraryId: String, fieldName: String) {
+  fun incrementField(itineraryId: String, field: IncrementableField) {
+    val fieldString =
+        when (field) {
+          IncrementableField.FLAME_COUNT -> "flameCount"
+          IncrementableField.SAVES -> "saves"
+          IncrementableField.CLICKS -> "clicks"
+          IncrementableField.NUM_STARTS -> "numStarts"
+        }
     val itineraryRef = itineraryDb.document(itineraryId)
     db.runTransaction { transaction ->
           val snapshot = transaction.get(itineraryRef)
-          val currentCount = snapshot.getLong(fieldName) ?: 0
-          transaction.update(itineraryRef, fieldName, currentCount + 1)
+          val currentCount = snapshot.getLong(fieldString) ?: 0
+          transaction.update(itineraryRef, fieldString, currentCount + 1)
         }
         .addOnSuccessListener { Log.d(TAG, "Field incremented successfully") }
         .addOnFailureListener { e -> Log.e(TAG, "Error incrementing field", e) }
@@ -288,25 +296,32 @@ open class ItineraryRepository {
    * Uses a Firestore transaction to safely update a field in the itinerary document.
    *
    * @param itineraryId The ID of the itinerary to update.
-   * @param fieldName The name of the field to update.
+   * @param field The field to update.
    * @param newValue The new value to set for the field.
    */
-  fun updateField(itineraryId: String, fieldName: String, newValue: Any) {
+  fun updateField(itineraryId: String, field: IncrementableField, newValue: Any) {
     val itineraryRef = db.collection("itineraries").document(itineraryId)
 
+    val fieldString =
+        when (field) {
+          IncrementableField.FLAME_COUNT -> "flameCount"
+          IncrementableField.SAVES -> "saves"
+          IncrementableField.CLICKS -> "clicks"
+          IncrementableField.NUM_STARTS -> "numStarts"
+        }
     db.runTransaction { transaction ->
           val snapshot = transaction.get(itineraryRef)
           if (snapshot.exists()) {
-            transaction.update(itineraryRef, fieldName, newValue)
+            transaction.update(itineraryRef, fieldString, newValue)
           } else {
             throw FirebaseFirestoreException(
                 "Itinerary not found", FirebaseFirestoreException.Code.ABORTED)
           }
         }
         .addOnSuccessListener {
-          Log.d(TAG, "Transaction successfully committed for field: $fieldName")
+          Log.d(TAG, "Transaction successfully committed for field: $fieldString")
         }
-        .addOnFailureListener { e -> Log.e(TAG, "Transaction failed for field: $fieldName", e) }
+        .addOnFailureListener { e -> Log.e(TAG, "Transaction failed for field: $fieldString", e) }
   }
 
   /**
