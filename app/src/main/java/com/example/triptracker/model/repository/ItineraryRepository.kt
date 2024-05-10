@@ -222,7 +222,9 @@ open class ItineraryRepository {
           IncrementableField.SAVES -> "saves"
           IncrementableField.CLICKS -> "clicks"
           IncrementableField.NUM_STARTS -> "numStarts"
-        }
+          else -> null
+        } ?: throw IllegalArgumentException("Invalid field type")
+
     val itineraryRef = itineraryDb.document(itineraryId)
     db.runTransaction { transaction ->
           val snapshot = transaction.get(itineraryRef)
@@ -308,7 +310,12 @@ open class ItineraryRepository {
           IncrementableField.SAVES -> "saves"
           IncrementableField.CLICKS -> "clicks"
           IncrementableField.NUM_STARTS -> "numStarts"
+          IncrementableField.DESCRIPTION -> "description"
+          IncrementableField.PINNED_PLACES -> "pinnedPlaces"
+          IncrementableField.ROUTE -> "route"
+          IncrementableField.TITLE -> "title"
         }
+
     db.runTransaction { transaction ->
           val snapshot = transaction.get(itineraryRef)
           if (snapshot.exists()) {

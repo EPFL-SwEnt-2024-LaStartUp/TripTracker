@@ -27,7 +27,11 @@ enum class IncrementableField {
   FLAME_COUNT,
   SAVES,
   CLICKS,
-  NUM_STARTS
+  NUM_STARTS,
+  DESCRIPTION,
+  PINNED_PLACES,
+  ROUTE,
+  TITLE
 }
 
 /**
