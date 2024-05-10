@@ -43,6 +43,7 @@ import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_orange
+import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
 // set up a dummy profile for testing
@@ -65,8 +66,9 @@ fun DisplayItinerary(
     boxHeight: Dp = 200.dp,
     userProfileViewModel: UserProfileViewModel = viewModel(),
     onClick: () -> Unit,
-    test: Boolean = false,
-    profile: MutableUserProfile
+    profile: MutableUserProfile,
+    homeViewModel: HomeViewModel = viewModel(),
+    test: Boolean = false
 ) {
   // Number of additional itineraries not displayed
   val pinListString = fetchPinNames(itinerary)
@@ -74,7 +76,7 @@ fun DisplayItinerary(
   // The padding around the box
   val paddingAround = 15.dp
   // The size of the user's avatar/profile picture
-  val avatarSize = 20.dp
+  val avatarSize = 25.dp
 
   // var readyToDisplay by remember { mutableStateOf(true) }
   // var profile by remember { mutableStateOf(UserProfile("")) }
@@ -126,7 +128,7 @@ fun DisplayItinerary(
                           text = profile.userProfile.value.username, // userProfile.username,
                           fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                           fontWeight = FontWeight.Normal,
-                          fontSize = 14.sp,
+                          fontSize = 16.sp,
                           color = md_theme_grey,
                           modifier = Modifier.testTag("Username"))
                     }
@@ -151,9 +153,16 @@ fun DisplayItinerary(
                           modifier =
                               Modifier.size(20.dp).clickable {
                                 userProfileViewModel.addFavorite(profile, itinerary.id)
+                                homeViewModel.incrementSaveCount(
+                                    itinerary.id) // when click on grey star, increment save count
                               })
                     }
                   }
+              Spacer(modifier = Modifier.width(120.dp))
+              Icon(
+                  imageVector = Icons.Outlined.Star,
+                  contentDescription = "Star",
+                  Modifier.size(20.dp).clickable { homeViewModel.incrementSaveCount(itinerary.id) })
               Spacer(modifier = Modifier.height(5.dp))
               Log.d("ItineraryRoute", itinerary.route.toString())
               Text(

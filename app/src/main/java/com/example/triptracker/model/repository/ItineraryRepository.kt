@@ -4,8 +4,10 @@ import android.util.Log
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
+import com.example.triptracker.viewmodel.IncrementableField
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
 
@@ -96,6 +98,9 @@ open class ItineraryRepository {
               userMail = document.getString("userMail") ?: "",
               location = location,
               flameCount = document.getLong("flameCount") ?: 0L,
+              saves = document.getLong("saves") ?: 0L,
+              clicks = document.getLong("clicks") ?: 0L,
+              numStarts = document.getLong("numStarts") ?: 0L,
               startDateAndTime = document.getString("startDateAndTime") ?: "",
               endDateAndTime = document.getString("endDateAndTime") ?: "",
               pinnedPlaces = pinnedPlaces,
@@ -125,6 +130,9 @@ open class ItineraryRepository {
                     "longitude" to itinerary.location.longitude,
                     "name" to itinerary.location.name),
             "flameCount" to itinerary.flameCount,
+            "saves" to itinerary.saves, // Added saves field to Itinerary class
+            "clicks" to itinerary.clicks, // Added clicks field to Itinerary class
+            "numStarts" to itinerary.numStarts, // Added numStarts field to Itinerary class
             "startDateAndTime" to itinerary.startDateAndTime,
             "endDateAndTime" to itinerary.endDateAndTime,
             "pinnedPlaces" to
@@ -163,6 +171,9 @@ open class ItineraryRepository {
                     "longitude" to itinerary.location.longitude,
                     "name" to itinerary.location.name),
             "flameCount" to itinerary.flameCount,
+            "saves" to itinerary.saves, // Added saves field to Itinerary class
+            "clicks" to itinerary.clicks, // Added clicks field to Itinerary class,
+            "numStarts" to itinerary.numStarts, // Added numStarts field to Itinerary class
             "startDateAndTime" to itinerary.startDateAndTime,
             "endDateAndTime" to itinerary.endDateAndTime,
             "pinnedPlaces" to
@@ -195,6 +206,129 @@ open class ItineraryRepository {
         .delete()
         .addOnSuccessListener { Log.d(TAG, "Itinerary removed successfully") }
         .addOnFailureListener { e -> Log.e(TAG, "Error removing itinerary", e) }
+  }
+
+  /**
+   * Increment a field in the itinerary document
+   *
+   * @param itineraryId Id of the itinerary document
+   * @param fieldName Name of the field to increment
+   * @return Unit
+   */
+  fun incrementField(itineraryId: String, field: IncrementableField) {
+    val fieldString =
+        when (field) {
+          IncrementableField.FLAME_COUNT -> "flameCount"
+          IncrementableField.SAVES -> "saves"
+          IncrementableField.CLICKS -> "clicks"
+          IncrementableField.NUM_STARTS -> "numStarts"
+          else -> null
+        } ?: throw IllegalArgumentException("Invalid field type")
+
+    val itineraryRef = itineraryDb.document(itineraryId)
+    db.runTransaction { transaction ->
+          val snapshot = transaction.get(itineraryRef)
+          val currentCount = snapshot.getLong(fieldString) ?: 0
+          transaction.update(itineraryRef, fieldString, currentCount + 1)
+        }
+        .addOnSuccessListener { Log.d(TAG, "Field incremented successfully") }
+        .addOnFailureListener { e -> Log.e(TAG, "Error incrementing field", e) }
+  }
+
+  /**
+   * Get an itinerary by ID
+   *
+   * @param itineraryId Id of the itinerary
+   * @param callback Callback function to call with the itinerary object
+   */
+  fun getItineraryById(itineraryId: String, callback: (Itinerary?) -> Unit) {
+    itineraryDb
+        .document(itineraryId)
+        .get()
+        .addOnSuccessListener { document ->
+          if (document.exists()) {
+            val locationData = document.data?.get("location") as Map<*, *>
+            val location =
+                Location(
+                    locationData["latitude"] as Double,
+                    locationData["longitude"] as Double,
+                    locationData["name"] as String)
+            val pinnedPlacesData =
+                document.data!!["pinnedPlaces"] as? List<Map<String, Any>> ?: emptyList()
+            val pinnedPlaces: List<Pin> =
+                pinnedPlacesData.map { pinData ->
+                  // Assuming Pin class has a constructor that takes these fields:
+                  Pin(
+                      pinData["latitude"] as? Double ?: 0.0,
+                      pinData["longitude"] as? Double ?: 0.0,
+                      pinData["name"] as? String ?: "",
+                      pinData["description"] as? String ?: "",
+                      pinData["image-url"] as? List<String> ?: emptyList())
+                }
+            val routeData = document.data!!["route"] as? List<Map<String, Any>> ?: emptyList()
+            val route: List<LatLng> = convertMapToLatLng(routeData)
+
+            val itinerary =
+                Itinerary(
+                    id = document.id,
+                    title = document.getString("title") ?: "",
+                    userMail = document.getString("userMail") ?: "",
+                    location = location,
+                    flameCount = document.getLong("flameCount") ?: 0L,
+                    saves = document.getLong("saves") ?: 0L,
+                    clicks = document.getLong("clicks") ?: 0L,
+                    numStarts = document.getLong("numStarts") ?: 0L,
+                    startDateAndTime = document.getString("startDateAndTime") ?: "",
+                    endDateAndTime = document.getString("endDateAndTime") ?: "",
+                    pinnedPlaces = pinnedPlaces,
+                    description = document.getString("description") ?: "",
+                    route = route)
+            callback(itinerary)
+          } else {
+            callback(null)
+          }
+        }
+        .addOnFailureListener { e ->
+          Log.e(TAG, "Error fetching itinerary by ID", e)
+          callback(null)
+        }
+  }
+
+  /**
+   * Uses a Firestore transaction to safely update a field in the itinerary document.
+   *
+   * @param itineraryId The ID of the itinerary to update.
+   * @param field The field to update.
+   * @param newValue The new value to set for the field.
+   */
+  fun updateField(itineraryId: String, field: IncrementableField, newValue: Any) {
+    val itineraryRef = db.collection("itineraries").document(itineraryId)
+
+    val fieldString =
+        when (field) {
+          IncrementableField.FLAME_COUNT -> "flameCount"
+          IncrementableField.SAVES -> "saves"
+          IncrementableField.CLICKS -> "clicks"
+          IncrementableField.NUM_STARTS -> "numStarts"
+          IncrementableField.DESCRIPTION -> "description"
+          IncrementableField.PINNED_PLACES -> "pinnedPlaces"
+          IncrementableField.ROUTE -> "route"
+          IncrementableField.TITLE -> "title"
+        }
+
+    db.runTransaction { transaction ->
+          val snapshot = transaction.get(itineraryRef)
+          if (snapshot.exists()) {
+            transaction.update(itineraryRef, fieldString, newValue)
+          } else {
+            throw FirebaseFirestoreException(
+                "Itinerary not found", FirebaseFirestoreException.Code.ABORTED)
+          }
+        }
+        .addOnSuccessListener {
+          Log.d(TAG, "Transaction successfully committed for field: $fieldString")
+        }
+        .addOnFailureListener { e -> Log.e(TAG, "Transaction failed for field: $fieldString", e) }
   }
 
   /**

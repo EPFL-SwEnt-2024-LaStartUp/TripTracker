@@ -15,6 +15,9 @@ class MockItineraryList {
               "User1",
               Location(0.0, 0.0, "Paris"),
               200,
+              saves = 50,
+              clicks = 20,
+              numStarts = 16, // 2 * 50 + 20 + 5 * 16 = 200
               "10-03-2024",
               "20-03-2024",
               listOf(Pin(0.2, 0.1, "Eiffel Tower", "yes", listOf("test.com"))),
@@ -26,6 +29,9 @@ class MockItineraryList {
               "User2",
               Location(0.0, 0.0, "New York"),
               200,
+              saves = 50,
+              clicks = 20,
+              numStarts = 16, // 2 * 50 + 20 + 5 * 16 = 200
               "10-03-2024",
               "20-03-2024",
               listOf(

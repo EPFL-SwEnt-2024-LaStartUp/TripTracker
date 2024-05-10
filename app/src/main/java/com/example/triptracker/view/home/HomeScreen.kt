@@ -149,7 +149,10 @@ fun HomeScreen(
                     DisplayItinerary(
                         itinerary = itinerary,
                         navigation = navigation,
-                        onClick = { navigation.navigateTo(Route.MAPS, itinerary.id) },
+                        onClick = {
+                          navigation.navigateTo(Route.MAPS, itinerary.id)
+                          homeViewModel.incrementClickCount(itinerary.id)
+                        },
                         test = test,
                         profile = profile)
                   }

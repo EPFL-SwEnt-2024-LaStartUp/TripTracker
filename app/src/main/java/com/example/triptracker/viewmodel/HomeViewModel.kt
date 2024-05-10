@@ -1,8 +1,6 @@
 package com.example.triptracker.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,6 +21,17 @@ enum class FilterType {
   FLAME,
   PIN,
   FAVORTIES
+}
+
+enum class IncrementableField {
+  FLAME_COUNT,
+  SAVES,
+  CLICKS,
+  NUM_STARTS,
+  DESCRIPTION,
+  PINNED_PLACES,
+  ROUTE,
+  TITLE
 }
 
 /**
@@ -46,6 +55,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
 
   init {
     UserProfileViewModel().fetchAllUserProfiles { userProfileList = it }
+    viewModelScope.launch { fetchItineraries() }
   }
 
   private val _userProfiles = MutableLiveData<Map<String, UserProfile>>()
@@ -72,16 +82,11 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
         }
       }
 
-  init {
-    viewModelScope.launch { fetchItineraries() }
-  }
-
   /** Fetches all itineraries from the repository and stores them in the itineraryList LiveData */
   private fun fetchItineraries() {
     Log.d("HomeViewModel", "Fetching itineraries")
     itineraryInstance.setItineraryList(repository.getAllItineraries())
     _itineraryList.value = itineraryInstance.getAllItineraries()
-    Log.d("HomeViewModel", repository.getAllItineraries().toString())
   }
 
   /**
@@ -206,5 +211,73 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    */
   fun setSearchFilter(filterType: FilterType) {
     _selectedFilter.value = filterType
+  }
+
+  /**
+   * Filter the itinerary list by trending itineraries based on the flame count The trending
+   * itineraries are sorted in descending order of flame count Filtered list is stored in the
+   * itineraryList LiveData
+   */
+  fun filterByTrending() {
+    _itineraryList.value =
+        _itineraryList.value?.sortedByDescending { itinerary -> itinerary.flameCount }
+  }
+
+  private fun calculateFlameCounts(saves: Long, clicks: Long, numStarts: Long): Long {
+    return 2 * saves + clicks + 5 * numStarts
+  }
+
+  /**
+   * Calculate the flame count for each itinerary and update the itineraryList the flame count is
+   * calculated as 2 * saves + clicks + 5 * numStarts as number of user that started the itinerary
+   * is presumably much smaller than the number of users that saved it and even less than the number
+   * of clicks and more valuable. updates the db field flameCount
+   *
+   * @param itineraryId the id of the itinerary to update
+   */
+  private fun updateFlameCount(itineraryId: String) {
+    repository.getItineraryById(itineraryId) { itinerary ->
+      if (itinerary != null) {
+        val newFlameCount =
+            calculateFlameCounts(itinerary.saves, itinerary.clicks, itinerary.numStarts)
+        repository.updateField(itineraryId, IncrementableField.FLAME_COUNT, newFlameCount)
+      }
+    }
+  }
+
+  /** Increment the click count of the itinerary with the given id */
+  fun incrementClickCount(itineraryId: String) {
+    viewModelScope.launch {
+      repository.incrementField(itineraryId, IncrementableField.CLICKS)
+      // update flame count after incrementing click count
+      updateFlameCount(itineraryId)
+    }
+  }
+
+  /** Increment the save count of the itinerary with the given id */
+  fun incrementSaveCount(itineraryId: String) {
+    viewModelScope.launch {
+      repository.incrementField(itineraryId, IncrementableField.SAVES)
+      val updatedList =
+          _itineraryList.value?.map { itinerary ->
+            if (itinerary.id == itineraryId) {
+              itinerary.copy(saves = itinerary.saves + 1)
+            } else {
+              itinerary
+            }
+          }
+      if (updatedList != null) {
+        _itineraryList = MutableLiveData(updatedList)
+      }
+      updateFlameCount(itineraryId)
+    }
+  }
+
+  /** Increment the flame count of the itinerary with the given id */
+  fun incrementNumStarts(itineraryId: String) {
+    viewModelScope.launch {
+      repository.incrementField(itineraryId, IncrementableField.NUM_STARTS)
+      updateFlameCount(itineraryId)
+    }
   }
 }
