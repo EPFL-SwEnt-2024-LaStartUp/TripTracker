@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.model.location.popupState
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
@@ -86,7 +87,8 @@ fun MapOverview(
     context: Context,
     navigation: Navigation,
     checkLocationPermission: Boolean = true, // Default value true, can be overridden during tests
-    selectedId: String = ""
+    selectedId: String = "",
+    userProfile: MutableUserProfile
 ) {
   var mapProperties by remember {
     mutableStateOf(
@@ -112,7 +114,14 @@ fun MapOverview(
           bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
               innerPadding ->
             Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-              Map(mapViewModel, context, mapProperties, uiSettings, navigation, selectedId)
+              Map(
+                  mapViewModel,
+                  context,
+                  mapProperties,
+                  uiSettings,
+                  navigation,
+                  selectedId,
+                  userProfile)
             }
           }
     }
@@ -149,7 +158,8 @@ fun Map(
     mapProperties: MapProperties,
     uiSettings: MapUiSettings,
     navigation: Navigation,
-    currentSelectedId: String
+    currentSelectedId: String,
+    userProfile: MutableUserProfile
 ) {
   // Used to display the gradient with the top bar and the changing city location
   val ui by remember { mutableStateOf(uiSettings) }
@@ -353,6 +363,9 @@ fun Map(
                   DisplayItinerary(
                       itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
                       navigation = navigation,
+                      onClick = { mapPopupState = popupState.PATHOVERLAY },
+                      test = false,
+                      profile = userProfile)
                       onClick = { mapPopupState = popupState.DISPLAYPIN },
                       test = false)
                 }

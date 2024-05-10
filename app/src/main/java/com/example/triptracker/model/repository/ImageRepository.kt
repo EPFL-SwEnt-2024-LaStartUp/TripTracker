@@ -7,39 +7,30 @@ import com.google.firebase.storage.storage
 import java.util.UUID
 import kotlinx.coroutines.tasks.await
 
+/** Repository for interacting with Firebase Storage to upload and download images. */
 class ImageRepository {
 
   private val storage = Firebase.storage
 
+  /** The folder where the pictures are stored */
   private val PICTURE_FOLDER = "pictures"
   private val PIN_PICTURES = "pin"
   private val PROFILE_PICTURES = "profile"
 
-  suspend fun addImageToFirebaseStorage(imageUri: Uri): Response<Uri> {
-    return try {
-      val downloadUrl =
-          storage.reference
-              .child(PICTURE_FOLDER)
-              .child(PIN_PICTURES)
-              .child(UUID.randomUUID().toString())
-              .putFile(imageUri)
-              .await()
-              .storage
-              .downloadUrl
-              .await()
-      Log.d("DOWNLOAD URL", downloadUrl.toString())
-      Response.Success(downloadUrl)
-    } catch (e: Exception) {
-      Response.Failure(e)
-    }
-  }
+  /** Get the path to the pin pictures folder */
+  val pinPictures: String
+    get() = PIN_PICTURES
 
-  suspend fun addProfilePictureToFirebaseStorage(imageUri: Uri): Response<Uri> {
+  /** Get the path to the profile pictures folder */
+  val profilePictures: String
+    get() = PROFILE_PICTURES
+
+  suspend fun addImageToFirebaseStorage(folder: String, imageUri: Uri): Response<Uri> {
     return try {
       val downloadUrl =
           storage.reference
               .child(PICTURE_FOLDER)
-              .child(PROFILE_PICTURES)
+              .child(folder)
               .child(UUID.randomUUID().toString())
               .putFile(imageUri)
               .await()
@@ -49,6 +40,7 @@ class ImageRepository {
       Log.d("DOWNLOAD URL", downloadUrl.toString())
       Response.Success(downloadUrl)
     } catch (e: Exception) {
+      Log.d("DOWNLOAD URL", e.toString())
       Response.Failure(e)
     }
   }

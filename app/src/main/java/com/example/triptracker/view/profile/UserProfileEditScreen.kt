@@ -21,14 +21,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
@@ -112,6 +115,10 @@ fun UserProfileEditScreen(
     mutableStateOf(profile.userProfile.value.profileImageUrl?.isEmpty())
   }
 
+  var isLoading by remember { mutableStateOf(false) }
+
+  val scrollState = rememberScrollState()
+
   // Variable to store the state of the new profile picture
   var selectedPicture by remember { mutableStateOf<Uri?>(null) }
   // Launcher for the pick multiple media activity
@@ -120,15 +127,26 @@ fun UserProfileEditScreen(
         // Callback is invoked after the user selects media items or closes the
         // photo picker.
         if (picture != null) {
-          Log.d("PhotoPicker", "One media selected.")
+          Log.d("PhotoPicker", picture.toString())
           selectedPicture = picture
         } else {
           Log.d("PhotoPicker", "No media selected.")
         }
       }
 
-  /** This function updates the user profile in the database on save. */
-  fun updateProfile() {
+  /** Alpha value for the screen depending on loading state */
+  val alpha = if (!isLoading) 1f else 0.9f
+
+  /**
+   * his function updates the user profile in the database on save.
+   *
+   * @param navigation : Navigation object that manages the navigation in the application.
+   * @param isCreated : Boolean indicating if the user profile is created. Navigation needs to be
+   *   used after the callback else the view will be destroyed and resulting in a crash of the
+   *   upload of the picture.
+   */
+  fun updateProfile(navigation: Navigation, isCreated: Boolean) {
+    isLoading = true
     if (selectedPicture != null) {
       userProfileViewModel.addProfilePictureToStorage(selectedPicture!!) { resp ->
         imageUrl =
@@ -139,30 +157,43 @@ fun UserProfileEditScreen(
             }
         val newProfile =
             UserProfile(
-                mail,
-                name,
-                surname,
-                birthdate,
-                username,
-                imageUrl,
+                mail = mail,
+                name = name,
+                surname = surname,
+                birthdate = birthdate,
+                username = username,
+                profileImageUrl = imageUrl,
                 profile.userProfile.value.followers,
                 profile.userProfile.value.following)
+        Log.d("TRALALALALALL", newProfile.toString())
         userProfileViewModel.updateUserProfileInDb(newProfile)
         profile.userProfile.value = newProfile
+        if (!isCreated) {
+          navigation.goBack()
+        } else {
+          navigation.navigateTo(navigation.getStartingDestination())
+        }
+        isLoading = false
       }
     } else {
       val newProfile =
           UserProfile(
-              mail,
-              name,
-              surname,
-              birthdate,
-              username,
-              imageUrl,
+              mail = mail,
+              name = name,
+              surname = surname,
+              birthdate = birthdate,
+              username = username,
+              profileImageUrl = imageUrl,
               profile.userProfile.value.followers,
               profile.userProfile.value.following)
       userProfileViewModel.updateUserProfileInDb(newProfile)
       profile.userProfile.value = newProfile
+      if (!isCreated) {
+        navigation.goBack()
+      } else {
+        navigation.navigateTo(navigation.getStartingDestination())
+      }
+      isLoading = false
     }
   }
 
@@ -176,9 +207,22 @@ fun UserProfileEditScreen(
                     .padding(innerPadding)
                     .padding(top = 30.dp, bottom = 30.dp, start = 25.dp, end = 25.dp)
                     .fillMaxWidth()
-                    .background(md_theme_light_dark, shape = RoundedCornerShape(20.dp)),
+                    .background(md_theme_light_dark.copy(alpha), shape = RoundedCornerShape(20.dp)),
             contentAlignment = Alignment.TopCenter) {
+
+              // Loading bar for when the save button is clicked
+              when (isLoading) {
+                true -> {
+                  CircularProgressIndicator(
+                      modifier = Modifier.width(64.dp).align(Alignment.Center),
+                      color = md_theme_orange,
+                      trackColor = md_theme_grey,
+                  )
+                }
+                false -> {}
+              }
               Column(
+                  modifier = Modifier.fillMaxSize().verticalScroll(scrollState),
                   horizontalAlignment = Alignment.Start,
                   verticalArrangement = Arrangement.SpaceEvenly) {
                     Spacer(modifier = Modifier.height(25.dp))
@@ -216,12 +260,14 @@ fun UserProfileEditScreen(
                               modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8f),
                               verticalArrangement = Arrangement.Center) {
                                 Text(
+                                    modifier = Modifier.padding(end = 30.dp),
                                     text = "Username",
                                     fontSize = 14.sp,
                                     fontFamily = Montserrat,
                                     fontWeight = FontWeight.Normal,
                                     color = md_theme_grey)
                                 OutlinedTextField(
+                                    singleLine = true,
                                     value = username,
                                     label = {},
                                     onValueChange = {
@@ -229,7 +275,7 @@ fun UserProfileEditScreen(
                                       isUsernameEmpty = it.isEmpty()
                                     },
                                     modifier =
-                                        Modifier.padding(bottom = 5.dp, end = 30.dp).weight(1f),
+                                        Modifier.height(65.dp).padding(bottom = 5.dp, end = 30.dp),
                                     textStyle =
                                         TextStyle(
                                             color = Color.White,
@@ -253,7 +299,7 @@ fun UserProfileEditScreen(
                                         ))
                               }
                         }
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                     ProfileEditTextField(
                         "Name",
                         name,
@@ -262,7 +308,7 @@ fun UserProfileEditScreen(
                           isNameEmpty = it.isEmpty()
                         },
                         isNameEmpty)
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                     ProfileEditTextField(
                         "Surname",
                         surname,
@@ -271,7 +317,7 @@ fun UserProfileEditScreen(
                           isSurnameEmpty = it.isEmpty()
                         },
                         isSurnameEmpty)
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                     ProfileEditTextField(
                         "Mail",
                         mail,
@@ -281,7 +327,7 @@ fun UserProfileEditScreen(
                         },
                         isMailEmpty,
                         true)
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     val isOpen = remember { mutableStateOf(false) }
                     Text(
@@ -297,7 +343,10 @@ fun UserProfileEditScreen(
                           value = birthdate,
                           label = {},
                           onValueChange = {},
-                          modifier = Modifier.padding(bottom = 5.dp, start = 30.dp).weight(1f),
+                          modifier =
+                              Modifier.height(65.dp)
+                                  .padding(bottom = 5.dp, start = 30.dp)
+                                  .weight(1f),
                           textStyle =
                               TextStyle(
                                   color = Color.White,
@@ -356,14 +405,7 @@ fun UserProfileEditScreen(
                                       !isSurnameEmpty &&
                                       !isBirthdateEmpty &&
                                       !isUsernameEmpty,
-                              action = {
-                                updateProfile()
-                                if (!isCreated) {
-                                  navigation.goBack()
-                                } else {
-                                  navigation.navigateTo(navigation.getStartingDestination())
-                                }
-                              })
+                              action = { updateProfile(navigation, isCreated) })
                         }
                   }
             }
@@ -397,10 +439,14 @@ fun ProfileEditTextField(
   OutlinedTextField(
       readOnly = isReadOnly,
       enabled = !isReadOnly,
+      singleLine = true,
       value = value,
       onValueChange = { onValueChange(it) },
       label = {},
-      modifier = Modifier.fillMaxWidth(1f).padding(bottom = 5.dp, start = 30.dp, end = 30.dp),
+      modifier =
+          Modifier.height(65.dp)
+              .fillMaxWidth(1f)
+              .padding(bottom = 5.dp, start = 30.dp, end = 30.dp),
       textStyle =
           TextStyle(
               color = Color.White,
