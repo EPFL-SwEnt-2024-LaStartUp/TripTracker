@@ -39,7 +39,8 @@ class MapViewModel(
   // Dummy selected polyline to avoid nullability issues
   val DUMMY_SELECTED_POLYLINE =
       SelectedPolyline(
-          Itinerary("", "", "", Location(0.0, 0.0, ""), 0, "", "", emptyList(), "", emptyList()),
+          Itinerary(
+              "", "", "", Location(0.0, 0.0, ""), 0, 0, 0, 0, "", "", emptyList(), "", emptyList()),
           LatLng(0.0, 0.0))
 
   // state for the city name displayed at the top of the screen

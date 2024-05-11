@@ -211,7 +211,8 @@ class UserProfileViewModel(
    */
   fun addProfilePictureToStorage(imageUri: Uri, callback: (Response<Uri>) -> Unit) {
     viewModelScope.launch {
-      val elem = imageRepository.addProfilePictureToFirebaseStorage(imageUri)
+      val elem =
+          imageRepository.addImageToFirebaseStorage(imageRepository.profilePictures, imageUri)
       callback(elem)
     }
   }

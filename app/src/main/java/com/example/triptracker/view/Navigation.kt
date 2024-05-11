@@ -9,6 +9,7 @@ import androidx.compose.material.icons.outlined.RadioButtonChecked
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import com.example.triptracker.model.network.Connection
 
 /** Destinations used in the app. */
 object Route {
@@ -32,6 +33,9 @@ object Route {
   const val MAPS = "maps"
   const val RECORD = "record"
   const val PROFILE = "profile"
+
+  /** Offline route */
+  const val OFFLINE = "offline"
 }
 
 /** Models of the top level destinations for the bottom navigation bar. */
@@ -53,23 +57,48 @@ private val TOP_LEVEL_DESTINATIONS =
  */
 class Navigation(val navController: NavHostController) {
 
+  /**
+   * Connection object to check if the device is connected to the internet. Relevant here since the
+   * connection influences the navigation behavior.
+   */
+  private val connection = Connection()
+
   /** Current destination, helpful notably for the navigation bar */
   private var currentDestination: TopLevelDestination = getStartingDestination()
 
-  fun navigateTo(destination: TopLevelDestination) {
-    navController.navigate(destination.route) {
-      currentDestination = destination
-      // reset the id when navigating normally so that the state is not saved
-      navController.currentBackStackEntry?.arguments?.putString("id", "")
-      // Pop up to the start destination of the graph to
-      // avoid building up a large stack of destinations
-      // on the back stack as users select items
-      popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-      // Avoid multiple copies of the same destination when
-      // reselecting the same item
-      launchSingleTop = true
-      // Restore state when reselecting a previously selected item
-      restoreState = true
+  /** Next destination, used when no internet connection */
+  private var nextDestination: TopLevelDestination? = null
+
+  fun navigateTo(destination: TopLevelDestination, isRetry: Boolean = false) {
+    if (connection.isDeviceConnectedToInternet()) {
+
+      if (isRetry) {
+        Log.d("Navigation", "Successfully reconnected to the internet")
+        // Reset next destination
+        nextDestination = null
+        goBack()
+      }
+
+      navController.navigate(destination.route) {
+        currentDestination = destination
+        // reset the id when navigating normally so that the state is not saved
+        navController.currentBackStackEntry?.arguments?.putString("id", "")
+        // Pop up to the start destination of the graph to
+        // avoid building up a large stack of destinations
+        // on the back stack as users select items
+        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+        // Avoid multiple copies of the same destination when
+        // reselecting the same item
+        launchSingleTop = true
+        // Restore state when reselecting a previously selected item
+        restoreState = true
+      }
+    } else {
+      Log.d("Navigation", "No internet connection")
+      if (!isRetry) {
+        nextDestination = destination
+        navController.navigate(Route.OFFLINE)
+      }
     }
   }
 
@@ -89,6 +118,13 @@ class Navigation(val navController: NavHostController) {
       //      launchSingleTop = true
       // Restore state when reselecting a previously selected item
       //      restoreState = true
+    }
+  }
+
+  /** Retry the navigation to the next destination when not connected to internet */
+  fun retryNavigateTo() {
+    if (nextDestination != null) {
+      navigateTo(nextDestination!!, isRetry = true)
     }
   }
 

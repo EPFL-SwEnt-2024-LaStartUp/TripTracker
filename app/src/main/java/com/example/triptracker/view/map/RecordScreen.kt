@@ -516,6 +516,9 @@ fun Map(
                                             "Mean Path Location")
                                     // (default device location)
                                     val flameCount = 0L
+                                    val saves = 0L
+                                    val clicks = 0L
+                                    val numStarts = 0L
                                     val startDate = viewModel.startDate.value
                                     val endDate = viewModel.endDate.value
                                     val pinList = viewModel.pinList
@@ -528,6 +531,9 @@ fun Map(
                                             username,
                                             location,
                                             flameCount,
+                                            saves,
+                                            clicks,
+                                            numStarts,
                                             startDate,
                                             endDate,
                                             pinList,
