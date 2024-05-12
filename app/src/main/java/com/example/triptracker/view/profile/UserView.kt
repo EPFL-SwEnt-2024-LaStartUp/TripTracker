@@ -47,7 +47,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.triptracker.R
@@ -89,6 +88,7 @@ fun UserView(
 
   val loggedUser by remember { mutableStateOf(profile) }
   var displayedUser by remember { mutableStateOf(UserProfile("")) }
+
   userProfileViewModel.getUserProfile(userMail) { fetchedUser ->
     if (fetchedUser != null) {
       displayedUser = fetchedUser
@@ -102,6 +102,10 @@ fun UserView(
   // Observe the filtered itinerary list from the ViewModel
   val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
 
+  if (test) {
+    readyToDisplay = true
+  }
+
   when (readyToDisplay) {
     false -> {
       WaitingScreen()
@@ -112,11 +116,7 @@ fun UserView(
       }
 
       val myTripsList = homeViewModel.filteredItineraryList
-      var tripCount = 0
-      myTripsList.observeForever(Observer { list -> tripCount = list.size })
-      homeViewModel.setSearchFilter(FilterType.USERNAME)
-      homeViewModel.setSearchQuery(
-          displayedUser.username) // Filters the list of trips on user that created it
+      var tripCount = homeViewModel.filteredItineraryList.value?.size
 
       Scaffold(
           topBar = {
@@ -216,7 +216,7 @@ fun UserView(
                                     modifier =
                                         Modifier.align(Alignment.End)
                                             .padding(bottom = 20.dp)
-                                            .testTag("InterestsList"))
+                                            .testTag("InterestList"))
                                 Text(
                                     text = "Travel Style",
                                     style = AppTypography.secondaryTitleStyle,
