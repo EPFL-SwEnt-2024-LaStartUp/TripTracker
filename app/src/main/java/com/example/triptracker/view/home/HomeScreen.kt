@@ -148,13 +148,12 @@ fun HomeScreen(
                     Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
                     DisplayItinerary(
                         itinerary = itinerary,
-                        navigation = navigation,
                         onClick = {
                           navigation.navigateTo(Route.MAPS, itinerary.id)
                           homeViewModel.incrementClickCount(itinerary.id)
                         },
                         test = test,
-                        profile = profile)
+                    )
                   }
                 }
             /*

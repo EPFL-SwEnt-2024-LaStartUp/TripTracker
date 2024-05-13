@@ -368,10 +368,9 @@ fun UserView(
                               Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
                               DisplayItinerary(
                                   itinerary = itinerary,
-                                  navigation = navigation,
                                   onClick = { navigation.navigateTo(Route.MAPS, itinerary.id) },
                                   test = test,
-                                  profile = profile)
+                              )
                             }
                           }
                     }

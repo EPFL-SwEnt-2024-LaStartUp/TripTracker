@@ -362,10 +362,9 @@ fun Map(
                     Modifier.fillMaxHeight(0.3f).fillMaxWidth().align(Alignment.BottomCenter)) {
                   DisplayItinerary(
                       itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                      navigation = navigation,
                       onClick = { mapPopupState = popupState.DISPLAYPIN },
                       test = false,
-                      profile = userProfile)
+                  )
                 }
           }
           popupState.DISPLAYPIN -> {
