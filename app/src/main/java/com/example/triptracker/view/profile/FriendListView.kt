@@ -2,6 +2,7 @@ package com.example.triptracker.view.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,8 +39,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.Relationship
 import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.view.Navigation
+import com.example.triptracker.view.Route
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_grey
@@ -51,17 +55,21 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
  * This composable function displays the user's followers or following list.
  *
  * @param viewModel : ViewModel for the UserProfile class
- * @param userProfile : the profile of the current user
+ * @param profile : the profile of the current user
  * @param relationship : the relationship between the current user and the friend
  * @param friendList : List of friends' email to display
  */
 @Composable
 fun FriendListView(
+    navigation: Navigation,
     viewModel: UserProfileViewModel,
-    userProfile: UserProfile,
+    profile: MutableUserProfile,
     relationship: Relationship,
     friendList: State<List<UserProfile>>
 ) {
+
+  val userProfile by remember { mutableStateOf(profile) }
+
   // If there is no profile corresponding to the search query we display a message
   // If we are in the friend finder view and the search query is empty we don't display profiles
   if (friendList.value.isEmpty() ||
@@ -98,7 +106,7 @@ fun FriendListView(
         verticalArrangement = Arrangement.spacedBy(10.dp)) {
           items(friendList.value) { friend ->
             // we do not prompt the profile of the current user
-            if (friend.mail != userProfile.mail) {
+            if (friend.mail != userProfile.userProfile.value.mail) {
               // Display the user's profile
               Box(
                   modifier =
@@ -107,7 +115,10 @@ fun FriendListView(
                           .background(
                               MaterialTheme.colorScheme.onBackground,
                               shape = RoundedCornerShape(35.dp))
-                          .testTag("FriendProfile"),
+                          .testTag("FriendProfile")
+                          .clickable {
+                            navigation.navController.navigate(Route.USER + "/${friend.mail}")
+                          },
                   contentAlignment = Alignment.Center) {
                     Row(
                         modifier = Modifier.fillMaxHeight().padding(start = 20.dp, end = 20.dp),
@@ -118,7 +129,7 @@ fun FriendListView(
 
                           Image(
                               painter = imagePainter,
-                              contentDescription = "${userProfile.username}'s profile picture",
+                              contentDescription = "${friend.username}'s profile picture",
                               contentScale = ContentScale.Crop,
                               modifier =
                                   Modifier.size(62.dp)
@@ -163,7 +174,7 @@ fun FriendListView(
                             // Display the remove friend button
                             RemoveFriendButton(
                                 viewModel = viewModel,
-                                userProfile = userProfile,
+                                profile = profile,
                                 friend = friend,
                                 relationship = relationship)
                           }
@@ -179,47 +190,42 @@ fun FriendListView(
 @Composable
 fun RemoveFriendButton(
     viewModel: UserProfileViewModel,
-    userProfile: UserProfile,
+    profile: MutableUserProfile,
     friend: UserProfile,
     relationship: Relationship
 ) {
-  // we fetch the last version of the user profile
-  var updatedUserProfile = userProfile.copy()
-  viewModel.getUserProfile(userProfile.mail) { profile ->
-    if (profile != null) {
-      updatedUserProfile = profile
-    }
-  }
+  val userProfile by remember { mutableStateOf(profile) }
+
   // we fetch the last version of the follower
   var updatedFriend = friend.copy()
-  viewModel.getUserProfile(friend.mail) { profile ->
-    if (profile != null) {
-      updatedFriend = profile
+  viewModel.getUserProfile(friend.mail) { fetchedUser ->
+    if (fetchedUser != null) {
+      updatedFriend = fetchedUser
     }
   }
 
   // variable to keep track of whether the user and follower are connected (following/follower)
   var areConnected by remember {
-    mutableStateOf(updatedUserProfile.following.contains(friend.mail))
+    mutableStateOf(userProfile.userProfile.value.following.contains(friend.mail))
   }
 
   if (relationship == Relationship.FOLLOWER) {
-    areConnected = updatedUserProfile.followers.contains(friend.mail)
+    areConnected = userProfile.userProfile.value.followers.contains(friend.mail)
   }
 
   Button(
       onClick = {
         if (relationship == Relationship.FRIENDS || relationship == Relationship.FOLLOWING) {
           if (areConnected) {
-            viewModel.removeFollower(updatedFriend, updatedUserProfile)
+            viewModel.removeFollowing(userProfile, updatedFriend)
           } else {
-            viewModel.addFollower(updatedFriend, updatedUserProfile)
+            viewModel.addFollowing(userProfile, updatedFriend)
           }
         } else if (relationship == Relationship.FOLLOWER) {
           if (areConnected) {
-            viewModel.removeFollower(updatedUserProfile, updatedFriend)
+            viewModel.removeFollower(userProfile, updatedFriend)
           } else {
-            viewModel.addFollower(updatedUserProfile, updatedFriend)
+            viewModel.addFollower(userProfile, updatedFriend)
           }
         }
         areConnected = !areConnected

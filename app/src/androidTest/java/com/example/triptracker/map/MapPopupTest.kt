@@ -44,7 +44,9 @@ class MapPopupTest {
           }
       coEvery { addNewUserProfileToDb(any()) } just Runs
       coEvery { updateUserProfileInDb(any()) } just Runs
-      coEvery { addFollower(any(), any()) } just Runs
+      coEvery { addFollowing(any(), any()) } just Runs
+      coEvery { addFollowing(any(), any()) } just Runs
+      coEvery { removeFollowing(any(), any()) } just Runs
       coEvery { removeFollower(any(), any()) } just Runs
       coEvery { removeUserProfileInDb(any()) } just Runs
     }
@@ -59,6 +61,9 @@ class MapPopupTest {
             "Jack's Path",
             "Jack",
             Location(34.5, 34.5, "jo"),
+            0,
+            0,
+            0,
             0,
             "start",
             "end",

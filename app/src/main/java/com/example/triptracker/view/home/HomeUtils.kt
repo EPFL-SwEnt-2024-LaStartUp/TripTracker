@@ -21,6 +21,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,13 +38,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
-import com.example.triptracker.model.profile.MutableUserProfile
+import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.UserProfile
-import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_orange
+import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
 // set up a dummy profile for testing
@@ -61,12 +63,11 @@ val dummyProfile = UserProfile("test@gmail.com", "Test User", "test", "test bio"
 @Composable
 fun DisplayItinerary(
     itinerary: Itinerary,
-    navigation: Navigation,
     boxHeight: Dp = 200.dp,
     userProfileViewModel: UserProfileViewModel = viewModel(),
     onClick: () -> Unit,
-    test: Boolean = false,
-    profile: MutableUserProfile
+    homeViewModel: HomeViewModel = viewModel(),
+    test: Boolean = false
 ) {
   // Number of additional itineraries not displayed
   val pinListString = fetchPinNames(itinerary)
@@ -74,21 +75,20 @@ fun DisplayItinerary(
   // The padding around the box
   val paddingAround = 15.dp
   // The size of the user's avatar/profile picture
-  val avatarSize = 20.dp
+  val avatarSize = 25.dp
+  // Boolean to check if the user profile is ready to display
+  var readyToDisplay by remember { mutableStateOf(false) }
+  // The user profile fetched from the database for each path
+  var dbProfile by remember { mutableStateOf(UserProfile("")) }
+  // The current user profile of the user using the app
+  val ambientProfile = AmbientUserProfile.current
 
-  // var readyToDisplay by remember { mutableStateOf(true) }
-  // var profile by remember { mutableStateOf(UserProfile("")) }
-  //  if (test) {
-  //    //readyToDisplay = true
-  //    //profile = dummyProfile
-  //  }
-
-  //  userProfileViewModel.getUserProfile(itinerary.userMail) { itin ->
-  //    if (itin != null) {
-  //      //profile = itin
-  //      readyToDisplay = true
-  //    }
-  //  }
+  userProfileViewModel.getUserProfile(itinerary.userMail) {
+    if (it != null) {
+      dbProfile = it
+      readyToDisplay = true
+    }
+  }
 
   when (true) {
     false -> {
@@ -113,7 +113,7 @@ fun DisplayItinerary(
                     // change the image to the user's profile picture
                     Row() {
                       AsyncImage(
-                          model = profile.userProfile.value.profileImageUrl,
+                          model = dbProfile.profileImageUrl,
                           contentDescription = "User Avatar",
                           modifier =
                               Modifier.size(avatarSize)
@@ -123,16 +123,16 @@ fun DisplayItinerary(
 
                       Spacer(modifier = Modifier.width(15.dp))
                       Text(
-                          text = profile.userProfile.value.username, // userProfile.username,
+                          text = dbProfile.username,
                           fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                           fontWeight = FontWeight.Normal,
-                          fontSize = 14.sp,
+                          fontSize = 16.sp,
                           color = md_theme_grey,
                           modifier = Modifier.testTag("Username"))
                     }
 
                     Spacer(modifier = Modifier.width(120.dp))
-                    if (profile.userProfile.value.favoritesPaths.contains(itinerary.id)) {
+                    if (ambientProfile.userProfile.value.favoritesPaths.contains(itinerary.id)) {
                       // If the user has favorited this itinerary, display a star orange
                       Icon(
                           imageVector = Icons.Outlined.Star,
@@ -140,7 +140,7 @@ fun DisplayItinerary(
                           tint = md_theme_orange,
                           modifier =
                               Modifier.size(20.dp).clickable {
-                                userProfileViewModel.removeFavorite(profile, itinerary.id)
+                                userProfileViewModel.removeFavorite(ambientProfile, itinerary.id)
                               })
                     } else {
                       // If the user has not favorited this itinerary, display a star grey
@@ -150,10 +150,17 @@ fun DisplayItinerary(
                           tint = md_theme_grey,
                           modifier =
                               Modifier.size(20.dp).clickable {
-                                userProfileViewModel.addFavorite(profile, itinerary.id)
+                                userProfileViewModel.addFavorite(ambientProfile, itinerary.id)
+                                homeViewModel.incrementSaveCount(
+                                    itinerary.id) // when click on grey star, increment save count
                               })
                     }
                   }
+              Spacer(modifier = Modifier.width(120.dp))
+              Icon(
+                  imageVector = Icons.Outlined.Star,
+                  contentDescription = "Star",
+                  Modifier.size(20.dp).clickable { homeViewModel.incrementSaveCount(itinerary.id) })
               Spacer(modifier = Modifier.height(5.dp))
               Log.d("ItineraryRoute", itinerary.route.toString())
               Text(
