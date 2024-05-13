@@ -17,11 +17,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
 
+/**
+ * Check if the camera permission is granted
+ *
+ * @param context the context of the activity
+ */
 fun checkForCameraPermission(context: Context): Boolean {
   return ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
       android.content.pm.PackageManager.PERMISSION_GRANTED
 }
 
+/**
+ * Request the camera permission
+ *
+ * @param context the context of the activity
+ */
 @Composable
 fun LaunchCameraPermissionRequest(context: Context) {
   var hasCameraPermission by remember { mutableStateOf(checkForCameraPermission(context)) }
@@ -41,6 +51,12 @@ fun LaunchCameraPermissionRequest(context: Context) {
   }
 }
 
+/**
+ * Display an alert dialog to ask for camera permission
+ *
+ * @param onPermissionGranted the function to call when the permission is granted
+ * @param onPermissionDenied the function to call when the permission is denied
+ */
 @Composable
 fun AllowCameraPermission(onPermissionGranted: () -> Unit, onPermissionDenied: () -> Unit) {
 

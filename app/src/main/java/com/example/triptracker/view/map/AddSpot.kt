@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -28,6 +29,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.AddPhotoAlternate
+import androidx.compose.material.icons.outlined.Camera
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Edit
@@ -118,8 +120,12 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
           onCameraLaunch = { boxDisplayed = AddSpotStatus.DISPLAY_CAMERA })
     }
     AddSpotStatus.DISPLAY_CAMERA -> {
+
+      // Create the directory where the pictures will be saved temporary
       val file = File("/storage/emulated/0/Download/TripTracker/")
       file.mkdirs()
+
+      // Create the executor for the camera
       val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
 
       TakePicture(
@@ -337,6 +343,16 @@ fun FillAddSpot(
           Row(
               modifier = Modifier.fillMaxWidth().height(150.dp).testTag("SpotPictures"),
               horizontalArrangement = Arrangement.Center) {
+                // Button to launch the camera
+                IconButton(
+                    onClick = { onCameraLaunch() },
+                    modifier = Modifier.align(Alignment.CenterVertically).padding(10.dp)) {
+                      Icon(
+                          modifier = Modifier.size(50.dp),
+                          imageVector = Icons.Outlined.Camera,
+                          contentDescription = "Add Picture",
+                          tint = md_theme_orange)
+                    }
                 InsertPictures(
                     pickMultipleMedia = pickMultipleMedia,
                     selectedPictures,
@@ -379,13 +395,6 @@ fun FillAddSpot(
               modifier = Modifier.fillMaxWidth().fillMaxHeight().testTag("SaveButton"),
               horizontalArrangement = Arrangement.Center,
               verticalAlignment = Alignment.Top) {
-                IconButton(onClick = { onCameraLaunch() }) {
-                  Icon(
-                      imageVector = Icons.Outlined.AddPhotoAlternate,
-                      contentDescription = "Add Picture",
-                      tint = md_theme_orange)
-                }
-
                 FilledTonalButton(
                     onClick = {
                       if ((location.isEmpty() && recordViewModel.namePOI.value.isEmpty()) ||

@@ -54,6 +54,17 @@ import java.util.concurrent.Executor
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+/**
+ * Composable that displays the camera view and allows the user to take a picture and saves it to
+ * the gallery.
+ *
+ * @param outputDirectory The directory where the picture will be saved.
+ * @param executor The executor that will be used to take the picture.
+ * @param onCaptureClosedSuccess Callback that will be called when the user closes the camera after
+ *   taking a picture.
+ * @param onCaptureClosedError Callback that will be called when an error occurs while taking a
+ *   picture.
+ */
 @Composable
 fun TakePicture(
     outputDirectory: File,
@@ -85,6 +96,16 @@ fun TakePicture(
   }
 }
 
+/**
+ * Composable that displays the camera view and allows the user to take a picture and saves it to
+ * the gallery.
+ *
+ * @param outputDirectory The directory where the picture will be saved.
+ * @param executor The executor that will be used to take the picture.
+ * @param onImageCaptured Callback that will be called when the picture is taken and gives the link
+ *   to the saved picture.
+ * @param onError Callback that will be called when an error occurs while taking a picture.
+ */
 @Composable
 fun CameraView(
     outputDirectory: File,
@@ -102,7 +123,6 @@ fun CameraView(
   val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
   val configuration = LocalConfiguration.current
   val orientation = configuration.orientation
-  Log.d("LALALLALAALAL", "Orientation: $orientation")
 
   LaunchedEffect(lensFacing) {
     val cameraProvider = context.getCameraProvider()
@@ -154,6 +174,18 @@ fun CameraView(
       }
 }
 
+/**
+ * Function that takes a picture and saves it to the gallery.
+ *
+ * @param context The context of the application.
+ * @param imageCapture The image capture object that will be used to take the picture.
+ * @param outputDirectory The directory where the picture will be saved.
+ * @param executor The executor that will be used to take the picture.
+ * @param orientation The orientation of the device.
+ * @param onImageCaptured Callback that will be called when the picture is taken and gives the link
+ *   to the saved picture.
+ * @param onError Callback that will be called when an error occurs while taking a picture.
+ */
 private fun takePhoto(
     context: Context,
     imageCapture: ImageCapture,
@@ -199,6 +231,13 @@ private fun takePhoto(
       })
 }
 
+/**
+ * Function that adjusts the orientation of the bitmap.
+ *
+ * @param filePath The path of the file.
+ * @param bitmap The bitmap that will be adjusted.
+ * @return The adjusted bitmap.
+ */
 private fun adjustBitmapOrientation(filePath: String, bitmap: Bitmap): Bitmap {
   val ei = ExifInterface(filePath)
   val orientation =
@@ -211,12 +250,28 @@ private fun adjustBitmapOrientation(filePath: String, bitmap: Bitmap): Bitmap {
   }
 }
 
+/**
+ * Function that rotates the image.
+ *
+ * @param source The source bitmap.
+ * @param angle The angle of rotation.
+ * @return The rotated bitmap.
+ */
 private fun rotateImage(source: Bitmap, angle: Float): Bitmap {
   val matrix = Matrix()
   matrix.postRotate(angle)
   return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
 }
 
+/**
+ * Function that saves the image to the gallery.
+ *
+ * @param photoFile The file where the image will be saved.
+ * @param bitmap The bitmap that will be saved.
+ * @param context The context of the application.
+ * @param orientation The orientation of the device.
+ * @param onImageSaved Callback that will be called when the image is saved.
+ */
 private fun saveImageToGallery(
     photoFile: File,
     bitmap: Bitmap,
@@ -245,6 +300,11 @@ private fun saveImageToGallery(
   }
 }
 
+/**
+ * Function that gets the camera provider.
+ *
+ * @return The camera provider.
+ */
 private suspend fun Context.getCameraProvider(): ProcessCameraProvider =
     suspendCoroutine { continuation ->
       ProcessCameraProvider.getInstance(this).also { cameraProvider ->
