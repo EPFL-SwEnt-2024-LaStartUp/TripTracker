@@ -14,7 +14,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.triptracker.MainActivity.Companion.applicationContext
 import com.example.triptracker.authentication.GoogleAuthenticator
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.ProvideUserProfile
@@ -36,6 +35,7 @@ import com.example.triptracker.view.profile.UserProfileOverview
 import com.example.triptracker.view.profile.UserProfileSettings
 import com.example.triptracker.view.profile.UserView
 import com.example.triptracker.view.theme.TripTrackerTheme
+import com.example.triptracker.viewmodel.LaunchCameraPermissionRequest
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
 class MainActivity : ComponentActivity() {
@@ -84,6 +84,7 @@ class MainActivity : ComponentActivity() {
             val context: Context = applicationContext()
 
             LaunchPermissionRequest(context)
+            LaunchCameraPermissionRequest(context)
 
             // List of destinations for in app navigation
             NavHost(
