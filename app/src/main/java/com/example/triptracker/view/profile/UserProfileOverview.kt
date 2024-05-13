@@ -28,7 +28,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
@@ -43,12 +42,10 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.profile.MutableUserProfile
@@ -70,14 +67,6 @@ import com.example.triptracker.viewmodel.HomeViewModel
  * @param userProfileViewModel: The view model of the UserProfile
  * @param navigation: The navigation of the app to switch between different views
  */
-@Preview
-@Composable
-fun UserProfilePreview() {
-  val navController = rememberNavController()
-  val navigation = remember(navController) { Navigation(navController) }
-  UserProfileOverview(navigation = navigation, profile = MutableUserProfile())
-}
-
 @Composable
 fun UserProfileOverview(
     navigation: Navigation,
