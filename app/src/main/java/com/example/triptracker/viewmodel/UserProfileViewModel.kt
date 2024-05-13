@@ -87,35 +87,75 @@ class UserProfileViewModel(
   }
 
   /**
-   * Function that add follower to userProfile follower list
+   * Function that add following to userProfile following list
    *
-   * @param userProfile : the user profile to which we add a follower
-   * @param follower : the user profile of the follower to add
+   * @param userProfile : the user profile to which we add a following
+   * @param following : the user profile of the following to add
    */
-  fun addFollower(userProfile: UserProfile, follower: UserProfile) {
+  fun addFollowing(userProfile: MutableUserProfile, following: UserProfile) {
+    val user = userProfile.userProfile.value
     // we only add follower to userProfile's follower list if he is not already present
-    if (!userProfile.followers.contains(follower.mail)) {
-      val updatedUserProfile = userProfile.copy(followers = userProfile.followers + follower.mail)
+    if (!user.following.contains(following.mail)) {
+      val updatedUserProfile = user.copy(following = user.following + following.mail)
       userProfileRepository.updateUserProfile(updatedUserProfile)
+      userProfile.userProfile.value = updatedUserProfile
     }
     // we only add userProfile to follower's following list if he is not already present
-    if (!follower.following.contains(userProfile.mail)) {
-      val updatedFollower = follower.copy(following = follower.following + userProfile.mail)
+    if (!following.followers.contains(user.mail)) {
+      val updatedFollower = following.copy(followers = following.followers + user.mail)
       userProfileRepository.updateUserProfile(updatedFollower)
     }
   }
 
   /**
-   * Function that remove follower from userProfile follower list
+   * Function that add follower to userProfile followers list
+   *
+   * @param userProfile : the user profile to which we add a follower
+   * @param follower : the user profile of the follower to add
+   */
+  fun addFollower(userProfile: MutableUserProfile, follower: UserProfile) {
+    val user = userProfile.userProfile.value
+    // we only add follower to userProfile's follower list if he is not already present
+    if (!user.followers.contains(follower.mail)) {
+      val updatedUserProfile = user.copy(followers = user.followers + follower.mail)
+      userProfileRepository.updateUserProfile(updatedUserProfile)
+      userProfile.userProfile.value = updatedUserProfile
+    }
+    // we only add userProfile to follower's following list if he is not already present
+    if (!follower.following.contains(user.mail)) {
+      val updatedFollower = follower.copy(following = follower.following + user.mail)
+      userProfileRepository.updateUserProfile(updatedFollower)
+    }
+  }
+
+  /**
+   * Function that remove following from userProfile following list
+   *
+   * @param userProfile : the user profile from which we remove a following
+   * @param following : the user profile of the following to remove
+   */
+  fun removeFollowing(userProfile: MutableUserProfile, following: UserProfile) {
+    val user = userProfile.userProfile.value
+    val updatedUserProfile = user.copy(following = user.following - following.mail)
+    val updatedFollower = following.copy(followers = following.followers - user.mail)
+    userProfileRepository.updateUserProfile(updatedUserProfile)
+    userProfileRepository.updateUserProfile(updatedFollower)
+    userProfile.userProfile.value = updatedUserProfile
+  }
+
+  /**
+   * Function that remove follower from userProfile followers list
    *
    * @param userProfile : the user profile from which we remove a follower
    * @param follower : the user profile of the follower to remove
    */
-  fun removeFollower(userProfile: UserProfile, follower: UserProfile) {
-    val updatedUserProfile = userProfile.copy(followers = userProfile.followers - follower.mail)
-    val updatedFollower = follower.copy(following = follower.following - userProfile.mail)
+  fun removeFollower(userProfile: MutableUserProfile, follower: UserProfile) {
+    val user = userProfile.userProfile.value
+    val updatedUserProfile = user.copy(followers = user.followers - follower.mail)
+    val updatedFollower = follower.copy(following = follower.following - user.mail)
     userProfileRepository.updateUserProfile(updatedUserProfile)
     userProfileRepository.updateUserProfile(updatedFollower)
+    userProfile.userProfile.value = updatedUserProfile
   }
 
   /**

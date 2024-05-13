@@ -34,24 +34,31 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.triptracker.R
-import com.example.triptracker.model.profile.AmbientUserProfile
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.Relationship
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
-/** This composable function displays the user's following list. */
+/**
+ * This composable function displays the user's following list.
+ *
+ * @param navigation : the navigation object to navigate to other screens.
+ * @param userProfileViewModel : the view model to handle the user profile.
+ */
 @Composable
 fun UserProfileFollowers(
     navigation: Navigation,
+    profile: MutableUserProfile,
     userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
 ) {
-  val userProfile = AmbientUserProfile.current.userProfile.value
+  val userProfile by remember { mutableStateOf(profile) }
+
   var isSearchActive by remember { mutableStateOf(false) }
 
   var followersList: List<UserProfile> by remember { mutableStateOf(listOf<UserProfile>()) }
-  userProfile.followers.forEach { follower ->
+  userProfile.userProfile.value.followers.forEach { follower ->
     userProfileViewModel.getUserProfile(follower) { profile ->
       if (profile != null) {
         // we check that the profile is not already in the following list
@@ -106,8 +113,9 @@ fun UserProfileFollowers(
               onSearchActivated = { isActive -> isSearchActive = isActive })
           // Display the list of following
           FriendListView(
+              navigation = navigation,
               viewModel = userProfileViewModel,
-              userProfile = userProfile,
+              profile = userProfile,
               relationship = Relationship.FOLLOWER,
               friendList = filteredList)
         }
