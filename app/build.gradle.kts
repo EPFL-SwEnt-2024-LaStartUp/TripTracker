@@ -155,8 +155,9 @@ dependencies {
   implementation("androidx.compose.runtime:runtime")
   implementation("androidx.compose.runtime:runtime-rxjava2")
   implementation("androidx.compose.runtime:runtime-livedata")
+    implementation(libs.androidx.exifinterface)
 
-  // Camera
+    // Camera
   val cameraVersion = "1.3.1"
   implementation("androidx.camera:camera-lifecycle:$cameraVersion")
   implementation("androidx.camera:camera-camera2:$cameraVersion")
