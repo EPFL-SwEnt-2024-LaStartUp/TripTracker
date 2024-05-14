@@ -42,6 +42,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -73,6 +74,7 @@ import com.example.triptracker.view.theme.md_theme_light_error
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -271,10 +273,10 @@ fun UserProfileEditScreen(
                                     value = username,
                                     label = {},
                                     onValueChange = {
-                                        if (it.length <= 30) {
-                                            username = it
-                                            isUsernameEmpty = it.isEmpty()
-                                        }
+                                      if (it.length <= 30) {
+                                        username = it
+                                        isUsernameEmpty = it.isEmpty()
+                                      }
                                     },
                                     modifier =
                                         Modifier.height(65.dp).padding(bottom = 5.dp, end = 30.dp),
@@ -501,7 +503,16 @@ fun SaveButton(canSave: Boolean = true, action: () -> Unit = {}) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomDatePickerDialog(onAccept: (Long?) -> Unit, onCancel: () -> Unit) {
-  val state = rememberDatePickerState()
+  val maxDate = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
+  val selectableDates =
+      object : SelectableDates {
+        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+          return utcTimeMillis <= maxDate
+        }
+      }
+
+  val state = rememberDatePickerState(selectableDates = selectableDates)
 
   DatePickerDialog(
       onDismissRequest = {},
