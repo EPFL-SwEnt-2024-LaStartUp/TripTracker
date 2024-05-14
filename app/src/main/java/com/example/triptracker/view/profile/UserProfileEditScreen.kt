@@ -205,7 +205,7 @@ fun UserProfileEditScreen(
                               modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8f),
                               verticalArrangement = Arrangement.Center) {
                                 Text(
-                                    modifier = Modifier.padding(bottom = 5.dp, end = 30.dp),
+                                    modifier = Modifier.padding(bottom = 4.dp, end = 30.dp),
                                     text = "Username",
                                     fontSize = 14.sp,
                                     fontFamily = Montserrat,
@@ -280,7 +280,7 @@ fun UserProfileEditScreen(
                         fontFamily = Montserrat,
                         fontWeight = FontWeight.Normal,
                         color = md_theme_grey,
-                        modifier = Modifier.padding(start = 30.dp, end = 30.dp))
+                        modifier = Modifier.padding(bottom = 4.dp, start = 30.dp, end = 30.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                       OutlinedTextField(
                           readOnly = true,
@@ -395,7 +395,7 @@ fun ProfileEditTextField(
       fontFamily = Montserrat,
       fontWeight = FontWeight.Normal,
       color = md_theme_grey,
-      modifier = Modifier.padding(start = 30.dp, end = 30.dp),
+      modifier = Modifier.padding(bottom = 4.dp, start = 30.dp, end = 30.dp),
   )
   OutlinedTextField(
       readOnly = isReadOnly,
