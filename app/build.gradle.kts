@@ -155,6 +155,14 @@ dependencies {
   implementation("androidx.compose.runtime:runtime")
   implementation("androidx.compose.runtime:runtime-rxjava2")
   implementation("androidx.compose.runtime:runtime-livedata")
+    implementation(libs.androidx.exifinterface)
+
+    // Camera
+  val cameraVersion = "1.3.1"
+  implementation("androidx.camera:camera-lifecycle:$cameraVersion")
+  implementation("androidx.camera:camera-camera2:$cameraVersion")
+  implementation("androidx.camera:camera-view:$cameraVersion")
+  implementation("androidx.camera:camera-core:$cameraVersion")
 
   // Testing compose
   androidTestImplementation("androidx.compose.ui:ui-test-junit4")
@@ -246,6 +254,10 @@ dependencies {
   // --------------- JUnit ---------------
   testImplementation("junit:junit:4.13.2")
   androidTestImplementation("androidx.test.ext:junit:1.1.5")
+
+  // --------------- Appcompat ---------------
+  implementation("androidx.appcompat:appcompat:1.5.1")
+
 }
 
 configurations.all {

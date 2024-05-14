@@ -19,6 +19,6 @@ class AddSpotScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val descriptionText: KNode = description.child { hasTestTag("DescriptionText") }
   val pictures: KNode = child { hasTestTag("SpotPictures") }
   val saveButton: KNode = child { hasTestTag("SaveButton") }
-
+  val alertWindow: KNode = child { hasTestTag("AlertDialog") }
   val editPicture: KNode = child { hasTestTag("EditPicture") }
 }

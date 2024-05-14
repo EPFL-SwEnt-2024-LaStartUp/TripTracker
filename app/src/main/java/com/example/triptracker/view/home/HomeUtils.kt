@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -24,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
@@ -76,25 +79,49 @@ fun DisplayItinerary(
   val paddingAround = 15.dp
   // The size of the user's avatar/profile picture
   val avatarSize = 25.dp
-  // Boolean to check if the user profile is ready to display
-  var readyToDisplay by remember { mutableStateOf(false) }
   // The user profile fetched from the database for each path
   var dbProfile by remember { mutableStateOf(UserProfile("")) }
   // The current user profile of the user using the app
   val ambientProfile = AmbientUserProfile.current
+  // Boolean to check if the profile picture should be displayed
+  var showProfilePicture by remember { mutableStateOf(false) }
 
   userProfileViewModel.getUserProfile(itinerary.userMail) {
     if (it != null) {
       dbProfile = it
-      readyToDisplay = true
     }
   }
 
-  when (true) {
-    false -> {
-      Log.d("UserProfile", "User profile is null")
+  when (showProfilePicture) {
+    true -> {
+      Box(
+          modifier =
+              Modifier.fillMaxWidth()
+                  .padding(paddingAround)
+                  .height(boxHeight)
+                  .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))) {
+
+            // Close button
+            IconButton(
+                modifier = Modifier.padding(10.dp).testTag("CloseButton"),
+                onClick = { showProfilePicture = false }) {
+                  Icon(
+                      imageVector = Icons.Outlined.ArrowBackIosNew,
+                      contentDescription = "back",
+                      tint = md_theme_light_onPrimary)
+                }
+
+            AsyncImage(
+                model = dbProfile.profileImageUrl,
+                contentDescription = "User Avatar",
+                modifier =
+                    Modifier.align(Alignment.Center)
+                        .padding(15.dp)
+                        .clip(CircleShape)
+                        .testTag("ProfilePicBig"))
+          }
     }
-    else -> {
+    false -> {
       Box(
           modifier =
               Modifier.fillMaxWidth()
@@ -119,7 +146,7 @@ fun DisplayItinerary(
                               Modifier.size(avatarSize)
                                   .clip(CircleShape)
                                   .testTag("ProfilePic")
-                                  .clickable { /* TODO bring user to profile page */})
+                                  .clickable { showProfilePicture = true })
 
                       Spacer(modifier = Modifier.width(15.dp))
                       Text(

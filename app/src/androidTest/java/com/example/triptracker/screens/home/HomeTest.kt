@@ -142,6 +142,35 @@ class HomeTest {
   }
 
   @Test
+  fun clickingOnProfilePictureOpensPreview() {
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
+    every { mockNav.getTopLevelDestinations()[1] } returns
+        TopLevelDestination(Route.MAPS, Icons.Outlined.Place, "Maps")
+    every { mockProfile.userProfile.value } returns mockUsers[0]
+
+    // Setting up the test composition
+    composeTestRule.setContent {
+      HomeScreen(
+          navigation = mockNav, homeViewModel = mockViewModel, test = true, profile = mockProfile)
+    }
+    ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
+      profilePic {
+        assertIsDisplayed()
+        performClick()
+      }
+
+      profilePicScreen { assertIsDisplayed() }
+
+      profilePicClose {
+        assertIsDisplayed()
+        performClick()
+      }
+    }
+  }
+
+  @Test
   fun testSearchBarDisplaysComponentsCorrectly() {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
