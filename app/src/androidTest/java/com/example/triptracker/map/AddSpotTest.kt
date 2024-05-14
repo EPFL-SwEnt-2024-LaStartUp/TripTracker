@@ -6,8 +6,10 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intending
@@ -164,6 +166,25 @@ class AddSpotTest {
         assertIsDisplayed()
         performClick()
       }
+    }
+  }
+
+  @Test
+  fun alertDisplayed() {
+
+    ComposeScreen.onComposeScreen<AddSpotScreen>(composeTestRule) {
+      locationText { assertIsDisplayed() }
+
+      saveButton {
+        performScrollTo()
+        assertIsDisplayed()
+        performClick()
+      }
+
+      composeTestRule
+          .onNodeWithText(
+              "There are some missing informations and you are about to leave this page. Do you want to save the spot or dismiss it ?")
+          .assertIsDisplayed()
     }
   }
 }
