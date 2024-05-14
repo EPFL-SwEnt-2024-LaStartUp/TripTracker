@@ -11,9 +11,13 @@ class UserProfileFriendsScreen(semanticsProvider: SemanticsNodeInteractionsProvi
         viewBuilderAction = { hasTestTag("FriendsFinderScreen") }) {
 
   // Structural elements of the UI
+
+  // UserProfileFriends
   val friendsTitle: KNode = child { hasTestTag("FriendsFinderTitle") }
   val goBackButton: KNode = child { hasTestTag("GoBackButton") }
+
+  // FriendListView
   val friendsList: KNode = child { hasTestTag("FriendsList") }
-  val removeButton: KNode = child { hasTestTag("RemoveButton") }
   val friendProfile: KNode = child { hasTestTag("FriendProfile") }
+  val notDisplayingProfile: KNode = child { hasTestTag("NotDisplayingProfile") }
 }

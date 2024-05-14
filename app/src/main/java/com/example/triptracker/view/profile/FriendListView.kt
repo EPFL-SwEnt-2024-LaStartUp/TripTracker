@@ -75,7 +75,7 @@ fun FriendListView(
   if (friendList.value.isEmpty() ||
       (relationship == Relationship.FRIENDS && viewModel.searchQuery.value == "")) {
     Column(
-        modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+        modifier = Modifier.fillMaxWidth().fillMaxHeight().testTag("NotDisplayingProfile"),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
           Text(
@@ -101,8 +101,7 @@ fun FriendListView(
   } else {
     // Display the list of user's profiles
     LazyColumn(
-        modifier =
-            Modifier.fillMaxWidth().fillMaxHeight().padding(15.dp).testTag("FriendListScreen"),
+        modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(15.dp).testTag("FriendList"),
         verticalArrangement = Arrangement.spacedBy(10.dp)) {
           items(friendList.value) { friend ->
             // we do not prompt the profile of the current user

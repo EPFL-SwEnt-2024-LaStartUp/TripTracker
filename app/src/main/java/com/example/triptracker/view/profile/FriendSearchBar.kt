@@ -66,7 +66,7 @@ fun FriendSearchBar(viewModel: UserProfileViewModel, onSearchActivated: (Boolean
             placeholder = {
               Text(
                   "Find Friends",
-                  modifier = Modifier.padding(start = 10.dp).testTag("searchBarText"),
+                  modifier = Modifier.padding(start = 10.dp).testTag("SearchBarText"),
                   textAlign = TextAlign.Center,
                   fontFamily = FontFamily(Font(R.font.montserrat_bold)),
                   fontSize = 21.sp,
@@ -78,6 +78,7 @@ fun FriendSearchBar(viewModel: UserProfileViewModel, onSearchActivated: (Boolean
               Icon(
                   imageVector = Icons.Default.Search,
                   contentDescription = "Search",
+                  modifier = Modifier.testTag("SearchIcon"),
                   tint = if (isActive) Color.DarkGray else Color.Gray)
             },
             trailingIcon = {
@@ -86,7 +87,8 @@ fun FriendSearchBar(viewModel: UserProfileViewModel, onSearchActivated: (Boolean
                     onClick = {
                       searchText = ""
                       viewModel.setSearchQuery("")
-                    }) {
+                    },
+                    modifier = Modifier.testTag("ClearButton")) {
                       Icon(
                           imageVector = Icons.Default.Close,
                           contentDescription = "Clear",
@@ -109,6 +111,6 @@ fun FriendSearchBar(viewModel: UserProfileViewModel, onSearchActivated: (Boolean
                       focusManager.clearFocus()
                       onSearchActivated(false)
                     }),
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp))
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp).testTag("SearchBar"))
       }
 }
