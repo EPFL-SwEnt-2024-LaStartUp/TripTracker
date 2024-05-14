@@ -13,7 +13,12 @@ class UserProfileFollowingScreen(semanticsProvider: SemanticsNodeInteractionsPro
   // Structural elements of the UI
   val followingTitle: KNode = child { hasTestTag("FollowingTitle") }
   val goBackButton: KNode = child { hasTestTag("GoBackButton") }
-  val removeButton: KNode = child { hasTestTag("RemoveButton") }
   val followingList: KNode = child { hasTestTag("FollowingList") }
-  val followingProfile: KNode = child { hasTestTag("FriendProfile") }
+
+  // FriendListView
+  val friendsList: KNode = child { hasTestTag("FriendsList") }
+  val friendProfile: KNode = child { hasTestTag("FriendProfile") }
+
+  // RemoveFriendButton
+  val removeButton: KNode = child { hasTestTag("RemoveButton") }
 }

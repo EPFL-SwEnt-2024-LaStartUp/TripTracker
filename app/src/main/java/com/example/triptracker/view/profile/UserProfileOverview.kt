@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -80,9 +82,9 @@ fun UserProfileOverview(
   homeViewModel.setSearchFilter(FilterType.USERNAME)
   homeViewModel.setSearchQuery(
       profile.userProfile.value.username) // Filters the list of trips on user that created it
-  var sizeUsername = 24.sp
+  var sizeUsername = (LocalConfiguration.current.screenHeightDp * 0.02f).sp
   if (profile.userProfile.value.username.length > MAX_PROFILE_NAME_LENGTH) {
-    sizeUsername = 18.sp
+    sizeUsername = (LocalConfiguration.current.screenHeightDp * 0.018f).sp
   }
 
   Scaffold(
@@ -90,7 +92,10 @@ fun UserProfileOverview(
       bottomBar = { NavigationBar(navigation) },
       modifier = Modifier.fillMaxSize().testTag("ProfileOverview")) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-          Row(modifier = Modifier.height(75.dp).fillMaxSize()) {}
+          Row(
+              modifier =
+                  Modifier.height((LocalConfiguration.current.screenHeightDp * 0.098f).dp)
+                      .fillMaxSize()) {}
 
           // Profile picture and name (later maybe more informations depending of data classes
           // updates
@@ -108,7 +113,7 @@ fun UserProfileOverview(
                               ambientColor = md_theme_light_dark,
                               spotColor = md_theme_light_dark)
                           .padding(start = 15.dp)
-                          .size(110.dp)
+                          .size((LocalConfiguration.current.screenHeightDp * 0.11f).dp)
                           .clip(CircleShape),
                   contentScale = ContentScale.Crop)
             }
@@ -128,74 +133,94 @@ fun UserProfileOverview(
                     style =
                         TextStyle(
                             fontSize = sizeUsername,
-                            lineHeight = 16.sp,
+                            lineHeight = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
                             fontFamily = FontFamily(Font(R.font.montserrat)),
                             fontWeight = FontWeight(700),
                             color = md_theme_light_dark,
                             textAlign = TextAlign.Right,
-                            letterSpacing = 0.5.sp,
+                            letterSpacing =
+                                (LocalConfiguration.current.screenHeightDp * 0.0005f).sp,
                         ),
                     modifier =
-                        Modifier.width(250.dp).height(37.dp).padding(top = 12.dp, end = 15.dp))
+                        Modifier.width((LocalConfiguration.current.screenHeightDp * 0.67f).dp)
+                            .height((LocalConfiguration.current.screenHeightDp * 0.05f).dp)
+                            .padding(
+                                top = (LocalConfiguration.current.screenHeightDp * 0.012f).dp,
+                                end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp))
               }
               Text(
                   text = "Interests",
-                  style = AppTypography.secondaryTitleStyle,
-                  modifier = Modifier.align(Alignment.End).padding(end = 15.dp))
+                  style = secondaryTitleStyle(LocalConfiguration.current.screenHeightDp),
+                  modifier =
+                      Modifier.align(Alignment.End)
+                          .padding(end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp))
               Text(
                   text = "Hiking, Photography", // profile.interestsList
-                  style = AppTypography.secondaryContentStyle,
-                  modifier = Modifier.align(Alignment.End).padding(end = 15.dp))
+                  style = secondaryContentStyle(LocalConfiguration.current.screenHeightDp),
+                  modifier =
+                      Modifier.align(Alignment.End)
+                          .padding(end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp))
 
               /*add more informations later if UserProfile is udpated*/
             }
           }
           // Number of trips, followers and following when implemented in the data classes
-          Row(modifier = Modifier.height(225.dp).align(Alignment.CenterHorizontally)) {
-            Column(
-                modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 40.dp)) {
-                  Text(
-                      text = "${myTripsCount}", // Call to the filtered Itinerarylist
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.bigNumberStyle)
-                  Text(
-                      text = "Trips",
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.categoryTextStyle)
-                }
-            Column(
-                modifier =
-                    Modifier.align(Alignment.CenterVertically)
-                        .padding(horizontal = 30.dp)
-                        .clickable { navigation.navController.navigate(Route.FOLLOWERS) }) {
-                  Text(
-                      text = "${profile.userProfile.value.followers.size}",
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.bigNumberStyle)
-                  Text(
-                      text = "Followers",
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.categoryTextStyle)
-                }
-            Column(
-                modifier =
-                    Modifier.align(Alignment.CenterVertically)
-                        .padding(horizontal = 30.dp)
-                        .clickable { navigation.navController.navigate(Route.FOLLOWING) }) {
-                  Text(
-                      text = "${profile.userProfile.value.following.size}",
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.bigNumberStyle)
-                  Text(
-                      text = "Following",
-                      modifier = Modifier.align(Alignment.CenterHorizontally),
-                      style = AppTypography.categoryTextStyle)
-                }
-          }
+          Row(
+              modifier =
+                  Modifier.height((LocalConfiguration.current.screenHeightDp * 0.3f).dp)
+                      .align(Alignment.CenterHorizontally)) {
+                Column(
+                    modifier =
+                        Modifier.align(Alignment.CenterVertically)
+                            .padding(
+                                horizontal =
+                                    (LocalConfiguration.current.screenWidthDp * 0.067f).dp)) {
+                      Text(
+                          text = "${myTripsCount}", // Call to the filtered Itinerarylist
+                          modifier = Modifier.align(Alignment.CenterHorizontally),
+                          style = bigNumberStyle(LocalConfiguration.current.screenHeightDp))
+                      Text(
+                          text = "Trips",
+                          modifier = Modifier.align(Alignment.CenterHorizontally),
+                          style = categoryTextStyle(LocalConfiguration.current.screenHeightDp))
+                    }
+                Column(
+                    modifier =
+                        Modifier.align(Alignment.CenterVertically)
+                            .padding(
+                                horizontal = (LocalConfiguration.current.screenWidthDp * 0.067f).dp)
+                            .clickable { navigation.navController.navigate(Route.FOLLOWERS) }) {
+                      Text(
+                          text = "${profile.userProfile.value.followers.size}",
+                          modifier = Modifier.align(Alignment.CenterHorizontally),
+                          style = bigNumberStyle(LocalConfiguration.current.screenHeightDp))
+                      Text(
+                          text = "Followers",
+                          modifier = Modifier.align(Alignment.CenterHorizontally),
+                          style = categoryTextStyle(LocalConfiguration.current.screenHeightDp))
+                    }
+                Column(
+                    modifier =
+                        Modifier.align(Alignment.CenterVertically)
+                            .padding(
+                                horizontal = (LocalConfiguration.current.screenWidthDp * 0.067f).dp)
+                            .clickable { navigation.navController.navigate(Route.FOLLOWING) }) {
+                      Text(
+                          text = "${profile.userProfile.value.following.size}",
+                          modifier = Modifier.align(Alignment.CenterHorizontally),
+                          style = bigNumberStyle(LocalConfiguration.current.screenHeightDp))
+                      Text(
+                          text = "Following",
+                          modifier = Modifier.align(Alignment.CenterHorizontally),
+                          style = categoryTextStyle(LocalConfiguration.current.screenHeightDp))
+                    }
+              }
           // Favourites, Friends, Settings and MyTrips tiles
           Box(
               modifier =
-                  Modifier.height(300.dp).width(350.dp).align(Alignment.CenterHorizontally)) {
+                  Modifier.height((LocalConfiguration.current.screenHeightDp * 0.37f).dp)
+                      .width((LocalConfiguration.current.screenWidthDp * 0.9f).dp)
+                      .align(Alignment.CenterHorizontally)) {
                 ProfileButton(
                     label = "Favourites",
                     icon = Icons.Outlined.FavoriteBorder,
@@ -222,58 +247,58 @@ fun UserProfileOverview(
       }
 }
 
-object AppTypography {
+fun bigNumberStyle(size: Int): TextStyle {
+  return TextStyle(
+      fontSize = (size * 0.024f).sp,
+      lineHeight = (size * 0.016f).sp,
+      fontFamily = FontFamily(Font(R.font.montserrat)),
+      fontWeight = FontWeight.Bold,
+      color = md_theme_light_dark,
+      textAlign = TextAlign.Center,
+      letterSpacing = (size * 0.0005f).sp)
+}
 
-  val bigNumberStyle =
-      TextStyle(
-          fontSize = 24.sp,
-          lineHeight = 16.sp,
-          fontFamily = FontFamily(Font(R.font.montserrat)),
-          fontWeight = FontWeight.Bold,
-          color = md_theme_light_dark,
-          textAlign = TextAlign.Center,
-          letterSpacing = 0.5.sp)
+fun categoryTextStyle(size: Int): TextStyle {
+  return TextStyle(
+      fontSize = (size * 0.012f).sp,
+      lineHeight = (size * 0.016f).sp,
+      fontFamily = FontFamily(Font(R.font.montserrat)),
+      fontWeight = FontWeight.Light,
+      color = md_theme_dark_gray,
+      textAlign = TextAlign.Center,
+      letterSpacing = (size * 0.0005f).sp)
+}
 
-  val categoryTextStyle =
-      TextStyle(
-          fontSize = 12.sp,
-          lineHeight = 16.sp,
-          fontFamily = FontFamily(Font(R.font.montserrat)),
-          fontWeight = FontWeight.Light,
-          color = md_theme_dark_gray,
-          textAlign = TextAlign.Center,
-          letterSpacing = 0.5.sp)
+fun buttonTextStyle(size: Int): TextStyle {
+  return TextStyle(
+      fontSize = (size * 0.020f).sp,
+      lineHeight = (size * 0.016f).sp,
+      fontFamily = FontFamily(Font(R.font.montserrat)),
+      fontWeight = FontWeight.SemiBold,
+      color = md_theme_dark_gray,
+      letterSpacing = (size * 0.0005f).sp)
+}
 
-  val buttonTextStyle =
-      TextStyle(
-          fontSize = 20.sp,
-          lineHeight = 16.sp,
-          fontFamily = FontFamily(Font(R.font.montserrat)),
-          fontWeight = FontWeight.SemiBold,
-          color = md_theme_dark_gray,
-          letterSpacing = 0.5.sp)
+fun secondaryTitleStyle(size: Int): TextStyle {
+  return TextStyle(
+      fontSize = (size * 0.014f).sp,
+      lineHeight = (size * 0.016f).sp,
+      fontFamily = FontFamily(Font(R.font.montserrat)),
+      fontWeight = FontWeight(400),
+      color = md_theme_light_dark,
+      textAlign = TextAlign.Right,
+      letterSpacing = (size * 0.0005f).sp)
+}
 
-  val secondaryTitleStyle =
-      TextStyle(
-          fontSize = 14.sp,
-          lineHeight = 16.sp,
-          fontFamily = FontFamily(Font(R.font.montserrat)),
-          fontWeight = FontWeight(400),
-          color = md_theme_light_dark,
-          textAlign = TextAlign.Right,
-          letterSpacing = 0.5.sp,
-      )
-
-  val secondaryContentStyle =
-      TextStyle(
-          fontSize = 12.sp,
-          lineHeight = 16.sp,
-          fontFamily = FontFamily(Font(R.font.montserrat)),
-          fontWeight = FontWeight(400),
-          color = md_theme_dark_gray,
-          textAlign = TextAlign.Right,
-          letterSpacing = 0.5.sp,
-      )
+fun secondaryContentStyle(size: Int): TextStyle {
+  return TextStyle(
+      fontSize = (size * 0.012f).sp,
+      lineHeight = (size * 0.016f).sp,
+      fontFamily = FontFamily(Font(R.font.montserrat)),
+      fontWeight = FontWeight(400),
+      color = md_theme_dark_gray,
+      textAlign = TextAlign.Right,
+      letterSpacing = (size * 0.0005f).sp)
 }
 
 @Composable
@@ -288,21 +313,23 @@ fun ProfileButton(
       colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
       modifier =
           modifier
-              .height(130.dp)
-              .width(160.dp)
+              .height((LocalConfiguration.current.screenHeightDp * 0.17f).dp)
+              .width((LocalConfiguration.current.screenWidthDp * 0.425f).dp)
               .testTag("ProfileButton")
               .background(color = md_theme_light_dark, shape = RoundedCornerShape(16.dp))) {
-        Column(modifier = Modifier.width(150.dp)) {
+        Column(modifier = Modifier.fillMaxWidth()) {
           Icon(
               icon,
               contentDescription = "$label icon",
               tint = md_theme_orange,
-              modifier = Modifier.size(40.dp))
+              modifier = Modifier.size((LocalConfiguration.current.screenHeightDp * 0.04f).dp))
 
           Text(
               text = label,
-              style = AppTypography.buttonTextStyle,
-              modifier = Modifier.padding(vertical = 15.dp))
+              style = buttonTextStyle(LocalConfiguration.current.screenHeightDp),
+              modifier =
+                  Modifier.padding(
+                      vertical = (LocalConfiguration.current.screenHeightDp * 0.015f).dp))
         }
       }
 }

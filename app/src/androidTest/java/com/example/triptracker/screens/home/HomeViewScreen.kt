@@ -13,4 +13,6 @@ class HomeViewScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val itinerarySearch: KNode = searchBar.child { hasSetTextAction() }
   val itinerary: KNode = child { hasTestTag("Itinerary") }
   val profilePic: KNode = child { hasTestTag("ProfilePic") }
+  val profilePicScreen: KNode = child { hasTestTag("ProfilePicBig") }
+  val profilePicClose: KNode = child { hasTestTag("CloseButton") }
 }
