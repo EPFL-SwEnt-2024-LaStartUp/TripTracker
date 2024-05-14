@@ -74,7 +74,7 @@ class MapOverviewTest : TestCase() {
           context = appContext,
           navigation = mockNavigation,
           selectedId = "",
-          userProfile = mockProfile)
+      )
     }
 
     // Verify that the dependencies are properly initialized
@@ -99,7 +99,7 @@ class MapOverviewTest : TestCase() {
           navigation = mockNavigation,
           checkLocationPermission = false,
           selectedId = "1",
-          userProfile = mockProfile)
+      )
     }
 
     // Verify that the map is not shown
@@ -128,7 +128,7 @@ class MapOverviewTest : TestCase() {
           mapViewModel = mockViewModel,
           context = appContext,
           navigation = mockNavigation,
-          userProfile = mockProfile)
+      )
     }
 
     // Verify that the dependencies are properly called
@@ -159,7 +159,7 @@ class MapOverviewTest : TestCase() {
           navigation = mockNavigation,
           checkLocationPermission = true,
           selectedId = "",
-          userProfile = mockProfile)
+      )
     }
 
     // Verify that the dependencies are properly called
@@ -187,7 +187,7 @@ class MapOverviewTest : TestCase() {
           navigation = mockNavigation,
           checkLocationPermission = false,
           selectedId = "1",
-          userProfile = mockProfile)
+      )
     }
 
     // Verify that the map is not shown
@@ -219,7 +219,7 @@ class MapOverviewTest : TestCase() {
             mapViewModel = mockViewModel,
             context = appContext,
             navigation = mockNavigation,
-            userProfile = mockProfile)
+        )
       }
     } catch (e: Exception) {
       // If any exception occurs, fail the test
@@ -254,7 +254,7 @@ class MapOverviewTest : TestCase() {
             navigation = mockNavigation,
             checkLocationPermission = true,
             selectedId = "",
-            userProfile = mockProfile)
+        )
       }
 
       composeTestRule.onNodeWithTag("MapOverview").assertExists()
@@ -296,7 +296,7 @@ class MapOverviewTest : TestCase() {
             navigation = mockNavigation,
             checkLocationPermission = true,
             selectedId = "",
-            userProfile = mockProfile)
+        )
       }
 
       composeTestRule.onNodeWithTag("MapOverview").assertExists()
@@ -336,7 +336,7 @@ class MapOverviewTest : TestCase() {
           mapViewModel = mockViewModel,
           context = appContext,
           navigation = mockNavigation,
-          userProfile = mockProfile)
+      )
     }
 
     composeTestRule.onNodeWithTag("MapOverview").assertExists()
@@ -384,7 +384,7 @@ class MapOverviewTest : TestCase() {
           context = appContext,
           navigation = mockNavigation,
           selectedId = "1",
-          userProfile = mockProfile)
+      )
 
       // Trigger the LaunchedEffect
       coroutineScope.launch {

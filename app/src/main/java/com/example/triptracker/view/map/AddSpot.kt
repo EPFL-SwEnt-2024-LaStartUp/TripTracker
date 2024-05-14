@@ -25,9 +25,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.AddPhotoAlternate
@@ -39,10 +36,13 @@ import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -65,7 +65,6 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
@@ -230,6 +229,10 @@ fun FillAddSpot(
           var pos by remember { mutableStateOf(LatLng(0.0, 0.0)) }
           val placeHolderError by remember { mutableStateOf("Please enter a valid location") }
 
+          fun textColor() =
+              if (recordViewModel.namePOI.value.isNotEmpty()) md_theme_light_error
+              else md_theme_light_onPrimary
+
           /*
           TextField to input the name of the point of interest
           Enabled when no POI was found automatically with nominatim
@@ -267,12 +270,8 @@ fun FillAddSpot(
                     colors =
                         OutlinedTextFieldDefaults.colors(
                             unfocusedTextColor = md_theme_light_onPrimary,
-                            unfocusedBorderColor =
-                                if (recordViewModel.namePOI.value.isNotEmpty()) md_theme_light_error
-                                else md_theme_light_onPrimary,
-                            unfocusedLabelColor =
-                                if (recordViewModel.namePOI.value.isNotEmpty()) md_theme_light_error
-                                else md_theme_light_onPrimary,
+                            unfocusedBorderColor = textColor(),
+                            unfocusedLabelColor = textColor(),
                             cursorColor = md_theme_orange,
                             focusedBorderColor = md_theme_light_onPrimary,
                             focusedLabelColor = md_theme_light_onPrimary,
@@ -295,6 +294,11 @@ fun FillAddSpot(
                     properties = PopupProperties(focusable = false),
                 ) {
                   DropdownMenuItem(
+                      text = {
+                        Text(
+                            text = recordViewModel.displayNameDropDown.value,
+                            modifier = Modifier.testTag("LocationDropDown"))
+                      },
                       modifier = Modifier.fillMaxWidth().testTag("LocationDropDown"),
                       onClick = {
                         if (compareDistance(position, pos, 500.0)) {
@@ -309,11 +313,7 @@ fun FillAddSpot(
                         }
 
                         expanded.value = false
-                      }) {
-                        Text(
-                            text = recordViewModel.displayNameDropDown.value,
-                            modifier = Modifier.testTag("LocationDropDown"))
-                      }
+                      })
                 }
               }
 
@@ -627,11 +627,4 @@ fun InsertPictures(
           }
     }
   }
-}
-
-@Preview
-@Composable
-fun AddSpotPreview() {
-  //  AddSpot(RecordViewModel(), LatLng(46.519053, 6.568287))
-  //    AddSpot(RecordViewModel(), LatLng(46.519879, 6.560632))
 }
