@@ -2,6 +2,7 @@ package com.example.triptracker.map
 
 import android.app.Activity
 import android.app.Instrumentation
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.runtime.getValue
@@ -13,6 +14,7 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers.isInternal
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import com.example.triptracker.screens.AddSpotScreen
 import com.example.triptracker.view.map.AddSpot
 import com.example.triptracker.viewmodel.RecordViewModel
@@ -28,6 +30,7 @@ import org.junit.runner.RunWith
 class AddSpotTest {
 
   @get:Rule val composeTestRule = createComposeRule()
+  private val appContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
 
   @Before
   fun setUp() {
@@ -35,7 +38,7 @@ class AddSpotTest {
       AddSpot(
           recordViewModel = RecordViewModel(),
           latLng = LatLng(46.519879, 6.560632),
-      )
+          context = appContext)
     }
   }
 

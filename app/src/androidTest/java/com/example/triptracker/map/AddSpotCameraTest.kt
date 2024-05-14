@@ -40,7 +40,8 @@ class AddSpotCameraTest {
           outputDirectory = file,
           executor = cameraExecutor,
           onCaptureClosedSuccess = {},
-          onCaptureClosedError = {})
+          onCaptureClosedError = {},
+          context = appContext)
     }
 
     // Check if the camera is displayed
@@ -60,7 +61,8 @@ class AddSpotCameraTest {
           outputDirectory = file,
           executor = cameraExecutor,
           onCaptureClosedSuccess = {},
-          onCaptureClosedError = {})
+          onCaptureClosedError = {},
+          context = appContext)
     }
 
     // Check if the camera is displayed

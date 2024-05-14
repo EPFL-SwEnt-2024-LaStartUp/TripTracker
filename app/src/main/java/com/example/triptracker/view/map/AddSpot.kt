@@ -86,6 +86,7 @@ import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+/** AddSpotStatus is an enum class that represents the different states of the AddSpot box */
 enum class AddSpotStatus {
   DISPLAY_FORM,
   DISPLAY_CAMERA,
@@ -147,6 +148,10 @@ fun AddSpot(
   }
 }
 
+/**
+ * FillAddSpot is a composable function that allows the user to fill the information of the spot
+ * that is going to be added to the path.
+ */
 @Composable
 fun FillAddSpot(
     latLng: LatLng,
