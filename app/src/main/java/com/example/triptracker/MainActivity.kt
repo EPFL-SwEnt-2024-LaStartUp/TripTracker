@@ -102,7 +102,7 @@ class MainActivity : ComponentActivity() {
                         context = context,
                         navigation = navigation,
                         selectedId = backStackEntry.arguments?.getString("id") ?: "",
-                        userProfile = profile)
+                    )
                   }
 
               composable(Route.RECORD) { RecordScreen(context, navigation) }

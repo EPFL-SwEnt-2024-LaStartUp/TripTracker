@@ -16,12 +16,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Text
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.model.location.popupState
-import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
@@ -88,7 +88,6 @@ fun MapOverview(
     navigation: Navigation,
     checkLocationPermission: Boolean = true, // Default value true, can be overridden during tests
     selectedId: String = "",
-    userProfile: MutableUserProfile
 ) {
   var mapProperties by remember {
     mutableStateOf(
@@ -119,9 +118,8 @@ fun MapOverview(
                   context,
                   mapProperties,
                   uiSettings,
-                  navigation,
                   selectedId,
-                  userProfile)
+              )
             }
           }
     }
@@ -148,7 +146,6 @@ fun MapOverview(
  * @param context: The context of the app (needed for location permission and real time location)
  * @param mapProperties: The properties of the map (type, location enabled)
  * @param uiSettings: The settings of the map (location button enabled)
- * @param navigation: The app navigation instance
  * @param currentSelectedId: The id of the selected path
  */
 @Composable
@@ -157,9 +154,7 @@ fun Map(
     context: Context,
     mapProperties: MapProperties,
     uiSettings: MapUiSettings,
-    navigation: Navigation,
     currentSelectedId: String,
-    userProfile: MutableUserProfile
 ) {
   // Used to display the gradient with the top bar and the changing city location
   val ui by remember { mutableStateOf(uiSettings) }
@@ -183,7 +178,7 @@ fun Map(
   var visibleRegion: VisibleRegion?
 
   val displayPopUp by remember { mutableStateOf(mapViewModel.displayPopUp) }
-  var displayPicturesPopUp by remember { mutableStateOf(mapViewModel.displayPicturePopUp) }
+  val displayPicturesPopUp by remember { mutableStateOf(mapViewModel.displayPicturePopUp) }
 
   var selectedPolyline by remember { mapViewModel.selectedPolylineState }
 
@@ -400,8 +395,11 @@ fun Map(
                   .fillMaxHeight(0.4f)
                   .align(Alignment.BottomCenter)
                   .padding(15.dp)
-                  .height(300.dp)
+                  //                  .verticalScroll(rememberScrollState())
                   .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))) {
+            val selectedPin = mapViewModel.selectedPin.value
+            val scrollState = rememberScrollState()
+
             // Display the pictures of the selected pin
             // (only when the pin is selected)
             Row(
@@ -409,7 +407,10 @@ fun Map(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically) {
                   Column(
-                      modifier = Modifier.fillMaxWidth().padding(start = 30.dp, top = 10.dp),
+                      modifier =
+                          Modifier.fillMaxWidth()
+                              .verticalScroll(rememberScrollState())
+                              .padding(start = 30.dp, top = 10.dp),
                       verticalArrangement = Arrangement.Center,
                       horizontalAlignment = Alignment.Start) {
                         Text(
@@ -425,43 +426,27 @@ fun Map(
                             fontFamily = Montserrat,
                             fontWeight = FontWeight.Bold,
                             color = md_theme_light_onPrimary)
+                        Row(
+                            modifier =
+                                Modifier.fillMaxSize()
+                                    .horizontalScroll(scrollState)
+                                    .padding(vertical = 20.dp, horizontal = 20.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.Bottom) {
+                              selectedPin?.image_url?.forEach { url ->
+                                AsyncImage(
+                                    modifier =
+                                        Modifier.clip(shape = RoundedCornerShape(20.dp))
+                                            .height(200.dp)
+                                            .padding(horizontal = 2.dp),
+                                    model = url,
+                                    contentDescription = "Image",
+                                )
+                              }
+                            }
                       }
-                }
-
-            val selectedPin = mapViewModel.selectedPin.value
-            val scrollState = rememberScrollState()
-
-            Row(
-                modifier =
-                    Modifier.fillMaxSize()
-                        .horizontalScroll(scrollState)
-                        .align(Alignment.BottomStart)
-                        .padding(vertical = 20.dp, horizontal = 20.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.Bottom) {
-                  selectedPin?.image_url?.forEach { url ->
-                    AsyncImage(
-                        modifier =
-                            Modifier.clip(shape = RoundedCornerShape(20.dp))
-                                .height(200.dp)
-                                .padding(horizontal = 2.dp),
-                        model = url,
-                        contentDescription = "Image",
-                    )
-                  }
                 }
           }
     }
   }
 }
-
-// @Preview
-// @Composable
-//// Start this screen to only see the overview of the map
-// fun MapOverviewPreview(mapViewModel: MapViewModel = MapViewModel()) {
-//  val context = LocalContext.current
-//  val navController = rememberNavController()
-//  val navigation = remember(navController) { Navigation(navController) }
-//  //  MapOverview(mapViewModel, context, navigation, true, LatLng(46.8, 6.8))
-//  MapOverview(mapViewModel, context, navigation, true, "")
-// }
