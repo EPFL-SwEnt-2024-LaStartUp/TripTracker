@@ -139,6 +139,8 @@ fun UserProfileEditScreen(
   /** Alpha value for the screen depending on loading state */
   val alpha = if (!isLoading) 1f else 0.9f
 
+  val MAX_CHARS_USERNAME = 30
+
   /**
    * his function updates the user profile in the database on save.
    *
@@ -273,7 +275,7 @@ fun UserProfileEditScreen(
                                     value = username,
                                     label = {},
                                     onValueChange = {
-                                      if (it.length <= 30) {
+                                      if (it.length <= MAX_CHARS_USERNAME) {
                                         username = it
                                         isUsernameEmpty = it.isEmpty()
                                       }
