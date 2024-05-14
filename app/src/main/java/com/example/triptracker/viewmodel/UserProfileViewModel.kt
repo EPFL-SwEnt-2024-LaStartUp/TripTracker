@@ -252,8 +252,7 @@ class UserProfileViewModel(
    * @param isCreated : Boolean indicating if the user profile is created. Navigation needs to be
    *   used after the callback else the view will be destroyed and resulting in a crash of the
    *   upload of the picture.
-   * @param whenIsLoading : Function to execute when the loading starts.
-   * @param whenIsNotLoading : Function to execute when the loading stops.
+   * @param onLoadingChange : Function to execute when the loading status changes.
    * @param selectedPicture : Uri of the selected picture to update the user profile (can be null).
    * @param profile : User profile to update.
    * @return the updated user profile potentially with the new picture.
@@ -263,32 +262,22 @@ class UserProfileViewModel(
       isCreated: Boolean,
       onLoadingChange: () -> Unit,
       selectedPicture: Uri?,
-      profile: UserProfile
-  ): UserProfile {
-    var newProfile: UserProfile = profile
+      profile: MutableUserProfile
+  ) {
     onLoadingChange()
-
     if (selectedPicture != null) {
       addProfilePictureToStorage(selectedPicture!!) { resp ->
         val imageUrl =
             if (resp is Response.Success) {
               resp.data!!.toString()
             } else {
-              profile.profileImageUrl // Keep the old image if the new one could not be uploaded
+              profile.userProfile.value
+                  .profileImageUrl // Keep the old image if the new one could not be uploaded
             }
-        newProfile =
-            UserProfile(
-                mail = profile.mail,
-                name = profile.name,
-                surname = profile.surname,
-                birthdate = profile.birthdate,
-                username = profile.username,
-                profileImageUrl = imageUrl,
-                followers = profile.followers,
-                following = profile.following)
+        val newProfile = profile.userProfile.value.copy(profileImageUrl = imageUrl)
         Log.d("Profile picture updated", newProfile.toString())
         updateUserProfileInDb(newProfile)
-        // profile.userProfile.value = newProfile
+        profile.userProfile.value = newProfile
         if (!isCreated) {
           navigation.goBack()
         } else {
@@ -297,7 +286,7 @@ class UserProfileViewModel(
         onLoadingChange()
       }
     } else {
-      updateUserProfileInDb(profile)
+      updateUserProfileInDb(profile.userProfile.value)
       // profile.userProfile.value = newProfile
       if (!isCreated) {
         navigation.goBack()
@@ -306,7 +295,5 @@ class UserProfileViewModel(
       }
       onLoadingChange()
     }
-
-    return newProfile
   }
 }

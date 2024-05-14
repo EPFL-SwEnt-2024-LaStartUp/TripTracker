@@ -51,6 +51,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -115,7 +116,7 @@ fun UserProfileEditScreen(
   var isLoading by remember { mutableStateOf(false) }
 
   /** Alpha value for the screen depending on loading state */
-  val alpha = if (!isLoading) 1f else 0.9f
+  val alpha = if (!isLoading) 1f else 0.6f
 
   /* Mutable state variable that holds the scroll state of the screen */
   val scrollState = rememberScrollState()
@@ -145,7 +146,7 @@ fun UserProfileEditScreen(
                     .padding(innerPadding)
                     .padding(top = 30.dp, bottom = 30.dp, start = 25.dp, end = 25.dp)
                     .fillMaxWidth()
-                    .background(md_theme_light_dark.copy(alpha), shape = RoundedCornerShape(20.dp)),
+                    .background(md_theme_light_dark, shape = RoundedCornerShape(20.dp)),
             contentAlignment = Alignment.TopCenter) {
 
               // Loading bar for when the save button is clicked
@@ -160,7 +161,7 @@ fun UserProfileEditScreen(
                 false -> {}
               }
               Column(
-                  modifier = Modifier.fillMaxSize().verticalScroll(scrollState),
+                  modifier = Modifier.alpha(alpha).fillMaxSize().verticalScroll(scrollState),
                   horizontalAlignment = Alignment.Start,
                   verticalArrangement = Arrangement.SpaceEvenly) {
                     Spacer(modifier = Modifier.height(25.dp))
@@ -348,7 +349,7 @@ fun UserProfileEditScreen(
                                       !isBirthdateEmpty &&
                                       !isUsernameEmpty,
                               action = {
-                                var newProfile =
+                                profile.userProfile.value =
                                     UserProfile(
                                         mail = mail,
                                         name = name,
@@ -358,14 +359,12 @@ fun UserProfileEditScreen(
                                         profileImageUrl = imageUrl,
                                         followers = profile.userProfile.value.followers,
                                         following = profile.userProfile.value.following)
-                                newProfile =
-                                    userProfileViewModel.updateProfile(
-                                        navigation = navigation,
-                                        isCreated = isCreated,
-                                        onLoadingChange = { isLoading = !isLoading },
-                                        selectedPicture = selectedPicture,
-                                        profile = newProfile)
-                                profile.userProfile.value = newProfile
+                                userProfileViewModel.updateProfile(
+                                    navigation = navigation,
+                                    isCreated = isCreated,
+                                    onLoadingChange = { isLoading = !isLoading },
+                                    selectedPicture = selectedPicture,
+                                    profile = profile)
                               })
                         }
                   }
