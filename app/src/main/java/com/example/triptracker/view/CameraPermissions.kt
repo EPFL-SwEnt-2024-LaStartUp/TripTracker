@@ -1,4 +1,4 @@
-package com.example.triptracker.viewmodel
+package com.example.triptracker.view
 
 import android.Manifest
 import android.content.Context

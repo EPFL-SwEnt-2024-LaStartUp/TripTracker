@@ -47,6 +47,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import com.example.triptracker.view.AllowCameraPermission
+import com.example.triptracker.view.checkForCameraPermission
 import com.example.triptracker.view.theme.md_theme_dark_black
 import com.example.triptracker.view.theme.md_theme_light_black
 import java.io.File
@@ -70,10 +72,11 @@ import kotlin.coroutines.suspendCoroutine
 fun TakePicture(
     outputDirectory: File,
     executor: Executor,
+    context: Context,
     onCaptureClosedSuccess: () -> Unit,
     onCaptureClosedError: () -> Unit
 ) {
-  var shouldShowCamera by remember { mutableStateOf(true) }
+  var shouldShowCamera by remember { mutableStateOf(checkForCameraPermission(context)) }
   var photoUri by remember { mutableStateOf<Uri?>(null) }
 
   when (shouldShowCamera) {
@@ -93,7 +96,13 @@ fun TakePicture(
             onCaptureClosedError()
           })
     }
-    false -> {}
+    false -> {
+      if (!checkForCameraPermission(context)) {
+        AllowCameraPermission(
+            onPermissionGranted = { shouldShowCamera = true },
+            onPermissionDenied = { shouldShowCamera = false })
+      }
+    }
   }
 }
 

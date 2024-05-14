@@ -589,6 +589,7 @@ fun StartWindow(viewModel: RecordViewModel, context: Context) {
       AddSpot(
           latLng = viewModel.latLongList.last(),
           recordViewModel = viewModel,
+          context = context,
           onDismiss = { viewModel.addSpotClicked.value = false })
     }
     false -> {}

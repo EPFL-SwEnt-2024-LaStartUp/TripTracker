@@ -1,6 +1,7 @@
 package com.example.triptracker.view.map
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -99,7 +100,12 @@ enum class AddSpotStatus {
  * @param recordViewModel: RecordViewModel
  * @param latLng: LatLng at where the spot is going to be added
  */
-fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> Unit = {}) {
+fun AddSpot(
+    recordViewModel: RecordViewModel,
+    latLng: LatLng,
+    context: Context,
+    onDismiss: () -> Unit = {}
+) {
 
   // Variables to store the state of the add spot box
   var boxDisplayed by remember { mutableStateOf(AddSpotStatus.DISPLAY_FORM) }
@@ -133,6 +139,7 @@ fun AddSpot(recordViewModel: RecordViewModel, latLng: LatLng, onDismiss: () -> U
       TakePicture(
           outputDirectory = file,
           executor = cameraExecutor,
+          context = context,
           onCaptureClosedSuccess = { boxDisplayed = AddSpotStatus.DISPLAY_FORM },
           onCaptureClosedError = { boxDisplayed = AddSpotStatus.DISPLAY_FORM })
     }
@@ -620,6 +627,6 @@ fun InsertPictures(
 @Preview
 @Composable
 fun AddSpotPreview() {
-  AddSpot(RecordViewModel(), LatLng(46.519053, 6.568287))
+  //  AddSpot(RecordViewModel(), LatLng(46.519053, 6.568287))
   //    AddSpot(RecordViewModel(), LatLng(46.519879, 6.560632))
 }
