@@ -71,9 +71,7 @@ class UserProfileFriendsTest {
     ComposeScreen.onComposeScreen<UserProfileFriendsScreen>(composeTestRule) {
       friendsTitle { assertIsDisplayed() }
       friendsList { assertIsDisplayed() }
-      notDisplayingProfile {
-        assertIsDisplayed()
-      }
+      notDisplayingProfile { assertIsDisplayed() }
       goBackButton {
         assertIsDisplayed()
         assertHasClickAction()

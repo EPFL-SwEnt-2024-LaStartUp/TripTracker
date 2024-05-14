@@ -13,18 +13,18 @@ class UserProfileFollowersScreen(semanticsProvider: SemanticsNodeInteractionsPro
   // Structural elements of the UI
   val followersTitle: KNode = child { hasTestTag("FollowersTitle") }
   val goBackButton: KNode = child { hasTestTag("GoBackButton") }
-    val followersList: KNode = child { hasTestTag("FollowersList") }
+  val followersList: KNode = child { hasTestTag("FollowersList") }
 
-    // FriendListView
-    val friendsList: KNode = child { hasTestTag("FriendsList") }
-    val friendProfile: KNode = child { hasTestTag("FriendProfile") }
+  // FriendListView
+  val friendsList: KNode = child { hasTestTag("FriendsList") }
+  val friendProfile: KNode = child { hasTestTag("FriendProfile") }
 
-    // RemoveFriendButton
-    val removeButton: KNode = child { hasTestTag("RemoveButton") }
+  // RemoveFriendButton
+  val removeButton: KNode = child { hasTestTag("RemoveButton") }
 
-    // FriendSearchBar
-    val searchBar: KNode = child { hasTestTag("SearchBar") }
-    val searchBarText: KNode = child { hasTestTag("SearchBarText") }
-    val searchIcon: KNode = child { hasTestTag("SearchIcon") }
-    val clearButton: KNode = child { hasTestTag("ClearButton") }
+  // FriendSearchBar
+  val searchBar: KNode = child { hasTestTag("SearchBar") }
+  val searchBarText: KNode = child { hasTestTag("SearchBarText") }
+  val searchIcon: KNode = child { hasTestTag("SearchIcon") }
+  val clearButton: KNode = child { hasTestTag("ClearButton") }
 }

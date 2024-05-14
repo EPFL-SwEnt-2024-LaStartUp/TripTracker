@@ -76,12 +76,8 @@ class UserProfileFollowersTest {
         assertIsDisplayed()
         assertTextEquals("Followers")
       }
-        followersList {
-            assertIsDisplayed()
-        }
-      goBackButton {
-        assertIsDisplayed()
-      }
+      followersList { assertIsDisplayed() }
+      goBackButton { assertIsDisplayed() }
     }
   }
 
@@ -134,9 +130,9 @@ class UserProfileFollowersTest {
     // Setting up the test composition
     composeTestRule.setContent {
       UserProfileFollowers(
-        navigation = mockNav,
-        profile = MutableUserProfile(mutableStateOf(mockUserProfiles[0])),
-        userProfileViewModel = mockViewModel)
+          navigation = mockNav,
+          profile = MutableUserProfile(mutableStateOf(mockUserProfiles[0])),
+          userProfileViewModel = mockViewModel)
     }
     ComposeScreen.onComposeScreen<UserProfileFollowersScreen>(composeTestRule) {
       searchBar {

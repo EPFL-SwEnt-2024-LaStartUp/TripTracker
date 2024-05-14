@@ -7,8 +7,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.UserProfileRepository
+import com.example.triptracker.screens.userProfile.UserProfileFollowersScreen
 import com.example.triptracker.screens.userProfile.UserProfileFollowingScreen
 import com.example.triptracker.view.Navigation
+import com.example.triptracker.view.profile.UserProfileFollowers
 import com.example.triptracker.view.profile.UserProfileFollowing
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import io.github.kakaocup.compose.node.element.ComposeScreen
@@ -45,9 +47,9 @@ class UserProfileFollowingTest {
     mockViewModel = mockk {
       every { getUserProfileList() } returns mockUserProfiles
       every { getUserProfile(any(), any()) } answers
-              {
-                secondArg<(UserProfile?) -> Unit>().invoke(mockUserProfiles[0])
-              }
+          {
+            secondArg<(UserProfile?) -> Unit>().invoke(mockUserProfiles[0])
+          }
       every { userProfileList.value } returns mockUserProfiles
       every { userProfileList } returns MutableLiveData(mockUserProfiles)
       every { setListToFilter(any()) } just Runs
@@ -127,6 +129,24 @@ class UserProfileFollowingTest {
         assertIsDisplayed()
         assertHasClickAction()
         performClick()
+      }
+    }
+  }
+
+  @Test
+  fun searchBarWorks() {
+    // Setting up the test composition
+    composeTestRule.setContent {
+      UserProfileFollowers(
+          navigation = mockNav,
+          profile = MutableUserProfile(mutableStateOf(mockUserProfiles[0])),
+          userProfileViewModel = mockViewModel)
+    }
+    ComposeScreen.onComposeScreen<UserProfileFollowersScreen>(composeTestRule) {
+      searchBar {
+        assertIsDisplayed()
+        performClick()
+        performTextInput("test")
       }
     }
   }
