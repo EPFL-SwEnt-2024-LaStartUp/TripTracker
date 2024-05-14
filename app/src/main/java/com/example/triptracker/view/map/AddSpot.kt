@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -62,6 +63,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -187,9 +189,10 @@ fun FillAddSpot(
               .testTag("AddSpotScreen")) {
         Column(modifier = Modifier.matchParentSize().verticalScroll(rememberScrollState())) {
           Row(
-              modifier = Modifier.fillMaxWidth(),
+              modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
               horizontalArrangement = Arrangement.SpaceBetween,
               verticalAlignment = Alignment.CenterVertically) {
+                Spacer(modifier = Modifier.weight(1f))
                 // Title
                 Text(
                     text = "Add Spot",
@@ -197,10 +200,12 @@ fun FillAddSpot(
                     fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                     fontWeight = FontWeight.Bold,
                     fontSize = 30.sp,
-                    modifier = Modifier.padding(start = 130.dp).testTag("SpotTitle"))
+                    modifier = Modifier.padding(start = 16.dp, end = 8.dp).testTag("SpotTitle"))
+
+                Spacer(modifier = Modifier.weight(0.7f))
                 // Close button
                 IconButton(
-                    modifier = Modifier.padding(10.dp).testTag("CloseButton"),
+                    modifier = Modifier.testTag("CloseButton"),
                     onClick = { alertIsDisplayed = true }) {
                       Icon(
                           imageVector = Icons.Outlined.Close,
@@ -346,7 +351,10 @@ fun FillAddSpot(
                 // Button to launch the camera
                 IconButton(
                     onClick = { onCameraLaunch() },
-                    modifier = Modifier.align(Alignment.CenterVertically).padding(10.dp)) {
+                    modifier =
+                        Modifier.align(Alignment.CenterVertically)
+                            .padding(10.dp)
+                            .testTag("Camera")) {
                       Icon(
                           modifier = Modifier.size(50.dp),
                           imageVector = Icons.Outlined.Camera,
@@ -362,6 +370,7 @@ fun FillAddSpot(
           when (alertIsDisplayed) {
             true -> {
               AlertDialog(
+                  modifier = Modifier.testTag("AlertDialog"),
                   icon = { Icons.Filled.LocationOn },
                   title = { Text(text = "Path incomplete or don't save this spot") },
                   text = {
@@ -554,6 +563,7 @@ fun InsertPictures(
                         fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                         fontWeight = FontWeight.Normal,
                         fontSize = 20.sp,
+                        textAlign = TextAlign.Center,
                     )
                   }
             }

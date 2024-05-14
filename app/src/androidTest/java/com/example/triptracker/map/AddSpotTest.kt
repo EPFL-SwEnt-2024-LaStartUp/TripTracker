@@ -85,27 +85,26 @@ class AddSpotTest {
     Intents.release()
   }
 
-  /*
-    @Test
-    fun dropDownTestOk() {
-      ComposeScreen.onComposeScreen<AddSpotScreen>(composeTestRule) {
-        locationRow { assertIsDisplayed() }
-        locationText {
-          assertIsDisplayed()
+  //    @Test
+  //    fun dropDownTestOk() {
+  //      ComposeScreen.onComposeScreen<AddSpotScreen>(composeTestRule) {
+  //        locationRow { assertIsDisplayed() }
+  //        locationText {
+  //          assertIsDisplayed()
+  //
+  //          performTextClearance()
+  //
+  //          performTextInput("ecole polytechnique federale")
+  //          composeTestRule.onNodeWithTag("LocationDropDown").performClick()
+  //        }
+  //        runBlocking { delay(2000) }
+  //        locationText {
+  //          assertIsDisplayed()
+  //          assertTextContains("École Polytechnique Fédérale de Lausanne", substring = true)
+  //        }
+  //      }
+  //    }
 
-          performTextClearance()
-
-          performTextInput("ecole polytechnique federale")
-          composeTestRule.onNodeWithTag("LocationDropDown").performClick()
-        }
-        runBlocking { delay(2000) }
-        locationText {
-          assertIsDisplayed()
-          assertTextContains("École Polytechnique Fédérale de Lausanne", substring = true)
-        }
-      }
-    }
-  */
   @Test
   fun dropDownTestNotOk() {
     ComposeScreen.onComposeScreen<AddSpotScreen>(composeTestRule) {
@@ -165,5 +164,24 @@ class AddSpotTest {
         performClick()
       }
     }
+  }
+
+  @Test
+  fun dismissWindowPopUpOk() {
+    ComposeScreen.onComposeScreen<AddSpotScreen>(composeTestRule) {
+      saveButton {
+        performScrollTo()
+        assertIsDisplayed()
+        performClick()
+      }
+
+      composeTestRule.onNodeWithTag("AlertDialog").assertExists()
+    }
+  }
+
+  @Test
+  fun cameraDisplayed() {
+    composeTestRule.onNodeWithTag("Camera").assertExists()
+    composeTestRule.onNodeWithTag("Camera").performClick()
   }
 }

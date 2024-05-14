@@ -43,6 +43,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -139,7 +140,8 @@ fun CameraView(
               .padding(top = 80.dp, start = 15.dp, end = 15.dp, bottom = 20.dp)
               .border(1.dp, md_theme_light_black, shape = RoundedCornerShape(35.dp))
               .clip(RoundedCornerShape(35.dp))
-              .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))) {
+              .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))
+              .testTag("CameraView")) {
         AndroidView(
             { previewView },
         ) { view ->
@@ -150,7 +152,11 @@ fun CameraView(
         }
 
         IconButton(
-            modifier = Modifier.padding(bottom = 20.dp).align(Alignment.BottomCenter).size(60.dp),
+            modifier =
+                Modifier.padding(bottom = 20.dp)
+                    .align(Alignment.BottomCenter)
+                    .size(60.dp)
+                    .testTag("TakePictureButton"),
             onClick = {
               takePhoto(
                   context = context,
