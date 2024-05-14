@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -207,36 +208,48 @@ fun UserView(
                                         Modifier.padding(bottom = 20.dp).testTag("NameAndSurname"))
                                 Text(
                                     text = "Interests",
-                                    style = AppTypography.secondaryTitleStyle,
+                                    style =
+                                        secondaryTitleStyle(
+                                            LocalConfiguration.current.screenHeightDp),
                                     modifier =
                                         Modifier.align(Alignment.End).testTag("InterestTitle"))
                                 Text(
                                     text = "Hiking, Photography", // profile.interestsList
-                                    style = AppTypography.secondaryContentStyle,
+                                    style =
+                                        secondaryContentStyle(
+                                            LocalConfiguration.current.screenHeightDp),
                                     modifier =
                                         Modifier.align(Alignment.End)
                                             .padding(bottom = 20.dp)
                                             .testTag("InterestList"))
                                 Text(
                                     text = "Travel Style",
-                                    style = AppTypography.secondaryTitleStyle,
+                                    style =
+                                        secondaryTitleStyle(
+                                            LocalConfiguration.current.screenHeightDp),
                                     modifier =
                                         Modifier.align(Alignment.End).testTag("TravelStyleTitle"))
                                 Text(
                                     text = "Adventure, Cultural", // profile.travelStyleList
-                                    style = AppTypography.secondaryContentStyle,
+                                    style =
+                                        secondaryContentStyle(
+                                            LocalConfiguration.current.screenHeightDp),
                                     modifier =
                                         Modifier.align(Alignment.End)
                                             .padding(bottom = 20.dp)
                                             .testTag("TravelStyleList"))
                                 Text(
                                     text = "Languages",
-                                    style = AppTypography.secondaryTitleStyle,
+                                    style =
+                                        secondaryTitleStyle(
+                                            LocalConfiguration.current.screenHeightDp),
                                     modifier =
                                         Modifier.align(Alignment.End).testTag("LanguagesTitle"))
                                 Text(
                                     text = "English, Spanish", // profile.languagesList
-                                    style = AppTypography.secondaryContentStyle,
+                                    style =
+                                        secondaryContentStyle(
+                                            LocalConfiguration.current.screenHeightDp),
                                     modifier =
                                         Modifier.align(Alignment.End).testTag("LanguagesList"))
                               }
@@ -293,13 +306,17 @@ fun UserView(
                                         modifier =
                                             Modifier.align(Alignment.CenterHorizontally)
                                                 .testTag("TripsCount"),
-                                        style = AppTypography.bigNumberStyle)
+                                        style =
+                                            bigNumberStyle(
+                                                LocalConfiguration.current.screenHeightDp))
                                     Text(
                                         text = "Trips",
                                         modifier =
                                             Modifier.align(Alignment.CenterHorizontally)
                                                 .testTag("TripsTitle"),
-                                        style = AppTypography.categoryTextStyle)
+                                        style =
+                                            categoryTextStyle(
+                                                LocalConfiguration.current.screenHeightDp))
                                   }
                               Column(
                                   modifier =
@@ -310,13 +327,17 @@ fun UserView(
                                         modifier =
                                             Modifier.align(Alignment.CenterHorizontally)
                                                 .testTag("FollowersCount"),
-                                        style = AppTypography.bigNumberStyle)
+                                        style =
+                                            bigNumberStyle(
+                                                LocalConfiguration.current.screenHeightDp))
                                     Text(
                                         text = "Followers",
                                         modifier =
                                             Modifier.align(Alignment.CenterHorizontally)
                                                 .testTag("FollowersTitle"),
-                                        style = AppTypography.categoryTextStyle)
+                                        style =
+                                            categoryTextStyle(
+                                                LocalConfiguration.current.screenHeightDp))
                                   }
                               Column(
                                   modifier =
@@ -327,13 +348,17 @@ fun UserView(
                                         modifier =
                                             Modifier.align(Alignment.CenterHorizontally)
                                                 .testTag("FollowingCount"),
-                                        style = AppTypography.bigNumberStyle)
+                                        style =
+                                            bigNumberStyle(
+                                                LocalConfiguration.current.screenHeightDp))
                                     Text(
                                         text = "Following",
                                         modifier =
                                             Modifier.align(Alignment.CenterHorizontally)
                                                 .testTag("FollowingTitle"),
-                                        style = AppTypography.categoryTextStyle)
+                                        style =
+                                            categoryTextStyle(
+                                                LocalConfiguration.current.screenHeightDp))
                                   }
                             }
                       }
