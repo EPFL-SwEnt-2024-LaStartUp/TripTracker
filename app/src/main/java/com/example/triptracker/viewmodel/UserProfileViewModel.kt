@@ -287,7 +287,6 @@ class UserProfileViewModel(
       }
     } else {
       updateUserProfileInDb(profile.userProfile.value)
-      // profile.userProfile.value = newProfile
       if (!isCreated) {
         navigation.goBack()
       } else {

@@ -116,7 +116,7 @@ fun UserProfileEditScreen(
   var isLoading by remember { mutableStateOf(false) }
 
   /** Alpha value for the screen depending on loading state */
-  val alpha = if (!isLoading) 1f else 0.6f
+  val alpha = if (!isLoading) 1f else 0.8f
 
   /* Mutable state variable that holds the scroll state of the screen */
   val scrollState = rememberScrollState()
