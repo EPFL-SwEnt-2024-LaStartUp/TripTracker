@@ -271,8 +271,10 @@ fun UserProfileEditScreen(
                                     value = username,
                                     label = {},
                                     onValueChange = {
-                                      username = it
-                                      isUsernameEmpty = it.isEmpty()
+                                        if (it.length <= 30) {
+                                            username = it
+                                            isUsernameEmpty = it.isEmpty()
+                                        }
                                     },
                                     modifier =
                                         Modifier.height(65.dp).padding(bottom = 5.dp, end = 30.dp),
