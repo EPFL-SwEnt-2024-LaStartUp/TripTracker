@@ -148,6 +148,65 @@ fun AddSpot(
 }
 
 /**
+ * handleSelectedPictures is a function that handles the selected pictures
+ *
+ * @param pictures: List<Uri> list of selected pictures
+ * @param callback: (List<Uri>) -> Unit callback function
+ */
+private fun handleSelectedPictures(pictures: List<Uri>, callback: (List<Uri>) -> Unit) {
+  if (pictures.isNotEmpty()) {
+    Log.d("PhotoPicker", "Number of items selected: ${pictures.size}")
+    callback(pictures)
+  } else {
+    Log.d("PhotoPicker", "No media selected")
+  }
+}
+
+/** textColor is a function that returns the color of the text in the text field */
+private fun textColor(recordViewModel: RecordViewModel) =
+    if (recordViewModel.namePOI.value.isNotEmpty()) md_theme_light_error
+    else md_theme_light_onPrimary
+
+/** locationText is a function that returns the text of the location field */
+private fun locationText(recordViewModel: RecordViewModel, isError: Boolean, location: String) =
+    if (recordViewModel.namePOI.value.isEmpty() && !isError) location
+    else recordViewModel.namePOI.value
+
+/** checkString is a function that checks if a string is empty */
+private fun checkString(string: String, callback: (Boolean) -> Unit) {
+  if (string.isNotEmpty()) {
+    callback(false)
+  }
+}
+
+/** PlaceHolderText is a composable function that displays the placeholder text */
+@Composable
+private fun PlaceHolderText(isError: Boolean, placeHolderError: String) {
+  if (isError) Text(placeHolderError, color = md_theme_light_onPrimary)
+  else Text("", color = md_theme_light_onPrimary)
+}
+
+private fun checkDistance(
+    position: LatLng,
+    pos: LatLng,
+    recordViewModel: RecordViewModel,
+    callback: (pos: LatLng, location: String, isError: Boolean) -> Unit
+) {
+  if (compareDistance(position, pos, 500.0)) {
+    callback(pos, recordViewModel.displayNameDropDown.value, false)
+    //        position = pos
+    //        location = recordViewModel.displayNameDropDown.value
+    recordViewModel.namePOI.value = recordViewModel.displayNameDropDown.value
+    //        isError = false
+  } else {
+    callback(position, "", true)
+    //        isError = true
+    //        location = ""
+    recordViewModel.namePOI.value = ""
+  }
+}
+
+/**
  * FillAddSpot is a composable function that allows the user to fill the information of the spot
  * that is going to be added to the path.
  */
@@ -180,15 +239,10 @@ fun FillAddSpot(
   // Launcher for the pick multiple media activity
   val pickMultipleMedia =
       rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) {
+          // Callback is invoked after the user selects media items or closes the
+          // photo picker.
           pictures ->
-        // Callback is invoked after the user selects media items or closes the
-        // photo picker.
-        if (pictures.isNotEmpty()) {
-          Log.d("PhotoPicker", "Number of items selected: ${pictures.size}")
-          selectedPictures = pictures
-        } else {
-          Log.d("PhotoPicker", "No media selected")
-        }
+        handleSelectedPictures(pictures) { selectedPictures = it }
       }
 
   Box(
@@ -229,10 +283,6 @@ fun FillAddSpot(
           var pos by remember { mutableStateOf(LatLng(0.0, 0.0)) }
           val placeHolderError by remember { mutableStateOf("Please enter a valid location") }
 
-          fun textColor() =
-              if (recordViewModel.namePOI.value.isNotEmpty()) md_theme_light_error
-              else md_theme_light_onPrimary
-
           /*
           TextField to input the name of the point of interest
           Enabled when no POI was found automatically with nominatim
@@ -248,17 +298,13 @@ fun FillAddSpot(
                     enabled = recordViewModel.namePOI.value.isEmpty(),
                     modifier =
                         Modifier.padding(horizontal = 20.dp).fillMaxWidth().testTag("LocationText"),
-                    value =
-                        if (recordViewModel.namePOI.value.isEmpty() && !isError) location
-                        else recordViewModel.namePOI.value,
+                    value = locationText(recordViewModel, isError, location),
                     onValueChange = {
                       location = it
                       recordViewModel.getSuggestion(it) { latLng -> pos = latLng }
                       Log.d("Suggestion", pos.toString())
                       expanded.value = true
-                      if (it.isNotEmpty()) {
-                        isError = false
-                      }
+                      checkString(it) { bool -> isError = bool }
                     },
                     label = { Text("Point of Interest name", color = md_theme_light_onPrimary) },
                     leadingIcon = {
@@ -270,8 +316,8 @@ fun FillAddSpot(
                     colors =
                         OutlinedTextFieldDefaults.colors(
                             unfocusedTextColor = md_theme_light_onPrimary,
-                            unfocusedBorderColor = textColor(),
-                            unfocusedLabelColor = textColor(),
+                            unfocusedBorderColor = textColor(recordViewModel),
+                            unfocusedLabelColor = textColor(recordViewModel),
                             cursorColor = md_theme_orange,
                             focusedBorderColor = md_theme_light_onPrimary,
                             focusedLabelColor = md_theme_light_onPrimary,
@@ -281,8 +327,7 @@ fun FillAddSpot(
                     maxLines = 1,
                     isError = isError,
                     placeholder = {
-                      if (isError) Text(placeHolderError, color = md_theme_light_onPrimary)
-                      else Text("", color = md_theme_light_onPrimary)
+                      PlaceHolderText(isError = isError, placeHolderError = placeHolderError)
                     },
                     textStyle = TextStyle(color = md_theme_light_onPrimary),
                 )
@@ -301,16 +346,27 @@ fun FillAddSpot(
                       },
                       modifier = Modifier.fillMaxWidth().testTag("LocationDropDown"),
                       onClick = {
-                        if (compareDistance(position, pos, 500.0)) {
-                          position = pos
-                          location = recordViewModel.displayNameDropDown.value
-                          recordViewModel.namePOI.value = recordViewModel.displayNameDropDown.value
-                          isError = false
-                        } else {
-                          isError = true
-                          location = ""
-                          recordViewModel.namePOI.value = ""
-                        }
+                        checkDistance(
+                            position,
+                            pos,
+                            recordViewModel,
+                            callback = { pos, loc, boolError ->
+                              position = pos
+                              location = loc
+                              isError = boolError
+                            })
+                        //                        if (compareDistance(position, pos, 500.0)) {
+                        //                          position = pos
+                        //                          location =
+                        // recordViewModel.displayNameDropDown.value
+                        //                          recordViewModel.namePOI.value =
+                        // recordViewModel.displayNameDropDown.value
+                        //                          isError = false
+                        //                        } else {
+                        //                          isError = true
+                        //                          location = ""
+                        //                          recordViewModel.namePOI.value = ""
+                        //                        }
 
                         expanded.value = false
                       })
