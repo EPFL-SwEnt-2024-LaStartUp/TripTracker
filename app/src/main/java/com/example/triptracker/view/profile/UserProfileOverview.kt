@@ -1,38 +1,29 @@
 package com.example.triptracker.view.profile
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
@@ -52,9 +43,9 @@ import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
+import com.example.triptracker.view.profile.subviews.ProfileButton
 import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_light_dark
-import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
 
@@ -90,7 +81,8 @@ fun UserProfileOverview(
   Scaffold(
       topBar = {},
       bottomBar = { NavigationBar(navigation) },
-      modifier = Modifier.fillMaxSize().testTag("ProfileOverview")) { innerPadding ->
+      modifier = Modifier.fillMaxSize().testTag("ProfileOverview")
+  ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
           Row(
               modifier =
@@ -301,35 +293,3 @@ fun secondaryContentStyle(size: Int): TextStyle {
       letterSpacing = (size * 0.0005f).sp)
 }
 
-@Composable
-fun ProfileButton(
-    label: String,
-    icon: ImageVector,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-  Button(
-      onClick = onClick,
-      colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
-      modifier =
-          modifier
-              .height((LocalConfiguration.current.screenHeightDp * 0.17f).dp)
-              .width((LocalConfiguration.current.screenWidthDp * 0.425f).dp)
-              .testTag("ProfileButton")
-              .background(color = md_theme_light_dark, shape = RoundedCornerShape(16.dp))) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-          Icon(
-              icon,
-              contentDescription = "$label icon",
-              tint = md_theme_orange,
-              modifier = Modifier.size((LocalConfiguration.current.screenHeightDp * 0.04f).dp))
-
-          Text(
-              text = label,
-              style = buttonTextStyle(LocalConfiguration.current.screenHeightDp),
-              modifier =
-                  Modifier.padding(
-                      vertical = (LocalConfiguration.current.screenHeightDp * 0.015f).dp))
-        }
-      }
-}
