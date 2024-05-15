@@ -9,7 +9,7 @@ import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.UserProfileRepository
 import com.example.triptracker.screens.userProfile.UserProfileFriendsScreen
 import com.example.triptracker.view.Navigation
-import com.example.triptracker.view.profile.UserProfileFriends
+import com.example.triptracker.view.profile.UserProfileFriendsFinder
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import io.mockk.Runs
@@ -62,7 +62,7 @@ class UserProfileFriendsTest {
 
     // Setting up the test composition
     composeTestRule.setContent {
-      UserProfileFriends(
+      UserProfileFriendsFinder(
           navigation = mockNav,
           profile = MutableUserProfile(mutableStateOf(mockUserProfiles[0])),
           userProfileViewModel = mockViewModel,

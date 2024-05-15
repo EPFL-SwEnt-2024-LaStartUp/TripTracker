@@ -39,6 +39,8 @@ import com.example.triptracker.model.profile.Relationship
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
+import com.example.triptracker.view.profile.subviews.FriendListView
+import com.example.triptracker.view.profile.subviews.FriendSearchBar
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
 /**

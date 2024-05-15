@@ -38,6 +38,8 @@ import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.Relationship
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
+import com.example.triptracker.view.profile.subviews.FriendListView
+import com.example.triptracker.view.profile.subviews.FriendSearchBar
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
 /**
@@ -47,7 +49,7 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
  * @param userProfileViewModel : the view model to handle the user profile.
  */
 @Composable
-fun UserProfileFriends(
+fun UserProfileFriendsFinder(
     navigation: Navigation,
     profile: MutableUserProfile,
     userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),

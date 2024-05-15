@@ -1,4 +1,4 @@
-package com.example.triptracker.view.profile
+package com.example.triptracker.view.profile.subviews
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
