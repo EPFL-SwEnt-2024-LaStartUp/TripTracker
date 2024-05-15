@@ -219,6 +219,7 @@ class RecordViewModel(
    *
    * @param lat : latitude of the location
    * @param lon : longitude of the location
+   * @param callback : function to call when the city and country names are decoded
    */
   fun getCityAndCountry(lat: Float, lon: Float, callback: (String) -> Unit) {
     geocoder.getCity(lat, lon, callback = callback, true)
