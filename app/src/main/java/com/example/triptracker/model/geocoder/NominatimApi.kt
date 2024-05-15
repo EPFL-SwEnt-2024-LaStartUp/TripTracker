@@ -150,6 +150,7 @@ class NominatimApi {
    * @param lat : latitude of the location
    * @param lon : longitude of the location
    * @param callback : function to call when the city is decoded
+   * @param withCountry : boolean to indicate if the country should be included in the city
    */
   fun getCity(lat: Float, lon: Float, callback: (String) -> Unit, withCountry: Boolean = false) {
     reverseDecode(lat, lon) { json ->
