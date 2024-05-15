@@ -23,9 +23,10 @@ class NominatimGeocoderTest {
   @Test
   fun getCityTest() {
     val geocoder = NominatimApi()
-    geocoder.getCity(46.519053.toFloat(), 6.568287.toFloat()) { city -> assert(city == "Lausanne") }
+    geocoder.getCity(
+        46.519053.toFloat(), 6.568287.toFloat(), callback = { city -> assert(city == "Lausanne") })
 
-    geocoder.getCity(0.0.toFloat(), 0.0.toFloat()) { city -> assert(city == "Unknown") }
+    geocoder.getCity(0.0.toFloat(), 0.0.toFloat(), callback = { city -> assert(city == "Unknown") })
   }
 
   @Test
