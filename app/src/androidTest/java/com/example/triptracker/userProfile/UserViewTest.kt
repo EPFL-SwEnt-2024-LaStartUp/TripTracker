@@ -1,7 +1,9 @@
 package com.example.triptracker.userProfile
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.itinerary.MockItineraryList
@@ -124,5 +126,39 @@ class UserViewTest {
         assertHasClickAction()
       }
     }
+  }
+
+  @Test
+  fun Test2UserProfiles() {
+
+    mockUserVm = mockk {
+      every { getUserProfileList() } returns mockUserProfiles
+      every { getUserProfile(any(), any()) } coAnswers
+          {
+            secondArg<(UserProfile?) -> Unit>().invoke(mockUserProfiles[0])
+          }
+      every { removeFollowing(any(), any()) } just Runs
+      every { addFollowing(any(), any()) } just Runs
+    }
+
+    homevm = mockk {
+      every { setSearchFilter(any()) } just Runs
+      every { setSearchQuery(any()) } just Runs
+      every { filteredItineraryList.value } returns mockItineraries
+      every { filteredItineraryList } returns MutableLiveData(emptyList())
+    }
+
+    // Setting up the test composition
+    composeTestRule.setContent {
+      UserView(
+          profile = MutableUserProfile(mutableStateOf(mockUserProfiles[1])),
+          navigation = mockNavigation,
+          userMail = "example@gmail.com",
+          homeViewModel = homevm,
+          test = true)
+    }
+
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("NoTripsText").assertIsDisplayed()
   }
 }

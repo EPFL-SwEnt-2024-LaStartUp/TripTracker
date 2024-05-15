@@ -131,4 +131,34 @@ class UserProfileEditScreenTest : TestCase() {
     composeTestRule.onNodeWithTag("NoProfilePicture").performClick()
     verify { manager.launch(any()) }
   }
+
+  @Test
+  fun SaveProfile() {
+    composeTestRule.setContent {
+      UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
+    }
+    composeTestRule.onNodeWithText("Save").performClick()
+  }
+
+  @Test
+  fun SaveProfileUserPassed() {
+
+    val mutableUser = MutableUserProfile()
+    mutableUser.userProfile.value =
+        UserProfile(
+            "jake@gmail.com",
+            "Test User",
+            "Stupid",
+            "Yesterday",
+            "TestUser",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
+            emptyList(),
+            emptyList(),
+            emptyList())
+
+    composeTestRule.setContent {
+      UserProfileEditScreen(navigation = navigation, profile = mutableUser)
+    }
+    composeTestRule.onNodeWithText("Save").performClick()
+  }
 }
