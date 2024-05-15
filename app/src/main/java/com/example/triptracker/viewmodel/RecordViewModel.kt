@@ -213,6 +213,17 @@ class RecordViewModel(
     }
   }
 
+  /**
+   * Reverse decodes the location to get the city name. On success update the cityNameState at the
+   * top of the screen
+   *
+   * @param lat : latitude of the location
+   * @param lon : longitude of the location
+   */
+  fun getCityAndCountry(lat: Float, lon: Float, callback: (String) -> Unit) {
+    geocoder.getCity(lat, lon, callback = callback, true)
+  }
+
   /** Gets the point of interest (POI) name at the given LatLng point. */
   fun getPOI(latLng: LatLng) {
     geocoder.getPOI(latLng.latitude.toFloat(), latLng.longitude.toFloat()) { name ->
