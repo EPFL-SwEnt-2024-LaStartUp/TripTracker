@@ -72,7 +72,7 @@ class MapViewModel(
    * @param lon : longitude of the location
    */
   fun reverseDecode(lat: Float, lon: Float, _geocoder: NominatimApi = geocoder) {
-    _geocoder.getCity(lat, lon) { cityName -> cityNameState.value = cityName }
+    _geocoder.getCity(lat, lon, callback = { cityName -> cityNameState.value = cityName })
   }
 
   /** Get all itineraries from the database and update the pathList */

@@ -16,6 +16,7 @@ import org.json.JSONObject
  */
 object LocationStrings {
   const val ADDRESS = "address"
+  const val COUNTRY = "country"
   const val CITY = "city"
   const val VILLAGE = "village"
   const val TOWN = "town"
@@ -149,8 +150,9 @@ class NominatimApi {
    * @param lat : latitude of the location
    * @param lon : longitude of the location
    * @param callback : function to call when the city is decoded
+   * @param withCountry : boolean to indicate if the country should be included in the city
    */
-  fun getCity(lat: Float, lon: Float, callback: (String) -> Unit) {
+  fun getCity(lat: Float, lon: Float, callback: (String) -> Unit, withCountry: Boolean = false) {
     reverseDecode(lat, lon) { json ->
       if (json.toString() == LocationErrors.ERROR) {
         callback(LocationErrors.UNKNOWN)
@@ -164,21 +166,30 @@ class NominatimApi {
         return@reverseDecode
       }
 
+      val addressJson = address as JSONObject
+
+      // get the country from the address json object
+      val country =
+          if (withCountry && addressJson.has(LocationStrings.COUNTRY)) {
+            addressJson.get(LocationStrings.COUNTRY) as? String ?: LocationErrors.UNKNOWN
+          } else {
+            LocationErrors.UNKNOWN
+          }
+
       // get the city, village or town from the address json object since there are multiple
       // ways to describe a "city"
-      val addressJson = address as JSONObject
-      if (addressJson.has(LocationStrings.CITY)) {
-        val cityName = addressJson.get(LocationStrings.CITY) as? String ?: LocationErrors.UNKNOWN
-        callback(cityName)
-      } else if (addressJson.has(LocationStrings.VILLAGE)) {
-        val village = addressJson.get(LocationStrings.VILLAGE) as? String ?: LocationErrors.UNKNOWN
-        callback(village)
-      } else if (addressJson.has(LocationStrings.TOWN)) {
-        val town = addressJson.get(LocationStrings.TOWN) as? String ?: LocationErrors.UNKNOWN
-        callback(town)
-      } else {
-        callback(LocationErrors.UNKNOWN)
-      }
+      val city =
+          if (addressJson.has(LocationStrings.CITY)) {
+            addressJson.get(LocationStrings.CITY) as? String ?: LocationErrors.UNKNOWN
+          } else if (addressJson.has(LocationStrings.VILLAGE)) {
+            addressJson.get(LocationStrings.VILLAGE) as? String ?: LocationErrors.UNKNOWN
+          } else if (addressJson.has(LocationStrings.TOWN)) {
+            addressJson.get(LocationStrings.TOWN) as? String ?: LocationErrors.UNKNOWN
+          } else {
+            LocationErrors.UNKNOWN
+          }
+
+      callback(if (withCountry && country != LocationErrors.UNKNOWN) "$city, $country" else city)
     }
   }
 
