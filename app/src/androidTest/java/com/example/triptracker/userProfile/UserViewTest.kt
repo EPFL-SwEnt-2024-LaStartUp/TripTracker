@@ -83,6 +83,7 @@ class UserViewTest {
     ComposeScreen.onComposeScreen<UserView>(composeTestRule) {
       usernameTitle { assertIsDisplayed() }
       profilePicture { assertIsDisplayed() }
+      username { assertIsDisplayed() }
       nameAndSurname { assertIsDisplayed() }
       interestTitle {
         assertIsDisplayed()

@@ -23,8 +23,8 @@ import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_orange
 
 /**
- * This composable function displays a button with an icon and a label.
- * It is used in the UserProfileOverview screen
+ * This composable function displays a button with an icon and a label. It is used in the
+ * UserProfileOverview screen
  *
  * @param label : the label of the button.
  * @param icon : the icon of the button.
@@ -38,28 +38,28 @@ fun ProfileButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
-        modifier =
-        modifier
-            .height((LocalConfiguration.current.screenHeightDp * 0.17f).dp)
-            .width((LocalConfiguration.current.screenWidthDp * 0.425f).dp)
-            .testTag("ProfileButton")
-            .background(color = md_theme_light_dark, shape = RoundedCornerShape(16.dp))) {
+  Button(
+      onClick = onClick,
+      colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
+      modifier =
+          modifier
+              .height((LocalConfiguration.current.screenHeightDp * 0.17f).dp)
+              .width((LocalConfiguration.current.screenWidthDp * 0.425f).dp)
+              .testTag("ProfileButton")
+              .background(color = md_theme_light_dark, shape = RoundedCornerShape(16.dp))) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            Icon(
-                icon,
-                contentDescription = "$label icon",
-                tint = md_theme_orange,
-                modifier = Modifier.size((LocalConfiguration.current.screenHeightDp * 0.04f).dp))
+          Icon(
+              icon,
+              contentDescription = "$label icon",
+              tint = md_theme_orange,
+              modifier = Modifier.size((LocalConfiguration.current.screenHeightDp * 0.04f).dp))
 
-            Text(
-                text = label,
-                style = buttonTextStyle(LocalConfiguration.current.screenHeightDp),
-                modifier =
-                Modifier.padding(
-                    vertical = (LocalConfiguration.current.screenHeightDp * 0.015f).dp))
+          Text(
+              text = label,
+              style = buttonTextStyle(LocalConfiguration.current.screenHeightDp),
+              modifier =
+                  Modifier.padding(
+                      vertical = (LocalConfiguration.current.screenHeightDp * 0.015f).dp))
         }
-    }
+      }
 }
