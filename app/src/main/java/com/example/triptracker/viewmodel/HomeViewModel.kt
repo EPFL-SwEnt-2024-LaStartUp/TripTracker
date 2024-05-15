@@ -34,6 +34,12 @@ enum class IncrementableField {
   TITLE
 }
 
+enum class HomeCategory {
+  TRENDING,
+  FOLLOWING,
+  FAVORITES
+}
+
 /**
  * ViewModel for the Home Screen. Fetches all itineraries from the repository stores them in a
  * LiveData object
@@ -223,6 +229,10 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
         _itineraryList.value?.sortedByDescending { itinerary -> itinerary.flameCount }
   }
 
+  /**
+   * Formula to calculate flame count for each itinerary based on the number of saves, clicks and
+   * the number of users that started the itinerary
+   */
   private fun calculateFlameCounts(saves: Long, clicks: Long, numStarts: Long): Long {
     return 2 * saves + clicks + 5 * numStarts
   }
@@ -279,5 +289,43 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
       repository.incrementField(itineraryId, IncrementableField.NUM_STARTS)
       updateFlameCount(itineraryId)
     }
+  }
+
+  /**
+   * Filter the itinerary list by trending itineraries in a certain city The trending itineraries
+   * are sorted in descending order of flame count
+   *
+   * @param city the city to filter by
+   * @return a list of itineraries that match the query sorted by flame count
+   */
+  fun filterTrendingCity(city: String) {
+    _itineraryList.value =
+        itineraryList.value
+            ?.filter { it.location.name.split(", ").first().equals(city, ignoreCase = true) }
+            ?.sortedByDescending { it.flameCount }
+  }
+
+  /**
+   * Filter the itinerary list by trending itineraries in a certain country The trending itineraries
+   * are sorted in descending order of flame count
+   *
+   * @param country the country to filter by
+   * @return a list of itineraries that match the query sorted by flame count
+   */
+  fun filterTrendingCountry(country: String) {
+    _itineraryList.value =
+        itineraryList.value
+            ?.filter { it.location.name.split(", ").last().equals(country, ignoreCase = true) }
+            ?.sortedByDescending { it.flameCount }
+  }
+
+  /**
+   * Filter the itinerary list by trending itineraries worldwide The trending itineraries are sorted
+   * in descending order of flame count
+   *
+   * @return a list of itineraries sorted by flame count
+   */
+  fun filterTrendingWorldwide() {
+    _itineraryList.value = itineraryList.value?.sortedByDescending { it.flameCount }
   }
 }
