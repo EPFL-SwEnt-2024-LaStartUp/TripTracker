@@ -138,8 +138,9 @@ fun UserProfileEditScreen(
         }
       }
 
+  /** Maximum number of characters for the username */
   val MAX_CHARS_USERNAME = 30
-  
+
   Scaffold(
       topBar = {},
       bottomBar = { NavigationBar(navigation) },
