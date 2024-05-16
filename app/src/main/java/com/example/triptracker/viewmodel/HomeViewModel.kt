@@ -111,15 +111,14 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    * @return a list of itineraries that match the query
    */
   private fun filterByUsername(query: String): List<Itinerary> {
-    val mapProfileItinerary = mutableMapOf<String, Itinerary>()
+    val filteredItineraries = mutableListOf<Itinerary>()
     itineraryList.value?.forEach { itinerary ->
       val profile = userProfileList.firstOrNull { profile -> itinerary.userMail == profile.mail }
-      if (profile != null) {
-        mapProfileItinerary[profile.username] = itinerary
+      if (profile != null && profile.username.contains(query, ignoreCase = true)) {
+        filteredItineraries.add(itinerary)
       }
     }
-
-    return mapProfileItinerary.filter { it.key.contains(query, ignoreCase = true) }.values.toList()
+    return filteredItineraries
   }
 
   /**
