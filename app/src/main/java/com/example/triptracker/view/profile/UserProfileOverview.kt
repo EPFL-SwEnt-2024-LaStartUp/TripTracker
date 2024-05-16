@@ -53,8 +53,6 @@ import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
-import com.example.triptracker.view.theme.md_theme_dark_gray
-import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_light_outlineVariant
 import com.example.triptracker.view.theme.md_theme_light_primary
 import com.example.triptracker.view.theme.md_theme_orange
@@ -324,7 +322,8 @@ fun ProfileButton(
               .height((LocalConfiguration.current.screenHeightDp * 0.17f).dp)
               .width((LocalConfiguration.current.screenWidthDp * 0.425f).dp)
               .testTag("ProfileButton")
-              .background(color = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(16.dp))) {
+              .background(
+                  color = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(16.dp))) {
         Column(modifier = Modifier.fillMaxWidth()) {
           Icon(
               icon,

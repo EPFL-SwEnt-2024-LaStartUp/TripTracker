@@ -397,7 +397,9 @@ fun Map(
                   .align(Alignment.BottomCenter)
                   .padding(15.dp)
                   //                  .verticalScroll(rememberScrollState())
-                  .background(color = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(35.dp))) {
+                  .background(
+                      color = MaterialTheme.colorScheme.onSurface,
+                      shape = RoundedCornerShape(35.dp))) {
             val selectedPin = mapViewModel.selectedPin.value
             val scrollState = rememberScrollState()
 
