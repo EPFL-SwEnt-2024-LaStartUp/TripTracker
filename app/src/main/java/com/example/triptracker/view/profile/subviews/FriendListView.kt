@@ -115,14 +115,19 @@ fun FriendListView(
                           .height((LocalConfiguration.current.screenHeightDp * 0.14).dp)
                           .background(
                               MaterialTheme.colorScheme.onBackground,
-                              shape = RoundedCornerShape((LocalConfiguration.current.screenHeightDp * 0.05f).dp))
+                              shape =
+                                  RoundedCornerShape(
+                                      (LocalConfiguration.current.screenHeightDp * 0.05f).dp))
                           .testTag("FriendProfile")
                           .clickable {
                             navigation.navController.navigate(Route.USER + "/${friend.mail}")
                           },
                   contentAlignment = Alignment.Center) {
                     Row(
-                        modifier = Modifier.fillMaxHeight().fillMaxWidth().padding(start = 20.dp, end = 20.dp),
+                        modifier =
+                            Modifier.fillMaxHeight()
+                                .fillMaxWidth()
+                                .padding(start = 20.dp, end = 20.dp),
                         verticalAlignment = Alignment.CenterVertically) {
                           // Image painter for loading from a URL
                           val imagePainter =
@@ -133,21 +138,26 @@ fun FriendListView(
                               contentDescription = "${friend.username}'s profile picture",
                               contentScale = ContentScale.Crop,
                               modifier =
-                                  Modifier.size((LocalConfiguration.current.screenHeightDp * 0.09f).dp)
+                                  Modifier.size(
+                                          (LocalConfiguration.current.screenHeightDp * 0.09f).dp)
                                       .clip(RoundedCornerShape(50))
                                       .align(Alignment.CenterVertically))
                           Column(
-                              modifier = Modifier
-                                  .fillMaxHeight()
-                                  .width((LocalConfiguration.current.screenWidthDp * 0.45f).dp)
-                                  .padding(start = 15.dp),
+                              modifier =
+                                  Modifier.fillMaxHeight()
+                                      .width((LocalConfiguration.current.screenWidthDp * 0.45f).dp)
+                                      .padding(start = 15.dp),
                               verticalArrangement = Arrangement.Center) {
                                 Text(
                                     text = friend.username,
                                     style =
                                         TextStyle(
-                                            fontSize = (LocalConfiguration.current.screenHeightDp * 0.02f).sp,
-                                            lineHeight =(LocalConfiguration.current.screenHeightDp * 0.02f).sp,
+                                            fontSize =
+                                                (LocalConfiguration.current.screenHeightDp * 0.02f)
+                                                    .sp,
+                                            lineHeight =
+                                                (LocalConfiguration.current.screenHeightDp * 0.02f)
+                                                    .sp,
                                             fontFamily = Montserrat,
                                             fontWeight = FontWeight(600),
                                             color = MaterialTheme.colorScheme.surface,
@@ -156,20 +166,23 @@ fun FriendListView(
                                     overflow = TextOverflow.Ellipsis,
                                     maxLines = 1)
 
-                                  Text(
-                                      text = "${friend.name} ${friend.surname}",
-                                      style =
-                                          TextStyle(
-                                              fontSize = (LocalConfiguration.current.screenHeightDp * 0.018f).sp,
-                                              lineHeight = (LocalConfiguration.current.screenHeightDp * 0.02f).sp,
-                                              fontFamily = Montserrat,
-                                              fontWeight = FontWeight(600),
-                                              color = md_theme_dark_gray,
-                                              textAlign = TextAlign.Left,
-                                              letterSpacing = 0.5.sp),
-                                      overflow = TextOverflow.Ellipsis,
-                                      maxLines = 1)
-
+                                Text(
+                                    text = "${friend.name} ${friend.surname}",
+                                    style =
+                                        TextStyle(
+                                            fontSize =
+                                                (LocalConfiguration.current.screenHeightDp * 0.018f)
+                                                    .sp,
+                                            lineHeight =
+                                                (LocalConfiguration.current.screenHeightDp * 0.02f)
+                                                    .sp,
+                                            fontFamily = Montserrat,
+                                            fontWeight = FontWeight(600),
+                                            color = md_theme_dark_gray,
+                                            textAlign = TextAlign.Left,
+                                            letterSpacing = 0.5.sp),
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1)
                               }
                           Column(
                               modifier = Modifier.wrapContentWidth(),
@@ -242,7 +255,10 @@ fun RemoveFriendButton(
             ButtonDefaults.buttonColors(
                 containerColor = md_theme_grey, contentColor = md_theme_light_onPrimary)
           },
-      modifier = Modifier.height((LocalConfiguration.current.screenHeightDp * 0.06f).dp).width((LocalConfiguration.current.screenWidthDp * 0.23f).dp).testTag("RemoveButton"),
+      modifier =
+          Modifier.height((LocalConfiguration.current.screenHeightDp * 0.06f).dp)
+              .width((LocalConfiguration.current.screenWidthDp * 0.23f).dp)
+              .testTag("RemoveButton"),
       contentPadding =
           PaddingValues( // Reduce the padding around the text
               start = 2.dp, top = 4.dp, end = 2.dp, bottom = 4.dp)) {

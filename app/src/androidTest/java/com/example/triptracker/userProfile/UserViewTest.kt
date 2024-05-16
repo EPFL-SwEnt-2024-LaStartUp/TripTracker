@@ -100,9 +100,7 @@ class UserViewTest {
         assertTextEquals("Languages")
       }
       languagesList { assertIsDisplayed() }
-      followingButton {
-        assertIsDisplayed()
-      }
+      followingButton { assertIsDisplayed() }
       tripsTitle {
         assertIsDisplayed()
         assertTextEquals("Trips")

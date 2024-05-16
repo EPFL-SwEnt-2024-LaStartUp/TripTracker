@@ -79,7 +79,9 @@ fun UserProfileFollowing(
   Scaffold(
       topBar = {
         Row(
-            modifier = Modifier.height((LocalConfiguration.current.screenHeightDp * 0.075).dp).fillMaxWidth(),
+            modifier =
+                Modifier.height((LocalConfiguration.current.screenHeightDp * 0.075).dp)
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start) {
               Button(
@@ -95,19 +97,19 @@ fun UserProfileFollowing(
               Text(
                   text = "Following",
                   style =
-                  TextStyle(
-                      fontSize = (LocalConfiguration.current.screenHeightDp * 0.03f).sp,
-                      lineHeight = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
-                      fontFamily = Montserrat,
-                      fontWeight = FontWeight(700),
-                      color = md_theme_light_dark,
-                      textAlign = TextAlign.Left,
-                      letterSpacing = (LocalConfiguration.current.screenHeightDp * 0.0005f).sp,
-                  ),
+                      TextStyle(
+                          fontSize = (LocalConfiguration.current.screenHeightDp * 0.03f).sp,
+                          lineHeight = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
+                          fontFamily = Montserrat,
+                          fontWeight = FontWeight(700),
+                          color = md_theme_light_dark,
+                          textAlign = TextAlign.Left,
+                          letterSpacing = (LocalConfiguration.current.screenHeightDp * 0.0005f).sp,
+                      ),
                   modifier =
-                  Modifier.width((LocalConfiguration.current.screenHeightDp * 0.67f).dp)
-                      .wrapContentHeight()
-                      .testTag("FollowingTitle"))
+                      Modifier.width((LocalConfiguration.current.screenHeightDp * 0.67f).dp)
+                          .wrapContentHeight()
+                          .testTag("FollowingTitle"))
             }
       },
       bottomBar = { NavigationBar(navigation) },
