@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,9 +14,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.Icon
@@ -25,8 +31,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -70,37 +78,72 @@ fun DisplayItinerary(
     homeViewModel: HomeViewModel = viewModel(),
     test: Boolean = false
 ) {
+  val configuration = LocalConfiguration.current
+  val screenWidth = configuration.screenWidthDp.dp
+  val screenHeight = configuration.screenHeightDp.dp
   // Number of additional itineraries not displayed
   val pinListString = fetchPinNames(itinerary)
+  Log.d("PinListString", pinListString)
   // The height of the box that contains the itinerary, fixed
   // The padding around the box
   val paddingAround = 15.dp
   // The size of the user's avatar/profile picture
   val avatarSize = 25.dp
-  // Boolean to check if the user profile is ready to display
-  var readyToDisplay by remember { mutableStateOf(false) }
   // The user profile fetched from the database for each path
   var dbProfile by remember { mutableStateOf(UserProfile("")) }
   // The current user profile of the user using the app
   val ambientProfile = AmbientUserProfile.current
+  // Boolean to check if the profile picture should be displayed
+  var showProfilePicture by remember { mutableStateOf(false) }
+
+  var boxHeightToDisplay = 0.dp
+  if (checkIfImage(itinerary)) {
+    boxHeightToDisplay = 525.dp
+  } else {
+    boxHeightToDisplay = boxHeight
+  }
 
   userProfileViewModel.getUserProfile(itinerary.userMail) {
     if (it != null) {
       dbProfile = it
-      readyToDisplay = true
     }
   }
 
-  when (true) {
-    false -> {
-      Log.d("UserProfile", "User profile is null")
-    }
-    else -> {
+  when (showProfilePicture) {
+    true -> {
       Box(
           modifier =
               Modifier.fillMaxWidth()
                   .padding(paddingAround)
-                  .height(boxHeight)
+                  .height(boxHeightToDisplay)
+                  .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))) {
+
+            // Close button
+            IconButton(
+                modifier = Modifier.padding(10.dp).testTag("CloseButton"),
+                onClick = { showProfilePicture = false }) {
+                  Icon(
+                      imageVector = Icons.Outlined.ArrowBackIosNew,
+                      contentDescription = "back",
+                      tint = md_theme_light_onPrimary)
+                }
+
+            AsyncImage(
+                model = dbProfile.profileImageUrl,
+                contentDescription = "User Avatar",
+                modifier =
+                    Modifier.align(Alignment.Center)
+                        .padding(15.dp)
+                        .clip(CircleShape)
+                        .testTag("ProfilePicBig"))
+          }
+    }
+    false -> {
+      Box(
+          modifier =
+              Modifier.fillMaxWidth()
+                  .padding(paddingAround)
+                  .height(boxHeightToDisplay)
                   .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))
                   .clickable { // When you click on an itinerary, it should bring you to the map
                     // overview with the selected itinerary highlighted and the first pinned places
@@ -120,7 +163,7 @@ fun DisplayItinerary(
                               Modifier.size(avatarSize)
                                   .clip(CircleShape)
                                   .testTag("ProfilePic")
-                                  .clickable { /* TODO bring user to profile page */})
+                                  .clickable { showProfilePicture = true })
 
                       Spacer(modifier = Modifier.width(15.dp))
                       Text(
@@ -172,7 +215,7 @@ fun DisplayItinerary(
                   color = md_theme_orange, // This is the orange color
                   fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                   fontSize = 14.sp)
-              Spacer(modifier = Modifier.height(30.dp).weight(1f))
+              Spacer(modifier = Modifier.height(30.dp))
               Text(
                   text = pinListString,
                   fontSize = 14.sp,
@@ -181,6 +224,29 @@ fun DisplayItinerary(
                   overflow = "and more".let { TextOverflow.Ellipsis },
                   fontFamily = FontFamily(Font(R.font.montserrat_medium)),
                   color = md_theme_grey)
+
+              Spacer(modifier = Modifier.height(50.dp).weight(1f).padding(5.dp))
+              LazyRow(
+                  contentPadding = PaddingValues(5.dp),
+                  horizontalArrangement = Arrangement.Center,
+                  modifier =
+                      Modifier.testTag(
+                          "SpotPictures") // This will arrange the images in the center of the
+                  // LazyRow
+                  ) {
+                    items(itinerary.pinnedPlaces) { pin ->
+                      for (image in pin.image_url) {
+                        AsyncImage(
+                            model = image,
+                            contentDescription = pin.description,
+                            modifier =
+                                Modifier.clip(RoundedCornerShape(corner = CornerSize(14.dp)))
+                                    .size(screenWidth * 0.9f, screenHeight * 0.3f))
+
+                        Spacer(modifier = Modifier.width(20.dp))
+                      }
+                    }
+                  }
             }
           }
     }
@@ -211,4 +277,11 @@ private fun convertPinListToString(pinList: List<String>): String {
     val remainingCount = pinList.size - numOfPinsToDisplay
     "$displayedPins, and $remainingCount more"
   }
+}
+
+private fun checkIfImage(itinerary: Itinerary): Boolean {
+  itinerary.pinnedPlaces.forEach { pin ->
+    pin.image_url.forEach { imageUrl -> if (imageUrl.isNotEmpty()) return true }
+  }
+  return false // Return false if no valid URLs are found after checking all
 }

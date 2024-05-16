@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -33,6 +34,7 @@ import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,7 +55,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.model.location.popupState
-import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
 import com.example.triptracker.navigation.getCurrentLocation
@@ -131,7 +132,6 @@ fun MapOverview(
                   context,
                   mapProperties,
                   uiSettings,
-                  navigation,
                   selectedId,
                   userProfile)
             }
@@ -160,7 +160,6 @@ fun MapOverview(
  * @param context: The context of the app (needed for location permission and real time location)
  * @param mapProperties: The properties of the map (type, location enabled)
  * @param uiSettings: The settings of the map (location button enabled)
- * @param navigation: The app navigation instance
  * @param currentSelectedId: The id of the selected path
  */
 @Composable
@@ -169,7 +168,6 @@ fun Map(
     context: Context,
     mapProperties: MapProperties,
     uiSettings: MapUiSettings,
-    navigation: Navigation,
     currentSelectedId: String,
     userProfile: MutableUserProfile
 ) {
@@ -523,7 +521,8 @@ fun Map(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically) {
                       Column(
-                          modifier = Modifier.fillMaxWidth().padding(start = 30.dp, top = 10.dp),
+                          modifier = Modifier.fillMaxWidth().padding(start = 30.dp, top = 10.dp)
+                              .verticalScroll(rememberScrollState()),
                           verticalArrangement = Arrangement.Center,
                           horizontalAlignment = Alignment.Start) {
                             Text(
@@ -578,14 +577,3 @@ fun Map(
         }
   }
 }
-
-// @Preview
-// @Composable
-//// Start this screen to only see the overview of the map
-// fun MapOverviewPreview(mapViewModel: MapViewModel = MapViewModel()) {
-//  val context = LocalContext.current
-//  val navController = rememberNavController()
-//  val navigation = remember(navController) { Navigation(navController) }
-//  //  MapOverview(mapViewModel, context, navigation, true, LatLng(46.8, 6.8))
-//  MapOverview(mapViewModel, context, navigation, true, "")
-// }

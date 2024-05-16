@@ -14,11 +14,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.triptracker.MainActivity.Companion.applicationContext
 import com.example.triptracker.authentication.GoogleAuthenticator
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.ProvideUserProfile
 import com.example.triptracker.navigation.LaunchPermissionRequest
+import com.example.triptracker.view.LaunchCameraPermissionRequest
 import com.example.triptracker.view.LoginScreen
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.OfflineScreen
@@ -84,6 +84,7 @@ class MainActivity : ComponentActivity() {
             val context: Context = applicationContext()
 
             LaunchPermissionRequest(context)
+            LaunchCameraPermissionRequest(context)
 
             // List of destinations for in app navigation
             NavHost(
@@ -101,7 +102,7 @@ class MainActivity : ComponentActivity() {
                         context = context,
                         navigation = navigation,
                         selectedId = backStackEntry.arguments?.getString("id") ?: "",
-                        userProfile = profile)
+                    )
                   }
 
               composable(Route.RECORD) { RecordScreen(context, navigation) }

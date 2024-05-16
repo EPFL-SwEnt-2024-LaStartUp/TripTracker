@@ -318,17 +318,16 @@ fun Map(
 
       // Button to center on device location
       Row(
-          modifier = Modifier.align(Alignment.BottomCenter),
+          modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 20.dp),
           horizontalArrangement = Arrangement.SpaceBetween) {
+            Spacer(modifier = Modifier.weight(0.1f))
             if (ui.myLocationButtonEnabled && properties.isMyLocationEnabled) {
-              Box(modifier = Modifier.padding(horizontal = 0.dp, vertical = 60.dp)) {
-                DisplayCenterLocationButton(
-                    coroutineScope = coroutineScope,
-                    deviceLocation = deviceLocation,
-                    cameraPositionState = cameraPositionState) { /* DO NOTHING*/}
-              }
+              DisplayCenterLocationButton(
+                  coroutineScope = coroutineScope,
+                  deviceLocation = deviceLocation,
+                  cameraPositionState = cameraPositionState) { /* DO NOTHING*/}
             }
-
+            Spacer(modifier = Modifier.weight(0.5f))
             // Button to start/stop recording
             FilledTonalButton(
                 onClick = {
@@ -340,9 +339,8 @@ fun Map(
                   }
                 },
                 modifier =
-                    Modifier.padding(50.dp)
-                        .fillMaxWidth(0.6f)
-                        .fillMaxHeight(0.1f)
+                    Modifier.fillMaxWidth(0.4f)
+                        .fillMaxHeight(0.08f)
                         .align(Alignment.CenterVertically),
                 colors =
                     ButtonDefaults.filledTonalButtonColors(
@@ -355,7 +353,7 @@ fun Map(
                   fontWeight = FontWeight.SemiBold,
                   color = md_theme_light_onPrimary)
             }
-            Spacer(modifier = Modifier.width(50.dp))
+            Spacer(modifier = Modifier.weight(1f))
           }
     }
 
@@ -509,11 +507,17 @@ fun Map(
                                     // but not
                                     // implemented yet
                                     val meanLocation = meanLocation(viewModel.latLongList.toList())
+                                    var locationName = ""
+                                    viewModel.getCityAndCountry(
+                                        meanLocation.latitude.toFloat(),
+                                        meanLocation.longitude.toFloat()) {
+                                          locationName = it
+                                        }
                                     val location =
                                         Location(
                                             meanLocation.latitude,
                                             meanLocation.longitude,
-                                            "Mean Path Location")
+                                            locationName)
                                     // (default device location)
                                     val flameCount = 0L
                                     val saves = 0L
@@ -591,6 +595,7 @@ fun StartWindow(viewModel: RecordViewModel, context: Context) {
       AddSpot(
           latLng = viewModel.latLongList.last(),
           recordViewModel = viewModel,
+          context = context,
           onDismiss = { viewModel.addSpotClicked.value = false })
     }
     false -> {}

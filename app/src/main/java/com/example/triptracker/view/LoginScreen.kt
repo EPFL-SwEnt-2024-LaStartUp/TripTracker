@@ -160,10 +160,9 @@ fun Login(
 ) {
   Column(
       modifier = Modifier.fillMaxSize().padding(15.dp).testTag("LoginScreen"),
-      verticalArrangement = Arrangement.Top,
+      verticalArrangement = Arrangement.Center,
       horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    Spacer(modifier = Modifier.height(152.dp))
     Image(
         modifier = Modifier.width(189.dp).height(189.dp),
         painter = painterResource(id = R.drawable.logo_no_background),
@@ -181,7 +180,6 @@ fun Login(
                 fontWeight = FontWeight(400),
                 textAlign = TextAlign.Center,
             ))
-    Spacer(modifier = Modifier.height(120.dp))
     Button(
         onClick = {
           val signInIntent = authenticator.createSignInIntent(context)
