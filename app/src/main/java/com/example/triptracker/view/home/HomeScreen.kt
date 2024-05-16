@@ -2,9 +2,11 @@ package com.example.triptracker.view.home
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +15,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -46,12 +52,15 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.theme.md_theme_grey
+import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.FilterType
+import com.example.triptracker.viewmodel.HomeCategory
 import com.example.triptracker.viewmodel.HomeViewModel
 
 /**
@@ -66,6 +75,7 @@ fun HomeScreen(
     navigation: Navigation,
     profile: MutableUserProfile,
     homeViewModel: HomeViewModel = viewModel(),
+    category: HomeCategory = HomeCategory.TRENDING,
     test: Boolean = false
 ) {
   Log.d("HomeScreen", "Rendering HomeScreen")
@@ -140,22 +150,16 @@ fun HomeScreen(
                 fontSize = 1.sp)
           }
           else -> {
+
             // will display the list of itineraries
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("ItineraryList"),
-                contentPadding = PaddingValues(16.dp)) {
-                  items(itineraries) { itinerary ->
-                    Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
-                    DisplayItinerary(
-                        itinerary = itinerary,
-                        onClick = {
-                          navigation.navigateTo(Route.MAPS, itinerary.id)
-                          homeViewModel.incrementClickCount(itinerary.id)
-                        },
-                        test = test,
-                    )
-                  }
-                }
+            HomePager(
+                itineraries = itineraries,
+                navigation = navigation,
+                profile = profile,
+                homeViewModel = homeViewModel,
+                innerPadding = innerPadding,
+                test = test)
+
             /*
             TODO can be used to scroll to the top of the list
 
@@ -299,6 +303,137 @@ fun SearchBarImplementation(
         }
       }
     }
+  }
+}
+
+@Composable
+fun DisplayItineraryFromCategory(
+    itineraries: List<Itinerary>,
+    navigation: Navigation,
+    homeViewModel: HomeViewModel,
+    category: HomeCategory,
+    innerPadding: PaddingValues,
+    test: Boolean = false
+) {
+  // used to filter the itineraries by following
+  val ambientProfile = AmbientUserProfile.current
+
+  // Filter the itineraries based on the category
+  when (category) {
+    HomeCategory.TRENDING -> {
+      homeViewModel.filterTrendingWorldwide()
+    }
+    HomeCategory.FOLLOWING -> {
+      homeViewModel.filterByFollowing(ambientProfile.userProfile.value.mail)
+    }
+    HomeCategory.FAVORITES -> {
+      homeViewModel.filterByFavorite(ambientProfile.userProfile.value.mail)
+    }
+  }
+
+  LazyColumn(
+      modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("ItineraryList"),
+      contentPadding = PaddingValues(16.dp)) {
+        items(itineraries) { itinerary ->
+          Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
+          DisplayItinerary(
+              itinerary = itinerary,
+              onClick = {
+                navigation.navigateTo(Route.MAPS, itinerary.id)
+                homeViewModel.incrementClickCount(itinerary.id)
+              },
+              test = test,
+          )
+        }
+      }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun HomePager(
+    itineraries: List<Itinerary>,
+    navigation: Navigation,
+    profile: MutableUserProfile,
+    homeViewModel: HomeViewModel = viewModel(),
+    innerPadding: PaddingValues,
+    test: Boolean = false
+) {
+  val tabs = listOf("Trending", "Following", "Favorites")
+  val pagerState =
+      rememberPagerState(initialPage = 0) {
+        0 // initial page is 0, trending tab
+      }
+  var selectedTab by remember { mutableStateOf(pagerState.currentPage) }
+
+  Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+    TabRow(
+        selectedTabIndex = pagerState.currentPage,
+        modifier = Modifier.fillMaxWidth(),
+        backgroundColor = md_theme_orange) {
+          tabs.forEachIndexed { index, title ->
+            Tab(selected = index == selectedTab, onClick = { selectedTab = index }) { Text(title) }
+          }
+        }
+
+    HorizontalPager(state = pagerState) { page ->
+      Log.d("PAGE", "Page: $page")
+      when (page) {
+        0 ->
+            DisplayItineraryFromCategory(
+                itineraries = itineraries,
+                navigation = navigation,
+                homeViewModel = homeViewModel,
+                category = HomeCategory.TRENDING,
+                innerPadding = innerPadding,
+                test = test)
+        1 ->
+            DisplayItineraryFromCategory(
+                itineraries = itineraries,
+                navigation = navigation,
+                homeViewModel = homeViewModel,
+                category = HomeCategory.FOLLOWING,
+                innerPadding = innerPadding,
+                test = test)
+        2 ->
+            DisplayItineraryFromCategory(
+                itineraries = itineraries,
+                navigation = navigation,
+                homeViewModel = homeViewModel,
+                category = HomeCategory.FAVORITES,
+                innerPadding = innerPadding,
+                test = test)
+      }
+    }
+    /*
+    // Dynamically invoke the HomeScreen based on the selected tab
+    when (selectedTabIndex) {
+      0 ->
+          DisplayItineraryFromCategory(
+              itineraries = itineraries,
+              navigation = navigation,
+              homeViewModel = homeViewModel,
+              category = HomeCategory.TRENDING,
+              innerPadding = innerPadding,
+              test = test)
+      1 ->
+          DisplayItineraryFromCategory(
+              itineraries = itineraries,
+              navigation = navigation,
+              homeViewModel = homeViewModel,
+              category = HomeCategory.FOLLOWING,
+              innerPadding = innerPadding,
+              test = test)
+      2 ->
+          DisplayItineraryFromCategory(
+              itineraries = itineraries,
+              navigation = navigation,
+              homeViewModel = homeViewModel,
+              category = HomeCategory.FAVORITES,
+              innerPadding = innerPadding,
+              test = test)
+    }
+
+       */
   }
 }
 
