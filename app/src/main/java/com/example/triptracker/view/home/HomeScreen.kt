@@ -58,6 +58,7 @@ import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.theme.md_theme_grey
+import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeCategory
@@ -361,17 +362,19 @@ fun HomePager(
   val tabs = listOf("Trending", "Following", "Favorites")
   val pagerState =
       rememberPagerState(initialPage = 0) {
-        0 // initial page is 0, trending tab
+        3 // initial page is 0, trending tab
       }
   var selectedTab by remember { mutableStateOf(pagerState.currentPage) }
 
-  Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+  Column(modifier = Modifier.padding(innerPadding)) {
     TabRow(
         selectedTabIndex = pagerState.currentPage,
         modifier = Modifier.fillMaxWidth(),
         backgroundColor = md_theme_orange) {
           tabs.forEachIndexed { index, title ->
-            Tab(selected = index == selectedTab, onClick = { selectedTab = index }) { Text(title) }
+            Tab(selected = index == selectedTab, onClick = { selectedTab = index }) {
+              Text(title, color = md_theme_light_onPrimary)
+            }
           }
         }
 
