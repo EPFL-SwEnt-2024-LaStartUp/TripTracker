@@ -18,16 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.triptracker.R
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
@@ -35,8 +28,6 @@ import com.example.triptracker.view.Route
 import com.example.triptracker.view.profile.subviews.ProfileButton
 import com.example.triptracker.view.profile.subviews.ProfileCounts
 import com.example.triptracker.view.profile.subviews.ProfileInfoView
-import com.example.triptracker.view.theme.md_theme_dark_gray
-import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
 
@@ -127,56 +118,3 @@ fun UserProfileOverview(
       }
 }
 
-fun bigNumberStyle(size: Int): TextStyle {
-  return TextStyle(
-      fontSize = (size * 0.024f).sp,
-      lineHeight = (size * 0.016f).sp,
-      fontFamily = FontFamily(Font(R.font.montserrat)),
-      fontWeight = FontWeight.Bold,
-      color = md_theme_light_dark,
-      textAlign = TextAlign.Center,
-      letterSpacing = (size * 0.0005f).sp)
-}
-
-fun categoryTextStyle(size: Int): TextStyle {
-  return TextStyle(
-      fontSize = (size * 0.012f).sp,
-      lineHeight = (size * 0.016f).sp,
-      fontFamily = FontFamily(Font(R.font.montserrat)),
-      fontWeight = FontWeight.Light,
-      color = md_theme_dark_gray,
-      textAlign = TextAlign.Center,
-      letterSpacing = (size * 0.0005f).sp)
-}
-
-fun buttonTextStyle(size: Int): TextStyle {
-  return TextStyle(
-      fontSize = (size * 0.020f).sp,
-      lineHeight = (size * 0.016f).sp,
-      fontFamily = FontFamily(Font(R.font.montserrat)),
-      fontWeight = FontWeight.SemiBold,
-      color = md_theme_dark_gray,
-      letterSpacing = (size * 0.0005f).sp)
-}
-
-fun secondaryTitleStyle(size: Int): TextStyle {
-  return TextStyle(
-      fontSize = (size * 0.014f).sp,
-      lineHeight = (size * 0.016f).sp,
-      fontFamily = FontFamily(Font(R.font.montserrat)),
-      fontWeight = FontWeight(400),
-      color = md_theme_light_dark,
-      textAlign = TextAlign.Right,
-      letterSpacing = (size * 0.0005f).sp)
-}
-
-fun secondaryContentStyle(size: Int): TextStyle {
-  return TextStyle(
-      fontSize = (size * 0.012f).sp,
-      lineHeight = (size * 0.016f).sp,
-      fontFamily = FontFamily(Font(R.font.montserrat)),
-      fontWeight = FontWeight(400),
-      color = md_theme_dark_gray,
-      textAlign = TextAlign.Right,
-      letterSpacing = (size * 0.0005f).sp)
-}
