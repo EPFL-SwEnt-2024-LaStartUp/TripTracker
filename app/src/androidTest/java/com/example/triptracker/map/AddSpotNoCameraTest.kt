@@ -27,9 +27,10 @@ class AddSpotNoCameraTest {
   private val appContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
   @get:Rule val composeTestRule = createComposeRule()
 
+  private val mockContext = mockk<Context>()
+
   @Test
   fun noCameraAllowedTest() {
-    val mockContext = mockk<Context>()
 
     every { ActivityCompat.checkSelfPermission(mockContext, Manifest.permission.CAMERA) } returns
         android.content.pm.PackageManager.PERMISSION_DENIED
@@ -50,7 +51,7 @@ class AddSpotNoCameraTest {
           executor = cameraExecutor,
           onCaptureClosedSuccess = {},
           onCaptureClosedError = {},
-          context = appContext)
+          context = mockContext)
     }
 
     // Check if the camera is displayed
@@ -84,29 +85,25 @@ class AddSpotNoCameraTest {
 
   @Test
   fun runPermissionRequestsAllowedTest() {
-    val mockContext = mockk<Context>()
-
     every { ActivityCompat.checkSelfPermission(mockContext, Manifest.permission.CAMERA) } returns
         android.content.pm.PackageManager.PERMISSION_DENIED
 
-    composeTestRule.setContent { LaunchCameraPermissionRequest(appContext) }
-    composeTestRule.onNodeWithTag("AllowCameraPermissionButton").assertExists()
-    composeTestRule.onNodeWithTag("NoAllowCameraPermissionButton").assertExists()
-
-    composeTestRule.onNodeWithTag("NoAllowCameraPermissionButton").performClick()
-  }
-
-  @Test
-  fun runPermissionRequestsNotAllowedTest() {
-    val mockContext = mockk<Context>()
-
-    every { ActivityCompat.checkSelfPermission(mockContext, Manifest.permission.CAMERA) } returns
-        android.content.pm.PackageManager.PERMISSION_GRANTED
-
-    composeTestRule.setContent { LaunchCameraPermissionRequest(appContext) }
+    composeTestRule.setContent { LaunchCameraPermissionRequest(mockContext) }
     composeTestRule.onNodeWithTag("AllowCameraPermissionButton").assertExists()
     composeTestRule.onNodeWithTag("NoAllowCameraPermissionButton").assertExists()
 
     composeTestRule.onNodeWithTag("AllowCameraPermissionButton").performClick()
+  }
+
+  @Test
+  fun runPermissionRequestsNotAllowedTest() {
+    every { ActivityCompat.checkSelfPermission(mockContext, Manifest.permission.CAMERA) } returns
+        android.content.pm.PackageManager.PERMISSION_DENIED
+
+    composeTestRule.setContent { LaunchCameraPermissionRequest(mockContext) }
+    composeTestRule.onNodeWithTag("AllowCameraPermissionButton").assertExists()
+    composeTestRule.onNodeWithTag("NoAllowCameraPermissionButton").assertExists()
+
+    composeTestRule.onNodeWithTag("NoAllowCameraPermissionButton").performClick()
   }
 }
