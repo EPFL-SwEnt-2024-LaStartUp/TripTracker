@@ -97,7 +97,7 @@ fun DisplayItinerary(
   var showProfilePicture by remember { mutableStateOf(false) }
 
   var boxHeightToDisplay = 0.dp
-  if (checkIfImage(itinerary)) {
+  if (checkIfImage(itinerary) && displayImage) {
     boxHeightToDisplay = 525.dp
   } else {
     boxHeightToDisplay = boxHeight
@@ -219,7 +219,7 @@ fun DisplayItinerary(
                   color = md_theme_orange, // This is the orange color
                   fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                   fontSize = 14.sp)
-              Spacer(modifier = Modifier.height(30.dp))
+              Spacer(modifier = Modifier.height(30.dp).weight(1f))
               Text(
                   text = pinListString,
                   fontSize = 14.sp,
