@@ -24,6 +24,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,6 +55,7 @@ import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_light_dark
+import com.example.triptracker.view.theme.md_theme_light_primary
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
@@ -110,8 +112,8 @@ fun UserProfileOverview(
                       Modifier.shadow(
                               elevation = 15.dp,
                               shape = CircleShape,
-                              ambientColor = md_theme_light_dark,
-                              spotColor = md_theme_light_dark)
+                              ambientColor = md_theme_light_primary,
+                              spotColor = md_theme_light_primary)
                           .padding(start = 15.dp)
                           .size((LocalConfiguration.current.screenHeightDp * 0.11f).dp)
                           .clip(CircleShape),
@@ -136,7 +138,7 @@ fun UserProfileOverview(
                             lineHeight = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
                             fontFamily = FontFamily(Font(R.font.montserrat)),
                             fontWeight = FontWeight(700),
-                            color = md_theme_light_dark,
+                            color = MaterialTheme.colorScheme.inverseSurface,
                             textAlign = TextAlign.Right,
                             letterSpacing =
                                 (LocalConfiguration.current.screenHeightDp * 0.0005f).sp,
@@ -247,35 +249,38 @@ fun UserProfileOverview(
       }
 }
 
+@Composable
 fun bigNumberStyle(size: Int): TextStyle {
   return TextStyle(
       fontSize = (size * 0.024f).sp,
       lineHeight = (size * 0.016f).sp,
       fontFamily = FontFamily(Font(R.font.montserrat)),
       fontWeight = FontWeight.Bold,
-      color = md_theme_light_dark,
+      color = MaterialTheme.colorScheme.inverseSurface,
       textAlign = TextAlign.Center,
       letterSpacing = (size * 0.0005f).sp)
 }
 
+@Composable
 fun categoryTextStyle(size: Int): TextStyle {
   return TextStyle(
       fontSize = (size * 0.012f).sp,
       lineHeight = (size * 0.016f).sp,
       fontFamily = FontFamily(Font(R.font.montserrat)),
       fontWeight = FontWeight.Light,
-      color = md_theme_dark_gray,
+      color = MaterialTheme.colorScheme.inverseSurface,
       textAlign = TextAlign.Center,
       letterSpacing = (size * 0.0005f).sp)
 }
 
+@Composable
 fun buttonTextStyle(size: Int): TextStyle {
   return TextStyle(
       fontSize = (size * 0.020f).sp,
       lineHeight = (size * 0.016f).sp,
       fontFamily = FontFamily(Font(R.font.montserrat)),
       fontWeight = FontWeight.SemiBold,
-      color = md_theme_dark_gray,
+      color = MaterialTheme.colorScheme.outlineVariant,
       letterSpacing = (size * 0.0005f).sp)
 }
 
@@ -290,13 +295,14 @@ fun secondaryTitleStyle(size: Int): TextStyle {
       letterSpacing = (size * 0.0005f).sp)
 }
 
+@Composable
 fun secondaryContentStyle(size: Int): TextStyle {
   return TextStyle(
       fontSize = (size * 0.012f).sp,
       lineHeight = (size * 0.016f).sp,
       fontFamily = FontFamily(Font(R.font.montserrat)),
       fontWeight = FontWeight(400),
-      color = md_theme_dark_gray,
+      color = MaterialTheme.colorScheme.inverseSurface,
       textAlign = TextAlign.Right,
       letterSpacing = (size * 0.0005f).sp)
 }
@@ -310,13 +316,13 @@ fun ProfileButton(
 ) {
   Button(
       onClick = onClick,
-      colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
+      colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
       modifier =
           modifier
               .height((LocalConfiguration.current.screenHeightDp * 0.17f).dp)
               .width((LocalConfiguration.current.screenWidthDp * 0.425f).dp)
               .testTag("ProfileButton")
-              .background(color = md_theme_light_dark, shape = RoundedCornerShape(16.dp))) {
+              .background(color = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(16.dp))) {
         Column(modifier = Modifier.fillMaxWidth()) {
           Icon(
               icon,

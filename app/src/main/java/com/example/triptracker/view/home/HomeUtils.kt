@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -115,7 +116,7 @@ fun DisplayItinerary(
               Modifier.fillMaxWidth()
                   .padding(paddingAround)
                   .height(boxHeightToDisplay)
-                  .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))) {
+                  .background(color = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(35.dp))) {
 
             // Close button
             IconButton(
@@ -143,7 +144,7 @@ fun DisplayItinerary(
               Modifier.fillMaxWidth()
                   .padding(paddingAround)
                   .height(boxHeightToDisplay)
-                  .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))
+                  .background(color = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(35.dp))
                   .clickable { // When you click on an itinerary, it should bring you to the map
                     // overview with the selected itinerary highlighted and the first pinned places
                     onClick()
