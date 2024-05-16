@@ -285,13 +285,14 @@ fun buttonTextStyle(size: Int): TextStyle {
       letterSpacing = (size * 0.0005f).sp)
 }
 
+@Composable
 fun secondaryTitleStyle(size: Int): TextStyle {
   return TextStyle(
       fontSize = (size * 0.014f).sp,
       lineHeight = (size * 0.016f).sp,
       fontFamily = FontFamily(Font(R.font.montserrat)),
       fontWeight = FontWeight(400),
-      color = md_theme_light_dark,
+      color = MaterialTheme.colorScheme.inverseSurface,
       textAlign = TextAlign.Right,
       letterSpacing = (size * 0.0005f).sp)
 }
