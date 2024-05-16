@@ -1,6 +1,7 @@
 package com.example.triptracker.viewmodel
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,6 +14,7 @@ import com.example.triptracker.model.profile.UserProfileList
 import com.example.triptracker.model.repository.ImageRepository
 import com.example.triptracker.model.repository.Response
 import com.example.triptracker.model.repository.UserProfileRepository
+import com.example.triptracker.view.Navigation
 import kotlinx.coroutines.launch
 
 /**
@@ -241,5 +243,56 @@ class UserProfileViewModel(
     favorites.add(id)
     profile.userProfile.value = profile.userProfile.value.copy(favoritesPaths = favorites)
     updateUserProfileInDb(profile.userProfile.value)
+  }
+
+  /**
+   * This function updates the user profile in the database on save.
+   *
+   * @param navigation : Navigation object that manages the navigation in the application.
+   * @param isCreated : Boolean indicating if the user profile is created. Navigation needs to be
+   *   used after the callback else the view will be destroyed and resulting in a crash of the
+   *   upload of the picture.
+   * @param onLoadingChange : Function to execute when the loading status changes.
+   * @param selectedPicture : Uri of the selected picture to update the user profile (can be null).
+   * @param profile : User profile to update.
+   * @return the updated user profile potentially with the new picture.
+   */
+  fun updateProfile(
+      navigation: Navigation,
+      isCreated: Boolean,
+      onLoadingChange: () -> Unit,
+      selectedPicture: Uri?,
+      profile: MutableUserProfile
+  ) {
+    onLoadingChange()
+    if (selectedPicture != null) {
+      addProfilePictureToStorage(selectedPicture!!) { resp ->
+        val imageUrl =
+            if (resp is Response.Success) {
+              resp.data!!.toString()
+            } else {
+              profile.userProfile.value
+                  .profileImageUrl // Keep the old image if the new one could not be uploaded
+            }
+        val newProfile = profile.userProfile.value.copy(profileImageUrl = imageUrl)
+        Log.d("Profile picture updated", newProfile.toString())
+        updateUserProfileInDb(newProfile)
+        profile.userProfile.value = newProfile
+        if (!isCreated) {
+          navigation.goBack()
+        } else {
+          navigation.navigateTo(navigation.getStartingDestination())
+        }
+        onLoadingChange()
+      }
+    } else {
+      updateUserProfileInDb(profile.userProfile.value)
+      if (!isCreated) {
+        navigation.goBack()
+      } else {
+        navigation.navigateTo(navigation.getStartingDestination())
+      }
+      onLoadingChange()
+    }
   }
 }

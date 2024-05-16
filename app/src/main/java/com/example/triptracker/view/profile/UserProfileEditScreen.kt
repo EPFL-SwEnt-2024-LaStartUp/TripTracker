@@ -42,6 +42,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -51,6 +52,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -63,7 +65,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
-import com.example.triptracker.model.repository.Response
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
@@ -73,6 +74,7 @@ import com.example.triptracker.view.theme.md_theme_light_error
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -111,12 +113,14 @@ fun UserProfileEditScreen(
 
   /* Mutable state variable that holds the image url of the user profile */
   var imageUrl by remember { mutableStateOf(profile.userProfile.value.profileImageUrl) }
-  var isImageUrlEmpty by remember {
-    mutableStateOf(profile.userProfile.value.profileImageUrl?.isEmpty())
-  }
 
+  /* Mutable state variable that holds the loading state of the screen */
   var isLoading by remember { mutableStateOf(false) }
 
+  /** Alpha value for the screen depending on loading state */
+  val alpha = if (!isLoading) 1f else 0.8f
+
+  /* Mutable state variable that holds the scroll state of the screen */
   val scrollState = rememberScrollState()
 
   // Variable to store the state of the new profile picture
@@ -134,68 +138,8 @@ fun UserProfileEditScreen(
         }
       }
 
-  /** Alpha value for the screen depending on loading state */
-  val alpha = if (!isLoading) 1f else 0.9f
-
-  /**
-   * his function updates the user profile in the database on save.
-   *
-   * @param navigation : Navigation object that manages the navigation in the application.
-   * @param isCreated : Boolean indicating if the user profile is created. Navigation needs to be
-   *   used after the callback else the view will be destroyed and resulting in a crash of the
-   *   upload of the picture.
-   */
-  fun updateProfile(navigation: Navigation, isCreated: Boolean) {
-    isLoading = true
-    if (selectedPicture != null) {
-      userProfileViewModel.addProfilePictureToStorage(selectedPicture!!) { resp ->
-        imageUrl =
-            if (resp is Response.Success) {
-              resp.data!!.toString()
-            } else {
-              imageUrl // Keep the old image if the new one could not be uploaded
-            }
-        val newProfile =
-            UserProfile(
-                mail = mail,
-                name = name,
-                surname = surname,
-                birthdate = birthdate,
-                username = username,
-                profileImageUrl = imageUrl,
-                profile.userProfile.value.followers,
-                profile.userProfile.value.following)
-        Log.d("TRALALALALALL", newProfile.toString())
-        userProfileViewModel.updateUserProfileInDb(newProfile)
-        profile.userProfile.value = newProfile
-        if (!isCreated) {
-          navigation.goBack()
-        } else {
-          navigation.navigateTo(navigation.getStartingDestination())
-        }
-        isLoading = false
-      }
-    } else {
-      val newProfile =
-          UserProfile(
-              mail = mail,
-              name = name,
-              surname = surname,
-              birthdate = birthdate,
-              username = username,
-              profileImageUrl = imageUrl,
-              profile.userProfile.value.followers,
-              profile.userProfile.value.following)
-      userProfileViewModel.updateUserProfileInDb(newProfile)
-      profile.userProfile.value = newProfile
-      if (!isCreated) {
-        navigation.goBack()
-      } else {
-        navigation.navigateTo(navigation.getStartingDestination())
-      }
-      isLoading = false
-    }
-  }
+  /** Maximum number of characters for the username */
+  val MAX_CHARS_USERNAME = 30
 
   Scaffold(
       topBar = {},
@@ -207,7 +151,7 @@ fun UserProfileEditScreen(
                     .padding(innerPadding)
                     .padding(top = 30.dp, bottom = 30.dp, start = 25.dp, end = 25.dp)
                     .fillMaxWidth()
-                    .background(md_theme_light_dark.copy(alpha), shape = RoundedCornerShape(20.dp)),
+                    .background(md_theme_light_dark, shape = RoundedCornerShape(20.dp)),
             contentAlignment = Alignment.TopCenter) {
 
               // Loading bar for when the save button is clicked
@@ -222,7 +166,7 @@ fun UserProfileEditScreen(
                 false -> {}
               }
               Column(
-                  modifier = Modifier.fillMaxSize().verticalScroll(scrollState),
+                  modifier = Modifier.alpha(alpha).fillMaxSize().verticalScroll(scrollState),
                   horizontalAlignment = Alignment.Start,
                   verticalArrangement = Arrangement.SpaceEvenly) {
                     Spacer(modifier = Modifier.height(25.dp))
@@ -238,29 +182,36 @@ fun UserProfileEditScreen(
                                   InsertPicture(pickMedia, selectedPicture, imageUrl)
                                 }
                             // Position the small orange circle with a plus sign
-                            when (selectedPicture == null && imageUrl.isNullOrEmpty()) {
-                              true -> {
-                                Box(
-                                    modifier =
-                                        Modifier.size(24.dp)
-                                            .background(md_theme_orange, shape = CircleShape)
-                                            .align(Alignment.BottomEnd)) {
-                                      Icon(
-                                          imageVector = Icons.Default.Add,
-                                          contentDescription = "Add",
-                                          tint = Color.White,
-                                          modifier = Modifier.padding(4.dp))
-                                    }
-                              }
-                              false -> {}
-                            }
+                            Box(
+                                modifier =
+                                    Modifier.size(21.dp)
+                                        .background(md_theme_light_dark, shape = CircleShape)
+                                        .align(Alignment.BottomEnd)
+                                        .clickable {
+                                          pickMedia.launch(
+                                              PickVisualMediaRequest(
+                                                  ActivityResultContracts.PickVisualMedia
+                                                      .ImageAndVideo))
+                                        }) {
+                                  Box(
+                                      modifier =
+                                          Modifier.size(15.dp)
+                                              .background(md_theme_orange, shape = CircleShape)
+                                              .align(Alignment.Center)) {
+                                        Icon(
+                                            imageVector = Icons.Default.Add,
+                                            contentDescription = "Add",
+                                            tint = Color.White,
+                                            modifier = Modifier.padding(1.dp))
+                                      }
+                                }
                           }
                           Spacer(modifier = Modifier.width(25.dp))
                           Column(
                               modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8f),
                               verticalArrangement = Arrangement.Center) {
                                 Text(
-                                    modifier = Modifier.padding(end = 30.dp),
+                                    modifier = Modifier.padding(bottom = 4.dp, end = 30.dp),
                                     text = "Username",
                                     fontSize = 14.sp,
                                     fontFamily = Montserrat,
@@ -269,10 +220,11 @@ fun UserProfileEditScreen(
                                 OutlinedTextField(
                                     singleLine = true,
                                     value = username,
-                                    label = {},
                                     onValueChange = {
-                                      username = it
-                                      isUsernameEmpty = it.isEmpty()
+                                      if (it.length <= MAX_CHARS_USERNAME) {
+                                        username = it
+                                        isUsernameEmpty = it.isEmpty()
+                                      }
                                     },
                                     modifier =
                                         Modifier.height(65.dp).padding(bottom = 5.dp, end = 30.dp),
@@ -299,7 +251,7 @@ fun UserProfileEditScreen(
                                         ))
                               }
                         }
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     ProfileEditTextField(
                         "Name",
                         name,
@@ -308,7 +260,7 @@ fun UserProfileEditScreen(
                           isNameEmpty = it.isEmpty()
                         },
                         isNameEmpty)
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     ProfileEditTextField(
                         "Surname",
                         surname,
@@ -317,7 +269,7 @@ fun UserProfileEditScreen(
                           isSurnameEmpty = it.isEmpty()
                         },
                         isSurnameEmpty)
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     ProfileEditTextField(
                         "Mail",
                         mail,
@@ -327,7 +279,7 @@ fun UserProfileEditScreen(
                         },
                         isMailEmpty,
                         true)
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     val isOpen = remember { mutableStateOf(false) }
                     Text(
@@ -336,12 +288,11 @@ fun UserProfileEditScreen(
                         fontFamily = Montserrat,
                         fontWeight = FontWeight.Normal,
                         color = md_theme_grey,
-                        modifier = Modifier.padding(start = 30.dp, end = 30.dp))
+                        modifier = Modifier.padding(bottom = 4.dp, start = 30.dp, end = 30.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                       OutlinedTextField(
                           readOnly = true,
                           value = birthdate,
-                          label = {},
                           onValueChange = {},
                           modifier =
                               Modifier.height(65.dp)
@@ -395,9 +346,8 @@ fun UserProfileEditScreen(
                             })
                       }
                     }
-                    Spacer(modifier = Modifier.height(25.dp))
                     Box(
-                        modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                        modifier = Modifier.fillMaxWidth().height(200.dp),
                         contentAlignment = Alignment.Center) {
                           SaveButton(
                               canSave =
@@ -405,7 +355,24 @@ fun UserProfileEditScreen(
                                       !isSurnameEmpty &&
                                       !isBirthdateEmpty &&
                                       !isUsernameEmpty,
-                              action = { updateProfile(navigation, isCreated) })
+                              action = {
+                                profile.userProfile.value =
+                                    UserProfile(
+                                        mail = mail,
+                                        name = name,
+                                        surname = surname,
+                                        birthdate = birthdate,
+                                        username = username,
+                                        profileImageUrl = imageUrl,
+                                        followers = profile.userProfile.value.followers,
+                                        following = profile.userProfile.value.following)
+                                userProfileViewModel.updateProfile(
+                                    navigation = navigation,
+                                    isCreated = isCreated,
+                                    onLoadingChange = { isLoading = !isLoading },
+                                    selectedPicture = selectedPicture,
+                                    profile = profile)
+                              })
                         }
                   }
             }
@@ -434,7 +401,7 @@ fun ProfileEditTextField(
       fontFamily = Montserrat,
       fontWeight = FontWeight.Normal,
       color = md_theme_grey,
-      modifier = Modifier.padding(start = 30.dp, end = 30.dp),
+      modifier = Modifier.padding(bottom = 4.dp, start = 30.dp, end = 30.dp),
   )
   OutlinedTextField(
       readOnly = isReadOnly,
@@ -442,7 +409,6 @@ fun ProfileEditTextField(
       singleLine = true,
       value = value,
       onValueChange = { onValueChange(it) },
-      label = {},
       modifier =
           Modifier.height(65.dp)
               .fillMaxWidth(1f)
@@ -499,7 +465,16 @@ fun SaveButton(canSave: Boolean = true, action: () -> Unit = {}) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomDatePickerDialog(onAccept: (Long?) -> Unit, onCancel: () -> Unit) {
-  val state = rememberDatePickerState()
+  val maxDate = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
+  val selectableDates =
+      object : SelectableDates {
+        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+          return utcTimeMillis <= maxDate
+        }
+      }
+
+  val state = rememberDatePickerState(selectableDates = selectableDates)
 
   DatePickerDialog(
       onDismissRequest = {},
@@ -575,12 +550,3 @@ fun InsertPicture(
     }
   }
 }
-
-/** This function previews the UserProfileEditScreen. */
-// @Preview
-// @Composable
-// fun UserProfileEditScreenPreview() {
-//   val navController = rememberNavController()
-//   val navigation = remember(navController) { Navigation(navController) }
-//   UserProfileEditScreen(navigation)
-// }

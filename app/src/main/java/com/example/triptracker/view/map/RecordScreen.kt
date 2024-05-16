@@ -507,11 +507,17 @@ fun Map(
                                     // but not
                                     // implemented yet
                                     val meanLocation = meanLocation(viewModel.latLongList.toList())
+                                    var locationName = ""
+                                    viewModel.getCityAndCountry(
+                                        meanLocation.latitude.toFloat(),
+                                        meanLocation.longitude.toFloat()) {
+                                          locationName = it
+                                        }
                                     val location =
                                         Location(
                                             meanLocation.latitude,
                                             meanLocation.longitude,
-                                            "Mean Path Location")
+                                            locationName)
                                     // (default device location)
                                     val flameCount = 0L
                                     val saves = 0L
