@@ -256,7 +256,7 @@ fun RemoveFriendButton(
                 containerColor = md_theme_grey, contentColor = md_theme_light_onPrimary)
           },
       modifier =
-          Modifier.height((LocalConfiguration.current.screenHeightDp * 0.06f).dp)
+          Modifier.height((LocalConfiguration.current.screenHeightDp * 0.05f).dp)
               .width((LocalConfiguration.current.screenWidthDp * 0.23f).dp)
               .testTag("RemoveButton"),
       contentPadding =
@@ -276,8 +276,8 @@ fun RemoveFriendButton(
             modifier = Modifier.fillMaxWidth(),
             style =
                 TextStyle(
-                    fontSize = (LocalConfiguration.current.screenHeightDp * 0.018f).sp,
-                    lineHeight = (LocalConfiguration.current.screenHeightDp * 0.018f).sp,
+                    fontSize = (LocalConfiguration.current.screenHeightDp * 0.017f).sp,
+                    lineHeight = (LocalConfiguration.current.screenHeightDp * 0.017f).sp,
                     fontFamily = Montserrat,
                     fontWeight = FontWeight(500),
                     color = MaterialTheme.colorScheme.surface,
