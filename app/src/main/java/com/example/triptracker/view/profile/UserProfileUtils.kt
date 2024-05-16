@@ -11,6 +11,13 @@ import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_light_dark
 
 /** This file contains helper function for the layout of the UserProfile screen. */
+
+/**
+ * This function returns a TextStyle for the big number displayed in the UserProfile screen.
+ *
+ * @param size : the size of the screen.
+ * @return a TextStyle for the big number.
+ */
 fun bigNumberStyle(size: Int): TextStyle {
   return TextStyle(
       fontSize = (size * 0.024f).sp,
@@ -22,6 +29,12 @@ fun bigNumberStyle(size: Int): TextStyle {
       letterSpacing = (size * 0.0005f).sp)
 }
 
+/**
+ * This function returns a TextStyle for the category text displayed in the UserProfile screen.
+ *
+ * @param size : the size of the screen.
+ * @return a TextStyle for the category text.
+ */
 fun categoryTextStyle(size: Int): TextStyle {
   return TextStyle(
       fontSize = (size * 0.012f).sp,
@@ -33,6 +46,12 @@ fun categoryTextStyle(size: Int): TextStyle {
       letterSpacing = (size * 0.0005f).sp)
 }
 
+/**
+ * This function returns a TextStyle for the button text displayed in the UserProfile screen.
+ *
+ * @param size : the size of the screen.
+ * @return a TextStyle for the button text.
+ */
 fun buttonTextStyle(size: Int): TextStyle {
   return TextStyle(
       fontSize = (size * 0.020f).sp,
@@ -43,6 +62,12 @@ fun buttonTextStyle(size: Int): TextStyle {
       letterSpacing = (size * 0.0005f).sp)
 }
 
+/**
+ * This function returns a TextStyle for the secondary title displayed in the UserProfile screen.
+ *
+ * @param size : the size of the screen.
+ * @return a TextStyle for the secondary title.
+ */
 fun secondaryTitleStyle(size: Int): TextStyle {
   return TextStyle(
       fontSize = (size * 0.014f).sp,
@@ -54,6 +79,12 @@ fun secondaryTitleStyle(size: Int): TextStyle {
       letterSpacing = (size * 0.0005f).sp)
 }
 
+/**
+ * This function returns a TextStyle for the secondary content displayed in the UserProfile screen.
+ *
+ * @param size : the size of the screen.
+ * @return a TextStyle for the secondary content.
+ */
 fun secondaryContentStyle(size: Int): TextStyle {
   return TextStyle(
       fontSize = (size * 0.012f).sp,
