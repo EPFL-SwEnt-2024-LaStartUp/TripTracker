@@ -1,10 +1,8 @@
 package com.example.triptracker.viewmodel
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.geocoder.NominatimApi
 import com.example.triptracker.model.itinerary.Itinerary
@@ -58,7 +56,9 @@ class MapViewModel(
 
   val displayPicturePopUp = mutableStateOf(false)
 
-  val popUpState = popupState.DISPLAYITINERARY
+  var popUpState = mutableStateOf(popupState.DISPLAYITINERARY)
+
+  var asStartItinerary = mutableStateOf(false)
 
   init {
     viewModelScope.launch { getAllItineraries() }

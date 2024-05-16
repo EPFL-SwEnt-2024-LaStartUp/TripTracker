@@ -3,19 +3,30 @@ package com.example.triptracker.view.map
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
@@ -50,6 +61,7 @@ import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.home.DisplayItinerary
 import com.example.triptracker.view.theme.Montserrat
+import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
@@ -167,7 +179,7 @@ fun Map(
   var deviceLocation by remember { mutableStateOf(DEFAULT_LOCATION) }
   val coroutineScope = rememberCoroutineScope()
 
-  var mapPopupState by remember { mutableStateOf(mapViewModel.popUpState) }
+  // var mapPopupState by remember { mutableStateOf(mapViewModel.popUpState) }
   val pathList by mapViewModel.pathList.observeAsState()
 
   val cameraPositionState = rememberCameraPositionState {
@@ -182,10 +194,12 @@ fun Map(
   }
   var visibleRegion: VisibleRegion?
 
-  val displayPopUp by remember { mutableStateOf(mapViewModel.displayPopUp) }
-  var displayPicturesPopUp by remember { mutableStateOf(mapViewModel.displayPicturePopUp) }
+  // val displayPopUp by remember { mutableStateOf(mapViewModel.displayPopUp) }
+  // var displayPicturesPopUp by remember { mutableStateOf(mapViewModel.displayPicturePopUp) }
 
   var selectedPolyline by remember { mapViewModel.selectedPolylineState }
+
+  var showCancelDialog by remember { mutableStateOf(false) }
 
   // When the camera is moving, the city name is updated in the top bar with geo decoding
   LaunchedEffect(cameraPositionState.isMoving) {
@@ -231,7 +245,7 @@ fun Map(
           selectedPolyline = mapViewModel.selectedPolylineState.value
 
           // display the path popup
-          displayPopUp.value = true
+          mapViewModel.displayPopUp.value = true
         }
       }
     }
@@ -251,9 +265,17 @@ fun Map(
           properties = properties,
           uiSettings = ui,
           onMapClick = {
-            selectedPolyline = mapViewModel.DUMMY_SELECTED_POLYLINE
-            displayPopUp.value = false
-            displayPicturesPopUp.value = false
+            if (!mapViewModel.asStartItinerary.value) {
+              selectedPolyline = mapViewModel.DUMMY_SELECTED_POLYLINE
+              mapViewModel.displayPopUp.value = false
+              mapViewModel.displayPicturePopUp.value = false
+            } else {
+              if (mapViewModel.displayPicturePopUp.value) {
+                mapViewModel.displayPicturePopUp.value = false
+                mapViewModel.displayPopUp.value = true
+                mapViewModel.popUpState.value = popupState.PATHOVERLAY
+              }
+            }
           },
           onMapLoaded = {
             // decode the city name and update the top bar
@@ -274,9 +296,11 @@ fun Map(
                   color = md_theme_orange,
                   width = if (isSelected) 25f else 15f,
                   onClick = {
-                    selectedPolyline = MapViewModel.SelectedPolyline(location, latLngList[0])
-                    mapPopupState = popupState.DISPLAYITINERARY
-                    displayPopUp.value = true
+                    if (!mapViewModel.asStartItinerary.value) {
+                      selectedPolyline = MapViewModel.SelectedPolyline(location, latLngList[0])
+                      mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
+                      mapViewModel.displayPopUp.value = true
+                    }
                   })
 
               // Display the start marker of the polyline and a thicker path when selected
@@ -301,9 +325,9 @@ fun Map(
                         // Display the pin information
                         mapViewModel.selectedPin.value = pin
 
-                        displayPicturesPopUp.value = true
+                        mapViewModel.displayPicturePopUp.value = true
 
-                        displayPopUp.value = false
+                        mapViewModel.displayPopUp.value = false
 
                         true
                       }) {
@@ -317,15 +341,100 @@ fun Map(
             }
           }
     }
+    if (showCancelDialog) {
+      AlertDialog(
+          shape = RoundedCornerShape(15.dp),
+          modifier = Modifier.align(Alignment.Center),
+          onDismissRequest = { showCancelDialog = false },
+          title = {
+            Text(
+                text = "Cancel Itinerary",
+                fontSize = 20.sp,
+                fontFamily = Montserrat,
+                fontWeight = FontWeight.Bold,
+                color = md_theme_light_onPrimary)
+          },
+          text = {
+            Text(
+                text = "Are you sure you want to cancel the itinerary?",
+                fontSize = 16.sp,
+                fontFamily = Montserrat,
+                fontWeight = FontWeight.Normal,
+                color = md_theme_light_outline)
+          },
+          confirmButton = {
+            Button(
+                modifier = Modifier.testTag("YesCancelItineraryButton"),
+                onClick = {
+                  mapViewModel.asStartItinerary.value = false
+                  mapViewModel.displayPopUp.value = true
+                  mapViewModel.displayPicturePopUp.value = false
+                  mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
+                  showCancelDialog = false
+                },
+                colors =
+                    ButtonDefaults.buttonColors(
+                        backgroundColor = md_theme_light_dark, contentColor = Color.White),
+                shape = RoundedCornerShape(35.dp),
+            ) {
+              Text(
+                  text = "Yes",
+                  fontSize = 14.sp,
+                  fontFamily = Montserrat,
+                  fontWeight = FontWeight.SemiBold,
+              )
+            }
+          },
+          dismissButton = {
+            Button(
+                modifier = Modifier.testTag("NoCancelItineraryButton"),
+                onClick = { showCancelDialog = false },
+                colors =
+                    ButtonDefaults.buttonColors(
+                        backgroundColor = md_theme_light_black, contentColor = Color.White),
+                shape = RoundedCornerShape(35.dp)) {
+                  Text(
+                      text = "No",
+                      fontSize = 14.sp,
+                      fontFamily = Montserrat,
+                      fontWeight = FontWeight.SemiBold,
+                  )
+                }
+          })
+    }
 
     Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
-      Text(
-          text = mapViewModel.cityNameState.value,
-          modifier = Modifier.padding(30.dp).align(Alignment.TopCenter),
-          fontSize = 24.sp,
-          fontFamily = Montserrat,
-          fontWeight = FontWeight.SemiBold,
-          color = md_theme_light_dark)
+      Row(
+          modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth().padding(10.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.SpaceBetween) {
+            Spacer(modifier = Modifier.width(100.dp))
+            Text(
+                text = mapViewModel.cityNameState.value,
+                modifier = Modifier.padding(30.dp),
+                fontSize = 24.sp,
+                fontFamily = Montserrat,
+                fontWeight = FontWeight.SemiBold,
+                color = md_theme_light_dark)
+            if (mapViewModel.asStartItinerary.value) {
+              Button(
+                  colors =
+                      ButtonDefaults.buttonColors(
+                          backgroundColor = md_theme_light_dark, contentColor = Color.White),
+                  shape = RoundedCornerShape(35.dp),
+                  onClick = { showCancelDialog = true },
+                  modifier = Modifier.width(100.dp).testTag("CancelItineraryButton")) {
+                    Text(
+                        text = "Cancel",
+                        fontSize = 14.sp,
+                        fontFamily = Montserrat,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                  }
+            } else {
+              Spacer(modifier = Modifier.width(100.dp))
+            }
+          }
     }
     Row(
         modifier = Modifier.align(Alignment.BottomStart),
@@ -333,8 +442,8 @@ fun Map(
           Box(modifier = Modifier.padding(horizontal = 35.dp, vertical = 65.dp)) {
             if (ui.myLocationButtonEnabled &&
                 properties.isMyLocationEnabled &&
-                !displayPopUp.value &&
-                !displayPicturesPopUp.value) {
+                !mapViewModel.displayPopUp.value &&
+                !mapViewModel.displayPicturePopUp.value) {
               DisplayCenterLocationButton(
                   coroutineScope = coroutineScope,
                   deviceLocation = deviceLocation,
@@ -350,19 +459,19 @@ fun Map(
             }
           }
         }
-    if (displayPopUp.value) {
+    if (mapViewModel.displayPopUp.value) {
 
       if (mapViewModel.selectedPolylineState.value != null) {
         // Display the itinerary of the selected polyline
         // (only when the polyline is selected)
-        when (mapPopupState) {
+        when (mapViewModel.popUpState.value) {
           popupState.DISPLAYITINERARY -> {
             Box(
                 modifier =
                     Modifier.fillMaxHeight(0.3f).fillMaxWidth().align(Alignment.BottomCenter)) {
                   DisplayItinerary(
                       itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                      onClick = { mapPopupState = popupState.DISPLAYPIN },
+                      onClick = { mapViewModel.popUpState.value = popupState.DISPLAYPIN },
                       test = false,
                   )
                 }
@@ -371,87 +480,102 @@ fun Map(
             Box(modifier = Modifier.fillMaxHeight().fillMaxWidth().align(Alignment.BottomCenter)) {
               StartScreen(
                   itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                  uservm = UserProfileViewModel(),
-                  onClick = { mapPopupState = popupState.PATHOVERLAY })
+                  userProfileViewModel = UserProfileViewModel(),
+                  userProfile = userProfile,
+                  onClick = { mapViewModel.popUpState.value = popupState.PATHOVERLAY },
+                  mapViewModel = mapViewModel)
             }
           }
           popupState.PATHOVERLAY -> {
-            Box(
-                modifier =
-                    Modifier.fillMaxWidth().fillMaxHeight(0.3f).align(Alignment.BottomCenter)) {
-                  PathOverlaySheet(
-                      itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                      onClick = {
-                        mapPopupState = popupState.DISPLAYITINERARY
-                        displayPopUp.value = false
-                        displayPicturesPopUp.value = true
-                        mapViewModel.selectedPin.value = it
-                      })
-                }
+            Box(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)) {
+              PathOverlaySheet(
+                  itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                  onClick = {
+                    mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
+                    mapViewModel.displayPopUp.value = false
+                    mapViewModel.displayPicturePopUp.value = true
+                    mapViewModel.selectedPin.value = it
+                  })
+            }
           }
         }
       }
     }
+    AnimatedVisibility(
+        visible = mapViewModel.displayPicturePopUp.value,
+        enter =
+            fadeIn() + expandVertically(expandFrom = Alignment.Bottom, animationSpec = tween(100)),
+        exit =
+            fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top, animationSpec = tween(100)),
+        modifier = Modifier.align(Alignment.BottomCenter)) {
+          Box(
+              modifier =
+                  Modifier.fillMaxWidth()
+                      .fillMaxHeight(0.4f)
+                      .align(Alignment.BottomCenter)
+                      .background(
+                          color = md_theme_light_black,
+                          shape = RoundedCornerShape(topEnd = 35.dp, topStart = 35.dp))) {
+                // Display the pictures of the selected pin
+                // (only when the pin is selected)
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(15.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically) {
+                      Column(
+                          modifier = Modifier.fillMaxWidth().padding(start = 30.dp, top = 10.dp),
+                          verticalArrangement = Arrangement.Center,
+                          horizontalAlignment = Alignment.Start) {
+                            Text(
+                                text = mapViewModel.selectedPin.value?.description ?: "",
+                                fontSize = 20.sp,
+                                fontFamily = Montserrat,
+                                fontWeight = FontWeight.Bold,
+                                color = md_theme_light_onPrimary)
+                            Text(
+                                text = mapViewModel.selectedPin.value?.name ?: "",
+                                modifier = Modifier.padding(vertical = 10.dp),
+                                fontSize = 12.sp,
+                                fontFamily = Montserrat,
+                                fontWeight = FontWeight.Normal,
+                                color = md_theme_light_outline)
+                          }
+                    }
 
-    if (displayPicturesPopUp.value) {
-      Box(
-          modifier =
-              Modifier.fillMaxWidth()
-                  .fillMaxHeight(0.4f)
-                  .align(Alignment.BottomCenter)
-                  .padding(15.dp)
-                  .height(300.dp)
-                  .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))) {
-            // Display the pictures of the selected pin
-            // (only when the pin is selected)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically) {
-                  Column(
-                      modifier = Modifier.fillMaxWidth().padding(start = 30.dp, top = 10.dp),
-                      verticalArrangement = Arrangement.Center,
-                      horizontalAlignment = Alignment.Start) {
+                val selectedPin = mapViewModel.selectedPin.value
+                val scrollState = rememberScrollState()
+
+                Row(
+                    modifier =
+                        Modifier.fillMaxSize()
+                            .horizontalScroll(scrollState)
+                            .align(Alignment.BottomStart)
+                            .padding(vertical = 10.dp, horizontal = 20.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.Bottom) {
+                      if (selectedPin?.image_url?.isEmpty() == true) {
+                        Log.e("MapOverview", "No images available")
                         Text(
-                            text = mapViewModel.selectedPin.value?.name ?: "",
-                            modifier = Modifier.padding(vertical = 10.dp),
-                            fontSize = 12.sp,
-                            fontFamily = Montserrat,
-                            fontWeight = FontWeight.Normal,
-                            color = md_theme_light_outline)
-                        Text(
-                            text = mapViewModel.selectedPin.value?.description ?: "",
+                            text = "No images available",
                             fontSize = 20.sp,
                             fontFamily = Montserrat,
-                            fontWeight = FontWeight.Bold,
-                            color = md_theme_light_onPrimary)
+                            fontWeight = FontWeight.Light,
+                            color = md_theme_grey)
+                      } else {
+                        selectedPin?.image_url?.forEach { url ->
+                          AsyncImage(
+                              modifier =
+                                  Modifier.clip(shape = RoundedCornerShape(20.dp))
+                                      .height(200.dp)
+                                      .padding(horizontal = 2.dp),
+                              model = url,
+                              contentDescription = "Image",
+                          )
+                        }
                       }
-                }
-
-            val selectedPin = mapViewModel.selectedPin.value
-            val scrollState = rememberScrollState()
-
-            Row(
-                modifier =
-                    Modifier.fillMaxSize()
-                        .horizontalScroll(scrollState)
-                        .align(Alignment.BottomStart)
-                        .padding(vertical = 20.dp, horizontal = 20.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.Bottom) {
-                  selectedPin?.image_url?.forEach { url ->
-                    AsyncImage(
-                        modifier =
-                            Modifier.clip(shape = RoundedCornerShape(20.dp))
-                                .height(200.dp)
-                                .padding(horizontal = 2.dp),
-                        model = url,
-                        contentDescription = "Image",
-                    )
-                  }
-                }
-          }
-    }
+                    }
+              }
+        }
   }
 }
 
