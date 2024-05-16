@@ -104,176 +104,157 @@ fun UserView(
       WaitingScreen()
     }
     true -> {
-        var areConnected by remember {
-            mutableStateOf(loggedUser.userProfile.value.following.contains(displayedUser.mail))
-        }
+      var areConnected by remember {
+        mutableStateOf(loggedUser.userProfile.value.following.contains(displayedUser.mail))
+      }
 
-        val tripCount = homeViewModel.filteredItineraryList.value?.size
+      val tripCount = homeViewModel.filteredItineraryList.value?.size
 
-        Scaffold(
-            topBar = {
-                Row(
-                    modifier = Modifier.height(100.dp).fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Button(
-                        onClick = { navigation.goBack() },
-                        colors =
-                        ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                            contentColor = MaterialTheme.colorScheme.onSurface
-                        ),
-                        modifier = Modifier.testTag("GoBackButton")
-                    ) {
+      Scaffold(
+          topBar = {
+            Row(
+                modifier = Modifier.height(100.dp).fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start) {
+                  Button(
+                      onClick = { navigation.goBack() },
+                      colors =
+                          ButtonDefaults.buttonColors(
+                              containerColor = Color.Transparent,
+                              contentColor = MaterialTheme.colorScheme.onSurface),
+                      modifier = Modifier.testTag("GoBackButton")) {
                         Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
-                    }
+                      }
 
-                    Text(
-                        text = displayedUser.username,
-                        style =
-                        TextStyle(
-                            fontSize = 24.sp,
-                            lineHeight = 16.sp,
-                            fontFamily = FontFamily(Font(R.font.montserrat)),
-                            fontWeight = FontWeight(700),
-                            color = MaterialTheme.colorScheme.onSurface,
-                            textAlign = TextAlign.Start,
-                            letterSpacing = 0.5.sp,
-                        ),
-                        modifier =
-                        Modifier.weight(1f).height(37.dp).padding(5.dp).testTag("UsernameTitle")
-                    )
+                  Text(
+                      text = displayedUser.username,
+                      style =
+                          TextStyle(
+                              fontSize = 24.sp,
+                              lineHeight = 16.sp,
+                              fontFamily = FontFamily(Font(R.font.montserrat)),
+                              fontWeight = FontWeight(700),
+                              color = MaterialTheme.colorScheme.onSurface,
+                              textAlign = TextAlign.Start,
+                              letterSpacing = 0.5.sp,
+                          ),
+                      modifier =
+                          Modifier.weight(1f).height(37.dp).padding(5.dp).testTag("UsernameTitle"))
                 }
-            },
-            bottomBar = { NavigationBar(navigation) },
-            modifier = Modifier.fillMaxSize().testTag("UserView")
-        ) { innerPadding ->
+          },
+          bottomBar = { NavigationBar(navigation) },
+          modifier = Modifier.fillMaxSize().testTag("UserView")) { innerPadding ->
             Column(
                 modifier = Modifier.padding(innerPadding).fillMaxHeight().fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Column(
-                    modifier = Modifier
-                        .height((LocalConfiguration.current.screenHeightDp * 0.4).dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    // Composable function to display the user profile information
-                    ProfileInfoView(
-                        navigation = navigation, userProfile = displayedUser, editable = false
-                    )
-                    // We display the button showing the follow status
-                    Row(
-                        modifier =
-                        Modifier.fillMaxWidth()
-                            .padding((LocalConfiguration.current.screenHeightDp * 0.033f).dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Button(
-                            onClick = {
-                                if (areConnected) {
-                                    userProfileViewModel.removeFollowing(loggedUser, displayedUser)
-                                } else {
-                                    userProfileViewModel.addFollowing(loggedUser, displayedUser)
-                                }
-                                areConnected = !areConnected
-                            },
-                            colors =
-                            if (areConnected) {
-                                ButtonDefaults.buttonColors(
-                                    containerColor = md_theme_orange,
-                                    contentColor = md_theme_light_onPrimary
-                                )
-                            } else {
-                                ButtonDefaults.buttonColors(
-                                    containerColor = md_theme_grey,
-                                    contentColor = md_theme_light_onPrimary
-                                )
-                            },
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                  Column(
+                      modifier =
+                          Modifier.height((LocalConfiguration.current.screenHeightDp * 0.4).dp),
+                      horizontalAlignment = Alignment.CenterHorizontally,
+                      verticalArrangement = Arrangement.Center) {
+                        // Composable function to display the user profile information
+                        ProfileInfoView(
+                            navigation = navigation, userProfile = displayedUser, editable = false)
+                        // We display the button showing the follow status
+                        Row(
                             modifier =
-                            Modifier.height(40.dp).fillMaxWidth().testTag("FollowingButton"),
-                        ) {
-                            Text(
-                                text = if (areConnected) "Following" else "Follow",
-                                style =
-                                TextStyle(
-                                    fontSize = 12.sp,
-                                    lineHeight = 12.sp,
-                                    fontFamily = Montserrat,
-                                    fontWeight = FontWeight(500),
-                                    color = MaterialTheme.colorScheme.surface,
-                                    textAlign = TextAlign.Center,
-                                    letterSpacing = 0.5.sp
-                                )
-                            )
-                        }
-                    }
-                    // Display the number of trips, followers and following
-                    ProfileCounts(
-                        navigation = navigation,
-                        profile = displayedUser,
-                        tripsCount = tripCount ?: 0
-                    )
-                }
-                Column(
-                    modifier = Modifier
-                        .fillMaxHeight(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    when (filteredList) {
-                        // If the displayed user doesn't have any itineraries we display a message
-                        emptyList<Itinerary>() -> {
+                                Modifier.fillMaxWidth()
+                                    .padding(
+                                        (LocalConfiguration.current.screenHeightDp * 0.033f).dp),
+                            horizontalArrangement = Arrangement.Center) {
+                              Button(
+                                  onClick = {
+                                    if (areConnected) {
+                                      userProfileViewModel.removeFollowing(
+                                          loggedUser, displayedUser)
+                                    } else {
+                                      userProfileViewModel.addFollowing(loggedUser, displayedUser)
+                                    }
+                                    areConnected = !areConnected
+                                  },
+                                  colors =
+                                      if (areConnected) {
+                                        ButtonDefaults.buttonColors(
+                                            containerColor = md_theme_orange,
+                                            contentColor = md_theme_light_onPrimary)
+                                      } else {
+                                        ButtonDefaults.buttonColors(
+                                            containerColor = md_theme_grey,
+                                            contentColor = md_theme_light_onPrimary)
+                                      },
+                                  modifier =
+                                      Modifier.height(40.dp)
+                                          .fillMaxWidth()
+                                          .testTag("FollowingButton"),
+                              ) {
+                                Text(
+                                    text = if (areConnected) "Following" else "Follow",
+                                    style =
+                                        TextStyle(
+                                            fontSize = 12.sp,
+                                            lineHeight = 12.sp,
+                                            fontFamily = Montserrat,
+                                            fontWeight = FontWeight(500),
+                                            color = MaterialTheme.colorScheme.surface,
+                                            textAlign = TextAlign.Center,
+                                            letterSpacing = 0.5.sp))
+                              }
+                            }
+                        // Display the number of trips, followers and following
+                        ProfileCounts(
+                            navigation = navigation,
+                            profile = displayedUser,
+                            tripsCount = tripCount ?: 0)
+                      }
+                  Column(
+                      modifier = Modifier.fillMaxHeight(),
+                      horizontalAlignment = Alignment.CenterHorizontally,
+                      verticalArrangement = Arrangement.Center) {
+                        when (filteredList) {
+                          // If the displayed user doesn't have any itineraries we display a message
+                          emptyList<Itinerary>() -> {
                             // Display a message when the list is empty
                             Box(
                                 modifier = Modifier.fillMaxWidth().fillMaxHeight(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text =
-                                    "${displayedUser.name} ${displayedUser.surname} does not have any trips yet",
-                                    modifier =
-                                    Modifier.padding(30.dp)
-                                        .align(Alignment.Center)
-                                        .testTag("NoTripsText"),
-                                    fontSize = 16.sp,
-                                    fontFamily = Montserrat,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = md_theme_grey
-                                )
-                            }
-                        }
-
-                        else -> {
+                                contentAlignment = Alignment.Center) {
+                                  Text(
+                                      text =
+                                          "${displayedUser.name} ${displayedUser.surname} does not have any trips yet",
+                                      modifier =
+                                          Modifier.padding(30.dp)
+                                              .align(Alignment.Center)
+                                              .testTag("NoTripsText"),
+                                      fontSize = 16.sp,
+                                      fontFamily = Montserrat,
+                                      fontWeight = FontWeight.SemiBold,
+                                      color = md_theme_grey)
+                                }
+                          }
+                          else -> {
                             // Display the list of itineraries when the list is not empty
                             val listState = rememberLazyListState()
                             LazyColumn(
-                                modifier = Modifier.fillMaxWidth().fillMaxHeight()
-                                    .testTag("MyTripsList"),
+                                modifier =
+                                    Modifier.fillMaxWidth().fillMaxHeight().testTag("MyTripsList"),
                                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
-                                state = listState
-                            ) {
-                                items(filteredList) { itinerary ->
+                                state = listState) {
+                                  items(filteredList) { itinerary ->
                                     Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
                                     DisplayItinerary(
                                         itinerary = itinerary,
                                         onClick = {
-                                            navigation.navigateTo(
-                                                Route.MAPS,
-                                                itinerary.id
-                                            )
+                                          navigation.navigateTo(Route.MAPS, itinerary.id)
                                         },
                                         test = test,
                                     )
+                                  }
                                 }
-                            }
+                          }
                         }
-                    }
+                      }
                 }
-            }
-        }
+          }
     }
   }
 }

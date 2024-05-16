@@ -19,7 +19,13 @@ import com.example.triptracker.view.Route
 import com.example.triptracker.view.profile.bigNumberStyle
 import com.example.triptracker.view.profile.categoryTextStyle
 
-/** This component displays the user's trip count, follower count, and following count. */
+/**
+ * This component displays the user's trip count, follower count, and following count.
+ *
+ * @param navigation : the navigation object to navigate to other screens.
+ * @param profile : the user profile to display.
+ * @param tripsCount : the number of trips the user has taken.
+ */
 @Composable
 fun ProfileCounts(
     navigation: Navigation,

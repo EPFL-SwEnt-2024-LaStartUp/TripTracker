@@ -67,61 +67,64 @@ fun UserProfileOverview(
       topBar = {},
       bottomBar = { NavigationBar(navigation) },
       modifier = Modifier.fillMaxSize().testTag("ProfileOverview")) { innerPadding ->
-      Column(modifier = Modifier.padding(innerPadding).fillMaxHeight().fillMaxWidth(),
-          verticalArrangement = Arrangement.Center,
-          horizontalAlignment = Alignment.CenterHorizontally) {
-          Column(
-              modifier = Modifier
-                  .height((LocalConfiguration.current.screenHeightDp * 0.5).dp),
-              horizontalAlignment = Alignment.CenterHorizontally,
-              verticalArrangement = Arrangement.Center
-          ) {
-              // Profile picture and user information
-              ProfileInfoView(navigation, profile.userProfile.value)
-              // Number of trips, followers and following when implemented in the data classes
-              ProfileCounts(navigation, profile.userProfile.value, myTripsCount)
-              // Favourites, Friends, Settings and MyTrips tiles
-          }
-          Column(
-              modifier = Modifier
-                  .height((LocalConfiguration.current.screenHeightDp * 0.5).dp),
-              horizontalAlignment = Alignment.CenterHorizontally,
-              verticalArrangement = Arrangement.Center
-          ) {
-              Row(modifier = Modifier.padding(bottom = (LocalConfiguration.current.screenWidthDp * 0.05f).dp),
-                  horizontalArrangement = Arrangement.spacedBy((LocalConfiguration.current.screenWidthDp * 0.05).dp)) {
-                  ProfileButton(
-                      label = "Favourites",
-                      icon = Icons.Outlined.FavoriteBorder,
-                      onClick = { navigation.navController.navigate(Route.FAVORITES) },
-                      modifier = Modifier.testTag("FavoritesButton")
-                  )
-                  ProfileButton(
-                      label = "Friends",
-                      icon = Icons.Outlined.People,
-                      onClick = { navigation.navController.navigate(Route.FRIENDS) },
-                      modifier = Modifier.testTag("FriendsButton")
-                  )
-              }
-              Row(modifier = Modifier.padding(bottom = (LocalConfiguration.current.screenWidthDp * 0.05f).dp),
-                  horizontalArrangement = Arrangement.spacedBy((LocalConfiguration.current.screenWidthDp * 0.05).dp)) {
-                  ProfileButton(
-                      label = "MyTrips",
-                      icon = Icons.Outlined.BookmarkBorder,
-                      modifier = Modifier.testTag("MyTripsButton"),
-                      onClick = { navigation.navController.navigate(Route.MYTRIPS) })
+        Column(
+            modifier = Modifier.padding(innerPadding).fillMaxHeight().fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+              Column(
+                  modifier = Modifier.height((LocalConfiguration.current.screenHeightDp * 0.5).dp),
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                  verticalArrangement = Arrangement.Center) {
+                    // Profile picture and user information
+                    ProfileInfoView(navigation, profile.userProfile.value)
+                    // Number of trips, followers and following when implemented in the data classes
+                    ProfileCounts(navigation, profile.userProfile.value, myTripsCount)
+                    // Favourites, Friends, Settings and MyTrips tiles
+                  }
+              Column(
+                  modifier = Modifier.height((LocalConfiguration.current.screenHeightDp * 0.5).dp),
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                  verticalArrangement = Arrangement.Center) {
+                    Row(
+                        modifier =
+                            Modifier.padding(
+                                bottom = (LocalConfiguration.current.screenWidthDp * 0.05f).dp),
+                        horizontalArrangement =
+                            Arrangement.spacedBy(
+                                (LocalConfiguration.current.screenWidthDp * 0.05).dp)) {
+                          ProfileButton(
+                              label = "Favourites",
+                              icon = Icons.Outlined.FavoriteBorder,
+                              onClick = { navigation.navController.navigate(Route.FAVORITES) },
+                              modifier = Modifier.testTag("FavoritesButton"))
+                          ProfileButton(
+                              label = "Friends",
+                              icon = Icons.Outlined.People,
+                              onClick = { navigation.navController.navigate(Route.FRIENDS) },
+                              modifier = Modifier.testTag("FriendsButton"))
+                        }
+                    Row(
+                        modifier =
+                            Modifier.padding(
+                                bottom = (LocalConfiguration.current.screenWidthDp * 0.05f).dp),
+                        horizontalArrangement =
+                            Arrangement.spacedBy(
+                                (LocalConfiguration.current.screenWidthDp * 0.05).dp)) {
+                          ProfileButton(
+                              label = "MyTrips",
+                              icon = Icons.Outlined.BookmarkBorder,
+                              modifier = Modifier.testTag("MyTripsButton"),
+                              onClick = { navigation.navController.navigate(Route.MYTRIPS) })
 
-                  ProfileButton(
-                      label = "Settings",
-                      icon = Icons.Outlined.Settings,
-                      onClick = { navigation.navController.navigate(Route.SETTINGS) },
-                      modifier = Modifier.testTag("SettingsButton")
-                  )
-              }
-              }
-          }
+                          ProfileButton(
+                              label = "Settings",
+                              icon = Icons.Outlined.Settings,
+                              onClick = { navigation.navController.navigate(Route.SETTINGS) },
+                              modifier = Modifier.testTag("SettingsButton"))
+                        }
+                  }
+            }
       }
-
 }
 
 fun bigNumberStyle(size: Int): TextStyle {

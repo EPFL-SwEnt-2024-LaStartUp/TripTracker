@@ -118,7 +118,8 @@ fun ProfileInfoView(navigation: Navigation, userProfile: UserProfile, editable: 
           style = secondaryTitleStyle(LocalConfiguration.current.screenHeightDp),
           modifier =
               Modifier.align(Alignment.End)
-                  .padding(end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp))
+                  .padding(end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp)
+                  .testTag("InterestTitle"))
       Text(
           text = "Hiking, Photography", // profile.interestsList
           style = secondaryContentStyle(LocalConfiguration.current.screenHeightDp),
@@ -126,14 +127,16 @@ fun ProfileInfoView(navigation: Navigation, userProfile: UserProfile, editable: 
               Modifier.align(Alignment.End)
                   .padding(
                       end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp,
-                      bottom = (LocalConfiguration.current.screenHeightDp * 0.012f).dp),
+                      bottom = (LocalConfiguration.current.screenHeightDp * 0.012f).dp)
+                  .testTag("InterestList"),
       )
       Text(
           text = "Travel Style",
           style = secondaryTitleStyle(LocalConfiguration.current.screenHeightDp),
           modifier =
               Modifier.align(Alignment.End)
-                  .padding(end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp))
+                  .padding(end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp)
+                  .testTag("TravelStyleTitle"))
       Text(
           text = "Adventure, Cultural", // profile.travelStyleList
           style = secondaryContentStyle(LocalConfiguration.current.screenHeightDp),
@@ -141,14 +144,16 @@ fun ProfileInfoView(navigation: Navigation, userProfile: UserProfile, editable: 
               Modifier.align(Alignment.End)
                   .padding(
                       end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp,
-                      bottom = (LocalConfiguration.current.screenHeightDp * 0.012f).dp),
+                      bottom = (LocalConfiguration.current.screenHeightDp * 0.012f).dp)
+                  .testTag("TravelStyleList"),
       )
       Text(
           text = "Languages",
           style = secondaryTitleStyle(LocalConfiguration.current.screenHeightDp),
           modifier =
               Modifier.align(Alignment.End)
-                  .padding(end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp))
+                  .padding(end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp)
+                  .testTag("LanguagesTitle"))
       Text(
           text = "English, Spanish", // profile.languagesList
           style = secondaryContentStyle(LocalConfiguration.current.screenHeightDp),
@@ -156,7 +161,8 @@ fun ProfileInfoView(navigation: Navigation, userProfile: UserProfile, editable: 
               Modifier.align(Alignment.End)
                   .padding(
                       end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp,
-                      bottom = (LocalConfiguration.current.screenHeightDp * 0.012f).dp),
+                      bottom = (LocalConfiguration.current.screenHeightDp * 0.012f).dp)
+                  .testTag("LanguagesList"),
       )
     }
   }
