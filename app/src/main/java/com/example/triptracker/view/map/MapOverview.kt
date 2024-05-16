@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -399,8 +398,7 @@ fun Map(
                   .padding(15.dp)
                   //                  .verticalScroll(rememberScrollState())
                   .background(
-                      color = md_theme_light_onSurface,
-                      shape = RoundedCornerShape(35.dp))) {
+                      color = md_theme_light_onSurface, shape = RoundedCornerShape(35.dp))) {
             val selectedPin = mapViewModel.selectedPin.value
             val scrollState = rememberScrollState()
 

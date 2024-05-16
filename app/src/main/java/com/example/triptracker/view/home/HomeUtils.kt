@@ -146,9 +146,7 @@ fun DisplayItinerary(
               Modifier.fillMaxWidth()
                   .padding(paddingAround)
                   .height(boxHeightToDisplay)
-                  .background(
-                      color = md_theme_light_onSurface,
-                      shape = RoundedCornerShape(35.dp))
+                  .background(color = md_theme_light_onSurface, shape = RoundedCornerShape(35.dp))
                   .clickable { // When you click on an itinerary, it should bring you to the map
                     // overview with the selected itinerary highlighted and the first pinned places
                     onClick()

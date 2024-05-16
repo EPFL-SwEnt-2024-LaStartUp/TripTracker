@@ -323,8 +323,7 @@ fun ProfileButton(
               .height((LocalConfiguration.current.screenHeightDp * 0.17f).dp)
               .width((LocalConfiguration.current.screenWidthDp * 0.425f).dp)
               .testTag("ProfileButton")
-              .background(
-                  color = md_theme_light_onSurface, shape = RoundedCornerShape(16.dp))) {
+              .background(color = md_theme_light_onSurface, shape = RoundedCornerShape(16.dp))) {
         Column(modifier = Modifier.fillMaxWidth()) {
           Icon(
               icon,
