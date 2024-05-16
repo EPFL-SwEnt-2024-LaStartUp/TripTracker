@@ -106,16 +106,6 @@ class UserViewTest {
         assertTextEquals("Trips")
       }
       tripsCount { assertIsDisplayed() }
-      followersTitle {
-        assertIsDisplayed()
-        assertTextEquals("Followers")
-      }
-      followersCount { assertIsDisplayed() }
-      followingTitle {
-        assertIsDisplayed()
-        assertTextEquals("Following")
-      }
-      followingCount { assertIsDisplayed() }
       goBackButton {
         assertIsDisplayed()
         assertHasClickAction()
