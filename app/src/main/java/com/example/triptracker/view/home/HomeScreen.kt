@@ -94,17 +94,19 @@ fun HomeScreen(
 
   Scaffold(
       topBar = {
-        // Assuming a SearchBar composable is defined elsewhere
-        SearchBarImplementation(
-            onBackClicked = {
-              // Navigate back to the home
-              navigation.goBack()
-            },
-            viewModel = homeViewModel,
-            onSearchActivated = { isActive -> isSearchActive = isActive },
-            navigation = navigation,
-            selectedFilterType = selectedFilterType,
-            isNoResultFound = isNoResultFound)
+        Column {
+          // Assuming a SearchBar composable is defined elsewhere
+          SearchBarImplementation(
+              onBackClicked = {
+                // Navigate back to the home
+                navigation.goBack()
+              },
+              viewModel = homeViewModel,
+              onSearchActivated = { isActive -> isSearchActive = isActive },
+              navigation = navigation,
+              selectedFilterType = selectedFilterType,
+              isNoResultFound = isNoResultFound)
+        }
         if (isSearchActive) {
           Box(
               modifier =
@@ -152,15 +154,25 @@ fun HomeScreen(
                 fontSize = 1.sp)
           }
           else -> {
-
-            // will display the list of itineraries
-            HomePager(
-                itineraries = itineraries,
-                navigation = navigation,
-                profile = profile,
-                homeViewModel = homeViewModel,
-                innerPadding = innerPadding,
-                test = test)
+            Column(
+                modifier =
+                    Modifier.fillMaxSize()
+                        .padding(
+                            PaddingValues(
+                                0.dp,
+                                80.dp,
+                                0.dp,
+                                0.dp)) // this ensures having a padding at the top
+                ) {
+                  // will display the list of itineraries
+                  HomePager(
+                      itineraries = itineraries,
+                      navigation = navigation,
+                      profile = profile,
+                      homeViewModel = homeViewModel,
+                      innerPadding = innerPadding,
+                      test = test)
+                }
 
             /*
             TODO can be used to scroll to the top of the list
@@ -314,7 +326,6 @@ fun DisplayItineraryFromCategory(
     navigation: Navigation,
     homeViewModel: HomeViewModel,
     category: HomeCategory,
-    innerPadding: PaddingValues,
     test: Boolean = false
 ) {
   // used to filter the itineraries by following
@@ -330,11 +341,17 @@ fun DisplayItineraryFromCategory(
     }
     HomeCategory.FAVORITES -> {
       homeViewModel.filterByFavorite(ambientProfile.userProfile.value.mail)
+      Log.d("FavoriteItineraries", "Favorite itineraries: ${homeViewModel.itineraryList.value}")
     }
   }
 
   LazyColumn(
-      modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("ItineraryList"),
+      modifier =
+          Modifier.fillMaxSize()
+              .padding(
+                  PaddingValues(
+                      0.dp, 0.dp, 0.dp, 70.dp)) // this ensures having a padding at the bottom
+              .testTag("ItineraryList"),
       contentPadding = PaddingValues(16.dp)) {
         items(itineraries) { itinerary ->
           Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
@@ -367,16 +384,18 @@ fun HomePager(
         3 // initial page is 0, trending tab
       }
   var selectedTab by remember { mutableStateOf(pagerState.currentPage) }
-
   var isSelected by remember { mutableStateOf(false) }
-  // added for page animation
+
+  // added for page animation, if the animation is not smooth, change to pagerState.scrollToPage
   LaunchedEffect(key1 = selectedTab) { pagerState.animateScrollToPage(page = selectedTab) }
+
   // LaunchedEffect to synchronize the pager state with the selected tab
   LaunchedEffect(pagerState.currentPage) { selectedTab = pagerState.currentPage }
-  Column(modifier = Modifier.padding(innerPadding).background(md_theme_light_onPrimary)) {
+
+  Column(modifier = Modifier.background(md_theme_light_onPrimary)) {
     TabRow(
         selectedTabIndex = pagerState.currentPage,
-        modifier = Modifier.fillMaxWidth().height(60.dp),
+        modifier = Modifier.fillMaxWidth().height(50.dp),
         backgroundColor = md_theme_light_onPrimary) {
           tabs.forEachIndexed { index, title ->
             isSelected = index == selectedTab
@@ -391,13 +410,12 @@ fun HomePager(
                       color = if (isSelected) md_theme_light_black else md_theme_grey,
                       fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                       fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Normal,
-                      fontSize = 20.sp)
-                }
+                      fontSize = 20.sp) // same size as itinerary title
+            }
           }
         }
 
     HorizontalPager(state = pagerState) { page ->
-      Log.d("PAGE", "Page: $page")
       when (page) {
         0 -> {
           DisplayItineraryFromCategory(
@@ -405,7 +423,6 @@ fun HomePager(
               navigation = navigation,
               homeViewModel = homeViewModel,
               category = HomeCategory.TRENDING,
-              innerPadding = innerPadding,
               test = test)
         }
         1 -> {
@@ -414,7 +431,6 @@ fun HomePager(
               navigation = navigation,
               homeViewModel = homeViewModel,
               category = HomeCategory.FOLLOWING,
-              innerPadding = innerPadding,
               test = test)
         }
         2 -> {
@@ -423,7 +439,6 @@ fun HomePager(
               navigation = navigation,
               homeViewModel = homeViewModel,
               category = HomeCategory.FAVORITES,
-              innerPadding = innerPadding,
               test = test)
         }
       }
