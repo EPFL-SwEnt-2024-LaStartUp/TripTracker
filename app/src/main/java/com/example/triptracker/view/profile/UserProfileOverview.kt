@@ -55,6 +55,7 @@ import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_light_dark
+import com.example.triptracker.view.theme.md_theme_light_outlineVariant
 import com.example.triptracker.view.theme.md_theme_light_primary
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.FilterType
@@ -224,7 +225,7 @@ fun UserProfileOverview(
                       .width((LocalConfiguration.current.screenWidthDp * 0.9f).dp)
                       .align(Alignment.CenterHorizontally)) {
                 ProfileButton(
-                    label = "Favourites",
+                    label = "Favorites",
                     icon = Icons.Outlined.FavoriteBorder,
                     onClick = { navigation.navController.navigate(Route.FAVORITES) },
                     modifier = Modifier.align(Alignment.TopStart).testTag("FavoritesButton"))
@@ -280,7 +281,7 @@ fun buttonTextStyle(size: Int): TextStyle {
       lineHeight = (size * 0.016f).sp,
       fontFamily = FontFamily(Font(R.font.montserrat)),
       fontWeight = FontWeight.SemiBold,
-      color = MaterialTheme.colorScheme.outlineVariant,
+      color = md_theme_light_outlineVariant,
       letterSpacing = (size * 0.0005f).sp)
 }
 

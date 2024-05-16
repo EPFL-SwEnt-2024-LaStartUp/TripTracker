@@ -28,6 +28,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -54,7 +55,6 @@ import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
-import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.MapPopupViewModel
@@ -91,7 +91,7 @@ fun PathOverlaySheet(
               Modifier.fillMaxWidth()
                   .fillMaxHeight()
                   .background(
-                      color = md_theme_light_black,
+                      color = MaterialTheme.colorScheme.onSurface,
                       shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp))) {
             Column(modifier = Modifier.fillMaxWidth().testTag("PathOverlaySheet").padding(25.dp)) {
               Text(
@@ -105,7 +105,7 @@ fun PathOverlaySheet(
               LazyColumn {
                 items(itinerary.pinnedPlaces) { pin ->
                   PathItem(pin, onClick)
-                  Divider(thickness = 1.dp)
+                  Divider(thickness = 1.dp, color = MaterialTheme.colorScheme.onSurface)
                 }
               }
             }
@@ -178,7 +178,7 @@ fun StartScreen(itinerary: Itinerary, uservm: UserProfileViewModel, onClick: () 
           Modifier.fillMaxWidth()
               .fillMaxHeight()
               .background(
-                  color = md_theme_light_black,
+                  color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                   shape =
                       RoundedCornerShape(
                           topStart = 35.dp,
