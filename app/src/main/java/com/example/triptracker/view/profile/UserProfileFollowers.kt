@@ -71,7 +71,7 @@ fun UserProfileFollowers(
 
   userProfileViewModel.setListToFilter(followersList)
   var filteredList =
-      userProfileViewModel.filteredUserProfileList.observeAsState(initial = emptyList())
+      userProfileViewModel.filteredUserProfileList(true).observeAsState(initial = emptyList())
 
   Scaffold(
       topBar = {

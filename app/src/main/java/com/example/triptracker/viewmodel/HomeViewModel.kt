@@ -9,6 +9,7 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryList
+import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.view.home.dummyProfile
@@ -63,9 +64,11 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
 
   private val userProfileViewModel: UserProfileViewModel = UserProfileViewModel()
 
-  val filteredItineraryList: LiveData<List<Itinerary>> =
-      _searchQuery.switchMap { query ->
+
+  fun filteredItineraryList(currProfile: UserProfile, aware: Boolean): LiveData<List<Itinerary>> {
+      val toReturn = _searchQuery.switchMap { query ->
         liveData {
+
           val filteredList =
               when (_selectedFilter.value) {
                 FilterType.TITLE -> filterByTitle(query)
@@ -77,10 +80,28 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
               }
 
           if (filteredList != null) {
-            emit(filteredList)
+            var privacyFilteredList = filteredList
+            if(!aware){
+              val allProfiles = userProfileViewModel.getUserProfileList()
+              privacyFilteredList = filteredList.filter {
+                val itin = it
+                val ownerProfile = allProfiles.find { it.mail == itin.userMail }
+                if (ownerProfile != null) {
+                  ownerProfile.itineraryPrivacy == 0 ||
+                          (ownerProfile.itineraryPrivacy == 1 && currProfile.followers.contains(
+                            ownerProfile.mail
+                          ) && currProfile.following.contains(ownerProfile.mail))
+                } else {
+                  false
+                }
+              }
+            }
+            emit(privacyFilteredList)
           }
         }
       }
+    return toReturn
+  }
 
   /** Fetches all itineraries from the repository and stores them in the itineraryList LiveData */
   private fun fetchItineraries() {

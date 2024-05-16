@@ -31,8 +31,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.MainActivity
 import com.example.triptracker.authentication.GoogleAuthenticator
+import com.example.triptracker.model.profile.AmbientUserProfile
+import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
@@ -40,6 +43,7 @@ import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_orange
+import com.example.triptracker.viewmodel.UserProfileViewModel
 
 /**
  * Composable function to display the user's settings
@@ -47,7 +51,12 @@ import com.example.triptracker.view.theme.md_theme_orange
  * @param navigation: Navigation object to navigate to other screens
  */
 @Composable
-fun UserProfileSettings(navigation: Navigation) {
+fun UserProfileSettings(
+    navigation: Navigation,
+    userProfileViewModel: UserProfileViewModel = viewModel()
+) {
+  val userProfile = AmbientUserProfile.current.userProfile.value
+
   Scaffold(bottomBar = { NavigationBar(navigation) }) { paddingValues ->
     Box(
         modifier =
@@ -84,15 +93,36 @@ fun UserProfileSettings(navigation: Navigation) {
                 "Profile",
                 actions = {
                   // Remember the state of the button to toggle between texts
-                  val (isPrivate, setIsPrivate) = remember { mutableStateOf(true) }
+                  val (isPublic, setIsPrivate) = remember { mutableStateOf(false) }
 
                   // Determine the text and background colors based on the state
-                  val textColor = if (isPrivate) md_theme_dark_gray else Color.White
-                  val backgroundColor = if (isPrivate) md_theme_grey else md_theme_orange
-                  val buttonText = if (isPrivate) "Private" else "Public"
+                  val textColor = if (isPublic) md_theme_dark_gray else Color.White
+                  val backgroundColor = if (isPublic) md_theme_grey else md_theme_orange
+                  val buttonText = if (isPublic) "Private" else "Public"
                   FilledTonalButton(
                       modifier = Modifier.size(width = 94.dp, height = 35.dp),
-                      onClick = { setIsPrivate(!isPrivate) },
+                      onClick = {
+                        setIsPrivate(!isPublic)
+                        var privacy = userProfile.profilePrivacy
+                        if (!isPublic) {
+                          privacy = 1
+                        } else {
+                          privacy = 0
+                        }
+                        val newProfile =
+                            UserProfile(
+                                mail = userProfile.mail,
+                                name = userProfile.name,
+                                surname = userProfile.surname,
+                                birthdate = userProfile.birthdate,
+                                username = userProfile.username,
+                                profileImageUrl = userProfile.profileImageUrl,
+                                followers = userProfile.followers,
+                                following = userProfile.following,
+                                profilePrivacy = privacy,
+                                itineraryPrivacy = userProfile.itineraryPrivacy)
+                        userProfileViewModel.updateUserProfileInDb(newProfile)
+                      },
                       colors =
                           ButtonDefaults.filledTonalButtonColors(
                               containerColor = backgroundColor, contentColor = textColor)) {
@@ -115,7 +145,23 @@ fun UserProfileSettings(navigation: Navigation) {
                       state3 = "Public",
                       state = buttonState,
                       modifier = Modifier.size(width = 94.dp, height = 35.dp),
-                      onClick = { setButtonState((buttonState + 1) % 3) })
+                      onClick = {
+                        setButtonState((buttonState + 1) % 3)
+                        var itinPrivacy = buttonState
+                        val newProfile =
+                            UserProfile(
+                                mail = userProfile.mail,
+                                name = userProfile.name,
+                                surname = userProfile.surname,
+                                birthdate = userProfile.birthdate,
+                                username = userProfile.username,
+                                profileImageUrl = userProfile.profileImageUrl,
+                                followers = userProfile.followers,
+                                following = userProfile.following,
+                                profilePrivacy = userProfile.profilePrivacy,
+                                itineraryPrivacy = itinPrivacy)
+                        userProfileViewModel.updateUserProfileInDb(newProfile)
+                      })
                 })
             Divider()
             SettingsElement(

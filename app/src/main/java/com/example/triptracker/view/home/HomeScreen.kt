@@ -43,9 +43,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
@@ -61,6 +63,8 @@ import com.example.triptracker.viewmodel.HomeViewModel
  * @param homeViewModel: HomeViewModel to use for fetching itineraries
  * @param test: Boolean to test the function
  */
+
+
 @Composable
 fun HomeScreen(
     navigation: Navigation,
@@ -72,7 +76,8 @@ fun HomeScreen(
   val selectedFilterType by homeViewModel.selectedFilter.observeAsState(FilterType.TITLE)
 
   // Filtered list of itineraries based on search query
-  val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
+  val filteredList by homeViewModel.filteredItineraryList(
+      AmbientUserProfile.current.userProfile.value, false).observeAsState(initial = emptyList())
   var showFilterDropdown by remember { mutableStateOf(false) }
   var isSearchActive by remember { mutableStateOf(false) }
   val isNoResultFound =
@@ -189,7 +194,8 @@ fun SearchBarImplementation(
     navigation: Navigation
 ) {
   var searchText by remember { mutableStateOf("") }
-  val items = viewModel.filteredItineraryList.value ?: listOf()
+  val items = viewModel.filteredItineraryList(
+      AmbientUserProfile.current.userProfile.value, false).value ?: listOf()
   val focusManager = LocalFocusManager.current
   // If the search bar is active (in focus or contains text), we'll consider it active.
   var isActive by remember { mutableStateOf(false) }

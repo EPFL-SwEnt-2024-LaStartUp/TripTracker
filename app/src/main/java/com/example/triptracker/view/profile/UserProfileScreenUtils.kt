@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
@@ -74,7 +75,8 @@ fun UserProfileScreen(
     homeViewModel.setSearchQuery(userProfile.userProfile.value.username)
   }
 
-  val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
+  val filteredList by homeViewModel.filteredItineraryList(
+      AmbientUserProfile.current.userProfile.value, true).observeAsState(initial = emptyList())
 
   Scaffold(
       topBar = {},

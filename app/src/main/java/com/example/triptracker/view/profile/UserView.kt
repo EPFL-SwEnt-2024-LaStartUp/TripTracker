@@ -52,6 +52,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
@@ -101,7 +102,8 @@ fun UserView(
   homeViewModel.setSearchQuery(displayedUser.username)
 
   // Observe the filtered itinerary list from the ViewModel
-  val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
+  val filteredList by homeViewModel.filteredItineraryList(
+      AmbientUserProfile.current.userProfile.value, true).observeAsState(initial = emptyList())
 
   if (test) {
     readyToDisplay = true
@@ -116,8 +118,10 @@ fun UserView(
         mutableStateOf(loggedUser.userProfile.value.following.contains(displayedUser.mail))
       }
 
-      val myTripsList = homeViewModel.filteredItineraryList
-      var tripCount = homeViewModel.filteredItineraryList.value?.size
+      val myTripsList = homeViewModel.filteredItineraryList(
+          AmbientUserProfile.current.userProfile.value, true)
+      var tripCount = homeViewModel.filteredItineraryList(
+          AmbientUserProfile.current.userProfile.value, true).value?.size
 
       Scaffold(
           topBar = {
