@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -57,9 +58,9 @@ import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
+import com.example.triptracker.view.theme.md_theme_dark_black
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
-import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeCategory
 import com.example.triptracker.viewmodel.HomeViewModel
@@ -343,6 +344,7 @@ fun DisplayItineraryFromCategory(
                 navigation.navigateTo(Route.MAPS, itinerary.id)
                 homeViewModel.incrementClickCount(itinerary.id)
               },
+              displayImage = true,
               test = test,
           )
         }
@@ -366,14 +368,18 @@ fun HomePager(
       }
   var selectedTab by remember { mutableStateOf(pagerState.currentPage) }
 
-  Column(modifier = Modifier.padding(innerPadding)) {
+  Column(modifier = Modifier.padding(innerPadding).background(md_theme_light_onPrimary)) {
     TabRow(
         selectedTabIndex = pagerState.currentPage,
-        modifier = Modifier.fillMaxWidth(),
-        backgroundColor = md_theme_orange) {
+        modifier = Modifier.fillMaxWidth().height(60.dp),
+        backgroundColor = md_theme_light_onPrimary) {
           tabs.forEachIndexed { index, title ->
             Tab(selected = index == selectedTab, onClick = { selectedTab = index }) {
-              Text(title, color = md_theme_light_onPrimary)
+              Text(
+                  title,
+                  color = md_theme_dark_black,
+                  fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                  fontSize = 20.sp)
             }
           }
         }

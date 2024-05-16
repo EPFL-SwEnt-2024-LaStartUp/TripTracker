@@ -75,6 +75,7 @@ fun DisplayItinerary(
     userProfileViewModel: UserProfileViewModel = viewModel(),
     onClick: () -> Unit,
     homeViewModel: HomeViewModel = viewModel(),
+    displayImage: Boolean = false,
     test: Boolean = false
 ) {
   val configuration = LocalConfiguration.current
@@ -228,28 +229,30 @@ fun DisplayItinerary(
                   fontFamily = FontFamily(Font(R.font.montserrat_medium)),
                   color = md_theme_grey)
 
-              Spacer(modifier = Modifier.height(50.dp).weight(1f).padding(5.dp))
-              LazyRow(
-                  contentPadding = PaddingValues(5.dp),
-                  horizontalArrangement = Arrangement.Center,
-                  modifier =
-                      Modifier.testTag(
-                          "SpotPictures") // This will arrange the images in the center of the
-                  // LazyRow
-                  ) {
-                    items(itinerary.pinnedPlaces) { pin ->
-                      for (image in pin.image_url) {
-                        AsyncImage(
-                            model = image,
-                            contentDescription = pin.description,
-                            modifier =
-                                Modifier.clip(RoundedCornerShape(corner = CornerSize(14.dp)))
-                                    .size(screenWidth * 0.9f, screenHeight * 0.3f))
+              if (displayImage) {
+                Spacer(modifier = Modifier.height(50.dp).weight(1f).padding(5.dp))
+                LazyRow(
+                    contentPadding = PaddingValues(5.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    modifier =
+                        Modifier.testTag(
+                            "SpotPictures") // This will arrange the images in the center of the
+                    // LazyRow
+                    ) {
+                      items(itinerary.pinnedPlaces) { pin ->
+                        for (image in pin.image_url) {
+                          AsyncImage(
+                              model = image,
+                              contentDescription = pin.description,
+                              modifier =
+                                  Modifier.clip(RoundedCornerShape(corner = CornerSize(14.dp)))
+                                      .size(screenWidth * 0.9f, screenHeight * 0.3f))
 
-                        Spacer(modifier = Modifier.width(20.dp))
+                          Spacer(modifier = Modifier.width(20.dp))
+                        }
                       }
                     }
-                  }
+              }
             }
           }
     }
