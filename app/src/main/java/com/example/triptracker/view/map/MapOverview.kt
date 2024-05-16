@@ -127,13 +127,7 @@ fun MapOverview(
           bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
               innerPadding ->
             Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-              Map(
-                  mapViewModel,
-                  context,
-                  mapProperties,
-                  uiSettings,
-                  selectedId,
-                  userProfile)
+              Map(mapViewModel, context, mapProperties, uiSettings, selectedId, userProfile)
             }
           }
     }
@@ -521,8 +515,10 @@ fun Map(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically) {
                       Column(
-                          modifier = Modifier.fillMaxWidth().padding(start = 30.dp, top = 10.dp)
-                              .verticalScroll(rememberScrollState()),
+                          modifier =
+                              Modifier.fillMaxWidth()
+                                  .padding(start = 30.dp, top = 10.dp)
+                                  .verticalScroll(rememberScrollState()),
                           verticalArrangement = Arrangement.Center,
                           horizontalAlignment = Alignment.Start) {
                             Text(
