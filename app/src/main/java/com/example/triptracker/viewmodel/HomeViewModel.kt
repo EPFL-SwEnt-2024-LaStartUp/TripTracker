@@ -195,7 +195,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    * @param usermail the usermail to filter by
    * @return a list of itineraries that match the query
    */
-  private fun filterByFavorite(usermail: String): List<Itinerary> {
+  fun filterByFavorite(usermail: String): List<Itinerary> {
     val userProfile = userProfileList.firstOrNull { it.mail == usermail } ?: return emptyList()
     return _itineraryList.value?.filter { userProfile.favoritesPaths.contains(it.id) }
         ?: emptyList()
@@ -289,6 +289,13 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
       repository.incrementField(itineraryId, IncrementableField.NUM_STARTS)
       updateFlameCount(itineraryId)
     }
+  }
+
+  /** Filter the itinerary posted by your following users */
+  fun filterByFollowing(usermail: String) {
+    val userProfile = userProfileList.firstOrNull { it.mail == usermail } ?: return
+    _itineraryList.value =
+        _itineraryList.value?.filter { userProfile.following.contains(it.userMail) }
   }
 
   /**
