@@ -189,7 +189,15 @@ fun UserView(
                                           .testTag("FollowingButton"),
                               ) {
                                 Text(
-                                    text = if (areConnected) "Following" else "Follow",
+                                    text =
+                                        if (areConnected) {
+                                          "Following"
+                                        } else if (displayedUser.following.contains(
+                                            loggedUser.userProfile.value.mail)) {
+                                          "Follow Back"
+                                        } else {
+                                          "Follow"
+                                        },
                                     style =
                                         TextStyle(
                                             fontSize = 12.sp,
