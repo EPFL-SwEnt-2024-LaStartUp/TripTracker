@@ -1,18 +1,23 @@
 package com.example.triptracker.userProfile
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.model.repository.ImageRepository
 import com.example.triptracker.model.repository.UserProfileRepository
+import com.example.triptracker.view.Navigation
 import com.example.triptracker.viewmodel.UserProfileViewModel
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.verify
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,6 +34,10 @@ class UserProfileViewModelTest {
 
   @RelaxedMockK private lateinit var mockUserProfileRepository: UserProfileRepository
   @RelaxedMockK private lateinit var mockUserProfileViewModel: UserProfileViewModel
+  @RelaxedMockK private lateinit var mockNav: Navigation
+  @RelaxedMockK private lateinit var mockImageRepository: ImageRepository
+
+  private lateinit var viewModel: UserProfileViewModel
 
   private val mockList = MockUserList()
   private val mockUserProfiles = mockList.getUserProfiles()
@@ -46,7 +55,10 @@ class UserProfileViewModelTest {
   fun setUp() {
     // Mocking necessary components
     mockUserProfileRepository = mockk(relaxed = true)
+    mockImageRepository = mockk(relaxed = true)
     mockUserProfileViewModel = mockk(relaxed = true)
+    viewModel = UserProfileViewModel(mockUserProfileRepository, mockImageRepository)
+    mockNav = mockk(relaxed = true)
     mockkStatic(Log::class)
   }
 
@@ -172,5 +184,37 @@ class UserProfileViewModelTest {
     verify {
       Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
     }
+  }
+
+  @Test
+  fun favoriteTest() {
+    every { mockUserProfileRepository.updateUserProfile(any()) } answers
+        {
+          Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
+        }
+
+    val mockViewModel = UserProfileViewModel(mockUserProfileRepository)
+    mockViewModel.removeFavorite(MutableUserProfile(), "0")
+    verify {
+      Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
+    }
+
+    mockViewModel.addFavorite(MutableUserProfile(), "0")
+    verify {
+      Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
+    }
+  }
+
+  @Test
+  fun updateProfileWithoutPictureTest() = runBlocking {
+    val mockProfile = MutableUserProfile(mutableStateOf(mockUserProfiles[0]))
+    val isCreated = false
+    val onLoadingChange = mockk<() -> Unit>(relaxed = true)
+
+    viewModel.updateProfile(mockNav, isCreated, onLoadingChange, null, mockProfile)
+
+    coVerify { mockUserProfileRepository.updateUserProfile(mockProfile.userProfile.value) }
+    verify { onLoadingChange.invoke() }
+    verify { mockNav.goBack() }
   }
 }
