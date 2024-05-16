@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -73,10 +72,7 @@ fun FriendSearchBar(viewModel: UserProfileViewModel, onSearchActivated: (Boolean
               Text(
                   "Find Friends",
                   modifier = Modifier
-                      .wrapContentHeight(align = Alignment.CenterVertically)
-                      .wrapContentWidth(align = Alignment.CenterHorizontally)
                       .testTag("SearchBarText"),
-                  lineHeight = (LocalConfiguration.current.screenHeightDp * 0.025).sp,
                   textAlign = TextAlign.Start,
                   fontFamily = FontFamily(Font(R.font.montserrat_bold)),
                   fontSize = (LocalConfiguration.current.screenHeightDp * 0.025f).sp,
@@ -123,7 +119,7 @@ fun FriendSearchBar(viewModel: UserProfileViewModel, onSearchActivated: (Boolean
                     }),
             modifier = Modifier
                 .fillMaxWidth()
-                .height((LocalConfiguration.current.screenHeightDp * 0.08f).dp)
+                .height((LocalConfiguration.current.screenHeightDp * 0.09f).dp)
                 .padding(horizontal = 12.dp)
                 .testTag("SearchBar"))
       }
