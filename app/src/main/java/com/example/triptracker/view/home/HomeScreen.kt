@@ -58,8 +58,8 @@ import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
-import com.example.triptracker.view.theme.md_theme_dark_black
 import com.example.triptracker.view.theme.md_theme_grey
+import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeCategory
@@ -368,55 +368,38 @@ fun HomePager(
       }
   var selectedTab by remember { mutableStateOf(pagerState.currentPage) }
 
+  var isSelected by remember { mutableStateOf(false) }
+  // added for page animation
+  LaunchedEffect(key1 = selectedTab) { pagerState.animateScrollToPage(page = selectedTab) }
+  // LaunchedEffect to synchronize the pager state with the selected tab
+  LaunchedEffect(pagerState.currentPage) { selectedTab = pagerState.currentPage }
   Column(modifier = Modifier.padding(innerPadding).background(md_theme_light_onPrimary)) {
     TabRow(
         selectedTabIndex = pagerState.currentPage,
         modifier = Modifier.fillMaxWidth().height(60.dp),
         backgroundColor = md_theme_light_onPrimary) {
           tabs.forEachIndexed { index, title ->
-            Tab(selected = index == selectedTab, onClick = { selectedTab = index }) {
-              Text(
-                  title,
-                  color = md_theme_dark_black,
-                  fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                  fontSize = 20.sp)
-            }
+            isSelected = index == selectedTab
+            Tab(
+                selected = isSelected,
+                onClick = {
+                  selectedTab = index
+                  Log.d("SelectedTab", "Selected Tab: $selectedTab")
+                }) {
+                  Text(
+                      title,
+                      color = if (isSelected) md_theme_light_black else md_theme_grey,
+                      fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                      fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Normal,
+                      fontSize = 20.sp)
+                }
           }
         }
 
     HorizontalPager(state = pagerState) { page ->
       Log.d("PAGE", "Page: $page")
       when (page) {
-        0 ->
-            DisplayItineraryFromCategory(
-                itineraries = itineraries,
-                navigation = navigation,
-                homeViewModel = homeViewModel,
-                category = HomeCategory.TRENDING,
-                innerPadding = innerPadding,
-                test = test)
-        1 ->
-            DisplayItineraryFromCategory(
-                itineraries = itineraries,
-                navigation = navigation,
-                homeViewModel = homeViewModel,
-                category = HomeCategory.FOLLOWING,
-                innerPadding = innerPadding,
-                test = test)
-        2 ->
-            DisplayItineraryFromCategory(
-                itineraries = itineraries,
-                navigation = navigation,
-                homeViewModel = homeViewModel,
-                category = HomeCategory.FAVORITES,
-                innerPadding = innerPadding,
-                test = test)
-      }
-    }
-    /*
-    // Dynamically invoke the HomeScreen based on the selected tab
-    when (selectedTabIndex) {
-      0 ->
+        0 -> {
           DisplayItineraryFromCategory(
               itineraries = itineraries,
               navigation = navigation,
@@ -424,7 +407,8 @@ fun HomePager(
               category = HomeCategory.TRENDING,
               innerPadding = innerPadding,
               test = test)
-      1 ->
+        }
+        1 -> {
           DisplayItineraryFromCategory(
               itineraries = itineraries,
               navigation = navigation,
@@ -432,7 +416,8 @@ fun HomePager(
               category = HomeCategory.FOLLOWING,
               innerPadding = innerPadding,
               test = test)
-      2 ->
+        }
+        2 -> {
           DisplayItineraryFromCategory(
               itineraries = itineraries,
               navigation = navigation,
@@ -440,9 +425,9 @@ fun HomePager(
               category = HomeCategory.FAVORITES,
               innerPadding = innerPadding,
               test = test)
+        }
+      }
     }
-
-       */
   }
 }
 
