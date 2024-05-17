@@ -173,10 +173,8 @@ fun HomeScreen(
                       innerPadding = innerPadding,
                       test = test)
                 }
-
             /*
             TODO can be used to scroll to the top of the list
-
             val showButton = listState.firstVisibleItemIndex > 0
             AnimatedVisibility(visible = showButton) {
                 ScrollToTopButton()
@@ -403,7 +401,8 @@ fun HomePager(
     HorizontalPager(state = pagerState) { page ->
       when (page) {
         0 -> {
-          val trendingItineraries by homeViewModel.trendingItineraries.observeAsState(emptyList())
+          homeViewModel.filterByTrending()
+          val trendingItineraries by homeViewModel.itineraryList.observeAsState(emptyList())
           DisplayItineraryFromCategory(
               itineraries = trendingItineraries,
               navigation = navigation,
@@ -412,16 +411,19 @@ fun HomePager(
               test = test)
         }
         1 -> {
-          val followingItineraries by homeViewModel.followingItineraries.observeAsState(emptyList())
+          homeViewModel.filterByFollowing(userEmail)
+          val followingItineraries by homeViewModel.itineraryList.observeAsState(emptyList())
           if (followingItineraries.isEmpty()) {
-            Text(
-                text = "You are not following any users yet.",
-                modifier = Modifier.padding(50.dp),
-                fontSize = 46.sp,
-                fontWeight = FontWeight.Medium,
-                letterSpacing = 0.15.sp,
-                color = md_theme_light_onPrimary,
-                fontFamily = FontFamily(Font(R.font.montserrat_regular)))
+            Box(modifier = Modifier.fillMaxWidth().padding(top = 100.dp)) {
+              Text(
+                  text = "Not following anyone yet.",
+                  modifier = Modifier.padding(100.dp).height(100.dp).testTag("NoFollowingText"),
+                  fontSize = 16.sp,
+                  fontWeight = FontWeight.Medium,
+                  letterSpacing = 0.15.sp,
+                  color = md_theme_light_onPrimary,
+                  fontFamily = FontFamily(Font(R.font.montserrat_regular)))
+            }
           }
           DisplayItineraryFromCategory(
               itineraries = followingItineraries,

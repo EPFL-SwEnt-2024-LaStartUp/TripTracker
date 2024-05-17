@@ -50,12 +50,6 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   private var _itineraryList = MutableLiveData<List<Itinerary>>(emptyList())
   val itineraryList: LiveData<List<Itinerary>> = _itineraryList
 
-  private val _trendingItineraries = MutableLiveData<List<Itinerary>>(emptyList())
-  val trendingItineraries: LiveData<List<Itinerary>> = _trendingItineraries
-
-  private val _followingItineraries = MutableLiveData<List<Itinerary>>(emptyList())
-  val followingItineraries: LiveData<List<Itinerary>> = _followingItineraries
-
   private val _searchQuery = MutableLiveData<String>("")
 
   private var currentCategory = HomeCategory.TRENDING
@@ -103,29 +97,15 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    *   updating flame counts at launch
    */
   // Updated fetchItineraries to include category as an argument and update itineraries accordingly
-  private fun fetchItineraries(usermail: String = "", callback: () -> Unit = {}) {
+  private fun fetchItineraries(callback: () -> Unit = {}) {
     Log.d("HomeViewModel", "Fetching itineraries")
     repository.getAllItineraries { itineraries ->
       itineraryInstance.setItineraryList(itineraries)
       _itineraryList.value = itineraryInstance.getAllItineraries()
-      updateTrendingItineraries()
-      updateFollowingItineraries()
       callback()
     }
   }
 
-  private fun updateTrendingItineraries() {
-    _trendingItineraries.value = _itineraryList.value?.sortedByDescending { it.flameCount }
-  }
-
-  private fun updateFollowingItineraries() {
-    // val currentUserMail = // Fetch current user's email
-    val userProfile = userProfileList.firstOrNull { it.mail == "schifferlitheo@gmail.com" }
-    if (userProfile != null) {
-      _followingItineraries.value =
-          _itineraryList.value?.filter { userProfile.following.contains(it.userMail) }
-    }
-  }
   /**
    * Filter itineraries by title
    *

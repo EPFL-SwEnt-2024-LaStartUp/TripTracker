@@ -72,7 +72,7 @@ val dummyProfile = UserProfile("test@gmail.com", "Test User", "test", "test bio"
 @Composable
 fun DisplayItinerary(
     itinerary: Itinerary,
-    boxHeight: Dp = 200.dp,
+    boxHeight: Dp = 220.dp,
     userProfileViewModel: UserProfileViewModel = viewModel(),
     onClick: () -> Unit,
     homeViewModel: HomeViewModel = viewModel(),
@@ -102,7 +102,7 @@ fun DisplayItinerary(
 
   var boxHeightToDisplay = 0.dp
   if (checkIfImage(itinerary) && displayImage) {
-    boxHeightToDisplay = 525.dp
+    boxHeightToDisplay = 480.dp
   } else {
     boxHeightToDisplay = boxHeight
   }
@@ -223,7 +223,7 @@ fun DisplayItinerary(
                   color = md_theme_orange, // This is the orange color
                   fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                   fontSize = 14.sp)
-              Spacer(modifier = Modifier.height(30.dp).weight(1f))
+              Spacer(modifier = Modifier.height(20.dp).weight(1f))
               Text(
                   text = pinListString,
                   fontSize = 14.sp,
@@ -234,7 +234,7 @@ fun DisplayItinerary(
                   color = md_theme_grey)
 
               if (displayImage) {
-                Spacer(modifier = Modifier.height(50.dp).weight(1f).padding(5.dp))
+                Spacer(modifier = Modifier.height(30.dp).weight(1f).padding(5.dp))
                 LazyRow(
                     modifier =
                         Modifier.height(if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f),
@@ -249,7 +249,7 @@ fun DisplayItinerary(
                                   Modifier.clip(RoundedCornerShape(corner = CornerSize(15.dp)))
                                       .background(Color.Red))
 
-                          Spacer(modifier = Modifier.width(15.dp))
+                          Spacer(modifier = Modifier.width(15.dp).weight(1f))
                         }
                       }
                     }
@@ -258,7 +258,7 @@ fun DisplayItinerary(
                       text = "No images to display",
                       color = md_theme_light_outlineVariant,
                       fontSize = 16.sp,
-                      modifier = Modifier.padding(start = 20.dp).height(screenHeight * 0.25f))
+                      modifier = Modifier.height(screenHeight * 0.25f))
                 }
               }
             }
