@@ -280,4 +280,11 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
       updateFlameCount(itineraryId)
     }
   }
+
+  fun deleteItinerary(itineraryId: String) {
+    viewModelScope.launch {
+      repository.removeItinerary(itineraryId)
+      fetchItineraries()
+    }
+  }
 }

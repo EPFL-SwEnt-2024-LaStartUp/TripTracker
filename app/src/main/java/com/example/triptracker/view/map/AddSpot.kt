@@ -194,14 +194,9 @@ private fun checkDistance(
 ) {
   if (compareDistance(position, pos, 500.0)) {
     callback(pos, recordViewModel.displayNameDropDown.value, false)
-    //        position = pos
-    //        location = recordViewModel.displayNameDropDown.value
     recordViewModel.namePOI.value = recordViewModel.displayNameDropDown.value
-    //        isError = false
   } else {
     callback(position, "", true)
-    //        isError = true
-    //        location = ""
     recordViewModel.namePOI.value = ""
   }
 }
@@ -355,18 +350,6 @@ fun FillAddSpot(
                               location = loc
                               isError = boolError
                             })
-                        //                        if (compareDistance(position, pos, 500.0)) {
-                        //                          position = pos
-                        //                          location =
-                        // recordViewModel.displayNameDropDown.value
-                        //                          recordViewModel.namePOI.value =
-                        // recordViewModel.displayNameDropDown.value
-                        //                          isError = false
-                        //                        } else {
-                        //                          isError = true
-                        //                          location = ""
-                        //                          recordViewModel.namePOI.value = ""
-                        //                        }
 
                         expanded.value = false
                       })

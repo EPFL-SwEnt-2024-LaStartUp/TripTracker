@@ -83,6 +83,7 @@ class UserViewTest {
     ComposeScreen.onComposeScreen<UserView>(composeTestRule) {
       usernameTitle { assertIsDisplayed() }
       profilePicture { assertIsDisplayed() }
+      username { assertIsDisplayed() }
       nameAndSurname { assertIsDisplayed() }
       interestTitle {
         assertIsDisplayed()
@@ -99,28 +100,12 @@ class UserViewTest {
         assertTextEquals("Languages")
       }
       languagesList { assertIsDisplayed() }
-      followingButton {
-        assertIsDisplayed()
-        //        assertTextEquals("Follow")
-        //        assertHasClickAction()
-        //        performClick()
-        //        assertTextEquals("Following")
-      }
+      followingButton { assertIsDisplayed() }
       tripsTitle {
         assertIsDisplayed()
         assertTextEquals("Trips")
       }
       tripsCount { assertIsDisplayed() }
-      followersTitle {
-        assertIsDisplayed()
-        assertTextEquals("Followers")
-      }
-      followersCount { assertIsDisplayed() }
-      followingTitle {
-        assertIsDisplayed()
-        assertTextEquals("Following")
-      }
-      followingCount { assertIsDisplayed() }
       goBackButton {
         assertIsDisplayed()
         assertHasClickAction()

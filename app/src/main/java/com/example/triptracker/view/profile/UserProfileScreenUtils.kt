@@ -112,7 +112,7 @@ fun UserProfileScreen(
                           itinerary = itinerary,
                           onClick = { navigation.navigateTo(Route.MAPS, itinerary.id) },
                           test = test,
-                      )
+                          canBeDeleted = true)
                     }
                   }
             }
