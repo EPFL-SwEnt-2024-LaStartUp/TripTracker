@@ -332,39 +332,37 @@ fun Map(
                   cameraPositionState = cameraPositionState) { /* DO NOTHING*/}
             }
             Spacer(modifier = Modifier.weight(0.5f))
-          if(properties.isMyLocationEnabled && !viewModel.addSpotClicked.value) {
+            if (properties.isMyLocationEnabled && !viewModel.addSpotClicked.value) {
               // Button to start/stop recording
               FilledTonalButton(
                   onClick = {
-                      if (viewModel.isRecording()) {
-                          viewModel.stopRecording()
-                          viewModel.startDescription()
-                      } else {
-                          viewModel.startRecording()
-                      }
+                    if (viewModel.isRecording()) {
+                      viewModel.stopRecording()
+                      viewModel.startDescription()
+                    } else {
+                      viewModel.startRecording()
+                    }
                   },
                   modifier =
-                  Modifier.fillMaxWidth(0.4f)
-                      .fillMaxHeight(0.08f)
-                      .align(Alignment.CenterVertically),
+                      Modifier.fillMaxWidth(0.4f)
+                          .fillMaxHeight(0.08f)
+                          .align(Alignment.CenterVertically),
                   colors =
-                  ButtonDefaults.filledTonalButtonColors(
-                      containerColor = md_theme_orange, contentColor = md_theme_light_onPrimary
-                  ),
+                      ButtonDefaults.filledTonalButtonColors(
+                          containerColor = md_theme_orange,
+                          contentColor = md_theme_light_onPrimary),
               ) {
-                  Text(
-                      text = if (viewModel.isRecording()) "Stop" else "Start",
-                      fontSize = 24.sp,
-                      fontFamily = Montserrat,
-                      fontWeight = FontWeight.SemiBold,
-                      color = md_theme_light_onPrimary
-                  )
+                Text(
+                    text = if (viewModel.isRecording()) "Stop" else "Start",
+                    fontSize = 24.sp,
+                    fontFamily = Montserrat,
+                    fontWeight = FontWeight.SemiBold,
+                    color = md_theme_light_onPrimary)
               }
-          }
+            }
             Spacer(modifier = Modifier.weight(1f))
           }
     }
-
 
     // Display description window
     AnimatedVisibility(
@@ -517,76 +515,68 @@ fun SaveButton(
     profile: UserProfile,
     localLatLngList: MutableList<LatLng>,
 ) {
-    FilledTonalButton(
-        onClick = {
-            if (viewModel.title.value.isEmpty()) {
-                isTitleEmpty = true
-            }
-            if (viewModel.description.value.isEmpty()) {
-                isDescriptionEmpty = true
-            }
-            if (!isTitleEmpty && !isDescriptionEmpty) {
-                // Add itinerary to database
-                val id = itineraryRepository.getUID()
-                val title = viewModel.title.value
-                val username = profile.mail
-                val meanLocation = meanLocation(viewModel.latLongList.toList())
-                var locationName = ""
-                viewModel.getCityAndCountry(
-                    meanLocation.latitude.toFloat(),
-                    meanLocation.longitude.toFloat()
-                ) {
-                    locationName = it
-                }
-                val location = Location(
-                    meanLocation.latitude,
-                    meanLocation.longitude,
-                    locationName
-                )
-                val flameCount = 0L
-                val saves = 0L
-                val clicks = 0L
-                val numStarts = 0L
-                val startDate = viewModel.startDate.value
-                val endDate = viewModel.endDate.value
-                val pinList = viewModel.pinList
-                val description = viewModel.description.value
-                val itinerary = Itinerary(
-                    id,
-                    title,
-                    username,
-                    location,
-                    flameCount,
-                    saves,
-                    clicks,
-                    numStarts,
-                    startDate,
-                    endDate,
-                    pinList,
-                    description,
-                    viewModel.latLongList.toList()
-                )
+  FilledTonalButton(
+      onClick = {
+        if (viewModel.title.value.isEmpty()) {
+          isTitleEmpty = true
+        }
+        if (viewModel.description.value.isEmpty()) {
+          isDescriptionEmpty = true
+        }
+        if (!isTitleEmpty && !isDescriptionEmpty) {
+          // Add itinerary to database
+          val id = itineraryRepository.getUID()
+          val title = viewModel.title.value
+          val username = profile.mail
+          val meanLocation = meanLocation(viewModel.latLongList.toList())
+          var locationName = ""
+          viewModel.getCityAndCountry(
+              meanLocation.latitude.toFloat(), meanLocation.longitude.toFloat()) {
+                locationName = it
+              }
+          val location = Location(meanLocation.latitude, meanLocation.longitude, locationName)
+          val flameCount = 0L
+          val saves = 0L
+          val clicks = 0L
+          val numStarts = 0L
+          val startDate = viewModel.startDate.value
+          val endDate = viewModel.endDate.value
+          val pinList = viewModel.pinList
+          val description = viewModel.description.value
+          val itinerary =
+              Itinerary(
+                  id,
+                  title,
+                  username,
+                  location,
+                  flameCount,
+                  saves,
+                  clicks,
+                  numStarts,
+                  startDate,
+                  endDate,
+                  pinList,
+                  description,
+                  viewModel.latLongList.toList())
 
-                viewModel.addNewItinerary(itinerary, itineraryRepository)
-                viewModel.stopDescription()
-                viewModel.resetRecording()
-                localLatLngList.clear()
-            }
-        },
-        modifier = Modifier.size(150.dp, 70.dp),
-        colors = ButtonDefaults.filledTonalButtonColors(
-            containerColor = md_theme_orange,
-            contentColor = md_theme_light_onPrimary
-        ),
-    ) {
-        Text(
-            text = "Save",
-            fontSize = 24.sp,
-            fontFamily = Montserrat,
-            fontWeight = FontWeight.SemiBold,
-            color = md_theme_light_onPrimary
-        )
-    }
+          viewModel.addNewItinerary(itinerary, itineraryRepository)
+          viewModel.stopDescription()
+          viewModel.resetRecording()
+          localLatLngList.clear()
+        }
+      },
+      modifier = Modifier.size(150.dp, 70.dp),
+      colors =
+          ButtonDefaults.filledTonalButtonColors(
+              containerColor = md_theme_orange, contentColor = md_theme_light_onPrimary),
+  ) {
+    Text(
+        text = "Save",
+        fontSize = 24.sp,
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.SemiBold,
+        color = md_theme_light_onPrimary)
+  }
 }
 
 /**
@@ -673,84 +663,74 @@ fun StartWindow(viewModel: RecordViewModel, context: Context) {
  */
 @Composable
 fun RecordControls(viewModel: RecordViewModel) {
-    AnimatedVisibility(
-        visible = viewModel.isRecording(),
-        enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
-        exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Bottom)
-    ) {
+  AnimatedVisibility(
+      visible = viewModel.isRecording(),
+      enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+      exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Bottom)) {
         // Display the pause/resume button and add spot button
         Box(modifier = Modifier.height(200.dp).fillMaxWidth()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .fillMaxHeight(0.55f)
-                    .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
-                    .align(Alignment.Center)
-            ) {
+          Box(
+              modifier =
+                  Modifier.fillMaxWidth(0.9f)
+                      .fillMaxHeight(0.55f)
+                      .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
+                      .align(Alignment.Center)) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    FilledTonalButton(
-                        onClick = {
+                    modifier =
+                        Modifier.fillMaxSize()
+                            .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween) {
+                      FilledTonalButton(
+                          onClick = {
                             if (viewModel.isPaused.value) {
-                                viewModel.resumeRecording()
+                              viewModel.resumeRecording()
                             } else {
-                                viewModel.pauseRecording()
+                              viewModel.pauseRecording()
                             }
-                        },
-                        modifier = Modifier.align(Alignment.CenterVertically).fillMaxHeight(0.6f),
-                        colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = md_theme_light_onPrimary,
-                            contentColor = md_theme_light_dark
-                        ),
-                    ) {
+                          },
+                          modifier = Modifier.align(Alignment.CenterVertically).fillMaxHeight(0.6f),
+                          colors =
+                              ButtonDefaults.filledTonalButtonColors(
+                                  containerColor = md_theme_light_onPrimary,
+                                  contentColor = md_theme_light_dark),
+                      ) {
                         Text(
                             text = if (viewModel.isPaused.value) "Resume" else "Pause",
                             fontSize = 14.sp,
                             fontFamily = Montserrat,
                             fontWeight = FontWeight.SemiBold,
-                            color = md_theme_light_dark
-                        )
+                            color = md_theme_light_dark)
+                      }
+                      Row(
+                          modifier = Modifier.align(Alignment.CenterVertically),
+                          horizontalArrangement = Arrangement.SpaceEvenly) {
+                            Text(
+                                text = "Add spot",
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                                fontSize = 14.sp,
+                                fontFamily = Montserrat,
+                                fontWeight = FontWeight.SemiBold,
+                                color = md_theme_grey)
+                            Spacer(modifier = Modifier.width(20.dp))
+                            IconButton(
+                                onClick = { viewModel.addSpotClicked.value = true },
+                                modifier =
+                                    Modifier.align(Alignment.CenterVertically)
+                                        .size(50.dp)
+                                        .background(md_theme_light_onPrimary, shape = CircleShape),
+                            ) {
+                              Icon(
+                                  imageVector = Icons.Outlined.Add,
+                                  contentDescription = "Add spot",
+                                  tint = md_theme_light_dark,
+                                  modifier = Modifier.size(30.dp))
+                            }
+                          }
                     }
-                    Row(
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Text(
-                            text = "Add spot",
-                            modifier = Modifier.align(Alignment.CenterVertically),
-                            fontSize = 14.sp,
-                            fontFamily = Montserrat,
-                            fontWeight = FontWeight.SemiBold,
-                            color = md_theme_grey
-                        )
-                        Spacer(modifier = Modifier.width(20.dp))
-                        IconButton(
-                            onClick = {
-                                viewModel.addSpotClicked.value = true
-                                      },
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .size(50.dp)
-                                .background(md_theme_light_onPrimary, shape = CircleShape),
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Add,
-                                contentDescription = "Add spot",
-                                tint = md_theme_light_dark,
-                                modifier = Modifier.size(30.dp)
-                            )
-                        }
-                    }
-                }
-            }
+              }
         }
-    }
+      }
 }
-
 
 /**
  * Function to display the time in a readable format.
