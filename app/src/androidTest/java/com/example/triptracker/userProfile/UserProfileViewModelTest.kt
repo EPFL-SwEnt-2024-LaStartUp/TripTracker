@@ -254,7 +254,7 @@ class UserProfileViewModelTest {
     val isCreated = false
     val onLoadingChange = mockk<() -> Unit>(relaxed = true)
 
-    viewModel.updateProfile(mockNav, isCreated, onLoadingChange, Uri.EMPTY, mockProfile)
+    viewModel.updateProfile(mockNav, isCreated, onLoadingChange, null, mockProfile)
 
     coVerify { mockUserProfileRepository.updateUserProfile(mockProfile.userProfile.value) }
     verify { onLoadingChange.invoke() }

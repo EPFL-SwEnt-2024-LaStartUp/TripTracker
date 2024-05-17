@@ -56,6 +56,7 @@ class UserProfileOverviewTest {
                 .invoke(UserProfile("email@example.com", "Test User", "Stupid", "Yesterday"))
           }
       every { onConnectionRefresh() } returns true
+      every { setProfile(any()) } returns Unit
     }
 
     composeTestRule.setContent {
@@ -84,6 +85,7 @@ class UserProfileOverviewTest {
   fun testUserProfileOverviewLongName() {
 
     userProfilevm = mockk {
+      every { setProfile(any()) } returns Unit
       every { getUserProfileList() } returns
           listOf(
               UserProfile(
@@ -118,6 +120,7 @@ class UserProfileOverviewTest {
   @Test
   fun testUserProfileNavigateWindows() {
     userProfilevm = mockk {
+      every { setProfile(any()) } returns Unit
       every { getUserProfileList() } returns
           listOf(
               UserProfile(

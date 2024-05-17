@@ -31,8 +31,8 @@ class UserProfileViewModel(
   val isDeviceConnectedToInternet: Boolean
     get() = connection.isDeviceConnectedToInternet()
 
-  private var profile: MutableUserProfile? = null
-  private var selectedPicture: Uri? = null
+  private var _profile: MutableUserProfile? = null
+  private var _selectedPicture: Uri? = null
 
   private var userProfileInstance = UserProfileList(listOf())
   private var _userProfileList = MutableLiveData<List<UserProfile>>()
@@ -51,7 +51,7 @@ class UserProfileViewModel(
 
   /** MutableUserProfile object to store the user profile in the VM. */
   fun setProfile(profile: MutableUserProfile) {
-    this.profile = profile
+    this._profile = profile
   }
 
   /**
@@ -265,8 +265,8 @@ class UserProfileViewModel(
    */
   fun onConnectionRefresh(): Boolean {
     if (isDeviceConnectedToInternet) {
-      if (profile != null && selectedPicture != null) {
-        updateProfile(selectedPicture!!, profile!!)
+      if (_profile != null && _selectedPicture != null) {
+        updateProfile(_selectedPicture!!, _profile!!)
       }
       return true
     }
@@ -288,14 +288,14 @@ class UserProfileViewModel(
       navigation: Navigation,
       isCreated: Boolean,
       onLoadingChange: () -> Unit,
-      newSelectedPicture: Uri?,
-      newProfile: MutableUserProfile
+      selectedPicture: Uri?,
+      profile: MutableUserProfile
   ) {
     if (selectedPicture == null || isDeviceConnectedToInternet) {
-      updateProfile(navigation, isCreated, onLoadingChange, selectedPicture, newProfile)
+      updateProfile(navigation, isCreated, onLoadingChange, selectedPicture, profile)
     } else {
-      profile?.userProfile?.value = newProfile.userProfile.value.copy()
-      selectedPicture = Uri.parse(newSelectedPicture.toString())
+      profile.userProfile.value = profile.userProfile.value.copy()
+      _selectedPicture = Uri.parse(profile.toString())
       navigation.goBack()
     }
   }
@@ -318,7 +318,7 @@ class UserProfileViewModel(
           }
       val newProfile = profile.userProfile.value.copy(profileImageUrl = imageUrl)
       updateUserProfileInDb(newProfile)
-      profile.userProfile.value = newProfile
+      _profile?.userProfile?.value = newProfile
     }
   }
 
