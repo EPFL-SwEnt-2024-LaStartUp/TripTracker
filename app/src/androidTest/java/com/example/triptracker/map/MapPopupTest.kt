@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
@@ -91,9 +92,9 @@ class MapPopupTest {
 
     composeTestRule.setContent { PathOverlaySheet(itinerary, mockViewModel, onClick = {}) }
     // Assertions to check if the UI components are displayed correctly
-    composeTestRule.onNodeWithText("Picadilly Circus").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Buckingham Palace").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Abbey Road").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Picadilly Circus").assertIsDisplayed().performScrollTo()
+    composeTestRule.onNodeWithText("Buckingham Palace").assertIsDisplayed().performScrollTo()
+    composeTestRule.onNodeWithText("Abbey Road").assertIsDisplayed().performScrollTo()
   }
 
   @Test
