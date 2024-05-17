@@ -366,7 +366,7 @@ fun UserProfileEditScreen(
                                         profileImageUrl = imageUrl,
                                         followers = profile.userProfile.value.followers,
                                         following = profile.userProfile.value.following)
-                                userProfileViewModel.updateProfile(
+                                userProfileViewModel.tryToUpdateProfile(
                                     navigation = navigation,
                                     isCreated = isCreated,
                                     onLoadingChange = { isLoading = !isLoading },

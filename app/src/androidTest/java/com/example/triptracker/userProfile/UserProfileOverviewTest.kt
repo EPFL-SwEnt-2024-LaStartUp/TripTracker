@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
@@ -32,6 +33,7 @@ class UserProfileOverviewTest {
   @RelaxedMockK private lateinit var userProfilevm: UserProfileViewModel
   @RelaxedMockK private lateinit var homevm: HomeViewModel
   @RelaxedMockK private lateinit var mockNavigation: Navigation
+  @RelaxedMockK private lateinit var connection: Connection
 
   @Before
   fun setup() {
@@ -39,6 +41,7 @@ class UserProfileOverviewTest {
     mockNavigation = mockk(relaxed = true)
     userProfilevm = mockk(relaxed = true)
     homevm = mockk(relaxed = true)
+    connection = mockk(relaxed = true)
   }
 
   @Test
@@ -52,11 +55,15 @@ class UserProfileOverviewTest {
             secondArg<(UserProfile?) -> Unit>()
                 .invoke(UserProfile("email@example.com", "Test User", "Stupid", "Yesterday"))
           }
+      every { onConnectionRefresh() } returns true
     }
 
     composeTestRule.setContent {
       UserProfileOverview(
-          profile = MutableUserProfile(), navigation = mockNavigation, homeViewModel = homevm)
+          profile = MutableUserProfile(),
+          navigation = mockNavigation,
+          homeViewModel = homevm,
+          userProfileViewModel = userProfilevm)
     }
 
     composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
@@ -66,7 +73,10 @@ class UserProfileOverviewTest {
   fun emptyProfile() {
     composeTestRule.setContent {
       UserProfileOverview(
-          profile = MutableUserProfile(), navigation = mockNavigation, homeViewModel = homevm)
+          profile = MutableUserProfile(),
+          navigation = mockNavigation,
+          homeViewModel = homevm,
+          userProfileViewModel = userProfilevm)
     }
   }
 
@@ -91,11 +101,15 @@ class UserProfileOverviewTest {
                         name = "Stupid",
                         birthdate = "Yesterday"))
           }
+      every { onConnectionRefresh() } returns true
     }
 
     composeTestRule.setContent {
       UserProfileOverview(
-          profile = MutableUserProfile(), navigation = mockNavigation, homeViewModel = homevm)
+          profile = MutableUserProfile(),
+          navigation = mockNavigation,
+          homeViewModel = homevm,
+          userProfileViewModel = userProfilevm)
     }
 
     composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
@@ -118,11 +132,15 @@ class UserProfileOverviewTest {
                         "Stupid",
                         "Yesterday"))
           }
+      every { onConnectionRefresh() } returns true
     }
 
     composeTestRule.setContent {
       UserProfileOverview(
-          profile = MutableUserProfile(), navigation = mockNavigation, homeViewModel = homevm)
+          profile = MutableUserProfile(),
+          navigation = mockNavigation,
+          homeViewModel = homevm,
+          userProfileViewModel = userProfilevm)
     }
     composeTestRule.onNodeWithTag("FavoritesButton").performClick()
     composeTestRule.onNodeWithTag("FriendsButton").performClick()

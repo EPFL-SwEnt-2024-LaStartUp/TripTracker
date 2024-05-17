@@ -1,5 +1,9 @@
 package com.example.triptracker.view.profile
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -15,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -28,11 +33,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -53,12 +62,14 @@ import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
+import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_light_onSurface
 import com.example.triptracker.view.theme.md_theme_light_outlineVariant
 import com.example.triptracker.view.theme.md_theme_light_primary
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
+import com.example.triptracker.viewmodel.UserProfileViewModel
 
 /* Visual preview without any logic */
 
@@ -73,8 +84,12 @@ import com.example.triptracker.viewmodel.HomeViewModel
 fun UserProfileOverview(
     navigation: Navigation,
     profile: MutableUserProfile,
+    userProfileViewModel: UserProfileViewModel = viewModel(),
     homeViewModel: HomeViewModel = viewModel()
 ) {
+
+  var isConnected by remember { mutableStateOf(userProfileViewModel.onConnectionRefresh()) }
+
   val myTripsList = homeViewModel.filteredItineraryList
   var myTripsCount = 0
   myTripsList.observeForever(Observer { list -> myTripsCount = list.size })
@@ -89,6 +104,21 @@ fun UserProfileOverview(
     sizeUsername = (LocalConfiguration.current.screenHeightDp * 0.018f).sp
   }
 
+  // Toggle the visibility of the "No internet connection" text every half second
+  var blink by remember { mutableStateOf(true) }
+  LaunchedEffect(isConnected) {
+    if (!isConnected) {
+      blink = false
+    }
+  }
+  val color by
+      animateColorAsState(
+          targetValue = if (blink) Color.Black else md_theme_orange,
+          animationSpec =
+              infiniteRepeatable(
+                  animation = tween(durationMillis = 1500), repeatMode = RepeatMode.Reverse),
+          label = "")
+
   Scaffold(
       topBar = {},
       bottomBar = { NavigationBar(navigation) },
@@ -96,8 +126,29 @@ fun UserProfileOverview(
         Column(modifier = Modifier.padding(innerPadding)) {
           Row(
               modifier =
-                  Modifier.height((LocalConfiguration.current.screenHeightDp * 0.098f).dp)
-                      .fillMaxSize()) {}
+                  Modifier.align(Alignment.CenterHorizontally)
+                      .height((LocalConfiguration.current.screenHeightDp * 0.098f).dp)) {
+                if (!isConnected) {
+                  Text(
+                      text = "You are currently offline",
+                      fontFamily = Montserrat,
+                      fontWeight = FontWeight.Bold,
+                      color = color,
+                      fontSize = 15.sp,
+                      modifier = Modifier.align(Alignment.CenterVertically).padding(end = 4.dp))
+                  Icon(
+                      imageVector = Icons.Default.Refresh,
+                      contentDescription = "Refresh",
+                      modifier =
+                          Modifier.align(Alignment.CenterVertically)
+                              .padding(end = 16.dp)
+                              .size(20.dp)
+                              .clickable {
+                                isConnected = userProfileViewModel.onConnectionRefresh()
+                              },
+                      tint = color)
+                }
+              }
 
           // Profile picture and name (later maybe more informations depending of data classes
           // updates
