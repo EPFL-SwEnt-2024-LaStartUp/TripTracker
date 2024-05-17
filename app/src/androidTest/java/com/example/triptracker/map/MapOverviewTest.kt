@@ -78,6 +78,7 @@ class MapOverviewTest : TestCase() {
           context = appContext,
           navigation = mockNavigation,
           selectedId = "",
+        userProfile = mockProfile
       )
     }
 
@@ -106,7 +107,8 @@ class MapOverviewTest : TestCase() {
           navigation = mockNavigation,
           checkLocationPermission = false,
           selectedId = "1",
-      )
+          userProfile = mockProfile)
+
     }
 
     // Verify that the map is not shown
@@ -138,6 +140,7 @@ class MapOverviewTest : TestCase() {
           mapViewModel = mockViewModel,
           context = appContext,
           navigation = mockNavigation,
+        userProfile = mockProfile
       )
     }
 
@@ -172,6 +175,7 @@ class MapOverviewTest : TestCase() {
           navigation = mockNavigation,
           checkLocationPermission = true,
           selectedId = "",
+        userProfile = mockProfile
       )
     }
 
@@ -200,6 +204,7 @@ class MapOverviewTest : TestCase() {
           navigation = mockNavigation,
           checkLocationPermission = false,
           selectedId = "1",
+        userProfile = mockProfile
       )
     }
 
@@ -234,6 +239,7 @@ class MapOverviewTest : TestCase() {
             mapViewModel = mockViewModel,
             context = appContext,
             navigation = mockNavigation,
+          userProfile = mockProfile
         )
       }
     } catch (e: Exception) {
@@ -271,6 +277,7 @@ class MapOverviewTest : TestCase() {
             navigation = mockNavigation,
             checkLocationPermission = true,
             selectedId = "",
+          userProfile = mockProfile
         )
       }
 
@@ -360,6 +367,7 @@ class MapOverviewTest : TestCase() {
             navigation = mockNavigation,
             checkLocationPermission = true,
             selectedId = "",
+          userProfile = mockProfile
         )
       }
 
@@ -402,6 +410,7 @@ class MapOverviewTest : TestCase() {
           mapViewModel = mockViewModel,
           context = appContext,
           navigation = mockNavigation,
+        userProfile = mockProfile
       )
     }
 
@@ -453,6 +462,7 @@ class MapOverviewTest : TestCase() {
           context = appContext,
           navigation = mockNavigation,
           selectedId = "1",
+        userProfile = mockProfile
       )
 
       // Trigger the LaunchedEffect
