@@ -335,9 +335,7 @@ fun Map(
             if (properties.isMyLocationEnabled && !viewModel.addSpotClicked.value) {
               // Button to start/stop recording
               FilledTonalButton(
-                  onClick = {
-                    toggleRecordingDescription(viewModel)
-                  },
+                  onClick = { toggleRecordingDescription(viewModel) },
                   modifier =
                       Modifier.fillMaxWidth(0.4f)
                           .fillMaxHeight(0.08f)
@@ -422,10 +420,8 @@ fun Map(
                           colors =
                               OutlinedTextFieldDefaults.colors(
                                   unfocusedTextColor = md_theme_light_onPrimary,
-                                  unfocusedBorderColor =
-                                      getBorderColor(isTitleEmpty),
-                                  unfocusedLabelColor =
-                                        getBorderColor(isTitleEmpty),
+                                  unfocusedBorderColor = getBorderColor(isTitleEmpty),
+                                  unfocusedLabelColor = getBorderColor(isTitleEmpty),
                                   cursorColor = md_theme_light_onPrimary,
                                   focusedBorderColor = md_theme_light_onPrimary,
                                   focusedLabelColor = md_theme_light_onPrimary,
@@ -672,9 +668,7 @@ fun RecordControls(viewModel: RecordViewModel) {
                             .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween) {
                       FilledTonalButton(
-                          onClick = {
-                            toggleRecording(viewModel)
-                          },
+                          onClick = { toggleRecording(viewModel) },
                           modifier = Modifier.align(Alignment.CenterVertically).fillMaxHeight(0.6f),
                           colors =
                               ButtonDefaults.filledTonalButtonColors(
@@ -718,29 +712,30 @@ fun RecordControls(viewModel: RecordViewModel) {
         }
       }
 }
+
 fun getPauseResumeText(viewModel: RecordViewModel): String {
-    return if (viewModel.isPaused.value) "Resume" else "Pause"
+  return if (viewModel.isPaused.value) "Resume" else "Pause"
 }
 
 fun toggleRecordingDescription(viewModel: RecordViewModel) {
-    if (viewModel.isRecording()) {
-        viewModel.stopRecording()
-        viewModel.startDescription()
-    } else {
-        viewModel.startRecording()
-    }
+  if (viewModel.isRecording()) {
+    viewModel.stopRecording()
+    viewModel.startDescription()
+  } else {
+    viewModel.startRecording()
+  }
 }
 
 fun getBorderColor(bool: Boolean): Color {
-    return if (isDescriptionEmpty) md_theme_light_error else md_theme_grey
+  return if (isDescriptionEmpty) md_theme_light_error else md_theme_grey
 }
 
 fun toggleRecording(viewModel: RecordViewModel) {
-    if (viewModel.isPaused.value) {
-        viewModel.resumeRecording()
-    } else {
-        viewModel.pauseRecording()
-    }
+  if (viewModel.isPaused.value) {
+    viewModel.resumeRecording()
+  } else {
+    viewModel.pauseRecording()
+  }
 }
 
 /**

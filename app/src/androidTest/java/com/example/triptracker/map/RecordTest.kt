@@ -3,6 +3,7 @@ package com.example.triptracker.map
 import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.RadioButtonChecked
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -307,6 +308,41 @@ class RecordTest {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
+
+    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+
+    composeTestRule.setContent {
+      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+    }
+
+    // Go to RecordScreen
+    composeTestRule.onNodeWithTag("RecordScreen").assertExists()
+    composeTestRule.onNodeWithTag("RecordScreen").performClick()
+
+    composeTestRule.onNodeWithText("Save").assertExists()
+
+    composeTestRule.onNodeWithText("Save").performClick()
+  }
+
+  @Test
+  fun testSaveButtonNotEmpty() {
+    every { mockViewModel.isRecording() } returns false
+    every { mockViewModel.isPaused.value } returns false
+    every { mockViewModel.isInDescription() } returns true
+    every { mockViewModel.addSpotClicked.value } returns false
+    every { mockViewModel.description.value } returns "Description"
+    every { mockViewModel.title.value } returns "Title"
+    every { mockViewModel.startDate.value } returns "2021-10-10"
+    every { mockViewModel.endDate.value } returns "2021-10-10"
+
+    every { mockViewModel.latLongList } returns listOf()
+    every { mockViewModel.namePOI.value } returns "Name"
+    every { mockViewModel.displayNameDropDown.value } returns "Name"
+
+    every { mockViewModel.title } returns mutableStateOf("Title")
+    every { mockViewModel.description } returns mutableStateOf("Description")
+    every { mockViewModel.title.value.isEmpty() } returns false
+    every { mockViewModel.description.value.isEmpty() } returns false
 
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 

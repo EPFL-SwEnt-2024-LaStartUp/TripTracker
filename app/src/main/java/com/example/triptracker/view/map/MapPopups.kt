@@ -418,7 +418,7 @@ fun StartScreen(
                                     contentDescription = pin.description,
                                     modifier =
                                         Modifier.clip(
-                                                RoundedCornerShape(corner = CornerSize(15.dp))))
+                                            RoundedCornerShape(corner = CornerSize(15.dp))))
 
                                 Spacer(modifier = Modifier.width(15.dp))
                               }
@@ -439,8 +439,7 @@ fun StartScreen(
                             mapViewModel.asStartItinerary.value = true
                           },
                           modifier =
-                              Modifier
-                                  .align(Alignment.CenterHorizontally)
+                              Modifier.align(Alignment.CenterHorizontally)
                                   .height(
                                       screenHeight *
                                           0.07f) // Set a specific height for the button to make it
