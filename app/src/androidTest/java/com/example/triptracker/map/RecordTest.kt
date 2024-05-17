@@ -13,6 +13,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.example.triptracker.itinerary.MockItineraryList
+import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
@@ -48,6 +49,9 @@ class RecordTest {
 
   val mockList = MockItineraryList()
   val mockItineraries = mockList.getItineraries()
+
+  val mockConnection: Connection = mockk(relaxed = true)
+  val mockContext: Context = mockk(relaxed = true)
 
   @Before
   fun setUp() {
@@ -339,7 +343,6 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockViewModel.title } returns mutableStateOf("Title")
     every { mockViewModel.description } returns mutableStateOf("Description")
     every { mockViewModel.title.value.isEmpty() } returns false
     every { mockViewModel.description.value.isEmpty() } returns false
@@ -413,7 +416,7 @@ class RecordTest {
       every { mockViewModel.pinList } returns listOf()
 
       composeTestRule.setContent {
-        RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+        RecordScreen(context = mockContext, viewModel = mockViewModel, navigation = mockNavigation)
       }
 
       // Go to RecordScreen
