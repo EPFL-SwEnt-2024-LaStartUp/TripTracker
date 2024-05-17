@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -63,6 +64,7 @@ import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_error
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_light_outline
+import com.example.triptracker.view.theme.md_theme_light_onSurface
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
@@ -145,7 +147,9 @@ fun DisplayItinerary(
               Modifier.fillMaxWidth()
                   .padding(paddingAround)
                   .height(boxHeightToDisplay)
-                  .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))) {
+                  .background(
+                      color = MaterialTheme.colorScheme.onSurface,
+                      shape = RoundedCornerShape(35.dp))) {
 
             // Close button
             IconButton(
@@ -174,7 +178,7 @@ fun DisplayItinerary(
               Modifier.fillMaxWidth()
                   .padding(paddingAround)
                   .height(boxHeightToDisplay)
-                  .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))
+                  .background(color = md_theme_light_onSurface, shape = RoundedCornerShape(35.dp))
                   .combinedClickable(
                       onClick = {
                         onClick()

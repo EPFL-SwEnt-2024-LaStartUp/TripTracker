@@ -12,8 +12,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
-import com.example.triptracker.view.profile.ProfileButton
 import com.example.triptracker.view.profile.UserProfileOverview
+import com.example.triptracker.view.profile.subviews.ProfileButton
 import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import io.mockk.every
