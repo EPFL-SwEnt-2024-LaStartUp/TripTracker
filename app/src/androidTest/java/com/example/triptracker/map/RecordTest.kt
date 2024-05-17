@@ -1,9 +1,9 @@
 package com.example.triptracker.map
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.RadioButtonChecked
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -51,7 +51,6 @@ class RecordTest {
   val mockItineraries = mockList.getItineraries()
 
   val mockConnection: Connection = mockk(relaxed = true)
-  val mockContext: Context = mockk(relaxed = true)
 
   @Before
   fun setUp() {
@@ -83,7 +82,11 @@ class RecordTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -111,7 +114,11 @@ class RecordTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -141,7 +148,11 @@ class RecordTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -171,7 +182,11 @@ class RecordTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -201,7 +216,11 @@ class RecordTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -231,7 +250,11 @@ class RecordTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -257,7 +280,11 @@ class RecordTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -287,7 +314,11 @@ class RecordTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -316,9 +347,13 @@ class RecordTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
-
+    Log.e("RecordTest", "testSaveButton")
     // Go to RecordScreen
     composeTestRule.onNodeWithTag("RecordScreen").assertExists()
     composeTestRule.onNodeWithTag("RecordScreen").performClick()
@@ -343,14 +378,12 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockViewModel.description } returns mutableStateOf("Description")
-    every { mockViewModel.title.value.isEmpty() } returns false
-    every { mockViewModel.description.value.isEmpty() } returns false
-
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
-
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -382,7 +415,11 @@ class RecordTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -416,7 +453,11 @@ class RecordTest {
       every { mockViewModel.pinList } returns listOf()
 
       composeTestRule.setContent {
-        RecordScreen(context = mockContext, viewModel = mockViewModel, navigation = mockNavigation)
+        RecordScreen(
+            context = appContext,
+            viewModel = mockViewModel,
+            navigation = mockNavigation,
+            connection = mockConnection)
       }
 
       // Go to RecordScreen
@@ -448,7 +489,11 @@ class RecordTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -479,7 +524,11 @@ class RecordTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -510,7 +559,11 @@ class RecordTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -537,7 +590,11 @@ class RecordTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -563,7 +620,11 @@ class RecordTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -591,7 +652,11 @@ class RecordTest {
     every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
