@@ -63,8 +63,8 @@ import com.example.triptracker.view.theme.md_theme_light_background
 import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_error
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
-import com.example.triptracker.view.theme.md_theme_light_outline
 import com.example.triptracker.view.theme.md_theme_light_onSurface
+import com.example.triptracker.view.theme.md_theme_light_outline
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
