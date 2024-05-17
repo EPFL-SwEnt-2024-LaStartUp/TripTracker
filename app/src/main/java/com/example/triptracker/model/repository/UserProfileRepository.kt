@@ -117,8 +117,8 @@ open class UserProfileRepository {
     val favoritesPaths =
         document.data?.get("favoritesPaths") as? List<String> ?: createFavoritesPaths(document.id)
 
-      //val itineraryPrivacy = document.data?.get("itineraryPrivacy") as? Int ?: throw IllegalStateException("itineraryPrivacy is missing")
-      //val profilePrivacy = document.data?.get("profilePrivacy") as? Int ?: throw IllegalStateException("profilePrivacy is missing")
+      val itineraryPrivacy = document.data?.get("itineraryPrivacy") as? Int ?: createItineraryPrivacy(document.id)
+      val profilePrivacy = document.data?.get("profilePrivacy") as? Int ?: createProfilePrivacy(document.id)
 
     return UserProfile(
         document.id,
@@ -130,8 +130,8 @@ open class UserProfileRepository {
         follower,
         following,
         favoritesPaths,
-        //itineraryPrivacy,
-        //profilePrivacy
+        itineraryPrivacy,
+        profilePrivacy
     )
   }
 
@@ -144,6 +144,25 @@ open class UserProfileRepository {
         .addOnFailureListener { e -> Log.e(TAG, "Error creating FavoritesPaths", e) }
     return favoritesPaths
   }
+private fun createProfilePrivacy(id: String):Int {
+    val profilePrivacy = 0
+    userProfileDb
+        .document(id)
+        .update("profilePrivacy", profilePrivacy)
+        .addOnSuccessListener { Log.d(TAG, "Profile Privacy created successfully") }
+        .addOnFailureListener { e -> Log.e(TAG, "Error creating Profile Privacy", e) }
+    return profilePrivacy
+  }
+private fun createItineraryPrivacy(id: String):Int {
+    val itineraryPrivacy = 0
+    userProfileDb
+        .document(id)
+        .update("itineraryPrivacy", itineraryPrivacy)
+        .addOnSuccessListener { Log.d(TAG, "Itinerary Privacy created successfully") }
+        .addOnFailureListener { e -> Log.e(TAG, "Error creating Itinerary Privacy", e) }
+    return itineraryPrivacy
+  }
+
 
   /**
    * This function converts the QuerySnapshot to a list of user's profiles.
@@ -174,9 +193,9 @@ open class UserProfileRepository {
       val favoritesPaths =
           document.data["favoritesPaths"] as? List<String> ?: createFavoritesPaths(document.id)
 
-        //val profilePrivacy = document.data["profilePrivacy"] as? Int ?: throw IllegalStateException("profilePrivacy is missing")
+        val profilePrivacy = document.data["profilePrivacy"] as? Int ?: createProfilePrivacy(document.id)
 
-        //val itineraryPrivacy = document.data["itineraryPrivacy"] as? Int ?: throw IllegalStateException("itineraryPrivacy is missing")
+        val itineraryPrivacy = document.data["itineraryPrivacy"] as? Int ?: createItineraryPrivacy(document.id)
 
       val userProfile =
           UserProfile(
@@ -189,8 +208,8 @@ open class UserProfileRepository {
               followers,
               following,
               favoritesPaths,
-              //itineraryPrivacy,
-              //profilePrivacy
+              itineraryPrivacy,
+              profilePrivacy
           )
       _userProfileList.add(userProfile)
     }

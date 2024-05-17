@@ -154,7 +154,7 @@ fun UserProfileSettings(
                       onClick = {
                         setButtonState((buttonState + 1) % 3)
 
-                        var itinPrivacy = buttonState
+                        var itinPrivacy = (buttonState + 1) % 3
                         val newProfile =
                             UserProfile(
                                 mail = userProfile.mail,
