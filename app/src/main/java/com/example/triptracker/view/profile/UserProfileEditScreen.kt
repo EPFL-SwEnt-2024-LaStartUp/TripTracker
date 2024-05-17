@@ -376,8 +376,8 @@ fun UserProfileEditScreen(
                                     navigation = navigation,
                                     isCreated = isCreated,
                                     onLoadingChange = { isLoading = !isLoading },
-                                    selectedPicture = selectedPicture,
-                                    profile = profile)
+                                    newSelectedPicture = selectedPicture,
+                                    newProfile = profile)
                               })
                         }
                   }

@@ -31,8 +31,8 @@ class UserProfileViewModel(
   val isDeviceConnectedToInternet: Boolean
     get() = connection.isDeviceConnectedToInternet()
 
-  private var profileToUpdate: MutableUserProfile? = null
-  private var selectedPictureToUpdate: Uri? = null
+  private var profile: MutableUserProfile? = null
+  private var selectedPicture: Uri? = null
 
   private var userProfileInstance = UserProfileList(listOf())
   private var _userProfileList = MutableLiveData<List<UserProfile>>()
@@ -47,6 +47,11 @@ class UserProfileViewModel(
 
   init {
     viewModelScope.launch { fetchAllUserProfiles() }
+  }
+
+  /** MutableUserProfile object to store the user profile in the VM. */
+  fun setProfile(profile: MutableUserProfile) {
+    this.profile = profile
   }
 
   /**
@@ -260,8 +265,8 @@ class UserProfileViewModel(
    */
   fun onConnectionRefresh(): Boolean {
     if (isDeviceConnectedToInternet) {
-      if (profileToUpdate != null && selectedPictureToUpdate != null) {
-        updateProfile(selectedPictureToUpdate!!, profileToUpdate!!)
+      if (profile != null && selectedPicture != null) {
+        updateProfile(selectedPicture!!, profile!!)
       }
       return true
     }
@@ -283,14 +288,14 @@ class UserProfileViewModel(
       navigation: Navigation,
       isCreated: Boolean,
       onLoadingChange: () -> Unit,
-      selectedPicture: Uri?,
-      profile: MutableUserProfile
+      newSelectedPicture: Uri?,
+      newProfile: MutableUserProfile
   ) {
     if (selectedPicture == null || isDeviceConnectedToInternet) {
-      updateProfile(navigation, isCreated, onLoadingChange, selectedPicture, profile)
+      updateProfile(navigation, isCreated, onLoadingChange, selectedPicture, newProfile)
     } else {
-      profileToUpdate = profile
-      selectedPictureToUpdate = Uri.parse(selectedPicture.toString())
+      profile?.userProfile?.value = newProfile.userProfile.value.copy()
+      selectedPicture = Uri.parse(newSelectedPicture.toString())
       navigation.goBack()
     }
   }
