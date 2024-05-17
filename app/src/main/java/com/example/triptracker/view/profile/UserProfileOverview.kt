@@ -13,6 +13,11 @@ import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
@@ -28,6 +33,10 @@ import com.example.triptracker.view.Route
 import com.example.triptracker.view.profile.subviews.ProfileButton
 import com.example.triptracker.view.profile.subviews.ProfileCounts
 import com.example.triptracker.view.profile.subviews.ProfileInfoView
+import com.example.triptracker.view.theme.md_theme_light_onSurface
+import com.example.triptracker.view.theme.md_theme_light_outlineVariant
+import com.example.triptracker.view.theme.md_theme_light_primary
+import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
 

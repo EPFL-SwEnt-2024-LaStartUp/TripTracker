@@ -53,6 +53,7 @@ import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
+import com.example.triptracker.view.theme.md_theme_light_onSurface
 import com.example.triptracker.view.theme.md_theme_light_outline
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.MapViewModel
@@ -396,7 +397,8 @@ fun Map(
                   .align(Alignment.BottomCenter)
                   .padding(15.dp)
                   //                  .verticalScroll(rememberScrollState())
-                  .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))) {
+                  .background(
+                      color = md_theme_light_onSurface, shape = RoundedCornerShape(35.dp))) {
             val selectedPin = mapViewModel.selectedPin.value
             val scrollState = rememberScrollState()
 

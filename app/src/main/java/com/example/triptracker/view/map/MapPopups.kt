@@ -54,8 +54,8 @@ import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
-import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
+import com.example.triptracker.view.theme.md_theme_light_onSurface
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.MapPopupViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
@@ -91,7 +91,7 @@ fun PathOverlaySheet(
               Modifier.fillMaxWidth()
                   .fillMaxHeight()
                   .background(
-                      color = md_theme_light_black,
+                      color = md_theme_light_onSurface,
                       shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp))) {
             Column(modifier = Modifier.fillMaxWidth().testTag("PathOverlaySheet").padding(25.dp)) {
               Text(
@@ -105,7 +105,7 @@ fun PathOverlaySheet(
               LazyColumn {
                 items(itinerary.pinnedPlaces) { pin ->
                   PathItem(pin, onClick)
-                  Divider(thickness = 1.dp)
+                  Divider(thickness = 1.dp, color = md_theme_light_onSurface)
                 }
               }
             }
@@ -178,7 +178,7 @@ fun StartScreen(itinerary: Itinerary, uservm: UserProfileViewModel, onClick: () 
           Modifier.fillMaxWidth()
               .fillMaxHeight()
               .background(
-                  color = md_theme_light_black,
+                  color = md_theme_light_onSurface,
                   shape =
                       RoundedCornerShape(
                           topStart = 35.dp,
