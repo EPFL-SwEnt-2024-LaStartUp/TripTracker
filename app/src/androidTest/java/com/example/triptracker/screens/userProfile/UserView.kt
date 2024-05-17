@@ -13,6 +13,7 @@ class UserView(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val usernameTitle: KNode = child { hasTestTag("UsernameTitle") }
   val goBackButton: KNode = child { hasTestTag("GoBackButton") }
   val profilePicture: KNode = child { hasTestTag("ProfilePicture") }
+  val username: KNode = child { hasTestTag("Username") }
   val nameAndSurname: KNode = child { hasTestTag("NameAndSurname") }
   val interestTitle: KNode = child { hasTestTag("InterestTitle") }
   val interestList: KNode = child { hasTestTag("InterestList") }

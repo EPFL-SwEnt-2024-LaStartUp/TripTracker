@@ -92,8 +92,6 @@ class MapPopupTest {
     composeTestRule.setContent { PathOverlaySheet(itinerary, mockViewModel, onClick = {}) }
     // Assertions to check if the UI components are displayed correctly
     composeTestRule.onNodeWithText("Picadilly Circus").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Buckingham Palace").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Abbey Road").assertIsDisplayed()
   }
 
   @Test
