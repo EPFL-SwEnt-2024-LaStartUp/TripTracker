@@ -421,7 +421,7 @@ fun Map(
                         fontSize = 14.sp,
                         fontFamily = Montserrat,
                         fontWeight = FontWeight.SemiBold,
-                    )
+                        color = md_theme_light_onPrimary)
                   }
             } else {
               Spacer(modifier = Modifier.width(100.dp))
