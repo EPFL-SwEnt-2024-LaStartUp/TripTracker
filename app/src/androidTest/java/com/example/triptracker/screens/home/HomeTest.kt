@@ -252,22 +252,6 @@ class HomeTest {
   }
 
   @Test
-  fun itineraryIsLongClickable() {
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
-    every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
-    every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
-    every { mockNav.getTopLevelDestinations()[1] } returns
-        TopLevelDestination(Route.MAPS, Icons.Outlined.Place, "Maps")
-    every { mockProfile.userProfile.value } returns mockUsers[0]
-    // Setting up the test composition
-    composeTestRule.setContent {
-      HomeScreen(
-          navigation = mockNav, homeViewModel = mockViewModel, test = true, profile = mockProfile)
-    }
-    //    composeTestRule.onNodeWithTag("Itinerary").assertExists()
-  }
-
-  @Test
   fun noItinerariesTextIsDisplayed() {
     every { mockItineraryRepository.getAllItineraries() } returns emptyList()
     every { mockViewModel.itineraryList } returns MutableLiveData(null)

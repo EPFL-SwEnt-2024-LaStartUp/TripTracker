@@ -1,9 +1,11 @@
 package com.example.triptracker.userProfile
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.ImageRepository
@@ -36,6 +38,7 @@ class UserProfileViewModelTest {
   @RelaxedMockK private lateinit var mockUserProfileViewModel: UserProfileViewModel
   @RelaxedMockK private lateinit var mockNav: Navigation
   @RelaxedMockK private lateinit var mockImageRepository: ImageRepository
+  @RelaxedMockK private lateinit var mockConnection: Connection
 
   private lateinit var viewModel: UserProfileViewModel
 
@@ -56,8 +59,9 @@ class UserProfileViewModelTest {
     // Mocking necessary components
     mockUserProfileRepository = mockk(relaxed = true)
     mockImageRepository = mockk(relaxed = true)
+    mockConnection = mockk(relaxed = true)
     mockUserProfileViewModel = mockk(relaxed = true)
-    viewModel = UserProfileViewModel(mockUserProfileRepository, mockImageRepository)
+    viewModel = UserProfileViewModel(mockUserProfileRepository, mockImageRepository, mockConnection)
     mockNav = mockk(relaxed = true)
     mockkStatic(Log::class)
   }
@@ -83,7 +87,7 @@ class UserProfileViewModelTest {
           Log.d("FirebaseConnection - UserProfileRepository", "User profile added successfully")
         }
 
-    val viewModel = UserProfileViewModel(mockUserProfileRepository)
+    val viewModel = UserProfileViewModel(mockUserProfileRepository, connection = mockConnection)
     val newUser = mockList.getNewMockUser()
 
     viewModel.addNewUserProfileToDb(newUser)
@@ -96,7 +100,7 @@ class UserProfileViewModelTest {
           Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
         }
 
-    val mockViewModel = UserProfileViewModel(mockUserProfileRepository)
+    val mockViewModel = UserProfileViewModel(mockUserProfileRepository, connection = mockConnection)
     val user = mockList.getUserProfiles()[0]
     val updatedUser = user.copy(name = "David")
 
@@ -113,7 +117,7 @@ class UserProfileViewModelTest {
           Log.d("FirebaseConnection - UserProfileRepository", "User profile removed successfully")
         }
 
-    val mockViewModel = UserProfileViewModel(mockUserProfileRepository)
+    val mockViewModel = UserProfileViewModel(mockUserProfileRepository, connection = mockConnection)
     val mail = mockList.getUserProfiles()[0].mail
 
     mockViewModel.removeUserProfileInDb(mail)
@@ -129,7 +133,7 @@ class UserProfileViewModelTest {
           Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
         }
 
-    val mockViewModel = UserProfileViewModel(mockUserProfileRepository)
+    val mockViewModel = UserProfileViewModel(mockUserProfileRepository, connection = mockConnection)
     val follower = mockList.getUserProfiles()[1]
 
     mockViewModel.addFollower(MutableUserProfile(), follower)
@@ -145,7 +149,7 @@ class UserProfileViewModelTest {
           Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
         }
 
-    val mockViewModel = UserProfileViewModel(mockUserProfileRepository)
+    val mockViewModel = UserProfileViewModel(mockUserProfileRepository, connection = mockConnection)
     val following = mockList.getUserProfiles()[1]
 
     mockViewModel.addFollowing(MutableUserProfile(), following)
@@ -161,7 +165,7 @@ class UserProfileViewModelTest {
           Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
         }
 
-    val mockViewModel = UserProfileViewModel(mockUserProfileRepository)
+    val mockViewModel = UserProfileViewModel(mockUserProfileRepository, connection = mockConnection)
     val follower = mockList.getUserProfiles()[1]
 
     mockViewModel.removeFollower(MutableUserProfile(), follower)
@@ -177,7 +181,7 @@ class UserProfileViewModelTest {
           Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
         }
 
-    val mockViewModel = UserProfileViewModel(mockUserProfileRepository)
+    val mockViewModel = UserProfileViewModel(mockUserProfileRepository, connection = mockConnection)
     val following = mockList.getUserProfiles()[1]
 
     mockViewModel.removeFollowing(MutableUserProfile(), following)
@@ -193,7 +197,7 @@ class UserProfileViewModelTest {
           Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
         }
 
-    val mockViewModel = UserProfileViewModel(mockUserProfileRepository)
+    val mockViewModel = UserProfileViewModel(mockUserProfileRepository, connection = mockConnection)
     mockViewModel.removeFavorite(MutableUserProfile(), "0")
     verify {
       Log.d("FirebaseConnection - UserProfileRepository", "User profile updated successfully")
@@ -207,6 +211,45 @@ class UserProfileViewModelTest {
 
   @Test
   fun updateProfileWithoutPictureTest() = runBlocking {
+    val mockProfile = MutableUserProfile(mutableStateOf(mockUserProfiles[0]))
+    val isCreated = false
+    val onLoadingChange = mockk<() -> Unit>(relaxed = true)
+
+    viewModel.updateProfile(mockNav, isCreated, onLoadingChange, null, mockProfile)
+
+    coVerify { mockUserProfileRepository.updateUserProfile(mockProfile.userProfile.value) }
+    verify { onLoadingChange.invoke() }
+    verify { mockNav.goBack() }
+  }
+
+  @Test
+  fun tryToUpdateTest() {
+    viewModel.tryToUpdateProfile(
+        mockNav, false, {}, null, MutableUserProfile(mutableStateOf(mockUserProfiles[0])))
+    verify {
+      viewModel.updateProfile(
+          mockNav, false, {}, null, MutableUserProfile(mutableStateOf(mockUserProfiles[0])))
+    }
+
+    every { mockConnection.isDeviceConnectedToInternet() } returns false
+    viewModel.tryToUpdateProfile(
+        mockNav, false, {}, Uri.EMPTY, MutableUserProfile(mutableStateOf(mockUserProfiles[0])))
+    verify { mockNav.goBack() }
+  }
+
+  @Test
+  fun onConnectionRefreshTest() {
+    every { mockConnection.isDeviceConnectedToInternet() } returns false
+    viewModel.tryToUpdateProfile(
+        mockNav, false, {}, Uri.EMPTY, MutableUserProfile(mutableStateOf(mockUserProfiles[0])))
+    verify { mockNav.goBack() }
+
+    every { mockConnection.isDeviceConnectedToInternet() } returns true
+    assert(viewModel.onConnectionRefresh())
+  }
+
+  @Test
+  fun updateProfileTest() {
     val mockProfile = MutableUserProfile(mutableStateOf(mockUserProfiles[0]))
     val isCreated = false
     val onLoadingChange = mockk<() -> Unit>(relaxed = true)
