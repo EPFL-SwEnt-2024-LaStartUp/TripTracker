@@ -643,79 +643,92 @@ fun StartWindow(viewModel: RecordViewModel, context: Context) {
                 }
               }
           // animate the visibility of the pause/resume button
-          AnimatedVisibility(
-              visible = viewModel.isRecording(),
-              enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
-              exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Bottom)) {
-                // Display the pause/resume button and add spot button
-                Box(modifier = Modifier.height(200.dp).fillMaxWidth()) {
-                  Box(
-                      modifier =
-                          Modifier.fillMaxWidth(0.9f)
-                              .fillMaxHeight(0.55f)
-                              .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
-                              .align(Alignment.Center)) {
-                        Row(
-                            modifier =
-                                Modifier.fillMaxSize()
-                                    .padding(
-                                        start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween) {
-                              FilledTonalButton(
-                                  onClick = {
-                                    if (viewModel.isPaused.value) {
-                                      viewModel.resumeRecording()
-                                    } else {
-                                      viewModel.pauseRecording()
-                                    }
-                                  },
-                                  modifier =
-                                      Modifier.align(Alignment.CenterVertically)
-                                          .fillMaxHeight(0.6f),
-                                  colors =
-                                      ButtonDefaults.filledTonalButtonColors(
-                                          containerColor = md_theme_light_onPrimary,
-                                          contentColor = md_theme_light_dark),
-                              ) {
-                                Text(
-                                    text = if (viewModel.isPaused.value) "Resume" else "Pause",
-                                    fontSize = 14.sp,
-                                    fontFamily = Montserrat,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = md_theme_light_dark)
-                              }
-                              Row(
-                                  modifier = Modifier.align(Alignment.CenterVertically),
-                                  horizontalArrangement = Arrangement.SpaceEvenly) {
-                                    Text(
-                                        text = "Add spot",
-                                        modifier = Modifier.align(Alignment.CenterVertically),
-                                        fontSize = 14.sp,
-                                        fontFamily = Montserrat,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = md_theme_grey)
-                                    Spacer(modifier = Modifier.width(20.dp))
-                                    IconButton(
-                                        onClick = { viewModel.addSpotClicked.value = true },
-                                        modifier =
-                                            Modifier.align(Alignment.CenterVertically)
-                                                .size(50.dp)
-                                                .background(
-                                                    md_theme_light_onPrimary, shape = CircleShape),
-                                    ) {
-                                      Icon(
-                                          imageVector = Icons.Outlined.Add,
-                                          contentDescription = "Add spot",
-                                          tint = md_theme_light_dark,
-                                          modifier = Modifier.size(30.dp))
-                                    }
-                                  }
-                            }
-                      }
-                }
-              }
+          RecordControls(viewModel)
         }
   }
+}
+
+/**
+ * Composable function to display the record controls.
+ *
+ * @param viewModel The RecordViewModel instance.
+ */
+@Composable
+fun RecordControls(viewModel: RecordViewModel) {
+    AnimatedVisibility(
+        visible = viewModel.isRecording(),
+        enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+        exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Bottom)
+    ) {
+        // Display the pause/resume button and add spot button
+        Box(modifier = Modifier.height(200.dp).fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .fillMaxHeight(0.55f)
+                    .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
+                    .align(Alignment.Center)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    FilledTonalButton(
+                        onClick = {
+                            if (viewModel.isPaused.value) {
+                                viewModel.resumeRecording()
+                            } else {
+                                viewModel.pauseRecording()
+                            }
+                        },
+                        modifier = Modifier.align(Alignment.CenterVertically).fillMaxHeight(0.6f),
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = md_theme_light_onPrimary,
+                            contentColor = md_theme_light_dark
+                        ),
+                    ) {
+                        Text(
+                            text = if (viewModel.isPaused.value) "Resume" else "Pause",
+                            fontSize = 14.sp,
+                            fontFamily = Montserrat,
+                            fontWeight = FontWeight.SemiBold,
+                            color = md_theme_light_dark
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Text(
+                            text = "Add spot",
+                            modifier = Modifier.align(Alignment.CenterVertically),
+                            fontSize = 14.sp,
+                            fontFamily = Montserrat,
+                            fontWeight = FontWeight.SemiBold,
+                            color = md_theme_grey
+                        )
+                        Spacer(modifier = Modifier.width(20.dp))
+                        IconButton(
+                            onClick = { viewModel.addSpotClicked.value = true },
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .size(50.dp)
+                                .background(md_theme_light_onPrimary, shape = CircleShape),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Add,
+                                contentDescription = "Add spot",
+                                tint = md_theme_light_dark,
+                                modifier = Modifier.size(30.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 /**
