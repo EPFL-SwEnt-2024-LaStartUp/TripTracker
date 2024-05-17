@@ -52,14 +52,14 @@ import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
-/* Visual preview without any logic */
-
 /**
  * Composable displaying the profile overview featuring information about follower, following. 4
  * clickable buttons are available to access to the MyTrips, Favorites, Friends and settings views.
  *
- * @param userProfileViewModel: The view model of the UserProfile
  * @param navigation: The navigation of the app to switch between different views
+ * @param profile: The mutableUserProfile to display
+ * @param userProfileViewModel: The view model of the UserProfile
+ * @param homeViewModel: The view model of the Home
  */
 @Composable
 fun UserProfileOverview(

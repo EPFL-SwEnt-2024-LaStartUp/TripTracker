@@ -253,6 +253,11 @@ class UserProfileViewModel(
     updateUserProfileInDb(profile.userProfile.value)
   }
 
+  /**
+   * This function updates the user profile in the database if the connection is available.
+   *
+   * @return true if the connection is available, false otherwise
+   */
   fun onConnectionRefresh(): Boolean {
     if (isDeviceConnectedToInternet) {
       if (profileToUpdate != null && selectedPictureToUpdate != null) {
@@ -263,6 +268,17 @@ class UserProfileViewModel(
     return false
   }
 
+  /**
+   * This function updates the user profile in the database if the connection is available.
+   *
+   * @param navigation : Navigation object that manages the navigation in the application.
+   * @param isCreated : Boolean indicating if the user profile is created. Navigation needs to be
+   *   used after the callback else the view will be destroyed and resulting in a crash of the
+   *   upload of the picture.
+   * @param onLoadingChange : Function to execute when the loading status changes.
+   * @param selectedPicture : Uri of the selected picture to update the user profile (can be null).
+   * @param profile : User profile to update.
+   */
   fun tryToUpdateProfile(
       navigation: Navigation,
       isCreated: Boolean,
@@ -279,6 +295,13 @@ class UserProfileViewModel(
     }
   }
 
+  /**
+   * This function updates the user profile in the database on save when the connection is
+   * retrieved.
+   *
+   * @param selectedPicture : Uri of the selected picture to update the user profile.
+   * @param profile : User profile to update.
+   */
   private fun updateProfile(selectedPicture: Uri, profile: MutableUserProfile) {
     addProfilePictureToStorage(selectedPicture) { resp ->
       val imageUrl =
@@ -304,7 +327,6 @@ class UserProfileViewModel(
    * @param onLoadingChange : Function to execute when the loading status changes.
    * @param selectedPicture : Uri of the selected picture to update the user profile (can be null).
    * @param profile : User profile to update.
-   * @return the updated user profile potentially with the new picture.
    */
   fun updateProfile(
       navigation: Navigation,
