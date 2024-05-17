@@ -11,6 +11,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,9 +28,11 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
@@ -257,7 +260,7 @@ fun StartScreen(
                             bottomEnd = 35.dp))) {
           Column(
               modifier =
-                  Modifier.fillMaxWidth()
+                  Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
                       .padding(top = 15.dp, start = 25.dp, end = 25.dp, bottom = 10.dp)) {
                 IconButton(
                     onClick = {
@@ -404,7 +407,8 @@ fun StartScreen(
                       LazyRow(
                           modifier =
                               Modifier.height(
-                                  if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f),
+                                  if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f)
+                                  .verticalScroll(rememberScrollState()),
                           verticalAlignment = Alignment.CenterVertically) {
                             items(itinerary.pinnedPlaces) { pin ->
                               for (image in pin.image_url) {
