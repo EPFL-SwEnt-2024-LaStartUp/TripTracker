@@ -70,9 +70,9 @@ import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
-import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_light_outlineVariant
+import com.example.triptracker.view.theme.md_theme_light_onSurface
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.MapPopupViewModel
@@ -112,7 +112,7 @@ fun PathOverlaySheet(
                     .fillMaxHeight(if (expanded) 0.9f else 0.3f)
                     .animateContentSize()
                     .background(
-                        color = md_theme_light_black,
+                        color = md_theme_light_onSurface,
                         shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp))) {
               Column(
                   modifier =
@@ -137,7 +137,7 @@ fun PathOverlaySheet(
 
                     Text(
                         text = profile.username + "'s Path",
-                        color = Color.White,
+                        color = md_theme_light_onPrimary,
                         fontSize = 20.sp,
                         fontFamily = FontFamily(Font(R.font.montserrat_semi_bold)),
                         fontWeight = FontWeight.SemiBold,
@@ -149,7 +149,7 @@ fun PathOverlaySheet(
                     LazyColumn {
                       items(itinerary.pinnedPlaces) { pin ->
                         PathItem(pin, onClick)
-                        Divider(thickness = 1.dp)
+                        Divider(thickness = 1.dp, color = md_theme_light_onSurface)
                       }
                     }
                   }
@@ -248,7 +248,7 @@ fun StartScreen(
             Modifier.fillMaxWidth(0.9f)
                 .fillMaxHeight(0.95f)
                 .background(
-                    color = md_theme_light_black,
+                    color = md_theme_light_onSurface,
                     shape =
                         RoundedCornerShape(
                             topStart = 35.dp,

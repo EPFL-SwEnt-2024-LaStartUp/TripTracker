@@ -66,6 +66,7 @@ import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
+import com.example.triptracker.view.theme.md_theme_light_onSurface
 import com.example.triptracker.view.theme.md_theme_light_outline
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.MapViewModel
@@ -523,6 +524,7 @@ fun Map(
                           horizontalAlignment = Alignment.Start) {
                             Text(
                                 text = mapViewModel.selectedPin.value?.description ?: "",
+                                modifier = Modifier.padding(vertical = 10.dp),
                                 fontSize = 20.sp,
                                 fontFamily = Montserrat,
                                 fontWeight = FontWeight.Bold,
