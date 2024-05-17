@@ -20,7 +20,7 @@ enum class FilterType {
   USERNAME,
   FLAME,
   PIN,
-  FAVORTIES
+  FAVOURITES
 }
 
 enum class IncrementableField {
@@ -49,8 +49,16 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   private var itineraryInstance = ItineraryList(listOf())
   private var _itineraryList = MutableLiveData<List<Itinerary>>(emptyList())
   val itineraryList: LiveData<List<Itinerary>> = _itineraryList
+
+  private val _trendingItineraries = MutableLiveData<List<Itinerary>>(emptyList())
+  val trendingItineraries: LiveData<List<Itinerary>> = _trendingItineraries
+
+  private val _followingItineraries = MutableLiveData<List<Itinerary>>(emptyList())
+  val followingItineraries: LiveData<List<Itinerary>> = _followingItineraries
+
   private val _searchQuery = MutableLiveData<String>("")
 
+  private var currentCategory = HomeCategory.TRENDING
   val searchQuery: LiveData<String>
     get() = _searchQuery
 
@@ -77,7 +85,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
                 FilterType.USERNAME -> filterByUsername(query) // now filters by user mail
                 FilterType.FLAME -> parseFlameQuery(query)
                 FilterType.PIN -> filterByPinName(query)
-                FilterType.FAVORTIES -> filterByFavorite(query)
+                FilterType.FAVOURITES -> filterByFavorite(query)
                 else -> emptyList()
               }
 
@@ -90,18 +98,34 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   /**
    * Fetches all itineraries from the repository and stores them in the itineraryList LiveData
    *
+   * @param userEmail the email of the user to fetch itineraries for, used to filter by following
    * @param callback a callback, that can be used in various different ways for now, used for
    *   updating flame counts at launch
    */
-  private fun fetchItineraries(callback: () -> Unit = {}) {
+  // Updated fetchItineraries to include category as an argument and update itineraries accordingly
+  private fun fetchItineraries(usermail: String = "", callback: () -> Unit = {}) {
     Log.d("HomeViewModel", "Fetching itineraries")
     repository.getAllItineraries { itineraries ->
       itineraryInstance.setItineraryList(itineraries)
       _itineraryList.value = itineraryInstance.getAllItineraries()
+      updateTrendingItineraries()
+      updateFollowingItineraries()
       callback()
     }
   }
 
+  private fun updateTrendingItineraries() {
+    _trendingItineraries.value = _itineraryList.value?.sortedByDescending { it.flameCount }
+  }
+
+  private fun updateFollowingItineraries() {
+    // val currentUserMail = // Fetch current user's email
+    val userProfile = userProfileList.firstOrNull { it.mail == "schifferlitheo@gmail.com" }
+    if (userProfile != null) {
+      _followingItineraries.value =
+          _itineraryList.value?.filter { userProfile.following.contains(it.userMail) }
+    }
+  }
   /**
    * Filter itineraries by title
    *
@@ -201,10 +225,15 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    * @param usermail the usermail to filter by
    * @return a list of itineraries that match the query
    */
-  fun filterByFavorite(usermail: String): List<Itinerary> {
+  private fun filterByFavorite(usermail: String): List<Itinerary> {
+    val filteredItineraries = mutableListOf<Itinerary>()
     val userProfile = userProfileList.firstOrNull { it.mail == usermail } ?: return emptyList()
-    return _itineraryList.value?.filter { userProfile.favoritesPaths.contains(it.id) }
-        ?: emptyList()
+    _itineraryList.value?.forEach { itinerary ->
+      if (userProfile.favoritesPaths.contains(itinerary.id)) {
+        filteredItineraries.add(itinerary)
+      }
+    }
+    return filteredItineraries
   }
 
   /**

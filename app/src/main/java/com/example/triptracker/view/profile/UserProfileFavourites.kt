@@ -1,7 +1,6 @@
 package com.example.triptracker.view.profile
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
@@ -28,7 +27,7 @@ fun UserProfileFavourite(
       navigation = navigation,
       test = test,
       userProfile = userProfile,
-      filterType = FilterType.FAVORTIES,
+      filterType = FilterType.FAVOURITES,
       screenTag = "UserProfileFavouriteScreen",
       noDataText =
           "You do not have any favourite trips yet. Add some trips to your favourites to see them here.",

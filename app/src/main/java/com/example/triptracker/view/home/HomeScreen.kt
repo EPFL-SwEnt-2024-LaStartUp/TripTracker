@@ -219,7 +219,7 @@ fun SearchBarImplementation(
           FilterType.PIN -> "Example: EPFL"
           FilterType.TITLE -> "Find Itineraries"
           FilterType.USERNAME -> "Search for a User"
-          FilterType.FAVORTIES -> "No favorites yet"
+          FilterType.FAVOURITES -> "Find Favourites"
         }
       }
 
@@ -328,22 +328,6 @@ fun DisplayItineraryFromCategory(
     category: HomeCategory,
     test: Boolean = false
 ) {
-  // used to filter the itineraries by following
-  val ambientProfile = AmbientUserProfile.current
-
-  // Filter the itineraries based on the category
-  when (category) {
-    HomeCategory.TRENDING -> {
-      homeViewModel.filterTrendingWorldwide()
-    }
-    HomeCategory.FOLLOWING -> {
-      homeViewModel.filterByFollowing(ambientProfile.userProfile.value.mail)
-    }
-  }
-
-  // Filtered list of itineraries based on search query should be displayed
-  val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = itineraries)
-
   LazyColumn(
       modifier =
           Modifier.fillMaxSize()
@@ -377,6 +361,8 @@ fun HomePager(
     innerPadding: PaddingValues,
     test: Boolean = false
 ) {
+  val ambientProfile = AmbientUserProfile.current
+  val userEmail = ambientProfile.userProfile.value.mail
   val tabs = listOf(HomeCategory.TRENDING.name, HomeCategory.FOLLOWING.name)
   val pagerState =
       rememberPagerState(initialPage = 0) {
@@ -417,16 +403,28 @@ fun HomePager(
     HorizontalPager(state = pagerState) { page ->
       when (page) {
         0 -> {
+          val trendingItineraries by homeViewModel.trendingItineraries.observeAsState(emptyList())
           DisplayItineraryFromCategory(
-              itineraries = itineraries,
+              itineraries = trendingItineraries,
               navigation = navigation,
               homeViewModel = homeViewModel,
               category = HomeCategory.TRENDING,
               test = test)
         }
         1 -> {
+          val followingItineraries by homeViewModel.followingItineraries.observeAsState(emptyList())
+          if (followingItineraries.isEmpty()) {
+            Text(
+                text = "You are not following any users yet.",
+                modifier = Modifier.padding(50.dp),
+                fontSize = 46.sp,
+                fontWeight = FontWeight.Medium,
+                letterSpacing = 0.15.sp,
+                color = md_theme_light_onPrimary,
+                fontFamily = FontFamily(Font(R.font.montserrat_regular)))
+          }
           DisplayItineraryFromCategory(
-              itineraries = itineraries,
+              itineraries = followingItineraries,
               navigation = navigation,
               homeViewModel = homeViewModel,
               category = HomeCategory.FOLLOWING,

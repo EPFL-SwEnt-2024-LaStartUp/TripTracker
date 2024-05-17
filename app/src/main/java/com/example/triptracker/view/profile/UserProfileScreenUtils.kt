@@ -68,7 +68,7 @@ fun UserProfileScreen(
     titleText: String
 ) {
   homeViewModel.setSearchFilter(filterType)
-  if (filterType == FilterType.FAVORTIES) {
+  if (filterType == FilterType.FAVOURITES) {
     homeViewModel.setSearchQuery(userProfile.userProfile.value.mail)
   } else {
     homeViewModel.setSearchQuery(userProfile.userProfile.value.username)
