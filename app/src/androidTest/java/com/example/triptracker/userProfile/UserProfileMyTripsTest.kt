@@ -2,19 +2,25 @@ package com.example.triptracker.userProfile
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.RadioButtonChecked
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.itinerary.MockItineraryList
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.repository.ItineraryRepository
+import com.example.triptracker.screens.home.HomeViewScreen
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.TopLevelDestination
 import com.example.triptracker.view.profile.UserProfileMyTrips
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
+import io.github.kakaocup.compose.node.element.ComposeScreen
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
@@ -121,5 +127,63 @@ class UserProfileMyTripsTest {
           homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
     }
     composeTestRule.onNodeWithTag("DataList").assertExists()
+  }
+
+  @Test
+  fun itineraryIsLongClickableYes() {
+    every { mockItineraryRepository.getAllItineraries() } returns listOf(mockItineraries[0])
+
+    every { mockViewModel.filteredItineraryList } returns
+        MutableLiveData(listOf(mockItineraries[0]))
+    every { mockViewModel.selectedFilter.value } returns FilterType.PIN
+    every { mockViewModel.searchQuery.value } returns ""
+    every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
+    every { mockProfile.userProfile.value } returns mockUsers[0]
+    // Setting up the test composition
+    composeTestRule.setContent {
+      UserProfileMyTrips(
+          homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
+    }
+    ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
+      composeTestRule.onNodeWithTag("Itinerary", useUnmergedTree = true).assertIsDisplayed()
+      composeTestRule.onNodeWithTag("Itinerary", useUnmergedTree = true).performTouchInput {
+        longClick()
+      }
+      composeTestRule
+          .onNodeWithTag("YesCancelItineraryButton", useUnmergedTree = true)
+          .performClick()
+      composeTestRule
+          .onNodeWithTag("YesCancelItineraryButton", useUnmergedTree = true)
+          .assertDoesNotExist()
+    }
+  }
+
+  @Test
+  fun itineraryIsLongClickableNo() {
+    every { mockItineraryRepository.getAllItineraries() } returns listOf(mockItineraries[0])
+
+    every { mockViewModel.filteredItineraryList } returns
+        MutableLiveData(listOf(mockItineraries[0]))
+    every { mockViewModel.selectedFilter.value } returns FilterType.PIN
+    every { mockViewModel.searchQuery.value } returns ""
+    every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
+    every { mockProfile.userProfile.value } returns mockUsers[0]
+    // Setting up the test composition
+    composeTestRule.setContent {
+      UserProfileMyTrips(
+          homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
+    }
+    ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
+      composeTestRule.onNodeWithTag("Itinerary", useUnmergedTree = true).assertIsDisplayed()
+      composeTestRule.onNodeWithTag("Itinerary", useUnmergedTree = true).performTouchInput {
+        longClick()
+      }
+      composeTestRule
+          .onNodeWithTag("NoCancelItineraryButton", useUnmergedTree = true)
+          .performClick()
+      composeTestRule
+          .onNodeWithTag("NoCancelItineraryButton", useUnmergedTree = true)
+          .assertDoesNotExist()
+    }
   }
 }
