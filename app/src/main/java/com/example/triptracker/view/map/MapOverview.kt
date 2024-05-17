@@ -410,21 +410,22 @@ fun Map(
 
     Box(modifier = Modifier.matchParentSize().background(gradient).align(Alignment.TopCenter)) {
       Row(
-          modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth().padding(10.dp).background(Color.Cyan),
+          modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth().padding(10.dp),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.SpaceBetween) {
             displayCancelItineraryButton(mapViewModel, showCancelDialog)
-            }
+
             Text(
                 text = mapViewModel.cityNameState.value,
-                modifier = Modifier.padding(30.dp).background(Color.Green),
+                modifier = Modifier.padding(30.dp),
                 fontSize = 24.sp,
                 fontFamily = Montserrat,
                 fontWeight = FontWeight.SemiBold,
                 color = md_theme_light_dark)
-            Spacer(modifier = Modifier.width(50.dp).background(Color.Red))
+            Spacer(modifier = Modifier.width(50.dp))
           }
     }
+  }
     Row(
         modifier = Modifier.fillMaxWidth().fillMaxHeight(),
         horizontalArrangement = Arrangement.Start) {
@@ -454,7 +455,7 @@ fun Map(
                     }
               }
               popupState.DISPLAYPIN -> {
-                Box(modifier = Modifier.fillMaxHeight().fillMaxWidth().align(Alignment.BottomCenter)) {
+                Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
                   StartScreen(
                       itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
                       userProfileViewModel = UserProfileViewModel(),
@@ -558,7 +559,7 @@ fun displayCancelItineraryButton(mapViewModel: MapViewModel, showCancelDialog: M
     if (mapViewModel.asStartItinerary.value) {
         IconButton(
             onClick = { showCancelDialog.value = true },
-            modifier = Modifier.testTag("CancelItineraryButton").size(50.dp).background(Color.Yellow)
+            modifier = Modifier.testTag("CancelItineraryButton").size(50.dp)
         ) {
             Icon(
                 imageVector = Icons.Outlined.Close,
