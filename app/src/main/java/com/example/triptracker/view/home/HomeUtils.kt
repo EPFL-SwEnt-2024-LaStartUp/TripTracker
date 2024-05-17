@@ -28,6 +28,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -231,7 +232,7 @@ fun DisplayItinerary(
                     } else {
                       // If the user has not favorited this itinerary, display a star grey
                       Icon(
-                          imageVector = Icons.Outlined.Star,
+                          imageVector = Icons.Outlined.StarBorder,
                           contentDescription = "Star",
                           tint = md_theme_grey,
                           modifier =
@@ -243,10 +244,6 @@ fun DisplayItinerary(
                     }
                   }
               Spacer(modifier = Modifier.width(120.dp))
-              Icon(
-                  imageVector = Icons.Outlined.Star,
-                  contentDescription = "Star",
-                  Modifier.size(20.dp).clickable { homeViewModel.incrementSaveCount(itinerary.id) })
               Spacer(modifier = Modifier.height(5.dp))
               Log.d("ItineraryRoute", itinerary.route.toString())
               Text(

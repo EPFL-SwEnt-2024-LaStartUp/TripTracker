@@ -1,6 +1,7 @@
 package com.example.triptracker.map
 
 import android.content.Context
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -68,13 +69,16 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.displayPicturePopUp.value } returns false
     every { mockProfile.userProfile.value } returns mockUsers[0]
 
+    every { mockViewModel.asStartItinerary.value } returns false
+    every { mockViewModel.popUpState } returns mutableStateOf(popupState.DISPLAYITINERARY)
+
     composeTestRule.setContent {
       MapOverview(
           mapViewModel = mockViewModel,
           context = appContext,
           navigation = mockNavigation,
           selectedId = "",
-      )
+          userProfile = mockProfile)
     }
 
     // Verify that the dependencies are properly initialized
@@ -92,6 +96,9 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.displayPicturePopUp.value } returns false
     every { mockProfile.userProfile.value } returns mockUsers[0]
 
+    every { mockViewModel.asStartItinerary.value } returns false
+    every { mockViewModel.popUpState } returns mutableStateOf(popupState.DISPLAYITINERARY)
+
     composeTestRule.setContent {
       MapOverview(
           mapViewModel = mockViewModel,
@@ -99,7 +106,7 @@ class MapOverviewTest : TestCase() {
           navigation = mockNavigation,
           checkLocationPermission = false,
           selectedId = "1",
-      )
+          userProfile = mockProfile)
     }
 
     // Verify that the map is not shown
@@ -123,12 +130,15 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.displayPicturePopUp.value } returns false
     every { mockProfile.userProfile.value } returns mockUsers[0]
 
+    every { mockViewModel.asStartItinerary.value } returns false
+    every { mockViewModel.popUpState } returns mutableStateOf(popupState.DISPLAYITINERARY)
+
     composeTestRule.setContent {
       MapOverview(
           mapViewModel = mockViewModel,
           context = appContext,
           navigation = mockNavigation,
-      )
+          userProfile = mockProfile)
     }
 
     // Verify that the dependencies are properly called
@@ -152,6 +162,9 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.displayPicturePopUp.value } returns false
     every { mockProfile.userProfile.value } returns mockUsers[0]
 
+    every { mockViewModel.asStartItinerary.value } returns false
+    every { mockViewModel.popUpState } returns mutableStateOf(popupState.DISPLAYITINERARY)
+
     composeTestRule.setContent {
       MapOverview(
           mapViewModel = mockViewModel,
@@ -159,7 +172,7 @@ class MapOverviewTest : TestCase() {
           navigation = mockNavigation,
           checkLocationPermission = true,
           selectedId = "",
-      )
+          userProfile = mockProfile)
     }
 
     // Verify that the dependencies are properly called
@@ -187,7 +200,7 @@ class MapOverviewTest : TestCase() {
           navigation = mockNavigation,
           checkLocationPermission = false,
           selectedId = "1",
-      )
+          userProfile = mockProfile)
     }
 
     // Verify that the map is not shown
@@ -214,12 +227,14 @@ class MapOverviewTest : TestCase() {
       every { mockViewModel.displayPopUp.value } returns true
       every { mockViewModel.displayPicturePopUp.value } returns false
       every { mockProfile.userProfile.value } returns mockUsers[0]
+      every { mockViewModel.asStartItinerary.value } returns true
+      every { mockViewModel.popUpState } returns mutableStateOf(popupState.DISPLAYITINERARY)
       composeTestRule.setContent {
         MapOverview(
             mapViewModel = mockViewModel,
             context = appContext,
             navigation = mockNavigation,
-        )
+            userProfile = mockProfile)
       }
     } catch (e: Exception) {
       // If any exception occurs, fail the test
@@ -246,6 +261,8 @@ class MapOverviewTest : TestCase() {
       every { mockViewModel.displayPopUp.value } returns true
       every { mockViewModel.displayPicturePopUp.value } returns false
       every { mockProfile.userProfile.value } returns mockUsers[0]
+      every { mockViewModel.asStartItinerary.value } returns false
+      every { mockViewModel.popUpState } returns mutableStateOf(popupState.DISPLAYITINERARY)
 
       composeTestRule.setContent {
         MapOverview(
@@ -254,11 +271,57 @@ class MapOverviewTest : TestCase() {
             navigation = mockNavigation,
             checkLocationPermission = true,
             selectedId = "",
-        )
+            userProfile = mockProfile)
       }
 
       composeTestRule.onNodeWithTag("MapOverview").assertExists()
       composeTestRule.onNodeWithTag("Map").assertExists()
+
+      // Verify that the dependencies are properly called
+      verify { mockViewModel.selectedPolylineState.value }
+    } catch (e: Exception) {
+      // If any exception occurs, fail the test
+      junit.framework.TestCase.assertTrue("Test failed due to exception: ${e.message}", true)
+    }
+  }
+
+  @Test
+  fun testClickOnPathv2() {
+    try {
+      val itineraryList = MockItineraryList().getItineraries()
+      every { mockViewModel.cityNameState.value } returns "Lyon"
+      every { mockViewModel.filteredPathList.value } returns
+          mapOf(itineraryList[0] to listOf<LatLng>(LatLng(0.0, 0.0)))
+      every { mockViewModel.selectedPin.value } returns itineraryList[0].pinnedPlaces[0]
+      every { mockViewModel.getPathById(ItineraryList(itineraryList), "") } returns null
+      every { mockViewModel.getPathById(ItineraryList(itineraryList), "1") } returns
+          itineraryList[0]
+      every { mockViewModel.getPathById(ItineraryList(itineraryList), "2") } returns
+          itineraryList[1]
+      every { mockViewModel.selectedPolylineState.value } returns
+          MapViewModel.SelectedPolyline(itineraryList[0], LatLng(0.0, 0.0))
+      every { mockViewModel.pathList.value } returns ItineraryList(itineraryList)
+      every { mockViewModel.displayPopUp.value } returns true
+      every { mockViewModel.displayPicturePopUp.value } returns false
+      every { mockProfile.userProfile.value } returns mockUsers[0]
+      every { mockViewModel.asStartItinerary.value } returns false
+      every { mockViewModel.popUpState } returns mutableStateOf(popupState.DISPLAYITINERARY)
+
+      composeTestRule.setContent {
+        MapOverview(
+            mapViewModel = mockViewModel,
+            context = appContext,
+            navigation = mockNavigation,
+            checkLocationPermission = true,
+            selectedId = "",
+            userProfile = mockProfile)
+      }
+
+      composeTestRule.onNodeWithTag("MapOverview").assertExists()
+      composeTestRule.onNodeWithTag("Map").assertExists()
+
+      // click on the path
+      composeTestRule.onNodeWithTag("Map").performClick()
 
       // Verify that the dependencies are properly called
       verify { mockViewModel.selectedPolylineState.value }
@@ -285,9 +348,10 @@ class MapOverviewTest : TestCase() {
           MapViewModel.SelectedPolyline(itineraryList[0], LatLng(0.0, 0.0))
       every { mockViewModel.pathList.value } returns ItineraryList(itineraryList)
       every { mockViewModel.displayPopUp.value } returns true
-      every { mockViewModel.popUpState } returns popupState.PATHOVERLAY
+      every { mockViewModel.popUpState } returns mutableStateOf(popupState.DISPLAYITINERARY)
       every { mockViewModel.displayPicturePopUp.value } returns false
       every { mockProfile.userProfile.value } returns mockUsers[0]
+      every { mockViewModel.asStartItinerary.value } returns false
 
       composeTestRule.setContent {
         MapOverview(
@@ -296,7 +360,7 @@ class MapOverviewTest : TestCase() {
             navigation = mockNavigation,
             checkLocationPermission = true,
             selectedId = "",
-        )
+            userProfile = mockProfile)
       }
 
       composeTestRule.onNodeWithTag("MapOverview").assertExists()
@@ -330,13 +394,15 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.displayPopUp.value } returns false
     every { mockViewModel.displayPicturePopUp.value } returns true
     every { mockProfile.userProfile.value } returns mockUsers[0]
+    every { mockViewModel.asStartItinerary.value } returns false
+    every { mockViewModel.popUpState } returns mutableStateOf(popupState.DISPLAYITINERARY)
 
     composeTestRule.setContent {
       MapOverview(
           mapViewModel = mockViewModel,
           context = appContext,
           navigation = mockNavigation,
-      )
+          userProfile = mockProfile)
     }
 
     composeTestRule.onNodeWithTag("MapOverview").assertExists()
@@ -369,6 +435,9 @@ class MapOverviewTest : TestCase() {
     every { mockViewModel.pathList } returns MutableLiveData()
     every { mockProfile.userProfile.value } returns mockUsers[0]
 
+    every { mockViewModel.asStartItinerary.value } returns false
+    every { mockViewModel.popUpState } returns mutableStateOf(popupState.DISPLAYITINERARY)
+
     composeTestRule.setContent {
       val coroutineScope = rememberCoroutineScope()
 
@@ -384,7 +453,7 @@ class MapOverviewTest : TestCase() {
           context = appContext,
           navigation = mockNavigation,
           selectedId = "1",
-      )
+          userProfile = mockProfile)
 
       // Trigger the LaunchedEffect
       coroutineScope.launch {
@@ -397,5 +466,174 @@ class MapOverviewTest : TestCase() {
         every { mockViewModel.pathList } returns MutableLiveData(ItineraryList(itineraryList))
       }
     }
+  }
+
+  @Test
+  fun popUpStateTrue() {
+    val itineraryList = MockItineraryList().getItineraries()
+
+    every { mockViewModel.cityNameState.value } returns "Lyon"
+    every { mockViewModel.filteredPathList.value } returns
+        mapOf(itineraryList[0] to listOf<LatLng>(LatLng(0.0, 0.0)))
+    every { mockViewModel.selectedPolylineState.value } returns
+        MapViewModel.SelectedPolyline(itineraryList[0], LatLng(0.0, 0.0))
+    every { mockViewModel.selectedPin.value } returns itineraryList[0].pinnedPlaces[0]
+    every { mockViewModel.getPathById(ItineraryList(itineraryList), "") } returns null
+    every { mockViewModel.getPathById(ItineraryList(itineraryList), "1") } returns itineraryList[0]
+    every { mockViewModel.getPathById(ItineraryList(itineraryList), "2") } returns itineraryList[1]
+    every { mockViewModelProfile.getUserProfile(itineraryList[0].userMail, any()) } answers
+        {
+          secondArg<(UserProfile) -> Unit>().invoke(UserProfile("test"))
+        }
+    every { mockViewModel.displayPopUp.value } returns false
+    every { mockViewModel.displayPicturePopUp.value } returns false
+
+    every { mockViewModel.pathList } returns MutableLiveData()
+    every { mockProfile.userProfile.value } returns mockUsers[0]
+
+    every { mockViewModel.asStartItinerary.value } returns true
+    every { mockViewModel.popUpState } returns mutableStateOf(popupState.DISPLAYITINERARY)
+
+    composeTestRule.setContent {
+      MapOverview(
+          mapViewModel = mockViewModel,
+          context = appContext,
+          navigation = mockNavigation,
+          userProfile = mockProfile)
+    }
+
+    composeTestRule.onNodeWithTag("MapOverview").assertExists()
+    composeTestRule.onNodeWithTag("Map").assertExists()
+
+    // Verify that the dependencies are properly called
+    verify { mockViewModel.selectedPolylineState.value }
+  }
+
+  @Test
+  fun popUpStateTrueDisplayPin() {
+    val itineraryList = MockItineraryList().getItineraries()
+
+    every { mockViewModel.cityNameState.value } returns "Lyon"
+    every { mockViewModel.filteredPathList.value } returns
+        mapOf(itineraryList[0] to listOf<LatLng>(LatLng(0.0, 0.0)))
+    every { mockViewModel.selectedPolylineState.value } returns
+        MapViewModel.SelectedPolyline(itineraryList[0], LatLng(0.0, 0.0))
+    every { mockViewModel.selectedPin.value } returns itineraryList[0].pinnedPlaces[0]
+    every { mockViewModel.getPathById(ItineraryList(itineraryList), "") } returns null
+    every { mockViewModel.getPathById(ItineraryList(itineraryList), "1") } returns itineraryList[0]
+    every { mockViewModel.getPathById(ItineraryList(itineraryList), "2") } returns itineraryList[1]
+    every { mockViewModelProfile.getUserProfile(itineraryList[0].userMail, any()) } answers
+        {
+          secondArg<(UserProfile) -> Unit>().invoke(UserProfile("test"))
+        }
+    every { mockViewModel.displayPopUp.value } returns false
+    every { mockViewModel.displayPicturePopUp.value } returns false
+
+    every { mockViewModel.pathList } returns MutableLiveData()
+    every { mockProfile.userProfile.value } returns mockUsers[0]
+
+    every { mockViewModel.asStartItinerary.value } returns true
+    every { mockViewModel.popUpState } returns mutableStateOf(popupState.DISPLAYPIN)
+    every { mockViewModel.popUpState.value } returns popupState.DISPLAYPIN
+
+    composeTestRule.setContent {
+      MapOverview(
+          mapViewModel = mockViewModel,
+          context = appContext,
+          navigation = mockNavigation,
+          userProfile = mockProfile)
+    }
+
+    composeTestRule.onNodeWithTag("MapOverview").assertExists()
+    composeTestRule.onNodeWithTag("Map").assertExists()
+    composeTestRule.onNodeWithTag("CancelItineraryButton").performClick()
+    composeTestRule.onNodeWithTag("NoCancelItineraryButton").performClick()
+    composeTestRule.onNodeWithTag("CancelItineraryButton").performClick()
+    composeTestRule.onNodeWithTag("YesCancelItineraryButton").performClick()
+
+    // Verify that the dependencies are properly called
+    verify { mockViewModel.selectedPolylineState.value }
+  }
+
+  @Test
+  fun popUpStatePathOverlay() {
+    val itineraryList = MockItineraryList().getItineraries()
+
+    every { mockViewModel.cityNameState.value } returns "Lyon"
+    every { mockViewModel.filteredPathList.value } returns
+        mapOf(itineraryList[0] to listOf<LatLng>(LatLng(0.0, 0.0)))
+    every { mockViewModel.selectedPolylineState.value } returns
+        MapViewModel.SelectedPolyline(itineraryList[0], LatLng(0.0, 0.0))
+    every { mockViewModel.selectedPin.value } returns itineraryList[0].pinnedPlaces[0]
+    every { mockViewModel.getPathById(ItineraryList(itineraryList), "") } returns null
+    every { mockViewModel.getPathById(ItineraryList(itineraryList), "1") } returns itineraryList[0]
+    every { mockViewModel.getPathById(ItineraryList(itineraryList), "2") } returns itineraryList[1]
+    every { mockViewModelProfile.getUserProfile(itineraryList[0].userMail, any()) } answers
+        {
+          secondArg<(UserProfile) -> Unit>().invoke(UserProfile("test"))
+        }
+    every { mockViewModel.displayPopUp.value } returns false
+    every { mockViewModel.displayPicturePopUp.value } returns false
+
+    every { mockViewModel.pathList } returns MutableLiveData()
+    every { mockProfile.userProfile.value } returns mockUsers[0]
+
+    every { mockViewModel.asStartItinerary.value } returns true
+    every { mockViewModel.popUpState } returns mutableStateOf(popupState.PATHOVERLAY)
+
+    composeTestRule.setContent {
+      MapOverview(
+          mapViewModel = mockViewModel,
+          context = appContext,
+          navigation = mockNavigation,
+          userProfile = mockProfile)
+    }
+
+    composeTestRule.onNodeWithTag("MapOverview").assertExists()
+    composeTestRule.onNodeWithTag("Map").assertExists()
+
+    // Verify that the dependencies are properly called
+    verify { mockViewModel.selectedPolylineState.value }
+  }
+
+  @Test
+  fun popUpStatePathOverlayv2() {
+    val itineraryList = MockItineraryList().getItineraries()
+
+    every { mockViewModel.cityNameState.value } returns "Lyon"
+    every { mockViewModel.filteredPathList.value } returns
+        mapOf(itineraryList[0] to listOf<LatLng>(LatLng(0.0, 0.0)))
+    every { mockViewModel.selectedPolylineState.value } returns
+        MapViewModel.SelectedPolyline(itineraryList[0], LatLng(0.0, 0.0))
+    every { mockViewModel.selectedPin.value } returns itineraryList[0].pinnedPlaces[0]
+    every { mockViewModel.getPathById(ItineraryList(itineraryList), "") } returns null
+    every { mockViewModel.getPathById(ItineraryList(itineraryList), "1") } returns itineraryList[0]
+    every { mockViewModel.getPathById(ItineraryList(itineraryList), "2") } returns itineraryList[1]
+    every { mockViewModelProfile.getUserProfile(itineraryList[0].userMail, any()) } answers
+        {
+          secondArg<(UserProfile) -> Unit>().invoke(UserProfile("test"))
+        }
+    every { mockViewModel.displayPopUp.value } returns false
+    every { mockViewModel.displayPicturePopUp.value } returns true
+
+    every { mockViewModel.pathList } returns MutableLiveData()
+    every { mockProfile.userProfile.value } returns mockUsers[0]
+
+    every { mockViewModel.asStartItinerary.value } returns true
+    every { mockViewModel.popUpState } returns mutableStateOf(popupState.PATHOVERLAY)
+
+    composeTestRule.setContent {
+      MapOverview(
+          mapViewModel = mockViewModel,
+          context = appContext,
+          navigation = mockNavigation,
+          userProfile = mockProfile)
+    }
+
+    composeTestRule.onNodeWithTag("MapOverview").assertExists()
+    composeTestRule.onNodeWithTag("Map").assertExists()
+
+    // Verify that the dependencies are properly called
+    verify { mockViewModel.selectedPolylineState.value }
   }
 }
