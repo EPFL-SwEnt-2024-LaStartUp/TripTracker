@@ -12,6 +12,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.example.triptracker.itinerary.MockItineraryList
+import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
@@ -75,7 +76,12 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -103,7 +109,12 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -133,7 +144,12 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -163,7 +179,12 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -192,8 +213,12 @@ class RecordTest {
     every { mockViewModel.latLongList } returns listOf()
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
-
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -223,7 +248,12 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -249,7 +279,12 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -279,7 +314,12 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -308,7 +348,12 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -340,7 +385,12 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -371,7 +421,12 @@ class RecordTest {
       every { mockViewModel.namePOI.value } returns "Name"
       every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-      every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+      every { mockItineraryRepository.getAllItineraries(any()) } answers
+          {
+            // Invoke the callback with mock data
+            val callback = arg<(List<Itinerary>) -> Unit>(0)
+            callback(mockItineraries)
+          }
 
       every { mockItineraryRepository.getUID() } returns "mockUID"
       every { mockViewModel.pinList } returns listOf()
@@ -406,7 +461,12 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -437,7 +497,12 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -468,7 +533,12 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -495,7 +565,12 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -521,7 +596,12 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
@@ -549,7 +629,12 @@ class RecordTest {
     every { mockViewModel.namePOI.value } returns "Name"
     every { mockViewModel.displayNameDropDown.value } returns "Name"
 
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     composeTestRule.setContent {
       RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)

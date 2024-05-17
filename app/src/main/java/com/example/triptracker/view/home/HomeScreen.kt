@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
@@ -79,6 +80,7 @@ fun HomeScreen(
     profile: MutableUserProfile,
     homeViewModel: HomeViewModel = viewModel(),
     category: HomeCategory = HomeCategory.TRENDING,
+    connection: Connection = Connection(),
     test: Boolean = false
 ) {
   Log.d("HomeScreen", "Rendering HomeScreen")
@@ -145,7 +147,7 @@ fun HomeScreen(
               }
         }
       },
-      bottomBar = { NavigationBar(navigation) },
+      bottomBar = { NavigationBar(navigation = navigation, connection = connection) },
       modifier = Modifier.fillMaxWidth().testTag("HomeScreen")) { innerPadding ->
         when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
           emptyList<Itinerary>() -> {

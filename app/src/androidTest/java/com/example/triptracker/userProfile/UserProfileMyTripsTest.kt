@@ -11,6 +11,7 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.itinerary.MockItineraryList
+import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.screens.home.HomeViewScreen
@@ -64,7 +65,12 @@ class UserProfileMyTripsTest {
 
   @Test
   fun componentsAreCorrectlyDisplayed() {
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
     every { mockViewModel.filteredItineraryList.value } returns mockItineraries
     every { mockProfile.userProfile.value } returns mockUsers[0]
     // Setting up the test composition
@@ -79,7 +85,12 @@ class UserProfileMyTripsTest {
 
   @Test
   fun noTripsTextIsDisplayed() {
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
     every { mockViewModel.filteredItineraryList.value } returns emptyList()
     every { mockProfile.userProfile.value } returns mockUsers[0]
     // Setting up the test composition
@@ -94,7 +105,12 @@ class UserProfileMyTripsTest {
   @Test
   fun tripsAreDisplayed() {
     try {
-      every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+      every { mockItineraryRepository.getAllItineraries(any()) } answers
+          {
+            // Invoke the callback with mock data
+            val callback = arg<(List<Itinerary>) -> Unit>(0)
+            callback(mockItineraries)
+          }
 
       every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
       every { mockViewModel.selectedFilter.value } returns FilterType.PIN
@@ -114,7 +130,12 @@ class UserProfileMyTripsTest {
 
   @Test
   fun tripsAreDisplayed2() {
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.selectedFilter.value } returns FilterType.PIN
@@ -131,8 +152,12 @@ class UserProfileMyTripsTest {
 
   @Test
   fun itineraryIsLongClickableYes() {
-    every { mockItineraryRepository.getAllItineraries() } returns listOf(mockItineraries[0])
-
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
     every { mockViewModel.filteredItineraryList } returns
         MutableLiveData(listOf(mockItineraries[0]))
     every { mockViewModel.selectedFilter.value } returns FilterType.PIN
@@ -160,8 +185,12 @@ class UserProfileMyTripsTest {
 
   @Test
   fun itineraryIsLongClickableNo() {
-    every { mockItineraryRepository.getAllItineraries() } returns listOf(mockItineraries[0])
-
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(mockItineraries.size - 1)
+          callback(mockItineraries)
+        }
     every { mockViewModel.filteredItineraryList } returns
         MutableLiveData(listOf(mockItineraries[0]))
     every { mockViewModel.selectedFilter.value } returns FilterType.PIN
