@@ -394,18 +394,13 @@ fun HomePager(
         backgroundColor = md_theme_light_onPrimary) {
           tabs.forEachIndexed { index, title ->
             isSelected = index == selectedTab
-            Tab(
-                selected = isSelected,
-                onClick = {
-                  selectedTab = index
-                  Log.d("SelectedTab", "Selected Tab: $selectedTab")
-                }) {
-                  Text(
-                      title,
-                      color = if (isSelected) md_theme_light_black else md_theme_grey,
-                      fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                      fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Normal,
-                      fontSize = 20.sp) // same size as itinerary title
+            Tab(selected = isSelected, onClick = { selectedTab = index }) {
+              Text(
+                  title,
+                  color = if (isSelected) md_theme_light_black else md_theme_grey,
+                  fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                  fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Normal,
+                  fontSize = 20.sp) // same size as itinerary title
             }
           }
         }
@@ -413,7 +408,7 @@ fun HomePager(
     HorizontalPager(state = pagerState) { page ->
       when (page) {
         0 -> {
-          val trendingItineraries by homeViewModel.itineraryList.observeAsState(emptyList())
+          val trendingItineraries by homeViewModel.trendingList.observeAsState(emptyList())
           DisplayItineraryFromCategory(
               itineraries = trendingItineraries,
               navigation = navigation,
@@ -422,18 +417,20 @@ fun HomePager(
               test = test)
         }
         1 -> {
-          val followingItineraries by homeViewModel.itineraryList.observeAsState(emptyList())
+          val followingItineraries by homeViewModel.followingList.observeAsState(emptyList())
           if (followingItineraries.isEmpty()) {
-            Box(modifier = Modifier.fillMaxWidth().padding(top = 40.dp)) {
-              Text(
-                  text = "Not following anyone yet.",
-                  modifier = Modifier.padding(100.dp).height(100.dp).testTag("NoFollowingText"),
-                  fontSize = 16.sp,
-                  fontWeight = FontWeight.Medium,
-                  letterSpacing = 0.15.sp,
-                  color = md_theme_light_onPrimary,
-                  fontFamily = FontFamily(Font(R.font.montserrat_regular)))
-            }
+
+            Text(
+                text = "Not following anyone yet.",
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .padding(start = 70.dp, bottom = 250.dp)
+                        .testTag("NoFollowingText"),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Medium,
+                letterSpacing = 0.15.sp,
+                color = md_theme_light_black,
+                fontFamily = FontFamily(Font(R.font.montserrat_regular)))
           }
           DisplayItineraryFromCategory(
               itineraries = followingItineraries,

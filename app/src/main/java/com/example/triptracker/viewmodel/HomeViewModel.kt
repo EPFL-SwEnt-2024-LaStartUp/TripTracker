@@ -50,6 +50,12 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   private var _itineraryList = MutableLiveData<List<Itinerary>>(emptyList())
   val itineraryList: LiveData<List<Itinerary>> = _itineraryList
 
+  private var _trendingList = MutableLiveData<List<Itinerary>>(emptyList())
+  val trendingList: LiveData<List<Itinerary>> = _trendingList
+
+  private var _followingList = MutableLiveData<List<Itinerary>>(emptyList())
+  val followingList: LiveData<List<Itinerary>> = _followingList
+
   private val _searchQuery = MutableLiveData<String>("")
 
   private var currentCategory = HomeCategory.TRENDING
@@ -102,6 +108,8 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
     repository.getAllItineraries { itineraries ->
       itineraryInstance.setItineraryList(itineraries)
       _itineraryList.value = itineraryInstance.getAllItineraries()
+      _followingList.value = itineraryInstance.getAllItineraries()
+      _trendingList.value = itineraryInstance.getAllItineraries()
       callback()
     }
   }
@@ -240,8 +248,8 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    * itineraryList LiveData
    */
   fun filterByTrending() {
-    _itineraryList.value =
-        _itineraryList.value?.sortedByDescending { itinerary -> itinerary.flameCount }
+    _trendingList.value =
+        _trendingList.value?.sortedByDescending { itinerary -> itinerary.flameCount }
   }
 
   /**
@@ -313,8 +321,8 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   /** Filter the itinerary posted by your following users */
   fun filterByFollowing(usermail: String) {
     val userProfile = userProfileList.firstOrNull { it.mail == usermail } ?: return
-    _itineraryList.value =
-        _itineraryList.value?.filter { userProfile.following.contains(it.userMail) }
+    _followingList.value =
+        _followingList.value?.filter { userProfile.following.contains(it.userMail) }
   }
 
   /**
