@@ -61,6 +61,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.profile.AmbientUserProfile
+import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
@@ -90,6 +91,9 @@ import kotlinx.coroutines.launch
 
 // Define the delay for the location update
 const val DELAY = 5000L
+
+var isTitleEmpty by mutableStateOf(true)
+var isDescriptionEmpty by mutableStateOf(true)
 
 /**
  * Composable function for displaying the RecordScreen.
@@ -328,37 +332,39 @@ fun Map(
                   cameraPositionState = cameraPositionState) { /* DO NOTHING*/}
             }
             Spacer(modifier = Modifier.weight(0.5f))
-            // Button to start/stop recording
-            FilledTonalButton(
-                onClick = {
-                  if (viewModel.isRecording()) {
-                    viewModel.stopRecording()
-                    viewModel.startDescription()
-                  } else {
-                    viewModel.startRecording()
-                  }
-                },
-                modifier =
-                    Modifier.fillMaxWidth(0.4f)
-                        .fillMaxHeight(0.08f)
-                        .align(Alignment.CenterVertically),
-                colors =
-                    ButtonDefaults.filledTonalButtonColors(
-                        containerColor = md_theme_orange, contentColor = md_theme_light_onPrimary),
-            ) {
-              Text(
-                  text = if (viewModel.isRecording()) "Stop" else "Start",
-                  fontSize = 24.sp,
-                  fontFamily = Montserrat,
-                  fontWeight = FontWeight.SemiBold,
-                  color = md_theme_light_onPrimary)
-            }
+          if(properties.isMyLocationEnabled && !viewModel.addSpotClicked.value) {
+              // Button to start/stop recording
+              FilledTonalButton(
+                  onClick = {
+                      if (viewModel.isRecording()) {
+                          viewModel.stopRecording()
+                          viewModel.startDescription()
+                      } else {
+                          viewModel.startRecording()
+                      }
+                  },
+                  modifier =
+                  Modifier.fillMaxWidth(0.4f)
+                      .fillMaxHeight(0.08f)
+                      .align(Alignment.CenterVertically),
+                  colors =
+                  ButtonDefaults.filledTonalButtonColors(
+                      containerColor = md_theme_orange, contentColor = md_theme_light_onPrimary
+                  ),
+              ) {
+                  Text(
+                      text = if (viewModel.isRecording()) "Stop" else "Start",
+                      fontSize = 24.sp,
+                      fontFamily = Montserrat,
+                      fontWeight = FontWeight.SemiBold,
+                      color = md_theme_light_onPrimary
+                  )
+              }
+          }
             Spacer(modifier = Modifier.weight(1f))
           }
     }
 
-    var isTitleEmpty by remember { mutableStateOf(false) }
-    var isDescriptionEmpty by remember { mutableStateOf(false) }
 
     // Display description window
     AnimatedVisibility(
@@ -491,84 +497,96 @@ fun Map(
                           horizontalArrangement = Arrangement.Center) {
                             Spacer(modifier = Modifier.width(20.dp))
                             // add a button to save the description
-                            FilledTonalButton(
-                                onClick = {
-                                  if (viewModel.title.value.isEmpty()) {
-                                    isTitleEmpty = true
-                                  }
-                                  if (viewModel.description.value.isEmpty()) {
-                                    isDescriptionEmpty = true
-                                  }
-                                  if (!isTitleEmpty && !isDescriptionEmpty) {
-                                    // Add itinerary to database
-                                    val id = itineraryRepository.getUID()
-                                    val title = viewModel.title.value
-                                    val username = profile.mail
-                                    // but not
-                                    // implemented yet
-                                    val meanLocation = meanLocation(viewModel.latLongList.toList())
-                                    var locationName = ""
-                                    viewModel.getCityAndCountry(
-                                        meanLocation.latitude.toFloat(),
-                                        meanLocation.longitude.toFloat()) {
-                                          locationName = it
-                                        }
-                                    val location =
-                                        Location(
-                                            meanLocation.latitude,
-                                            meanLocation.longitude,
-                                            locationName)
-                                    // (default device location)
-                                    val flameCount = 0L
-                                    val saves = 0L
-                                    val clicks = 0L
-                                    val numStarts = 0L
-                                    val startDate = viewModel.startDate.value
-                                    val endDate = viewModel.endDate.value
-                                    val pinList = viewModel.pinList
-                                    // implemented yet
-                                    val description = viewModel.description.value
-                                    val itinerary =
-                                        Itinerary(
-                                            id,
-                                            title,
-                                            username,
-                                            location,
-                                            flameCount,
-                                            saves,
-                                            clicks,
-                                            numStarts,
-                                            startDate,
-                                            endDate,
-                                            pinList,
-                                            description,
-                                            viewModel.latLongList.toList())
-
-                                    viewModel.addNewItinerary(itinerary, itineraryRepository)
-                                    viewModel.stopDescription()
-                                    viewModel.resetRecording()
-                                    localLatLngList.clear()
-                                  }
-                                },
-                                modifier = Modifier.size(150.dp, 70.dp),
-                                colors =
-                                    ButtonDefaults.filledTonalButtonColors(
-                                        containerColor = md_theme_orange,
-                                        contentColor = md_theme_light_onPrimary),
-                            ) {
-                              Text(
-                                  text = "Save",
-                                  fontSize = 24.sp,
-                                  fontFamily = Montserrat,
-                                  fontWeight = FontWeight.SemiBold,
-                                  color = md_theme_light_onPrimary)
-                            }
+                            SaveButton(
+                                viewModel = viewModel,
+                                itineraryRepository = itineraryRepository,
+                                profile = profile,
+                                localLatLngList = localLatLngList)
                             Spacer(modifier = Modifier.width(20.dp))
                           }
                     }
               }
         }
   }
+}
+
+@Composable
+fun SaveButton(
+    viewModel: RecordViewModel,
+    itineraryRepository: ItineraryRepository,
+    profile: UserProfile,
+    localLatLngList: MutableList<LatLng>,
+) {
+    FilledTonalButton(
+        onClick = {
+            if (viewModel.title.value.isEmpty()) {
+                isTitleEmpty = true
+            }
+            if (viewModel.description.value.isEmpty()) {
+                isDescriptionEmpty = true
+            }
+            if (!isTitleEmpty && !isDescriptionEmpty) {
+                // Add itinerary to database
+                val id = itineraryRepository.getUID()
+                val title = viewModel.title.value
+                val username = profile.mail
+                val meanLocation = meanLocation(viewModel.latLongList.toList())
+                var locationName = ""
+                viewModel.getCityAndCountry(
+                    meanLocation.latitude.toFloat(),
+                    meanLocation.longitude.toFloat()
+                ) {
+                    locationName = it
+                }
+                val location = Location(
+                    meanLocation.latitude,
+                    meanLocation.longitude,
+                    locationName
+                )
+                val flameCount = 0L
+                val saves = 0L
+                val clicks = 0L
+                val numStarts = 0L
+                val startDate = viewModel.startDate.value
+                val endDate = viewModel.endDate.value
+                val pinList = viewModel.pinList
+                val description = viewModel.description.value
+                val itinerary = Itinerary(
+                    id,
+                    title,
+                    username,
+                    location,
+                    flameCount,
+                    saves,
+                    clicks,
+                    numStarts,
+                    startDate,
+                    endDate,
+                    pinList,
+                    description,
+                    viewModel.latLongList.toList()
+                )
+
+                viewModel.addNewItinerary(itinerary, itineraryRepository)
+                viewModel.stopDescription()
+                viewModel.resetRecording()
+                localLatLngList.clear()
+            }
+        },
+        modifier = Modifier.size(150.dp, 70.dp),
+        colors = ButtonDefaults.filledTonalButtonColors(
+            containerColor = md_theme_orange,
+            contentColor = md_theme_light_onPrimary
+        ),
+    ) {
+        Text(
+            text = "Save",
+            fontSize = 24.sp,
+            fontFamily = Montserrat,
+            fontWeight = FontWeight.SemiBold,
+            color = md_theme_light_onPrimary
+        )
+    }
 }
 
 /**
@@ -711,7 +729,9 @@ fun RecordControls(viewModel: RecordViewModel) {
                         )
                         Spacer(modifier = Modifier.width(20.dp))
                         IconButton(
-                            onClick = { viewModel.addSpotClicked.value = true },
+                            onClick = {
+                                viewModel.addSpotClicked.value = true
+                                      },
                             modifier = Modifier
                                 .align(Alignment.CenterVertically)
                                 .size(50.dp)
@@ -730,6 +750,7 @@ fun RecordControls(viewModel: RecordViewModel) {
         }
     }
 }
+
 
 /**
  * Function to display the time in a readable format.
