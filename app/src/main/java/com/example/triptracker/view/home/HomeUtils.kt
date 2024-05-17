@@ -21,6 +21,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBackIosNew
@@ -35,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -52,9 +56,13 @@ import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
+import com.example.triptracker.view.theme.md_theme_light_background
 import com.example.triptracker.view.theme.md_theme_light_black
+import com.example.triptracker.view.theme.md_theme_light_error
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
+import com.example.triptracker.view.theme.md_theme_light_outline
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
@@ -100,6 +108,22 @@ fun DisplayItinerary(
   val ambientProfile = AmbientUserProfile.current
   // Boolean to check if the profile picture should be displayed
   var showProfilePicture by remember { mutableStateOf(false) }
+
+  var showAlert by remember { mutableStateOf(false) }
+
+  when (showAlert) {
+    true -> {
+      ShowAlert(
+          onDismiss = { showAlert = false },
+          onConfirm = {
+            homeViewModel.deleteItinerary(itinerary.id)
+            showAlert = false
+          })
+    }
+    false -> {
+      /* Do nothing */
+    }
+  }
 
   var boxHeightToDisplay = 0.dp
   if (checkIfImage(itinerary)) {
@@ -151,16 +175,16 @@ fun DisplayItinerary(
                   .padding(paddingAround)
                   .height(boxHeightToDisplay)
                   .background(color = md_theme_light_black, shape = RoundedCornerShape(35.dp))
-                  .clickable { // When you click on an itinerary, it should bring you to the map
-                    // overview with the selected itinerary highlighted and the first pinned places
-                    onClick()
-                  }
                   .combinedClickable(
-                      onClick = { onClick() },
+                      onClick = {
+                        onClick()
+                      }, // When you click on an itinerary, it should bring you to the map
+                      // overview with the selected itinerary highlighted and the first pinned
+                      // places
                       onLongClick = {
                         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                         if (canBeDeleted) {
-                          homeViewModel.deleteItinerary(itinerary.id)
+                          showAlert = true
                         }
                       })
                   .testTag("Itinerary")) {
@@ -269,6 +293,62 @@ fun DisplayItinerary(
           }
     }
   }
+}
+
+@Composable
+private fun ShowAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
+  AlertDialog(
+      shape = RoundedCornerShape(15.dp),
+      onDismissRequest = { onDismiss() },
+      title = {
+        Text(
+            text = "Delete Itinerary",
+            fontSize = 20.sp,
+            fontFamily = Montserrat,
+            fontWeight = FontWeight.Bold,
+            color = md_theme_light_onPrimary)
+      },
+      text = {
+        Text(
+            text = "Are you sure you want to delete the itinerary?",
+            fontSize = 16.sp,
+            fontFamily = Montserrat,
+            fontWeight = FontWeight.Normal,
+            color = md_theme_light_outline)
+      },
+      confirmButton = {
+        Button(
+            modifier = Modifier.testTag("YesCancelItineraryButton"),
+            onClick = { onConfirm() },
+            colors =
+                ButtonDefaults.buttonColors(
+                    backgroundColor = md_theme_light_error, contentColor = Color.White),
+            shape = RoundedCornerShape(35.dp),
+        ) {
+          Text(
+              text = "Yes, delete",
+              fontSize = 14.sp,
+              fontFamily = Montserrat,
+              fontWeight = FontWeight.SemiBold,
+              color = md_theme_light_background)
+        }
+      },
+      dismissButton = {
+        Button(
+            modifier = Modifier.testTag("NoCancelItineraryButton"),
+            onClick = { onDismiss() },
+            colors =
+                ButtonDefaults.buttonColors(
+                    backgroundColor = md_theme_light_black, contentColor = Color.White),
+            shape = RoundedCornerShape(35.dp)) {
+              Text(
+                  text = "No",
+                  fontSize = 14.sp,
+                  fontFamily = Montserrat,
+                  fontWeight = FontWeight.SemiBold,
+                  color = md_theme_light_background)
+            }
+      })
 }
 
 private fun fetchPinNames(itinerary: Itinerary): String {

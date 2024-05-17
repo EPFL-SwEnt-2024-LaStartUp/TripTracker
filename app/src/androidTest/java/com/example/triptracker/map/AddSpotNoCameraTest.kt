@@ -54,7 +54,6 @@ class AddSpotNoCameraTest {
           context = mockContext)
     }
 
-    // Check if the camera is displayed
     composeTestRule.onNodeWithTag("CameraView").assertDoesNotExist()
     composeTestRule.onNodeWithTag("TakePictureButton").assertDoesNotExist()
   }
