@@ -30,7 +30,7 @@ import com.example.triptracker.view.profile.UserProfileEditScreen
 import com.example.triptracker.view.profile.UserProfileFavourite
 import com.example.triptracker.view.profile.UserProfileFollowers
 import com.example.triptracker.view.profile.UserProfileFollowing
-import com.example.triptracker.view.profile.UserProfileFriends
+import com.example.triptracker.view.profile.UserProfileFriendsFinder
 import com.example.triptracker.view.profile.UserProfileMyTrips
 import com.example.triptracker.view.profile.UserProfileOverview
 import com.example.triptracker.view.profile.UserProfileSettings
@@ -102,7 +102,7 @@ class MainActivity : ComponentActivity() {
                         context = context,
                         navigation = navigation,
                         selectedId = backStackEntry.arguments?.getString("id") ?: "",
-                    )
+                        userProfile = profile)
                   }
 
               composable(Route.RECORD) { RecordScreen(context, navigation) }
@@ -110,7 +110,7 @@ class MainActivity : ComponentActivity() {
                 UserProfileOverview(navigation = navigation, profile = profile)
               }
               composable(Route.FRIENDS) {
-                UserProfileFriends(navigation = navigation, profile = profile)
+                UserProfileFriendsFinder(navigation = navigation, profile = profile)
               }
               composable(Route.FOLLOWERS) {
                 UserProfileFollowers(navigation = navigation, profile = profile)
@@ -143,7 +143,9 @@ class MainActivity : ComponentActivity() {
               }
               composable(Route.SETTINGS) { UserProfileSettings(navigation) }
 
-              composable(Route.OFFLINE) { OfflineScreen() { navigation.retryNavigateTo() } }
+              composable(Route.OFFLINE) {
+                OfflineScreen(navigation, onRetry = { navigation.retryNavigateTo() })
+              }
             }
           }
         }

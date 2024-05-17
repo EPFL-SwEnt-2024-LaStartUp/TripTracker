@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.profile.UserProfileList
@@ -24,7 +25,14 @@ import kotlinx.coroutines.launch
 class UserProfileViewModel(
     private val userProfileRepository: UserProfileRepository = UserProfileRepository(),
     private val imageRepository: ImageRepository = ImageRepository(),
+    private val connection: Connection = Connection()
 ) : ViewModel() {
+
+  val isDeviceConnectedToInternet: Boolean
+    get() = connection.isDeviceConnectedToInternet()
+
+  private var _profile: MutableUserProfile? = null
+  private var _selectedPicture: Uri? = null
 
   private var userProfileInstance = UserProfileList(listOf())
   private var _userProfileList = MutableLiveData<List<UserProfile>>()
@@ -39,6 +47,11 @@ class UserProfileViewModel(
 
   init {
     viewModelScope.launch { fetchAllUserProfiles() }
+  }
+
+  /** MutableUserProfile object to store the user profile in the VM. */
+  fun setProfile(profile: MutableUserProfile) {
+    this._profile = profile
   }
 
   /**
@@ -246,6 +259,70 @@ class UserProfileViewModel(
   }
 
   /**
+   * This function updates the user profile in the database if the connection is available.
+   *
+   * @return true if the connection is available, false otherwise
+   */
+  fun onConnectionRefresh(): Boolean {
+    if (isDeviceConnectedToInternet) {
+      if (_profile != null && _selectedPicture != null) {
+        updateProfile(_selectedPicture!!, _profile!!)
+      }
+      return true
+    }
+    return false
+  }
+
+  /**
+   * This function updates the user profile in the database if the connection is available.
+   *
+   * @param navigation : Navigation object that manages the navigation in the application.
+   * @param isCreated : Boolean indicating if the user profile is created. Navigation needs to be
+   *   used after the callback else the view will be destroyed and resulting in a crash of the
+   *   upload of the picture.
+   * @param onLoadingChange : Function to execute when the loading status changes.
+   * @param selectedPicture : Uri of the selected picture to update the user profile (can be null).
+   * @param profile : User profile to update.
+   */
+  fun tryToUpdateProfile(
+      navigation: Navigation,
+      isCreated: Boolean,
+      onLoadingChange: () -> Unit,
+      selectedPicture: Uri?,
+      profile: MutableUserProfile
+  ) {
+    if (selectedPicture == null || isDeviceConnectedToInternet) {
+      updateProfile(navigation, isCreated, onLoadingChange, selectedPicture, profile)
+    } else {
+      profile.userProfile.value = profile.userProfile.value.copy()
+      _selectedPicture = Uri.parse(profile.toString())
+      navigation.goBack()
+    }
+  }
+
+  /**
+   * This function updates the user profile in the database on save when the connection is
+   * retrieved.
+   *
+   * @param selectedPicture : Uri of the selected picture to update the user profile.
+   * @param profile : User profile to update.
+   */
+  private fun updateProfile(selectedPicture: Uri, profile: MutableUserProfile) {
+    addProfilePictureToStorage(selectedPicture) { resp ->
+      val imageUrl =
+          if (resp is Response.Success) {
+            resp.data!!.toString()
+          } else {
+            profile.userProfile.value
+                .profileImageUrl // Keep the old image if the new one could not be uploaded
+          }
+      val newProfile = profile.userProfile.value.copy(profileImageUrl = imageUrl)
+      updateUserProfileInDb(newProfile)
+      _profile?.userProfile?.value = newProfile
+    }
+  }
+
+  /**
    * This function updates the user profile in the database on save.
    *
    * @param navigation : Navigation object that manages the navigation in the application.
@@ -255,7 +332,6 @@ class UserProfileViewModel(
    * @param onLoadingChange : Function to execute when the loading status changes.
    * @param selectedPicture : Uri of the selected picture to update the user profile (can be null).
    * @param profile : User profile to update.
-   * @return the updated user profile potentially with the new picture.
    */
   fun updateProfile(
       navigation: Navigation,

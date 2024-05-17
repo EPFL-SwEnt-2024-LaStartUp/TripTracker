@@ -27,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.Button
@@ -39,9 +40,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -73,6 +76,7 @@ import com.example.triptracker.view.theme.md_theme_light_error
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -103,11 +107,13 @@ fun UserProfileEditScreen(
 
   /* Mutable state variable that holds the birthdate of the user profile */
   var birthdate by remember { mutableStateOf(profile.userProfile.value.birthdate) }
-  var isBirthdateEmpty by remember { mutableStateOf(false) }
+  var isBirthdateEmpty by remember { mutableStateOf(profile.userProfile.value.birthdate.isEmpty()) }
+  var colorBirthdate = if (isBirthdateEmpty) md_theme_light_error else md_theme_grey
 
   /* Mutable state variable that holds the username of the user profile */
   var username by remember { mutableStateOf(profile.userProfile.value.username) }
   var isUsernameEmpty by remember { mutableStateOf(profile.userProfile.value.username.isEmpty()) }
+  var colorUsername = if (isUsernameEmpty) md_theme_light_error else md_theme_grey
 
   /* Mutable state variable that holds the image url of the user profile */
   var imageUrl by remember { mutableStateOf(profile.userProfile.value.profileImageUrl) }
@@ -136,10 +142,24 @@ fun UserProfileEditScreen(
         }
       }
 
+  /** Maximum number of characters for the username */
+  val MAX_CHARS_USERNAME = 30
+
   Scaffold(
       topBar = {},
       bottomBar = { NavigationBar(navigation) },
       modifier = Modifier.testTag("UserProfileEditScreen")) { innerPadding ->
+        if (!isCreated) {
+          Button(
+              onClick = { navigation.goBack() },
+              colors =
+                  ButtonDefaults.buttonColors(
+                      containerColor = Color.Transparent,
+                      contentColor = MaterialTheme.colorScheme.onSurface),
+              modifier = Modifier.testTag("GoBackButton")) {
+                Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
+              }
+        }
         Box(
             modifier =
                 Modifier.fillMaxHeight()
@@ -216,8 +236,10 @@ fun UserProfileEditScreen(
                                     singleLine = true,
                                     value = username,
                                     onValueChange = {
-                                      username = it
-                                      isUsernameEmpty = it.isEmpty()
+                                      if (it.length <= MAX_CHARS_USERNAME) {
+                                        username = it
+                                        isUsernameEmpty = it.isEmpty()
+                                      }
                                     },
                                     modifier =
                                         Modifier.height(65.dp).padding(bottom = 5.dp, end = 30.dp),
@@ -230,16 +252,10 @@ fun UserProfileEditScreen(
                                     colors =
                                         OutlinedTextFieldDefaults.colors(
                                             unfocusedTextColor = md_theme_grey,
-                                            unfocusedBorderColor =
-                                                if (isUsernameEmpty) md_theme_light_error
-                                                else md_theme_grey,
-                                            unfocusedLabelColor =
-                                                if (isUsernameEmpty) md_theme_light_error
-                                                else md_theme_grey,
+                                            unfocusedBorderColor = colorUsername,
+                                            unfocusedLabelColor = colorUsername,
                                             cursorColor = md_theme_grey,
-                                            focusedBorderColor =
-                                                if (isUsernameEmpty) md_theme_light_error
-                                                else md_theme_grey,
+                                            focusedBorderColor = colorUsername,
                                             focusedLabelColor = Color.White,
                                         ))
                               }
@@ -300,13 +316,10 @@ fun UserProfileEditScreen(
                           colors =
                               OutlinedTextFieldDefaults.colors(
                                   unfocusedTextColor = md_theme_grey,
-                                  unfocusedBorderColor =
-                                      if (isBirthdateEmpty) md_theme_light_error else md_theme_grey,
-                                  unfocusedLabelColor =
-                                      if (isBirthdateEmpty) md_theme_light_error else md_theme_grey,
+                                  unfocusedBorderColor = colorBirthdate,
+                                  unfocusedLabelColor = colorBirthdate,
                                   cursorColor = md_theme_grey,
-                                  focusedBorderColor =
-                                      if (isBirthdateEmpty) md_theme_light_error else md_theme_grey,
+                                  focusedBorderColor = colorBirthdate,
                                   focusedLabelColor = Color.White,
                               ))
                       IconButton(
@@ -359,7 +372,7 @@ fun UserProfileEditScreen(
                                         profileImageUrl = imageUrl,
                                         followers = profile.userProfile.value.followers,
                                         following = profile.userProfile.value.following)
-                                userProfileViewModel.updateProfile(
+                                userProfileViewModel.tryToUpdateProfile(
                                     navigation = navigation,
                                     isCreated = isCreated,
                                     onLoadingChange = { isLoading = !isLoading },
@@ -388,6 +401,7 @@ fun ProfileEditTextField(
     isEmpty: Boolean,
     isReadOnly: Boolean = false,
 ) {
+  val color = if (isEmpty) md_theme_light_error else md_theme_grey
   Text(
       text = label,
       fontSize = 14.sp,
@@ -415,10 +429,10 @@ fun ProfileEditTextField(
       colors =
           OutlinedTextFieldDefaults.colors(
               unfocusedTextColor = md_theme_grey,
-              unfocusedBorderColor = if (isEmpty) md_theme_light_error else md_theme_grey,
-              unfocusedLabelColor = if (isEmpty) md_theme_light_error else md_theme_grey,
+              unfocusedBorderColor = color,
+              unfocusedLabelColor = color,
               cursorColor = md_theme_grey,
-              focusedBorderColor = if (isEmpty) md_theme_light_error else md_theme_grey,
+              focusedBorderColor = color,
               focusedLabelColor = Color.White,
           ))
 }
@@ -458,7 +472,16 @@ fun SaveButton(canSave: Boolean = true, action: () -> Unit = {}) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomDatePickerDialog(onAccept: (Long?) -> Unit, onCancel: () -> Unit) {
-  val state = rememberDatePickerState()
+  val maxDate = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
+  val selectableDates =
+      object : SelectableDates {
+        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+          return utcTimeMillis <= maxDate
+        }
+      }
+
+  val state = rememberDatePickerState(selectableDates = selectableDates)
 
   DatePickerDialog(
       onDismissRequest = {},

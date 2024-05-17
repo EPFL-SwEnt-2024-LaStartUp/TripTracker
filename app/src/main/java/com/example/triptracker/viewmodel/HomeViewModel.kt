@@ -362,4 +362,11 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   fun filterTrendingWorldwide() {
     _itineraryList.value = itineraryList.value?.sortedByDescending { it.flameCount }
   }
+
+  fun deleteItinerary(itineraryId: String) {
+    viewModelScope.launch {
+      repository.removeItinerary(itineraryId)
+      fetchItineraries()
+    }
+  }
 }
