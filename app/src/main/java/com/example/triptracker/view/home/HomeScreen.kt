@@ -58,6 +58,7 @@ import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
+import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
@@ -398,8 +399,8 @@ fun HomePager(
               Text(
                   title,
                   color = if (isSelected) md_theme_light_black else md_theme_grey,
-                  fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                  fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Normal,
+                  fontFamily = Montserrat,
+                  fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                   fontSize = 20.sp) // same size as itinerary title
             }
           }

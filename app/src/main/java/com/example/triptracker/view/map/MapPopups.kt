@@ -63,11 +63,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.location.popupState
+import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.theme.Montserrat
@@ -225,13 +227,14 @@ fun StartScreen(
     userProfileViewModel: UserProfileViewModel,
     onClick: () -> Unit,
     userProfile: MutableUserProfile,
-    homeViewModel: HomeViewModel = HomeViewModel(),
+    homeViewModel: HomeViewModel = viewModel(),
     mapViewModel: MapViewModel
 ) {
   val configuration = LocalConfiguration.current
   val screenWidth = configuration.screenWidthDp.dp
   val screenHeight = configuration.screenHeightDp.dp
 
+  val ambientProfile = AmbientUserProfile.current
   // The size of the user's avatar/profile picture
   val avatarSize = 35.dp
   var userOfPost by remember { mutableStateOf(UserProfile("")) }
