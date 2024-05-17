@@ -336,12 +336,7 @@ fun Map(
               // Button to start/stop recording
               FilledTonalButton(
                   onClick = {
-                    if (viewModel.isRecording()) {
-                      viewModel.stopRecording()
-                      viewModel.startDescription()
-                    } else {
-                      viewModel.startRecording()
-                    }
+                    toggleRecordingDescription(viewModel)
                   },
                   modifier =
                       Modifier.fillMaxWidth(0.4f)
@@ -428,9 +423,9 @@ fun Map(
                               OutlinedTextFieldDefaults.colors(
                                   unfocusedTextColor = md_theme_light_onPrimary,
                                   unfocusedBorderColor =
-                                      if (isTitleEmpty) md_theme_light_error else md_theme_grey,
+                                      getBorderColor(isTitleEmpty),
                                   unfocusedLabelColor =
-                                      if (isTitleEmpty) md_theme_light_error else md_theme_grey,
+                                        getBorderColor(isTitleEmpty),
                                   cursorColor = md_theme_light_onPrimary,
                                   focusedBorderColor = md_theme_light_onPrimary,
                                   focusedLabelColor = md_theme_light_onPrimary,
@@ -479,12 +474,8 @@ fun Map(
                           colors =
                               OutlinedTextFieldDefaults.colors(
                                   unfocusedTextColor = md_theme_light_onPrimary,
-                                  unfocusedBorderColor =
-                                      if (isDescriptionEmpty) md_theme_light_error
-                                      else md_theme_grey,
-                                  unfocusedLabelColor =
-                                      if (isDescriptionEmpty) md_theme_light_error
-                                      else md_theme_grey,
+                                  unfocusedBorderColor = getBorderColor(isDescriptionEmpty),
+                                  unfocusedLabelColor = getBorderColor(isDescriptionEmpty),
                                   cursorColor = md_theme_light_onPrimary,
                                   focusedBorderColor = md_theme_light_onPrimary,
                                   focusedLabelColor = md_theme_light_onPrimary,
@@ -682,11 +673,7 @@ fun RecordControls(viewModel: RecordViewModel) {
                     horizontalArrangement = Arrangement.SpaceBetween) {
                       FilledTonalButton(
                           onClick = {
-                            if (viewModel.isPaused.value) {
-                              viewModel.resumeRecording()
-                            } else {
-                              viewModel.pauseRecording()
-                            }
+                            toggleRecording(viewModel)
                           },
                           modifier = Modifier.align(Alignment.CenterVertically).fillMaxHeight(0.6f),
                           colors =
@@ -695,7 +682,7 @@ fun RecordControls(viewModel: RecordViewModel) {
                                   contentColor = md_theme_light_dark),
                       ) {
                         Text(
-                            text = if (viewModel.isPaused.value) "Resume" else "Pause",
+                            text = getPauseResumeText(viewModel),
                             fontSize = 14.sp,
                             fontFamily = Montserrat,
                             fontWeight = FontWeight.SemiBold,
@@ -730,6 +717,30 @@ fun RecordControls(viewModel: RecordViewModel) {
               }
         }
       }
+}
+fun getPauseResumeText(viewModel: RecordViewModel): String {
+    return if (viewModel.isPaused.value) "Resume" else "Pause"
+}
+
+fun toggleRecordingDescription(viewModel: RecordViewModel) {
+    if (viewModel.isRecording()) {
+        viewModel.stopRecording()
+        viewModel.startDescription()
+    } else {
+        viewModel.startRecording()
+    }
+}
+
+fun getBorderColor(bool: Boolean): Color {
+    return if (isDescriptionEmpty) md_theme_light_error else md_theme_grey
+}
+
+fun toggleRecording(viewModel: RecordViewModel) {
+    if (viewModel.isPaused.value) {
+        viewModel.resumeRecording()
+    } else {
+        viewModel.pauseRecording()
+    }
 }
 
 /**
