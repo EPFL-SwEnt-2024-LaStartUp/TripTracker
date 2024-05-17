@@ -407,8 +407,7 @@ fun StartScreen(
                       LazyRow(
                           modifier =
                               Modifier.height(
-                                      if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f)
-                                  ,
+                                  if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f),
                           verticalAlignment = Alignment.CenterVertically) {
                             items(itinerary.pinnedPlaces) { pin ->
                               for (image in pin.image_url) {
