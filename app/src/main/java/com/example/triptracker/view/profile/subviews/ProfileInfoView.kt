@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,7 +36,7 @@ import com.example.triptracker.view.Route
 import com.example.triptracker.view.profile.secondaryContentStyle
 import com.example.triptracker.view.profile.secondaryTitleStyle
 import com.example.triptracker.view.theme.Montserrat
-import com.example.triptracker.view.theme.md_theme_light_dark
+import com.example.triptracker.view.theme.md_theme_light_primary
 
 /**
  * This composable function displays the user's profile information.
@@ -64,8 +65,8 @@ fun ProfileInfoView(navigation: Navigation, userProfile: UserProfile, editable: 
               Modifier.shadow(
                       elevation = 15.dp,
                       shape = CircleShape,
-                      ambientColor = md_theme_light_dark,
-                      spotColor = md_theme_light_dark)
+                      ambientColor = md_theme_light_primary,
+                      spotColor = md_theme_light_primary)
                   .padding(start = 15.dp)
                   .size((LocalConfiguration.current.screenHeightDp * 0.11f).dp)
                   .clip(CircleShape)
@@ -90,7 +91,7 @@ fun ProfileInfoView(navigation: Navigation, userProfile: UserProfile, editable: 
                       lineHeight = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
                       fontFamily = Montserrat,
                       fontWeight = FontWeight(700),
-                      color = md_theme_light_dark,
+                      color = MaterialTheme.colorScheme.inverseSurface,
                       textAlign = TextAlign.Right,
                       letterSpacing = (LocalConfiguration.current.screenHeightDp * 0.0005f).sp,
                   ),

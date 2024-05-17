@@ -19,7 +19,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.triptracker.view.profile.buttonTextStyle
-import com.example.triptracker.view.theme.md_theme_light_dark
+import com.example.triptracker.view.theme.md_theme_light_onSurface
 import com.example.triptracker.view.theme.md_theme_orange
 
 /**
@@ -40,13 +40,13 @@ fun ProfileButton(
 ) {
   Button(
       onClick = onClick,
-      colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_dark),
+      colors = ButtonDefaults.buttonColors(containerColor = md_theme_light_onSurface),
       modifier =
           modifier
               .height((LocalConfiguration.current.screenHeightDp * 0.17f).dp)
               .width((LocalConfiguration.current.screenWidthDp * 0.425f).dp)
               .testTag("ProfileButton")
-              .background(color = md_theme_light_dark, shape = RoundedCornerShape(16.dp))) {
+              .background(color = md_theme_light_onSurface, shape = RoundedCornerShape(16.dp))) {
         Column(modifier = Modifier.fillMaxWidth()) {
           Icon(
               icon,

@@ -84,7 +84,7 @@ fun UserProfileOverview(
                             Arrangement.spacedBy(
                                 (LocalConfiguration.current.screenWidthDp * 0.05).dp)) {
                           ProfileButton(
-                              label = "Favourites",
+                              label = "Favorites",
                               icon = Icons.Outlined.FavoriteBorder,
                               onClick = { navigation.navController.navigate(Route.FAVORITES) },
                               modifier = Modifier.testTag("FavoritesButton"))
