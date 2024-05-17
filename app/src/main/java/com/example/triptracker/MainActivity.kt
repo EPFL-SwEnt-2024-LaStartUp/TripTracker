@@ -143,7 +143,9 @@ class MainActivity : ComponentActivity() {
               }
               composable(Route.SETTINGS) { UserProfileSettings(navigation) }
 
-              composable(Route.OFFLINE) { OfflineScreen() { navigation.retryNavigateTo() } }
+              composable(Route.OFFLINE) {
+                OfflineScreen(navigation, onRetry = { navigation.retryNavigateTo() })
+              }
             }
           }
         }

@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,7 +36,7 @@ import com.example.triptracker.view.theme.md_theme_orange
  * @param onRetry: Callback that is called when the user clicks on the retry button.
  */
 @Composable
-fun OfflineScreen(onRetry: () -> Unit) {
+fun OfflineScreen(navigation: Navigation, onRetry: () -> Unit) {
   var blink by remember { mutableStateOf(true) }
 
   val color by
@@ -46,45 +47,50 @@ fun OfflineScreen(onRetry: () -> Unit) {
                   animation = tween(durationMillis = 1500), repeatMode = RepeatMode.Reverse),
           label = "")
 
-  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-      Box(
-          modifier = Modifier.fillMaxWidth().padding(start = 30.dp, end = 30.dp),
-          contentAlignment = Alignment.Center) {
-            Text(
-                text = "Whoops! No internet? Try again when you're back in the land of Wi-Fi!",
-                fontFamily = Montserrat,
-                fontSize = 24.sp,
-                color = Color.Black)
-          }
-      Spacer(modifier = Modifier.height(16.dp))
-      Icon(
-          imageVector = Icons.Default.AirplanemodeActive,
-          contentDescription = "Airplane Mode Active",
-          modifier = Modifier.size(100.dp),
-          tint = color // Blinking effect
-          )
-      Spacer(modifier = Modifier.height(100.dp))
-      FilledTonalButton(
-          onClick = { onRetry() },
-          modifier = Modifier.padding(16.dp),
-          colors =
-              ButtonDefaults.filledTonalButtonColors(
-                  containerColor = md_theme_orange, contentColor = Color.White)) {
-            Icon(
-                imageVector = Icons.Default.Refresh,
-                contentDescription = "Refresh",
-                tint = Color.White)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Retry",
-                fontFamily = Montserrat,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.White)
-          }
-    }
-  }
-
   /** Blinking effect for the airplane icon. */
   LaunchedEffect(blink) { blink = false }
+
+  Scaffold(bottomBar = { NavigationBar(navigation = navigation) }) { innerPadding ->
+    Box(
+        modifier = Modifier.padding(innerPadding).fillMaxSize(),
+        contentAlignment = Alignment.Center) {
+          Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(start = 30.dp, end = 30.dp),
+                contentAlignment = Alignment.Center) {
+                  Text(
+                      text =
+                          "Whoops! No internet? Try again when you're back in the land of Wi-Fi!",
+                      fontFamily = Montserrat,
+                      fontSize = 24.sp,
+                      color = Color.Black)
+                }
+            Spacer(modifier = Modifier.height(16.dp))
+            Icon(
+                imageVector = Icons.Default.AirplanemodeActive,
+                contentDescription = "Airplane Mode Active",
+                modifier = Modifier.size(100.dp),
+                tint = color // Blinking effect
+                )
+            Spacer(modifier = Modifier.height(100.dp))
+            FilledTonalButton(
+                onClick = { onRetry() },
+                modifier = Modifier.padding(16.dp),
+                colors =
+                    ButtonDefaults.filledTonalButtonColors(
+                        containerColor = md_theme_orange, contentColor = Color.White)) {
+                  Icon(
+                      imageVector = Icons.Default.Refresh,
+                      contentDescription = "Refresh",
+                      tint = Color.White)
+                  Spacer(modifier = Modifier.width(8.dp))
+                  Text(
+                      text = "Retry",
+                      fontFamily = Montserrat,
+                      fontWeight = FontWeight.SemiBold,
+                      color = Color.White)
+                }
+          }
+        }
+  }
 }

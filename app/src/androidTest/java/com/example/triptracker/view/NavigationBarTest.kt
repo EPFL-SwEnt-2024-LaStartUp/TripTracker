@@ -12,8 +12,10 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
+import com.example.triptracker.model.network.Connection
 import io.mockk.confirmVerified
 import io.mockk.every
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Before
@@ -26,6 +28,7 @@ class NavigationBarTest {
   private val navigation: Navigation = mockk<Navigation>()
 
   @get:Rule val composeTestRule = createComposeRule()
+  @RelaxedMockK private lateinit var connectionMock: Connection
 
   @get:Rule
   val permissionRule: GrantPermissionRule =
@@ -46,7 +49,13 @@ class NavigationBarTest {
 
     every { navigation.navigateTo(any()) } returns Unit
 
-    composeTestRule.setContent { NavigationBar(navigation = navigation) }
+    connectionMock = mockk(relaxed = true)
+
+    every { connectionMock.isDeviceConnectedToInternet() } returns true
+
+    composeTestRule.setContent {
+      NavigationBar(navigation = navigation, connection = connectionMock)
+    }
   }
 
   @Test
