@@ -80,23 +80,8 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
               }
 
           if (filteredList != null) {
-            var privacyFilteredList = filteredList
-            if(!aware){
-              val allProfiles = userProfileViewModel.getUserProfileList()
-              privacyFilteredList = filteredList.filter {
-                val itin = it
-                val ownerProfile = allProfiles.find { it.mail == itin.userMail }
-                if (ownerProfile != null) {
-                  ownerProfile.itineraryPrivacy == 0 ||
-                          (ownerProfile.itineraryPrivacy == 1 && currProfile.followers.contains(
-                            ownerProfile.mail
-                          ) && currProfile.following.contains(ownerProfile.mail))
-                } else {
-                  false
-                }
-              }
-            }
-            emit(privacyFilteredList)
+
+            emit(filteredList)
           }
         }
       }

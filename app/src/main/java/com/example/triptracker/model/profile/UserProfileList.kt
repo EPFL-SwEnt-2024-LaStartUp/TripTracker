@@ -12,7 +12,7 @@ data class UserProfileList(private var userProfileList: List<UserProfile>) {
    * @return List of all user's profiles
    */
   fun getAllUserProfiles(): List<UserProfile> {
-    return userProfileList.filter { it.profilePrivacy == 0 }
+    return userProfileList
   }
 
   /**

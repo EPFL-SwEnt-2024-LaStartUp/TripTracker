@@ -49,12 +49,14 @@ import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.MutableUserProfile
+import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
+import com.example.triptracker.viewmodel.UserProfileViewModel
 
 /**
  * HomeScreen composable that displays the list of itineraries
@@ -70,6 +72,7 @@ fun HomeScreen(
     navigation: Navigation,
     profile: MutableUserProfile,
     homeViewModel: HomeViewModel = viewModel(),
+    userProfileViewModel: UserProfileViewModel = viewModel(),
     test: Boolean = false
 ) {
   Log.d("HomeScreen", "Rendering HomeScreen")
@@ -150,6 +153,35 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("ItineraryList"),
                 contentPadding = PaddingValues(16.dp)) {
                   items(itineraries) { itinerary ->
+                      var readyToDisplay by remember { mutableStateOf(false) }
+                      var allProfiles by remember { mutableStateOf(emptyList<UserProfile>()) }
+                      var privacyFilteredList = filteredList
+                      userProfileViewModel.fetchAllUserProfiles() {fetch ->
+                          if (fetch != null) {
+                              allProfiles = fetch
+                              readyToDisplay = true
+                          }
+                      }
+                      when(readyToDisplay) {
+                          false -> {
+                              Log.d("UserProfileList", "User profile list is null")
+                          }
+                          true -> {
+                              privacyFilteredList = filteredList.filter {
+                                  val itin = it
+                                  var currProfile =  AmbientUserProfile.current.userProfile.value
+                                  val ownerProfile = allProfiles.find { it.mail == itin.userMail }
+                                  if (ownerProfile != null) {
+                                      ownerProfile.itineraryPrivacy == 0 ||
+                                              (ownerProfile.itineraryPrivacy == 1 && currProfile.followers.contains(
+                                                  ownerProfile.mail
+                                              ) && currProfile.following.contains(ownerProfile.mail))
+                                  } else {
+                                      false
+                                  }
+                              }
+                          }
+                      }
                     Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
                     DisplayItinerary(
                         itinerary = itinerary,

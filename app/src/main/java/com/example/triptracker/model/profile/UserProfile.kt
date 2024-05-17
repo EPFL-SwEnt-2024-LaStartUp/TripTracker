@@ -30,7 +30,7 @@ data class UserProfile(
     val following: List<String> = emptyList(),
     val favoritesPaths: List<String> = emptyList(),
     val profilePrivacy: Int = 0,
-    val itineraryPrivacy: Int = 0,
+    val itineraryPrivacy: Int= 0,
 )
 
 /** This data class represents a mutable user's profile information. */

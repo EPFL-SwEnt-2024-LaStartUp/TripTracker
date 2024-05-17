@@ -5,6 +5,7 @@ import com.example.triptracker.model.profile.UserProfile
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.firestore
 
 /**
@@ -56,7 +57,7 @@ open class UserProfileRepository {
    */
   open fun getAllUserProfiles(callback: (List<UserProfile>) -> Unit) {
     userProfileDb
-        .get()
+        .get(Source.SERVER)
         .addOnSuccessListener { result ->
           userProfileList(result)
           callback(_userProfileList)
@@ -116,6 +117,9 @@ open class UserProfileRepository {
     val favoritesPaths =
         document.data?.get("favoritesPaths") as? List<String> ?: createFavoritesPaths(document.id)
 
+      //val itineraryPrivacy = document.data?.get("itineraryPrivacy") as? Int ?: throw IllegalStateException("itineraryPrivacy is missing")
+      //val profilePrivacy = document.data?.get("profilePrivacy") as? Int ?: throw IllegalStateException("profilePrivacy is missing")
+
     return UserProfile(
         document.id,
         name,
@@ -125,7 +129,10 @@ open class UserProfileRepository {
         profileImageUrl,
         follower,
         following,
-        favoritesPaths)
+        favoritesPaths,
+        //itineraryPrivacy,
+        //profilePrivacy
+    )
   }
 
   private fun createFavoritesPaths(id: String): List<String> {
@@ -167,6 +174,10 @@ open class UserProfileRepository {
       val favoritesPaths =
           document.data["favoritesPaths"] as? List<String> ?: createFavoritesPaths(document.id)
 
+        //val profilePrivacy = document.data["profilePrivacy"] as? Int ?: throw IllegalStateException("profilePrivacy is missing")
+
+        //val itineraryPrivacy = document.data["itineraryPrivacy"] as? Int ?: throw IllegalStateException("itineraryPrivacy is missing")
+
       val userProfile =
           UserProfile(
               document.id,
@@ -177,7 +188,10 @@ open class UserProfileRepository {
               profileImageUrl,
               followers,
               following,
-              favoritesPaths)
+              favoritesPaths,
+              //itineraryPrivacy,
+              //profilePrivacy
+          )
       _userProfileList.add(userProfile)
     }
   }
