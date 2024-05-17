@@ -32,7 +32,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
-import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material3.Icon
@@ -370,7 +369,8 @@ fun Map(
                 },
                 colors =
                     ButtonDefaults.buttonColors(
-                        backgroundColor = md_theme_light_dark, contentColor = md_theme_light_onPrimary),
+                        backgroundColor = md_theme_light_dark,
+                        contentColor = md_theme_light_onPrimary),
                 shape = RoundedCornerShape(35.dp),
             ) {
               Text(
@@ -378,8 +378,7 @@ fun Map(
                   fontSize = 14.sp,
                   fontFamily = Montserrat,
                   fontWeight = FontWeight.SemiBold,
-                  color = md_theme_light_onPrimary
-              )
+                  color = md_theme_light_onPrimary)
             }
           },
           dismissButton = {
@@ -396,7 +395,6 @@ fun Map(
                       fontFamily = Montserrat,
                       fontWeight = FontWeight.SemiBold,
                       color = md_theme_light_onPrimary)
-
                 }
           })
     }
@@ -406,29 +404,27 @@ fun Map(
           modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth().padding(10.dp),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.SpaceBetween) {
-
             if (mapViewModel.asStartItinerary.value) {
               IconButton(
-                    onClick = { showCancelDialog = true },
-                    modifier = Modifier.testTag("CancelItineraryButton").size(50.dp)) {
-                      Icon(
-                          imageVector = Icons.Outlined.Close,
-                          contentDescription = "Cancel Itinerary",
-                          tint = md_theme_light_dark)
-                    }
+                  onClick = { showCancelDialog = true },
+                  modifier = Modifier.testTag("CancelItineraryButton").size(50.dp)) {
+                    Icon(
+                        imageVector = Icons.Outlined.Close,
+                        contentDescription = "Cancel Itinerary",
+                        tint = md_theme_light_dark)
+                  }
             } else {
               Spacer(modifier = Modifier.width(50.dp))
             }
-              Text(
-                  text = mapViewModel.cityNameState.value,
-                  modifier = Modifier.padding(30.dp),
-                  fontSize = 24.sp,
-                  fontFamily = Montserrat,
-                  fontWeight = FontWeight.SemiBold,
-                  color = md_theme_light_dark)
-              Spacer(modifier = Modifier.width(50.dp))
+            Text(
+                text = mapViewModel.cityNameState.value,
+                modifier = Modifier.padding(30.dp),
+                fontSize = 24.sp,
+                fontFamily = Montserrat,
+                fontWeight = FontWeight.SemiBold,
+                color = md_theme_light_dark)
+            Spacer(modifier = Modifier.width(50.dp))
           }
-
     }
     Row(
         modifier = Modifier.align(Alignment.BottomStart),

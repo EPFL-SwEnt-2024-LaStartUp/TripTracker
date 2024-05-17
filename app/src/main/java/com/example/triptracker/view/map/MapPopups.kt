@@ -11,7 +11,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -260,7 +259,8 @@ fun StartScreen(
                             bottomEnd = 35.dp))) {
           Column(
               modifier =
-                  Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
+                  Modifier.fillMaxWidth()
+                      .verticalScroll(rememberScrollState())
                       .padding(top = 15.dp, start = 25.dp, end = 25.dp, bottom = 10.dp)) {
                 IconButton(
                     onClick = {
@@ -407,7 +407,7 @@ fun StartScreen(
                       LazyRow(
                           modifier =
                               Modifier.height(
-                                  if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f)
+                                      if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f)
                                   .verticalScroll(rememberScrollState()),
                           verticalAlignment = Alignment.CenterVertically) {
                             items(itinerary.pinnedPlaces) { pin ->
