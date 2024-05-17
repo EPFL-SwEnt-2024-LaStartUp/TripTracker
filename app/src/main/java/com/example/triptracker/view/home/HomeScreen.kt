@@ -199,7 +199,7 @@ fun HomeScreen(
 fun SearchBarImplementation(
     onBackClicked: () -> Unit = {},
     onSearchActivated: (Boolean) -> Unit,
-    viewModel: HomeViewModel = viewModel(),
+    viewModel: HomeViewModel,
     selectedFilterType: FilterType,
     isNoResultFound: Boolean = false,
     navigation: Navigation
@@ -355,7 +355,7 @@ fun HomePager(
     itineraries: List<Itinerary>,
     navigation: Navigation,
     profile: MutableUserProfile,
-    homeViewModel: HomeViewModel,
+    homeViewModel: HomeViewModel = viewModel(),
     innerPadding: PaddingValues,
     test: Boolean = false
 ) {
@@ -370,10 +370,22 @@ fun HomePager(
   var isSelected by remember { mutableStateOf(false) }
 
   // added for page animation, if the animation is not smooth, change to pagerState.scrollToPage
-  LaunchedEffect(key1 = selectedTab) { pagerState.animateScrollToPage(page = selectedTab) }
+  LaunchedEffect(key1 = selectedTab) {
+    pagerState.animateScrollToPage(page = selectedTab)
+    when (selectedTab) {
+      0 -> homeViewModel.filterByTrending()
+      1 -> homeViewModel.filterByFollowing(userEmail)
+    }
+  }
 
   // LaunchedEffect to synchronize the pager state with the selected tab
-  LaunchedEffect(pagerState.currentPage) { selectedTab = pagerState.currentPage }
+  LaunchedEffect(pagerState.currentPage) {
+    selectedTab = pagerState.currentPage
+    when (pagerState.currentPage) {
+      0 -> homeViewModel.filterByTrending()
+      1 -> homeViewModel.filterByFollowing(userEmail)
+    }
+  }
 
   Column(modifier = Modifier.background(md_theme_light_onPrimary)) {
     TabRow(
@@ -401,7 +413,6 @@ fun HomePager(
     HorizontalPager(state = pagerState) { page ->
       when (page) {
         0 -> {
-          homeViewModel.filterByTrending()
           val trendingItineraries by homeViewModel.itineraryList.observeAsState(emptyList())
           DisplayItineraryFromCategory(
               itineraries = trendingItineraries,
@@ -411,10 +422,9 @@ fun HomePager(
               test = test)
         }
         1 -> {
-          homeViewModel.filterByFollowing(userEmail)
           val followingItineraries by homeViewModel.itineraryList.observeAsState(emptyList())
           if (followingItineraries.isEmpty()) {
-            Box(modifier = Modifier.fillMaxWidth().padding(top = 100.dp)) {
+            Box(modifier = Modifier.fillMaxWidth().padding(top = 40.dp)) {
               Text(
                   text = "Not following anyone yet.",
                   modifier = Modifier.padding(100.dp).height(100.dp).testTag("NoFollowingText"),
