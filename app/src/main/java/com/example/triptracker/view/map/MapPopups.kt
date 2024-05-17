@@ -178,7 +178,7 @@ fun PathItem(pinnedPlace: Pin, onClick: (Pin) -> Unit) {
               fontSize = 16.sp,
               fontFamily = FontFamily(Font(R.font.montserrat_regular)),
               fontWeight = FontWeight.Normal,
-              modifier = Modifier.padding(end = 5.dp))
+              modifier = Modifier.padding(end = 5.dp).testTag("PathItemTitle"))
 
           // Fetch address
           AddressText(
