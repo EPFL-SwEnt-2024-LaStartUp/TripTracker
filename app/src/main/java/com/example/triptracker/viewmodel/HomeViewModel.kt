@@ -88,11 +88,19 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
         }
       }
 
-  /** Fetches all itineraries from the repository and stores them in the itineraryList LiveData */
-  private fun fetchItineraries() {
+  /**
+   * Fetches all itineraries from the repository and stores them in the itineraryList LiveData
+   *
+   * @param callback a callback, that can be used in various different ways for now, used for
+   *   updating flame counts at launch
+   */
+  private fun fetchItineraries(callback: () -> Unit = {}) {
     Log.d("HomeViewModel", "Fetching itineraries")
-    itineraryInstance.setItineraryList(repository.getAllItineraries())
-    _itineraryList.value = itineraryInstance.getAllItineraries()
+    repository.getAllItineraries { itineraries ->
+      itineraryInstance.setItineraryList(itineraries)
+      _itineraryList.value = itineraryInstance.getAllItineraries()
+    }
+    callback()
   }
 
   /**
@@ -252,6 +260,14 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
         repository.updateField(itineraryId, IncrementableField.FLAME_COUNT, newFlameCount)
       }
     }
+  }
+
+  /**
+   * Update flame count for all itineraries can be used when flame counts from all itineraries need
+   * to be updated
+   */
+  private fun updateAllFlameCounts() {
+    _itineraryList.value?.forEach { itinerary -> updateFlameCount(itinerary.id) }
   }
 
   /** Increment the click count of the itinerary with the given id */

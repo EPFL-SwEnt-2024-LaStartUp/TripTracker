@@ -77,7 +77,7 @@ class MapViewModel(
 
   /** Get all itineraries from the database and update the pathList */
   private fun getAllItineraries() {
-    pathList.postValue(ItineraryList(repository.getAllItineraries()))
+    repository.getAllItineraries { itineraries -> pathList.postValue(ItineraryList(itineraries)) }
   }
 
   /**

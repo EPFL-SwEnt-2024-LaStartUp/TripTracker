@@ -40,12 +40,20 @@ open class ItineraryRepository {
    *
    * @return List of itineraries
    */
-  open fun getAllItineraries(): List<Itinerary> {
+  // I kept the original function signature and added a callback parameter to return the list of
+  // itineraries
+  open fun getAllItineraries(callback: (List<Itinerary>) -> Unit) {
     db.collection("itineraries")
         .get()
-        .addOnSuccessListener { result -> itineraryList(result) }
-        .addOnFailureListener { e -> Log.e(TAG, "Error getting all itineraries", e) }
-    return _itineraryList
+        .addOnSuccessListener { result ->
+          _itineraryList.clear()
+          itineraryList(result)
+          callback(_itineraryList)
+        }
+        .addOnFailureListener { e ->
+          Log.e(TAG, "Error getting all itineraries", e)
+          callback(emptyList())
+        }
   }
 
   /**
