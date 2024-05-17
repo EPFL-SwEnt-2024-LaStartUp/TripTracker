@@ -339,11 +339,10 @@ fun DisplayItineraryFromCategory(
     HomeCategory.FOLLOWING -> {
       homeViewModel.filterByFollowing(ambientProfile.userProfile.value.mail)
     }
-    HomeCategory.FAVORITES -> {
-      homeViewModel.filterByFavorite(ambientProfile.userProfile.value.mail)
-      Log.d("FavoriteItineraries", "Favorite itineraries: ${homeViewModel.itineraryList.value}")
-    }
   }
+
+  // Filtered list of itineraries based on search query should be displayed
+  val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = itineraries)
 
   LazyColumn(
       modifier =
@@ -374,14 +373,14 @@ fun HomePager(
     itineraries: List<Itinerary>,
     navigation: Navigation,
     profile: MutableUserProfile,
-    homeViewModel: HomeViewModel = viewModel(),
+    homeViewModel: HomeViewModel,
     innerPadding: PaddingValues,
     test: Boolean = false
 ) {
-  val tabs = listOf("Trending", "Following", "Favorites")
+  val tabs = listOf(HomeCategory.TRENDING.name, HomeCategory.FOLLOWING.name)
   val pagerState =
       rememberPagerState(initialPage = 0) {
-        3 // initial page is 0, trending tab
+        2 // initial page is 0, trending tab
       }
   var selectedTab by remember { mutableStateOf(pagerState.currentPage) }
   var isSelected by remember { mutableStateOf(false) }
@@ -431,14 +430,6 @@ fun HomePager(
               navigation = navigation,
               homeViewModel = homeViewModel,
               category = HomeCategory.FOLLOWING,
-              test = test)
-        }
-        2 -> {
-          DisplayItineraryFromCategory(
-              itineraries = itineraries,
-              navigation = navigation,
-              homeViewModel = homeViewModel,
-              category = HomeCategory.FAVORITES,
               test = test)
         }
       }

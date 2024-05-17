@@ -36,8 +36,7 @@ enum class IncrementableField {
 
 enum class HomeCategory {
   TRENDING,
-  FOLLOWING,
-  FAVORITES
+  FOLLOWING
 }
 
 /**
@@ -61,7 +60,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
 
   init {
     UserProfileViewModel().fetchAllUserProfiles { userProfileList = it }
-    viewModelScope.launch { fetchItineraries() }
+    viewModelScope.launch { fetchItineraries { updateAllFlameCounts() } }
   }
 
   private val _userProfiles = MutableLiveData<Map<String, UserProfile>>()
@@ -99,8 +98,8 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
     repository.getAllItineraries { itineraries ->
       itineraryInstance.setItineraryList(itineraries)
       _itineraryList.value = itineraryInstance.getAllItineraries()
+      callback()
     }
-    callback()
   }
 
   /**
@@ -283,18 +282,14 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   fun incrementSaveCount(itineraryId: String) {
     viewModelScope.launch {
       repository.incrementField(itineraryId, IncrementableField.SAVES)
-      val updatedList =
-          _itineraryList.value?.map { itinerary ->
-            if (itinerary.id == itineraryId) {
-              itinerary.copy(saves = itinerary.saves + 1)
-            } else {
-              itinerary
-            }
-          }
-      if (updatedList != null) {
-        _itineraryList = MutableLiveData(updatedList)
+      repository.getItineraryById(itineraryId) { itinerary ->
+        if (itinerary != null) {
+          val updatedItinerary = itinerary.copy(saves = itinerary.saves + 1)
+          updateFlameCount(itinerary.id)
+          _itineraryList.value =
+              _itineraryList.value?.map { if (it.id == itineraryId) updatedItinerary else it }
+        }
       }
-      updateFlameCount(itineraryId)
     }
   }
 
