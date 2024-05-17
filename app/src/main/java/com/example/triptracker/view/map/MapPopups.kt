@@ -71,8 +71,8 @@ import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
-import com.example.triptracker.view.theme.md_theme_light_outlineVariant
 import com.example.triptracker.view.theme.md_theme_light_onSurface
+import com.example.triptracker.view.theme.md_theme_light_outlineVariant
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.MapPopupViewModel
