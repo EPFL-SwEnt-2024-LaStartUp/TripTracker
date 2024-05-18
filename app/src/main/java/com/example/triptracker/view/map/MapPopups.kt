@@ -332,15 +332,16 @@ fun StartScreen(
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     text = itinerary.title,
-                    fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                    fontWeight = FontWeight.Bold,
+                    fontFamily = Montserrat,
+                    fontWeight = FontWeight.SemiBold,
                     fontSize = 26.sp,
                     color = md_theme_light_onPrimary,
                     modifier = Modifier.testTag("Title"))
                 Text(
                     text = "${itinerary.flameCount} 🔥",
                     color = md_theme_orange, // This is the orange color
-                    fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                    fontFamily = Montserrat,
+                    fontWeight = FontWeight.Normal,
                     fontSize = 16.sp,
                     modifier =
                         Modifier.padding(

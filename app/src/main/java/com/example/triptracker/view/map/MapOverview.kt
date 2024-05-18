@@ -426,7 +426,7 @@ fun Map(
   Row(
       modifier = Modifier.fillMaxWidth().fillMaxHeight(),
       horizontalArrangement = Arrangement.Start) {
-        Box(modifier = Modifier.padding(horizontal = 35.dp, vertical = 65.dp)) {
+        Box(modifier = Modifier.padding(horizontal = 35.dp, vertical = 65.dp).align(Alignment.Bottom)) {
           displayCenterLocationButtonIfNeeded(
               ui = ui,
               properties = properties,
