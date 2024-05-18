@@ -426,16 +426,18 @@ fun Map(
   Row(
       modifier = Modifier.fillMaxWidth().fillMaxHeight(),
       horizontalArrangement = Arrangement.Start) {
-        Box(modifier = Modifier.padding(horizontal = 35.dp, vertical = 65.dp).align(Alignment.Bottom)) {
-          displayCenterLocationButtonIfNeeded(
-              ui = ui,
-              properties = properties,
-              mapViewModel = mapViewModel,
-              coroutineScope = coroutineScope,
-              cameraPositionState = cameraPositionState,
-              context = context,
-              deviceLocation = deviceLocation)
-        }
+        Box(
+            modifier =
+                Modifier.padding(horizontal = 35.dp, vertical = 65.dp).align(Alignment.Bottom)) {
+              displayCenterLocationButtonIfNeeded(
+                  ui = ui,
+                  properties = properties,
+                  mapViewModel = mapViewModel,
+                  coroutineScope = coroutineScope,
+                  cameraPositionState = cameraPositionState,
+                  context = context,
+                  deviceLocation = deviceLocation)
+            }
       }
   if (mapViewModel.displayPopUp.value) {
 
