@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
@@ -65,7 +66,8 @@ fun UserProfileScreen(
     filterType: FilterType,
     screenTag: String,
     noDataText: String,
-    titleText: String
+    titleText: String,
+    connection: Connection
 ) {
   homeViewModel.setSearchFilter(filterType)
   if (filterType == FilterType.FAVOURITES) {
@@ -78,7 +80,7 @@ fun UserProfileScreen(
 
   Scaffold(
       topBar = {},
-      bottomBar = { NavigationBar(navigation) },
+      bottomBar = { NavigationBar(navigation, connection) },
       modifier = Modifier.testTag(screenTag)) { innerPadding ->
         Box {
           when (filteredList) {

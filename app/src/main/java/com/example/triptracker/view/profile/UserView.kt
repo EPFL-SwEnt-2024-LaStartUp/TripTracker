@@ -213,7 +213,8 @@ fun UserView(
                         ProfileCounts(
                             navigation = navigation,
                             profile = displayedUser,
-                            tripsCount = tripCount ?: 0)
+                            tripsCount = tripCount ?: 0,
+                            currentUserProfile = false)
                       }
                   Column(
                       modifier = Modifier.fillMaxHeight(),

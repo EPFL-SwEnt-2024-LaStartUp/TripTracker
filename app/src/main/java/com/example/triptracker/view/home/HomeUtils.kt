@@ -88,12 +88,12 @@ val dummyProfile = UserProfile("test@gmail.com", "Test User", "test", "test bio"
 fun DisplayItinerary(
     itinerary: Itinerary,
     boxHeight: Dp = 220.dp,
-    userProfileViewModel: UserProfileViewModel = viewModel(),
+    userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
     onClick: () -> Unit,
     homeViewModel: HomeViewModel = viewModel(),
     displayImage: Boolean = false,
     test: Boolean = false,
-    canBeDeleted: Boolean = false
+    canBeDeleted: Boolean = false,
 ) {
   val configuration = LocalConfiguration.current
   val screenWidth = configuration.screenWidthDp.dp
@@ -262,7 +262,7 @@ fun DisplayItinerary(
                   color = md_theme_orange, // This is the orange color
                   fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                   fontSize = 14.sp)
-              Spacer(modifier = Modifier.height(20.dp).weight(1f))
+              Spacer(modifier = Modifier.height(30.dp))
               Text(
                   text = pinListString,
                   fontSize = 14.sp,

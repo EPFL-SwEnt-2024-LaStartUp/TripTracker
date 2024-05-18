@@ -3,6 +3,7 @@ package com.example.triptracker.view.profile
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.viewmodel.FilterType
@@ -21,7 +22,8 @@ fun UserProfileMyTrips(
     homeViewModel: HomeViewModel = viewModel(),
     navigation: Navigation,
     test: Boolean = false,
-    userProfile: MutableUserProfile
+    userProfile: MutableUserProfile,
+    connection: Connection = Connection()
 ) {
   UserProfileScreen(
       homeViewModel = homeViewModel,
@@ -31,5 +33,6 @@ fun UserProfileMyTrips(
       filterType = FilterType.USERNAME,
       screenTag = "UserProfileMyTripsScreen",
       noDataText = "You do not have any trips yet. Create a new trip to get started!",
-      titleText = "My Trips")
+      titleText = "My Trips",
+      connection = connection)
 }

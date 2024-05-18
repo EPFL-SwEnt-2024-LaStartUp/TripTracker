@@ -1,6 +1,7 @@
 package com.example.triptracker.map
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.RadioButtonChecked
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -13,6 +14,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.example.triptracker.itinerary.MockItineraryList
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
@@ -49,6 +51,8 @@ class RecordTest {
   val mockList = MockItineraryList()
   val mockItineraries = mockList.getItineraries()
 
+  val mockConnection: Connection = mockk(relaxed = true)
+
   @Before
   fun setUp() {
     mockViewModel = mockk(relaxed = true)
@@ -84,7 +88,11 @@ class RecordTest {
         }
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -117,7 +125,11 @@ class RecordTest {
         }
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -152,7 +164,11 @@ class RecordTest {
         }
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -187,7 +203,11 @@ class RecordTest {
         }
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -221,7 +241,11 @@ class RecordTest {
         }
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -256,7 +280,11 @@ class RecordTest {
         }
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -287,7 +315,11 @@ class RecordTest {
         }
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -322,7 +354,11 @@ class RecordTest {
         }
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -356,7 +392,43 @@ class RecordTest {
         }
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
+    }
+    Log.e("RecordTest", "testSaveButton")
+    // Go to RecordScreen
+    composeTestRule.onNodeWithTag("RecordScreen").assertExists()
+    composeTestRule.onNodeWithTag("RecordScreen").performClick()
+
+    composeTestRule.onNodeWithText("Save").assertExists()
+
+    composeTestRule.onNodeWithText("Save").performClick()
+  }
+
+  @Test
+  fun testSaveButtonNotEmpty() {
+    every { mockViewModel.isRecording() } returns false
+    every { mockViewModel.isPaused.value } returns false
+    every { mockViewModel.isInDescription() } returns true
+    every { mockViewModel.addSpotClicked.value } returns false
+    every { mockViewModel.description.value } returns "Description"
+    every { mockViewModel.title.value } returns "Title"
+    every { mockViewModel.startDate.value } returns "2021-10-10"
+    every { mockViewModel.endDate.value } returns "2021-10-10"
+
+    every { mockViewModel.latLongList } returns listOf()
+    every { mockViewModel.namePOI.value } returns "Name"
+    every { mockViewModel.displayNameDropDown.value } returns "Name"
+
+    composeTestRule.setContent {
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -393,7 +465,11 @@ class RecordTest {
         }
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -432,7 +508,11 @@ class RecordTest {
       every { mockViewModel.pinList } returns listOf()
 
       composeTestRule.setContent {
-        RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+        RecordScreen(
+            context = appContext,
+            viewModel = mockViewModel,
+            navigation = mockNavigation,
+            connection = mockConnection)
       }
 
       // Go to RecordScreen
@@ -469,7 +549,11 @@ class RecordTest {
         }
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -505,7 +589,11 @@ class RecordTest {
         }
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -541,7 +629,11 @@ class RecordTest {
         }
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -573,7 +665,11 @@ class RecordTest {
         }
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -604,7 +700,11 @@ class RecordTest {
         }
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
@@ -637,7 +737,11 @@ class RecordTest {
         }
 
     composeTestRule.setContent {
-      RecordScreen(context = appContext, viewModel = mockViewModel, navigation = mockNavigation)
+      RecordScreen(
+          context = appContext,
+          viewModel = mockViewModel,
+          navigation = mockNavigation,
+          connection = mockConnection)
     }
 
     // Go to RecordScreen
