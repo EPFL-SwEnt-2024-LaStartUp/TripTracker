@@ -320,11 +320,10 @@ fun SearchBarImplementation(
 }
 
 @Composable
-fun DisplayItineraryFromCategory(
+fun DisplayItineraries(
     itineraries: List<Itinerary>,
     navigation: Navigation,
     homeViewModel: HomeViewModel,
-    category: HomeCategory,
     test: Boolean = false
 ) {
   LazyColumn(
@@ -410,11 +409,10 @@ fun HomePager(
       when (page) {
         0 -> {
           val trendingItineraries by homeViewModel.trendingList.observeAsState(emptyList())
-          DisplayItineraryFromCategory(
+          DisplayItineraries(
               itineraries = trendingItineraries,
               navigation = navigation,
               homeViewModel = homeViewModel,
-              category = HomeCategory.TRENDING,
               test = test)
         }
         1 -> {
@@ -433,11 +431,10 @@ fun HomePager(
                 color = md_theme_light_black,
                 fontFamily = FontFamily(Font(R.font.montserrat_regular)))
           }
-          DisplayItineraryFromCategory(
+          DisplayItineraries(
               itineraries = followingItineraries,
               navigation = navigation,
               homeViewModel = homeViewModel,
-              category = HomeCategory.FOLLOWING,
               test = test)
         }
       }
