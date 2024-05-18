@@ -60,7 +60,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
+import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.profile.AmbientUserProfile
+import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
@@ -91,6 +93,9 @@ import kotlinx.coroutines.launch
 // Define the delay for the location update
 const val DELAY = 5000L
 
+var isTitleEmpty by mutableStateOf(true)
+var isDescriptionEmpty by mutableStateOf(true)
+
 /**
  * Composable function for displaying the RecordScreen.
  *
@@ -101,7 +106,8 @@ const val DELAY = 5000L
 fun RecordScreen(
     context: Context,
     navigation: Navigation,
-    viewModel: RecordViewModel = RecordViewModel()
+    viewModel: RecordViewModel = RecordViewModel(),
+    connection: Connection = Connection()
 ) {
   // default device location is EPFL
   var deviceLocation = DEFAULT_LOCATION
@@ -125,8 +131,8 @@ fun RecordScreen(
   when (loadMapScreen) {
     true -> {
       Scaffold(
-          bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("RecordScreen")) {
-              innerPadding ->
+          bottomBar = { NavigationBar(navigation, connection) },
+          modifier = Modifier.testTag("RecordScreen")) { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
               Map(context, viewModel, deviceLocation, mapProperties, uiSettings)
             }
@@ -328,37 +334,30 @@ fun Map(
                   cameraPositionState = cameraPositionState) { /* DO NOTHING*/}
             }
             Spacer(modifier = Modifier.weight(0.5f))
-            // Button to start/stop recording
-            FilledTonalButton(
-                onClick = {
-                  if (viewModel.isRecording()) {
-                    viewModel.stopRecording()
-                    viewModel.startDescription()
-                  } else {
-                    viewModel.startRecording()
-                  }
-                },
-                modifier =
-                    Modifier.fillMaxWidth(0.4f)
-                        .fillMaxHeight(0.08f)
-                        .align(Alignment.CenterVertically),
-                colors =
-                    ButtonDefaults.filledTonalButtonColors(
-                        containerColor = md_theme_orange, contentColor = md_theme_light_onPrimary),
-            ) {
-              Text(
-                  text = if (viewModel.isRecording()) "Stop" else "Start",
-                  fontSize = 24.sp,
-                  fontFamily = Montserrat,
-                  fontWeight = FontWeight.SemiBold,
-                  color = md_theme_light_onPrimary)
+            if (properties.isMyLocationEnabled && !viewModel.addSpotClicked.value) {
+              // Button to start/stop recording
+              FilledTonalButton(
+                  onClick = { toggleRecordingDescription(viewModel) },
+                  modifier =
+                      Modifier.fillMaxWidth(0.4f)
+                          .fillMaxHeight(0.08f)
+                          .align(Alignment.CenterVertically),
+                  colors =
+                      ButtonDefaults.filledTonalButtonColors(
+                          containerColor = md_theme_orange,
+                          contentColor = md_theme_light_onPrimary),
+              ) {
+                Text(
+                    text = if (viewModel.isRecording()) "Stop" else "Start",
+                    fontSize = 24.sp,
+                    fontFamily = Montserrat,
+                    fontWeight = FontWeight.SemiBold,
+                    color = md_theme_light_onPrimary)
+              }
             }
             Spacer(modifier = Modifier.weight(1f))
           }
     }
-
-    var isTitleEmpty by remember { mutableStateOf(false) }
-    var isDescriptionEmpty by remember { mutableStateOf(false) }
 
     // Display description window
     AnimatedVisibility(
@@ -423,10 +422,8 @@ fun Map(
                           colors =
                               OutlinedTextFieldDefaults.colors(
                                   unfocusedTextColor = md_theme_light_onPrimary,
-                                  unfocusedBorderColor =
-                                      if (isTitleEmpty) md_theme_light_error else md_theme_grey,
-                                  unfocusedLabelColor =
-                                      if (isTitleEmpty) md_theme_light_error else md_theme_grey,
+                                  unfocusedBorderColor = getBorderColor(isTitleEmpty),
+                                  unfocusedLabelColor = getBorderColor(isTitleEmpty),
                                   cursorColor = md_theme_light_onPrimary,
                                   focusedBorderColor = md_theme_light_onPrimary,
                                   focusedLabelColor = md_theme_light_onPrimary,
@@ -475,12 +472,8 @@ fun Map(
                           colors =
                               OutlinedTextFieldDefaults.colors(
                                   unfocusedTextColor = md_theme_light_onPrimary,
-                                  unfocusedBorderColor =
-                                      if (isDescriptionEmpty) md_theme_light_error
-                                      else md_theme_grey,
-                                  unfocusedLabelColor =
-                                      if (isDescriptionEmpty) md_theme_light_error
-                                      else md_theme_grey,
+                                  unfocusedBorderColor = getBorderColor(isDescriptionEmpty),
+                                  unfocusedLabelColor = getBorderColor(isDescriptionEmpty),
                                   cursorColor = md_theme_light_onPrimary,
                                   focusedBorderColor = md_theme_light_onPrimary,
                                   focusedLabelColor = md_theme_light_onPrimary,
@@ -491,83 +484,87 @@ fun Map(
                           horizontalArrangement = Arrangement.Center) {
                             Spacer(modifier = Modifier.width(20.dp))
                             // add a button to save the description
-                            FilledTonalButton(
-                                onClick = {
-                                  if (viewModel.title.value.isEmpty()) {
-                                    isTitleEmpty = true
-                                  }
-                                  if (viewModel.description.value.isEmpty()) {
-                                    isDescriptionEmpty = true
-                                  }
-                                  if (!isTitleEmpty && !isDescriptionEmpty) {
-                                    // Add itinerary to database
-                                    val id = itineraryRepository.getUID()
-                                    val title = viewModel.title.value
-                                    val username = profile.mail
-                                    // but not
-                                    // implemented yet
-                                    val meanLocation = meanLocation(viewModel.latLongList.toList())
-                                    var locationName = ""
-                                    viewModel.getCityAndCountry(
-                                        meanLocation.latitude.toFloat(),
-                                        meanLocation.longitude.toFloat()) {
-                                          locationName = it
-                                        }
-                                    val location =
-                                        Location(
-                                            meanLocation.latitude,
-                                            meanLocation.longitude,
-                                            locationName)
-                                    // (default device location)
-                                    val flameCount = 0L
-                                    val saves = 0L
-                                    val clicks = 0L
-                                    val numStarts = 0L
-                                    val startDate = viewModel.startDate.value
-                                    val endDate = viewModel.endDate.value
-                                    val pinList = viewModel.pinList
-                                    // implemented yet
-                                    val description = viewModel.description.value
-                                    val itinerary =
-                                        Itinerary(
-                                            id,
-                                            title,
-                                            username,
-                                            location,
-                                            flameCount,
-                                            saves,
-                                            clicks,
-                                            numStarts,
-                                            startDate,
-                                            endDate,
-                                            pinList,
-                                            description,
-                                            viewModel.latLongList.toList())
-
-                                    viewModel.addNewItinerary(itinerary, itineraryRepository)
-                                    viewModel.stopDescription()
-                                    viewModel.resetRecording()
-                                    localLatLngList.clear()
-                                  }
-                                },
-                                modifier = Modifier.size(150.dp, 70.dp),
-                                colors =
-                                    ButtonDefaults.filledTonalButtonColors(
-                                        containerColor = md_theme_orange,
-                                        contentColor = md_theme_light_onPrimary),
-                            ) {
-                              Text(
-                                  text = "Save",
-                                  fontSize = 24.sp,
-                                  fontFamily = Montserrat,
-                                  fontWeight = FontWeight.SemiBold,
-                                  color = md_theme_light_onPrimary)
-                            }
+                            SaveButton(
+                                viewModel = viewModel,
+                                itineraryRepository = itineraryRepository,
+                                profile = profile,
+                                localLatLngList = localLatLngList)
                             Spacer(modifier = Modifier.width(20.dp))
                           }
                     }
               }
         }
+  }
+}
+
+@Composable
+fun SaveButton(
+    viewModel: RecordViewModel,
+    itineraryRepository: ItineraryRepository,
+    profile: UserProfile,
+    localLatLngList: MutableList<LatLng>,
+) {
+  FilledTonalButton(
+      onClick = {
+        if (viewModel.title.value.isEmpty()) {
+          isTitleEmpty = true
+        }
+        if (viewModel.description.value.isEmpty()) {
+          isDescriptionEmpty = true
+        }
+        if (!isTitleEmpty && !isDescriptionEmpty) {
+          // Add itinerary to database
+          val id = itineraryRepository.getUID()
+          val title = viewModel.title.value
+          val username = profile.mail
+          val meanLocation = meanLocation(viewModel.latLongList.toList())
+          var locationName = ""
+          viewModel.getCityAndCountry(
+              meanLocation.latitude.toFloat(), meanLocation.longitude.toFloat()) {
+                locationName = it
+              }
+          val location = Location(meanLocation.latitude, meanLocation.longitude, locationName)
+          val flameCount = 0L
+          val saves = 0L
+          val clicks = 0L
+          val numStarts = 0L
+          val startDate = viewModel.startDate.value
+          val endDate = viewModel.endDate.value
+          val pinList = viewModel.pinList
+          val description = viewModel.description.value
+          val itinerary =
+              Itinerary(
+                  id,
+                  title,
+                  username,
+                  location,
+                  flameCount,
+                  saves,
+                  clicks,
+                  numStarts,
+                  startDate,
+                  endDate,
+                  pinList,
+                  description,
+                  viewModel.latLongList.toList())
+
+          viewModel.addNewItinerary(itinerary, itineraryRepository)
+          viewModel.stopDescription()
+          viewModel.resetRecording()
+          localLatLngList.clear()
+        }
+      },
+      modifier = Modifier.size(150.dp, 70.dp),
+      colors =
+          ButtonDefaults.filledTonalButtonColors(
+              containerColor = md_theme_orange, contentColor = md_theme_light_onPrimary),
+  ) {
+    Text(
+        text = "Save",
+        fontSize = 24.sp,
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.SemiBold,
+        color = md_theme_light_onPrimary)
   }
 }
 
@@ -643,78 +640,103 @@ fun StartWindow(viewModel: RecordViewModel, context: Context) {
                 }
               }
           // animate the visibility of the pause/resume button
-          AnimatedVisibility(
-              visible = viewModel.isRecording(),
-              enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
-              exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Bottom)) {
-                // Display the pause/resume button and add spot button
-                Box(modifier = Modifier.height(200.dp).fillMaxWidth()) {
-                  Box(
-                      modifier =
-                          Modifier.fillMaxWidth(0.9f)
-                              .fillMaxHeight(0.55f)
-                              .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
-                              .align(Alignment.Center)) {
-                        Row(
-                            modifier =
-                                Modifier.fillMaxSize()
-                                    .padding(
-                                        start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween) {
-                              FilledTonalButton(
-                                  onClick = {
-                                    if (viewModel.isPaused.value) {
-                                      viewModel.resumeRecording()
-                                    } else {
-                                      viewModel.pauseRecording()
-                                    }
-                                  },
-                                  modifier =
-                                      Modifier.align(Alignment.CenterVertically)
-                                          .fillMaxHeight(0.6f),
-                                  colors =
-                                      ButtonDefaults.filledTonalButtonColors(
-                                          containerColor = md_theme_light_onPrimary,
-                                          contentColor = md_theme_light_dark),
-                              ) {
-                                Text(
-                                    text = if (viewModel.isPaused.value) "Resume" else "Pause",
-                                    fontSize = 14.sp,
-                                    fontFamily = Montserrat,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = md_theme_light_dark)
-                              }
-                              Row(
-                                  modifier = Modifier.align(Alignment.CenterVertically),
-                                  horizontalArrangement = Arrangement.SpaceEvenly) {
-                                    Text(
-                                        text = "Add spot",
-                                        modifier = Modifier.align(Alignment.CenterVertically),
-                                        fontSize = 14.sp,
-                                        fontFamily = Montserrat,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = md_theme_grey)
-                                    Spacer(modifier = Modifier.width(20.dp))
-                                    IconButton(
-                                        onClick = { viewModel.addSpotClicked.value = true },
-                                        modifier =
-                                            Modifier.align(Alignment.CenterVertically)
-                                                .size(50.dp)
-                                                .background(
-                                                    md_theme_light_onPrimary, shape = CircleShape),
-                                    ) {
-                                      Icon(
-                                          imageVector = Icons.Outlined.Add,
-                                          contentDescription = "Add spot",
-                                          tint = md_theme_light_dark,
-                                          modifier = Modifier.size(30.dp))
-                                    }
-                                  }
-                            }
+          RecordControls(viewModel)
+        }
+  }
+}
+
+/**
+ * Composable function to display the record controls.
+ *
+ * @param viewModel The RecordViewModel instance.
+ */
+@Composable
+fun RecordControls(viewModel: RecordViewModel) {
+  AnimatedVisibility(
+      visible = viewModel.isRecording(),
+      enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+      exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Bottom)) {
+        // Display the pause/resume button and add spot button
+        Box(modifier = Modifier.height(200.dp).fillMaxWidth()) {
+          Box(
+              modifier =
+                  Modifier.fillMaxWidth(0.9f)
+                      .fillMaxHeight(0.55f)
+                      .background(md_theme_light_dark, shape = RoundedCornerShape(35.dp))
+                      .align(Alignment.Center)) {
+                Row(
+                    modifier =
+                        Modifier.fillMaxSize()
+                            .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween) {
+                      FilledTonalButton(
+                          onClick = { toggleRecording(viewModel) },
+                          modifier = Modifier.align(Alignment.CenterVertically).fillMaxHeight(0.6f),
+                          colors =
+                              ButtonDefaults.filledTonalButtonColors(
+                                  containerColor = md_theme_light_onPrimary,
+                                  contentColor = md_theme_light_dark),
+                      ) {
+                        Text(
+                            text = getPauseResumeText(viewModel),
+                            fontSize = 14.sp,
+                            fontFamily = Montserrat,
+                            fontWeight = FontWeight.SemiBold,
+                            color = md_theme_light_dark)
                       }
-                }
+                      Row(
+                          modifier = Modifier.align(Alignment.CenterVertically),
+                          horizontalArrangement = Arrangement.SpaceEvenly) {
+                            Text(
+                                text = "Add spot",
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                                fontSize = 14.sp,
+                                fontFamily = Montserrat,
+                                fontWeight = FontWeight.SemiBold,
+                                color = md_theme_grey)
+                            Spacer(modifier = Modifier.width(20.dp))
+                            IconButton(
+                                onClick = { viewModel.addSpotClicked.value = true },
+                                modifier =
+                                    Modifier.align(Alignment.CenterVertically)
+                                        .size(50.dp)
+                                        .background(md_theme_light_onPrimary, shape = CircleShape),
+                            ) {
+                              Icon(
+                                  imageVector = Icons.Outlined.Add,
+                                  contentDescription = "Add spot",
+                                  tint = md_theme_light_dark,
+                                  modifier = Modifier.size(30.dp))
+                            }
+                          }
+                    }
               }
         }
+      }
+}
+
+fun getPauseResumeText(viewModel: RecordViewModel): String {
+  return if (viewModel.isPaused.value) "Resume" else "Pause"
+}
+
+fun toggleRecordingDescription(viewModel: RecordViewModel) {
+  if (viewModel.isRecording()) {
+    viewModel.stopRecording()
+    viewModel.startDescription()
+  } else {
+    viewModel.startRecording()
+  }
+}
+
+fun getBorderColor(bool: Boolean): Color {
+  return if (isDescriptionEmpty) md_theme_light_error else md_theme_grey
+}
+
+fun toggleRecording(viewModel: RecordViewModel) {
+  if (viewModel.isPaused.value) {
+    viewModel.resumeRecording()
+  } else {
+    viewModel.pauseRecording()
   }
 }
 
