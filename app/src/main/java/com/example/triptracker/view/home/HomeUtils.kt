@@ -8,6 +8,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -77,7 +78,6 @@ val dummyProfile = UserProfile("test@gmail.com", "Test User", "test", "test bio"
  * Displays an itinerary in the list of itineraries
  *
  * @param itinerary: Itinerary object to display
- * @param navigation: Navigation object to use for navigation
  * @param boxHeight: Height of the box that contains the itinerary
  * @param userProfileViewModel: UserProfileViewModel object to use for fetching user profiles
  * @param onClick: Function to call when the itinerary is clicked
@@ -93,7 +93,7 @@ fun DisplayItinerary(
     homeViewModel: HomeViewModel = viewModel(),
     displayImage: Boolean = false,
     test: Boolean = false,
-    canBeDeleted: Boolean = false
+    canBeDeleted: Boolean = false,
 ) {
   val configuration = LocalConfiguration.current
   val screenWidth = configuration.screenWidthDp.dp

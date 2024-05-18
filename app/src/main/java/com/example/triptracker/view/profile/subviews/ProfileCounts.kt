@@ -25,12 +25,14 @@ import com.example.triptracker.view.profile.categoryTextStyle
  * @param navigation : the navigation object to navigate to other screens.
  * @param profile : the user profile to display.
  * @param tripsCount : the number of trips the user has taken.
+ * @param currentUserProfile : a boolean to know if the profile displayed is the user logged in.
  */
 @Composable
 fun ProfileCounts(
     navigation: Navigation,
     profile: UserProfile,
     tripsCount: Int,
+    currentUserProfile: Boolean = true
 ) {
   Row(
       modifier = Modifier.height((LocalConfiguration.current.screenHeightDp * 0.1f).dp),
@@ -52,7 +54,12 @@ fun ProfileCounts(
             modifier =
                 Modifier.align(Alignment.CenterVertically)
                     .padding(horizontal = (LocalConfiguration.current.screenWidthDp * 0.067f).dp)
-                    .clickable { navigation.navController.navigate(Route.FOLLOWERS) }) {
+                    .clickable(enabled = currentUserProfile) {
+                      // Navigate to the followers screen if the user displayed is the user logged
+                      // in
+
+                      navigation.navController.navigate(Route.FOLLOWERS)
+                    }) {
               Text(
                   text = "${profile.followers.size}",
                   modifier = Modifier.align(Alignment.CenterHorizontally).testTag("FollowersCount"),
@@ -66,7 +73,11 @@ fun ProfileCounts(
             modifier =
                 Modifier.align(Alignment.CenterVertically)
                     .padding(horizontal = (LocalConfiguration.current.screenWidthDp * 0.067f).dp)
-                    .clickable { navigation.navController.navigate(Route.FOLLOWING) }) {
+                    .clickable(enabled = currentUserProfile) {
+                      // Navigate to the following screen if the user displayed is the user logged
+                      // in
+                      navigation.navController.navigate(Route.FOLLOWING)
+                    }) {
               Text(
                   text = "${profile.following.size}",
                   modifier = Modifier.align(Alignment.CenterHorizontally).testTag("FollowingCount"),
