@@ -181,7 +181,8 @@ class UserProfileViewModel(
   /**
    * This function returns the filtered user profile list based on the search query.
    *
-   * @param aware : parameter that indicates if the filtered list should contain the private profiles or no
+   * @param aware : parameter that indicates if the filtered list should contain the private
+   *   profiles or no
    * @return filtered user profile list based on the search query
    */
   fun filteredUserProfileList(aware: Boolean): LiveData<List<UserProfile>> =

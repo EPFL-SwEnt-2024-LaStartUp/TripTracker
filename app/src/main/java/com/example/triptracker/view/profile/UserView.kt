@@ -102,8 +102,10 @@ fun UserView(
   homeViewModel.setSearchQuery(displayedUser.username)
 
   // Observe the filtered itinerary list from the ViewModel
-  val filteredList by homeViewModel.filteredItineraryList(
-      AmbientUserProfile.current.userProfile.value, true).observeAsState(initial = emptyList())
+  val filteredList by
+      homeViewModel
+          .filteredItineraryList(AmbientUserProfile.current.userProfile.value, true)
+          .observeAsState(initial = emptyList())
 
   if (test) {
     readyToDisplay = true
@@ -118,10 +120,13 @@ fun UserView(
         mutableStateOf(loggedUser.userProfile.value.following.contains(displayedUser.mail))
       }
 
-      val myTripsList = homeViewModel.filteredItineraryList(
-          AmbientUserProfile.current.userProfile.value, true)
-      var tripCount = homeViewModel.filteredItineraryList(
-          AmbientUserProfile.current.userProfile.value, true).value?.size
+      val myTripsList =
+          homeViewModel.filteredItineraryList(AmbientUserProfile.current.userProfile.value, true)
+      var tripCount =
+          homeViewModel
+              .filteredItineraryList(AmbientUserProfile.current.userProfile.value, true)
+              .value
+              ?.size
 
       Scaffold(
           topBar = {

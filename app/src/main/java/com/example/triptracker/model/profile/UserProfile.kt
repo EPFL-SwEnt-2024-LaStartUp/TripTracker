@@ -19,7 +19,8 @@ import androidx.compose.runtime.mutableStateOf
  * @property followers : list of user's followers' email. (Defaults: empty list)
  * @property following : list of user's following's email. (Defaults: empty list)
  * @property profilePrivacy : privacy of the user's profile 0 = public and 1 = private
- * @property itineraryPrivacy : privacy of the user's itineraries 0 = public, 1 = friends, 2 = private
+ * @property itineraryPrivacy : privacy of the user's itineraries 0 = public, 1 = friends, 2 =
+ *   private
  */
 data class UserProfile(
     val mail: String,
@@ -32,7 +33,7 @@ data class UserProfile(
     val following: List<String> = emptyList(),
     val favoritesPaths: List<String> = emptyList(),
     val profilePrivacy: Int = 0,
-    val itineraryPrivacy: Int= 0,
+    val itineraryPrivacy: Int = 0,
 )
 
 /** This data class represents a mutable user's profile information. */

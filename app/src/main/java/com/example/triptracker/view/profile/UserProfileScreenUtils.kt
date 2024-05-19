@@ -75,8 +75,10 @@ fun UserProfileScreen(
     homeViewModel.setSearchQuery(userProfile.userProfile.value.username)
   }
 
-  val filteredList by homeViewModel.filteredItineraryList(
-      AmbientUserProfile.current.userProfile.value, true).observeAsState(initial = emptyList())
+  val filteredList by
+      homeViewModel
+          .filteredItineraryList(AmbientUserProfile.current.userProfile.value, true)
+          .observeAsState(initial = emptyList())
 
   Scaffold(
       topBar = {},

@@ -56,7 +56,7 @@ fun UserProfileSettings(
     userProfileViewModel: UserProfileViewModel = viewModel()
 ) {
   val userProfile = AmbientUserProfile.current.userProfile.value
-    val userAmbient = AmbientUserProfile.current.userProfile
+  val userAmbient = AmbientUserProfile.current.userProfile
 
   Scaffold(bottomBar = { NavigationBar(navigation) }) { paddingValues ->
     Box(
@@ -94,10 +94,10 @@ fun UserProfileSettings(
                 "Profile",
                 actions = {
                   // Remember the state of the button to toggle between texts
-                    var curr = false
-                    if(userAmbient.value.profilePrivacy == 0) {
-                        curr = true
-                    }
+                  var curr = false
+                  if (userAmbient.value.profilePrivacy == 0) {
+                    curr = true
+                  }
                   val (isPublic, setIsPrivate) = remember { mutableStateOf(curr) }
 
                   // Determine the text and background colors based on the state
@@ -126,7 +126,7 @@ fun UserProfileSettings(
                                 following = userProfile.following,
                                 profilePrivacy = privacy,
                                 itineraryPrivacy = userProfile.itineraryPrivacy)
-                          userAmbient.value = newProfile
+                        userAmbient.value = newProfile
                         userProfileViewModel.updateUserProfileInDb(newProfile)
                       },
                       colors =
@@ -144,7 +144,8 @@ fun UserProfileSettings(
                 "Path Visibility",
                 actions = {
                   // Remember the state of the button to toggle between texts
-                  val (buttonState, setButtonState) = remember { mutableIntStateOf(userProfile.itineraryPrivacy) }
+                  val (buttonState, setButtonState) =
+                      remember { mutableIntStateOf(userProfile.itineraryPrivacy) }
                   TriStateButton(
                       state1 = "Public",
                       state2 = "Friends",
@@ -167,7 +168,7 @@ fun UserProfileSettings(
                                 following = userProfile.following,
                                 profilePrivacy = userProfile.profilePrivacy,
                                 itineraryPrivacy = itinPrivacy)
-                          userAmbient.value = newProfile
+                        userAmbient.value = newProfile
                         userProfileViewModel.updateUserProfileInDb(newProfile)
                       })
                 })

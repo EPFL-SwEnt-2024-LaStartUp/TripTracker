@@ -9,7 +9,6 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryList
-import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.view.home.dummyProfile
@@ -64,27 +63,26 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
 
   private val userProfileViewModel: UserProfileViewModel = UserProfileViewModel()
 
-
   fun filteredItineraryList(currProfile: UserProfile, aware: Boolean): LiveData<List<Itinerary>> {
-      val toReturn = _searchQuery.switchMap { query ->
-        liveData {
+    val toReturn =
+        _searchQuery.switchMap { query ->
+          liveData {
+            val filteredList =
+                when (_selectedFilter.value) {
+                  FilterType.TITLE -> filterByTitle(query)
+                  FilterType.USERNAME -> filterByUsername(query) // now filters by user mail
+                  FilterType.FLAME -> parseFlameQuery(query)
+                  FilterType.PIN -> filterByPinName(query)
+                  FilterType.FAVORTIES -> filterByFavorite(query)
+                  else -> emptyList()
+                }
 
-          val filteredList =
-              when (_selectedFilter.value) {
-                FilterType.TITLE -> filterByTitle(query)
-                FilterType.USERNAME -> filterByUsername(query) // now filters by user mail
-                FilterType.FLAME -> parseFlameQuery(query)
-                FilterType.PIN -> filterByPinName(query)
-                FilterType.FAVORTIES -> filterByFavorite(query)
-                else -> emptyList()
-              }
+            if (filteredList != null) {
 
-          if (filteredList != null) {
-
-            emit(filteredList)
+              emit(filteredList)
+            }
           }
         }
-      }
     return toReturn
   }
 
