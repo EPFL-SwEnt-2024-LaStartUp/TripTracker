@@ -1,6 +1,7 @@
 package com.example.triptracker.screens.home
 
 import android.util.Log
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Place
@@ -11,6 +12,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.action.ViewActions.pressKey
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -23,6 +25,7 @@ import com.example.triptracker.userProfile.MockUserList
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.TopLevelDestination
+import com.example.triptracker.view.home.HomePager
 import com.example.triptracker.view.home.HomeScreen
 import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
@@ -472,5 +475,19 @@ class HomeTest {
       // If any exception occurs, fail the test
       TestCase.assertTrue("Test failed due to exception: ${e.message}", true)
     }
+  }
+
+  @Test
+  fun testTabIsDisplayed() {
+    composeTestRule.setContent {
+      HomePager(
+          navigation = mockNav,
+          homeViewModel = mockViewModel,
+          innerPadding = PaddingValues(0.dp),
+          test = true)
+    }
+
+    composeTestRule.onNodeWithText("TRENDING", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithText("FOLLOWING", useUnmergedTree = true).assertIsDisplayed()
   }
 }
