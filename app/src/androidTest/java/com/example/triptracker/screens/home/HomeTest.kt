@@ -96,7 +96,7 @@ class HomeTest {
     // Have to repeat code to have specific mock data for each test!!
     every { mockUserProfileRepository.getUserProfileByEmail(mockMail) {} } returns
         mockk(relaxUnitFun = true)
-      // this removes previous problem
+    // this removes previous problem
     every { mockItineraryRepository.getAllItineraries(any()) } answers
         {
           // Invoke the callback with mock data
