@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.triptracker.model.network.Connection
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_orange
@@ -37,11 +36,7 @@ import com.example.triptracker.view.theme.md_theme_orange
  * @param onRetry: Callback that is called when the user clicks on the retry button.
  */
 @Composable
-fun OfflineScreen(
-    navigation: Navigation,
-    connection: Connection = Connection(),
-    onRetry: () -> Unit
-) {
+fun OfflineScreen(navigation: Navigation, onRetry: () -> Unit) {
   var blink by remember { mutableStateOf(true) }
 
   val color by
