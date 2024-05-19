@@ -88,6 +88,8 @@ class HomeTest {
     // Log.d("ItineraryList", mockViewModel.itineraryList.value.toString())
     every { mockNav.getTopLevelDestinations()[0] } returns
         TopLevelDestination(Route.HOME, Icons.Outlined.Home, "Home")
+
+    every { mockUserProfileViewModel.fetchAllUserProfiles { mockUsers }} returns Unit
   }
 
   @Test
