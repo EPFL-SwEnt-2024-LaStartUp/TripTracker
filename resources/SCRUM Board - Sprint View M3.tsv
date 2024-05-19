@@ -1,0 +1,77 @@
+Title	URL	Assignees	Status
+Button to go from spot to previous view		loicmisenta	Sprint Backlog
+Trending (frontend)		theoschiff	Sprint Backlog
+Bug: If path text is too long star dissapears			Sprint Backlog
+Bug: Long username completely obstructs display view			Sprint Backlog
+Bug: when searching for friends follow button size varies			Sprint Backlog
+UserProfile feature, personalized profile-> interests and travel style		UnavailableCode	Sprint Backlog
+Possibility to download a path		JCHAVEROT	Sprint Backlog
+Update figma to have offline feature		loicmisenta	Sprint Backlog
+UI not updating after saving			Sprint Backlog
+Local city/area trending instead of only global		theoschiff	Sprint Backlog
+Final product release video		SpaceMercury	Sprint Backlog
+App polishing		Jeremmmyyyyy, SpaceMercury, UnavailableCode	Sprint Backlog
+Try to update the path list on the app instantly	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/221	Jeremmmyyyyy	Sprint Backlog
+Bug Long press on real device is not deleting a path	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/220	Jeremmmyyyyy	Sprint Backlog
+Make path recording usable in background when closing the app			Sprint Backlog
+Add animations to improve the UX		UnavailableCode	Sprint Backlog
+Add sounds to improve the UX		JCHAVEROT	Sprint Backlog
+UserProfile : add new ways to personalise the profile		cleorenaud	Sprint Backlog
+Figma : Update		loicmisenta	Done in Sprint 7
+Bug: user doesn't update in friends view		cleorenaud	Done in Sprint 7
+Bug : Double display of itinerary list	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/175	theoschiff	Done in Sprint 7
+Implementation of the trend functionality using flames	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/176	theoschiff	Done in Sprint 7
+Firebase error	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/181	cleorenaud	Done in Sprint 7
+Friend: create view to the the user profile from other users	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/165	cleorenaud	Done in Sprint 7
+As a user I want to be able to add my friends so that I can see the paths they have created			Done in Sprint 7
+As a user I want to be able to save a route from another user so that I can easily come back to it when needed			Done in Sprint 7
+Creating ambient user profile and register user on login	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/168	Jeremmmyyyyy	Done in Sprint 7
+Implement Itinerary Preview Screen	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/23	SpaceMercury	Done in Sprint 7
+Record Screen : Add a close button in description		loicmisenta	Done in Sprint 7
+RecordScreen : fix the UI		loicmisenta	Done in Sprint 7
+Bug: fixed the problem at Login		cleorenaud	Done in Sprint 7
+UserProfile : adding path to favorites (backend)		loicmisenta	Done in Sprint 7
+Bug: Can't update the profile picture in the edit screen	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/180	JCHAVEROT, Jeremmmyyyyy	Done in Sprint 7
+Rework the sign in, so that we don't need to click on sign in every time	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/169	Jeremmmyyyyy	Done in Sprint 7
+UserProfile : the views displaying other user's profiles should use the colors from the Theme	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/163	cleorenaud	Done in Sprint 7
+UserProfile : Favorite paths view		loicmisenta	Done in Sprint 7
+Bug: Going back and forth from Home to Map leads to undesirable behavior	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/218	Jeremmmyyyyy	Sprint Backlog
+Implementation of the offline usability of the app	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/178	JCHAVEROT, Jeremmmyyyyy	Done in Sprint 7
+As a user, I want to be able to download a path so that I can follow it without internet			Product Backlog
+Record : save records base on specific criteria in order to not pollute the DB		loicmisenta	Sprint Backlog
+As a user I want to be showed points of interest in the city I'm visiting so that I can easily plan my trip and path			Product Backlog
+As a user I want to be able to organise my paths into "folders" so that I can easily navigate through them			Product Backlog
+As a user I want to be able to choose some privacy settings so that I can select who can see the paths I created			Product Backlog
+As a user I want to be able to close the app when recording a path so that I can save some battery or do something else meanwhile			Product Backlog
+As a user I want to have a pleasing user experience to come back more often using the app.			Product Backlog
+As a user I want to be able to navigate smoothly between tabs in the app			Product Backlog
+As a user I want to be able to personalise my profile so that it reflects better who I am			Product Backlog
+As a user I want to be able to check the highest rated paths for a given city so that I can explore the place with good recommendations			Product Backlog
+As a connected user I want to be able to rate other paths so that I can recommend the paths I think are the best			Product Backlog
+As a user I want to be able to see the paths I want even when I am offline so that I can follow them when I don't have any internet connection			Product Backlog
+Bug: Filtering on username only displays one user path even if user has more		theoschiff	Done in Sprint 8
+Advancements on the offline mode	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/210	JCHAVEROT	Done in Sprint 8
+Implementation of the privacy settings	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/158	UnavailableCode	Done in Sprint 8
+Rework Profile	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/230	UnavailableCode	Done in Sprint 8
+Adjusted tests that were commented for previous milestone	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/215	SpaceMercury	Done in Sprint 8
+Add spot allows to take pictures in real time	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/184	Jeremmmyyyyy	Done in Sprint 8
+Adjust the UI dynamically based on the size of the user's phone	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/179	cleorenaud, JCHAVEROT, Jeremmmyyyyy, loicmisenta, SpaceMercury, theoschiff, UnavailableCode	Done in Sprint 8
+Refactor of UserProfileEditScreen, MapOverview, RecordScreen, MapPopups	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/196	JCHAVEROT	Done in Sprint 8
+As a user, I want to be reminded that I'm offline when I don't have any internet connection ("Sorry, I'm offline")			Done in Sprint 8
+Adjust dark theme for higher contrast	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/194	SpaceMercury	Done in Sprint 8
+UserProfile : write tests for follower, following et friend search view	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/152	cleorenaud	Done in Sprint 8
+Friends: implement a follow back button	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/192	cleorenaud	Done in Sprint 8
+UserProfile : make the user view more modular	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/186	cleorenaud	Done in Sprint 8
+Addspot update	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/pull/188	Jeremmmyyyyy	Done in Sprint 8
+Start Trip : Rework	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/201	loicmisenta	Done in Sprint 8
+Bug: Can record a trip even though we deny location permission	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/219	loicmisenta	Done in Sprint 8
+Record Screen : reduce complexity + Bugs	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/223	loicmisenta	Done in Sprint 8
+As a user, I want to have a follow back button when on the profile of people that follow me, so that I can easily follow back my followers			Done in Sprint 8
+Bug hunting: trying to find crash		SpaceMercury	Done in Sprint 8
+Enhancement : Include pin images in Home Screen	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/199	theoschiff	Done in Sprint 8
+App Icon update	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/217	SpaceMercury	Done in Sprint 8
+As a user I want to be able to take pictures of a spot directly through the app so that I don't have to take pictures before uploading them			Done in Sprint 8
+Path record retrieves the city and country to save it on the DB	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/207	JCHAVEROT	Done in Sprint 8
+Add Trending and Following View to Home Screen		theoschiff	Done in Sprint 8
+Bug: User can input birthday that is in the future	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/216	SpaceMercury	Done in Sprint 8
+Bug: no limit in characters for username	https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/issues/214	SpaceMercury	Done in Sprint 8
