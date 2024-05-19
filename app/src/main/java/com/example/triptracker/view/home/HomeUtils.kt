@@ -77,7 +77,6 @@ val dummyProfile = UserProfile("test@gmail.com", "Test User", "test", "test bio"
  * Displays an itinerary in the list of itineraries
  *
  * @param itinerary: Itinerary object to display
- * @param navigation: Navigation object to use for navigation
  * @param boxHeight: Height of the box that contains the itinerary
  * @param userProfileViewModel: UserProfileViewModel object to use for fetching user profiles
  * @param onClick: Function to call when the itinerary is clicked
@@ -88,11 +87,11 @@ val dummyProfile = UserProfile("test@gmail.com", "Test User", "test", "test bio"
 fun DisplayItinerary(
     itinerary: Itinerary,
     boxHeight: Dp = 200.dp,
-    userProfileViewModel: UserProfileViewModel = viewModel(),
+    userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
     onClick: () -> Unit,
     homeViewModel: HomeViewModel = viewModel(),
     test: Boolean = false,
-    canBeDeleted: Boolean = false
+    canBeDeleted: Boolean = false,
 ) {
   val configuration = LocalConfiguration.current
   val screenWidth = configuration.screenWidthDp.dp

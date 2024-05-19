@@ -72,6 +72,7 @@ import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
+import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_light_onSurface
 import com.example.triptracker.view.theme.md_theme_light_outlineVariant
@@ -250,7 +251,7 @@ fun StartScreen(
             Modifier.fillMaxWidth(0.9f)
                 .fillMaxHeight(0.95f)
                 .background(
-                    color = md_theme_light_onSurface,
+                    color = md_theme_light_dark,
                     shape =
                         RoundedCornerShape(
                             topStart = 35.dp,
@@ -261,7 +262,7 @@ fun StartScreen(
               modifier =
                   Modifier.fillMaxWidth()
                       .verticalScroll(rememberScrollState())
-                      .padding(top = 15.dp, start = 25.dp, end = 25.dp, bottom = 10.dp)) {
+                      .padding(top = 15.dp, start = 25.dp, end = 25.dp, bottom = 0.dp)) {
                 IconButton(
                     onClick = {
                       // When you click on the back button, it should bring you back to the map
@@ -331,15 +332,16 @@ fun StartScreen(
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     text = itinerary.title,
-                    fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                    fontWeight = FontWeight.Bold,
+                    fontFamily = Montserrat,
+                    fontWeight = FontWeight.SemiBold,
                     fontSize = 26.sp,
                     color = md_theme_light_onPrimary,
                     modifier = Modifier.testTag("Title"))
                 Text(
                     text = "${itinerary.flameCount} 🔥",
                     color = md_theme_orange, // This is the orange color
-                    fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                    fontFamily = Montserrat,
+                    fontWeight = FontWeight.Normal,
                     fontSize = 16.sp,
                     modifier =
                         Modifier.padding(
@@ -353,7 +355,7 @@ fun StartScreen(
                       LazyColumn(
                           modifier =
                               Modifier.padding(
-                                      top = 10.dp, start = 10.dp, end = 10.dp, bottom = 40.dp)
+                                      top = 10.dp, start = 10.dp, end = 10.dp, bottom = 10.dp)
                                   .size(screenWidth, screenHeight * 0.2f)) {
                             items(itinerary.pinnedPlaces) { pin ->
                               val index = itinerary.pinnedPlaces.indexOf(pin)
@@ -417,8 +419,7 @@ fun StartScreen(
                                     contentDescription = pin.description,
                                     modifier =
                                         Modifier.clip(
-                                                RoundedCornerShape(corner = CornerSize(15.dp)))
-                                            .background(Color.Red))
+                                            RoundedCornerShape(corner = CornerSize(15.dp))))
 
                                 Spacer(modifier = Modifier.width(15.dp))
                               }
@@ -432,14 +433,14 @@ fun StartScreen(
                             modifier = Modifier.padding(start = 20.dp).height(screenHeight * 0.25f))
                       }
                       // add spacer proportional to the screen height
+                      Spacer(modifier = Modifier.height(screenHeight * 0.07f))
                       Button(
                           onClick = {
                             onClick()
                             mapViewModel.asStartItinerary.value = true
                           },
                           modifier =
-                              Modifier.padding(bottom = 20.dp, top = 10.dp)
-                                  .align(Alignment.CenterHorizontally)
+                              Modifier.align(Alignment.CenterHorizontally)
                                   .height(
                                       screenHeight *
                                           0.07f) // Set a specific height for the button to make it
