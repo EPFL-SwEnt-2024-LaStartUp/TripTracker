@@ -2,18 +2,25 @@ package com.example.triptracker.view.home
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -47,13 +54,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.profile.AmbientUserProfile
+import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
+import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
+import com.example.triptracker.view.theme.md_theme_light_black
+import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.viewmodel.FilterType
+import com.example.triptracker.viewmodel.HomeCategory
 import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
@@ -64,12 +76,12 @@ var allProfilesFetched: List<UserProfile> = emptyList()
  *
  * @param navigation: Navigation object to use for navigation
  * @param homeViewModel: HomeViewModel to use for fetching itineraries
+ * @param displayPager: Boolean to display or not the home pager
  * @param test: Boolean to test the function
  */
 @Composable
 fun HomeScreen(
     navigation: Navigation,
-    profile: MutableUserProfile,
     homeViewModel: HomeViewModel = viewModel(),
     userProfileViewModel: UserProfileViewModel = viewModel(),
     test: Boolean = false
@@ -88,17 +100,19 @@ fun HomeScreen(
 
   Scaffold(
       topBar = {
-        // Assuming a SearchBar composable is defined elsewhere
-        SearchBarImplementation(
-            onBackClicked = {
-              // Navigate back to the home
-              navigation.goBack()
-            },
-            viewModel = homeViewModel,
-            onSearchActivated = { isActive -> isSearchActive = isActive },
-            navigation = navigation,
-            selectedFilterType = selectedFilterType,
-            isNoResultFound = isNoResultFound)
+        Column {
+          // Assuming a SearchBar composable is defined elsewhere
+          SearchBarImplementation(
+              onBackClicked = {
+                // Navigate back to the home
+                navigation.goBack()
+              },
+              viewModel = homeViewModel,
+              onSearchActivated = { isActive -> isSearchActive = isActive },
+              navigation = navigation,
+              selectedFilterType = selectedFilterType,
+              isNoResultFound = isNoResultFound)
+        }
         if (isSearchActive) {
           Box(
               modifier =
@@ -136,7 +150,7 @@ fun HomeScreen(
               }
         }
       },
-      bottomBar = { NavigationBar(navigation) },
+      bottomBar = { NavigationBar(navigation = navigation) },
       modifier = Modifier.fillMaxWidth().testTag("HomeScreen")) { innerPadding ->
         when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
           emptyList<Itinerary>() -> {
@@ -146,6 +160,23 @@ fun HomeScreen(
                 fontSize = 1.sp)
           }
           else -> {
+            if (!test) {
+              Column(
+                  modifier =
+                      Modifier.fillMaxSize()
+                          .padding(
+                              PaddingValues(
+                                  0.dp,
+                                  80.dp,
+                                  0.dp,
+                                  0.dp)) // this ensures having a padding at the top
+                  ) {
+                    // will display the list of itineraries
+                    HomePager(
+                        navigation = navigation,
+                        homeViewModel = homeViewModel,
+                        innerPadding = innerPadding,
+                        test = test)
             var readyToDisplay by remember { mutableStateOf(false) }
             var allProfiles by remember { mutableStateOf(emptyList<UserProfile>()) }
             var privacyFilteredList = itineraries
@@ -192,15 +223,20 @@ fun HomeScreen(
                         test = test,
                     )
                   }
-                }
-            /*
-            TODO can be used to scroll to the top of the list
-
-            val showButton = listState.firstVisibleItemIndex > 0
-            AnimatedVisibility(visible = showButton) {
-                ScrollToTopButton()
+              /*
+              TODO can be used to scroll to the top of the list
+              val showButton = listState.firstVisibleItemIndex > 0
+              AnimatedVisibility(visible = showButton) {
+                  ScrollToTopButton()
+              }
+               */
+            } else {
+              DisplayItineraries(
+                  itineraries = itineraries,
+                  navigation = navigation,
+                  homeViewModel = homeViewModel,
+                  test = test)
             }
-             */
           }
         }
       }
@@ -220,7 +256,7 @@ fun HomeScreen(
 fun SearchBarImplementation(
     onBackClicked: () -> Unit = {},
     onSearchActivated: (Boolean) -> Unit,
-    viewModel: HomeViewModel = viewModel(),
+    viewModel: HomeViewModel,
     selectedFilterType: FilterType,
     isNoResultFound: Boolean = false,
     navigation: Navigation
@@ -239,7 +275,7 @@ fun SearchBarImplementation(
           FilterType.PIN -> "Example: EPFL"
           FilterType.TITLE -> "Find Itineraries"
           FilterType.USERNAME -> "Search for a User"
-          FilterType.FAVORTIES -> "No favorites yet"
+          FilterType.FAVOURITES -> "Find Favourites"
         }
       }
 
@@ -347,6 +383,129 @@ fun SearchBarImplementation(
           ItineraryItem(
               itinerary = itinerary,
               onItineraryClick = { navigation.navigateTo(Route.MAPS, itinerary.id) })
+        }
+      }
+    }
+  }
+}
+
+@Composable
+fun DisplayItineraries(
+    itineraries: List<Itinerary>,
+    navigation: Navigation,
+    homeViewModel: HomeViewModel,
+    test: Boolean = false
+) {
+  var goodPadding = PaddingValues(0.dp, 0.dp, 0.dp, 70.dp)
+  if (test) {
+    goodPadding = PaddingValues(0.dp, 50.dp, 0.dp, 70.dp)
+  }
+  LazyColumn(
+      modifier =
+          Modifier.fillMaxSize()
+              .padding(goodPadding) // this ensures having a padding at the bottom
+              .testTag("ItineraryList"),
+      contentPadding = PaddingValues(16.dp)) {
+        items(itineraries) { itinerary ->
+          Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
+          DisplayItinerary(
+              itinerary = itinerary,
+              onClick = {
+                navigation.navigateTo(Route.MAPS, itinerary.id)
+                homeViewModel.incrementClickCount(itinerary.id)
+              },
+              displayImage = true,
+              test = test,
+          )
+        }
+      }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun HomePager(
+    navigation: Navigation,
+    homeViewModel: HomeViewModel = viewModel(),
+    innerPadding: PaddingValues,
+    test: Boolean = false
+) {
+  val ambientProfile = AmbientUserProfile.current
+  val userEmail = ambientProfile.userProfile.value.mail
+  val tabs = listOf(HomeCategory.TRENDING.name, HomeCategory.FOLLOWING.name)
+  val numTabs = tabs.size
+  val pagerState =
+      rememberPagerState(initialPage = 0) {
+        numTabs // initial page is 0, trending tab
+      }
+  var selectedTab by remember { mutableStateOf(pagerState.currentPage) }
+  var isSelected by remember { mutableStateOf(false) }
+
+  // added for page animation, if the animation is not smooth, change to pagerState.scrollToPage
+  LaunchedEffect(key1 = selectedTab) {
+    pagerState.animateScrollToPage(page = selectedTab)
+    when (HomeCategory.entries[selectedTab]) {
+      HomeCategory.TRENDING -> homeViewModel.filterByTrending()
+      HomeCategory.FOLLOWING -> homeViewModel.filterByFollowing(userEmail)
+    }
+  }
+
+  // LaunchedEffect to synchronize the pager state with the selected tab
+  LaunchedEffect(pagerState.currentPage) {
+    selectedTab = pagerState.currentPage
+    when (HomeCategory.entries[pagerState.currentPage]) {
+      HomeCategory.TRENDING -> homeViewModel.filterByTrending()
+      HomeCategory.FOLLOWING -> homeViewModel.filterByFollowing(userEmail)
+    }
+  }
+
+  Column(modifier = Modifier.background(md_theme_light_onPrimary)) {
+    TabRow(
+        selectedTabIndex = pagerState.currentPage,
+        modifier = Modifier.fillMaxWidth().height(50.dp),
+        backgroundColor = md_theme_light_onPrimary) {
+          tabs.forEachIndexed { index, title ->
+            isSelected = index == selectedTab
+            Tab(selected = isSelected, onClick = { selectedTab = index }) {
+              Text(
+                  title,
+                  color = if (isSelected) md_theme_light_black else md_theme_grey,
+                  fontFamily = Montserrat,
+                  fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                  fontSize = 20.sp) // same size as itinerary title
+            }
+          }
+        }
+
+    HorizontalPager(state = pagerState, modifier = Modifier.testTag("HomePager")) { page ->
+      when (HomeCategory.entries[page]) {
+        HomeCategory.TRENDING -> {
+          val trendingItineraries by homeViewModel.trendingList.observeAsState(emptyList())
+          DisplayItineraries(
+              itineraries = trendingItineraries,
+              navigation = navigation,
+              homeViewModel = homeViewModel,
+              test = test)
+        }
+        HomeCategory.FOLLOWING -> {
+          val followingItineraries by homeViewModel.followingList.observeAsState(emptyList())
+          if (followingItineraries.isEmpty()) {
+            Text(
+                text = "Not following anyone yet.",
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .padding(start = 70.dp, bottom = 250.dp)
+                        .testTag("NoFollowingText"),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Medium,
+                letterSpacing = 0.15.sp,
+                color = md_theme_light_black,
+                fontFamily = FontFamily(Font(R.font.montserrat_regular)))
+          }
+          DisplayItineraries(
+              itineraries = followingItineraries,
+              navigation = navigation,
+              homeViewModel = homeViewModel,
+              test = test)
         }
       }
     }
