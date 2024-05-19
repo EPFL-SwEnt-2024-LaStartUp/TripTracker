@@ -77,7 +77,6 @@ val dummyProfile = UserProfile("test@gmail.com", "Test User", "test", "test bio"
  * Displays an itinerary in the list of itineraries
  *
  * @param itinerary: Itinerary object to display
- * @param navigation: Navigation object to use for navigation
  * @param boxHeight: Height of the box that contains the itinerary
  * @param userProfileViewModel: UserProfileViewModel object to use for fetching user profiles
  * @param onClick: Function to call when the itinerary is clicked
@@ -88,7 +87,7 @@ val dummyProfile = UserProfile("test@gmail.com", "Test User", "test", "test bio"
 fun DisplayItinerary(
     itinerary: Itinerary,
     boxHeight: Dp = 220.dp,
-    userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
+    userProfileViewModel: UserProfileViewModel = viewModel(),
     onClick: () -> Unit,
     homeViewModel: HomeViewModel = viewModel(),
     displayImage: Boolean = false,
@@ -262,7 +261,7 @@ fun DisplayItinerary(
                   color = md_theme_orange, // This is the orange color
                   fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                   fontSize = 14.sp)
-              Spacer(modifier = Modifier.height(30.dp))
+              Spacer(modifier = Modifier.height(20.dp).weight(1f))
               Text(
                   text = pinListString,
                   fontSize = 14.sp,

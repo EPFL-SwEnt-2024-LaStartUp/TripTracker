@@ -74,8 +74,6 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   private val _userProfiles = MutableLiveData<Map<String, UserProfile>>()
   private val userProfiles: LiveData<Map<String, UserProfile>> = _userProfiles
 
-  private val userProfileViewModel: UserProfileViewModel = UserProfileViewModel()
-
   val filteredItineraryList: LiveData<List<Itinerary>> =
       _searchQuery.switchMap { query ->
         liveData {

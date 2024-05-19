@@ -92,7 +92,7 @@ class MainActivity : ComponentActivity() {
                 startDestination = Route.LOGIN,
             ) {
               composable(Route.LOGIN) { LoginScreen(navigation, profile) }
-              composable(Route.HOME) { HomeScreen(navigation, profile) }
+              composable(Route.HOME) { HomeScreen(navigation) }
               //            composable(Route.MAPS) { MapOverview(context = context, navigation =
               // navigation, selectedId = "") }
               composable(

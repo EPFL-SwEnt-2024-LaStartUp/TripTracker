@@ -53,9 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
-import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.profile.AmbientUserProfile
-import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
@@ -72,15 +70,13 @@ import com.example.triptracker.viewmodel.HomeViewModel
  *
  * @param navigation: Navigation object to use for navigation
  * @param homeViewModel: HomeViewModel to use for fetching itineraries
+ * @param displayPager: Boolean to display or not the home pager
  * @param test: Boolean to test the function
  */
 @Composable
 fun HomeScreen(
     navigation: Navigation,
-    profile: MutableUserProfile,
     homeViewModel: HomeViewModel = viewModel(),
-    category: HomeCategory = HomeCategory.TRENDING,
-    connection: Connection = Connection(),
     test: Boolean = false
 ) {
   Log.d("HomeScreen", "Rendering HomeScreen")
@@ -147,7 +143,7 @@ fun HomeScreen(
               }
         }
       },
-      bottomBar = { NavigationBar(navigation = navigation, connection = connection) },
+      bottomBar = { NavigationBar(navigation = navigation) },
       modifier = Modifier.fillMaxWidth().testTag("HomeScreen")) { innerPadding ->
         when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
           emptyList<Itinerary>() -> {
@@ -157,32 +153,38 @@ fun HomeScreen(
                 fontSize = 1.sp)
           }
           else -> {
-            Column(
-                modifier =
-                    Modifier.fillMaxSize()
-                        .padding(
-                            PaddingValues(
-                                0.dp,
-                                80.dp,
-                                0.dp,
-                                0.dp)) // this ensures having a padding at the top
-                ) {
-                  // will display the list of itineraries
-                  HomePager(
-                      itineraries = itineraries,
-                      navigation = navigation,
-                      profile = profile,
-                      homeViewModel = homeViewModel,
-                      innerPadding = innerPadding,
-                      test = test)
-                }
-            /*
-            TODO can be used to scroll to the top of the list
-            val showButton = listState.firstVisibleItemIndex > 0
-            AnimatedVisibility(visible = showButton) {
-                ScrollToTopButton()
+            if (!test) {
+              Column(
+                  modifier =
+                      Modifier.fillMaxSize()
+                          .padding(
+                              PaddingValues(
+                                  0.dp,
+                                  80.dp,
+                                  0.dp,
+                                  0.dp)) // this ensures having a padding at the top
+                  ) {
+                    // will display the list of itineraries
+                    HomePager(
+                        navigation = navigation,
+                        homeViewModel = homeViewModel,
+                        innerPadding = innerPadding,
+                        test = test)
+                  }
+              /*
+              TODO can be used to scroll to the top of the list
+              val showButton = listState.firstVisibleItemIndex > 0
+              AnimatedVisibility(visible = showButton) {
+                  ScrollToTopButton()
+              }
+               */
+            } else {
+              DisplayItineraries(
+                  itineraries = itineraries,
+                  navigation = navigation,
+                  homeViewModel = homeViewModel,
+                  test = test)
             }
-             */
           }
         }
       }
@@ -322,19 +324,20 @@ fun SearchBarImplementation(
 }
 
 @Composable
-fun DisplayItineraryFromCategory(
+fun DisplayItineraries(
     itineraries: List<Itinerary>,
     navigation: Navigation,
     homeViewModel: HomeViewModel,
-    category: HomeCategory,
     test: Boolean = false
 ) {
+  var goodPadding = PaddingValues(0.dp, 0.dp, 0.dp, 70.dp)
+  if (test) {
+    goodPadding = PaddingValues(0.dp, 50.dp, 0.dp, 70.dp)
+  }
   LazyColumn(
       modifier =
           Modifier.fillMaxSize()
-              .padding(
-                  PaddingValues(
-                      0.dp, 0.dp, 0.dp, 70.dp)) // this ensures having a padding at the bottom
+              .padding(goodPadding) // this ensures having a padding at the bottom
               .testTag("ItineraryList"),
       contentPadding = PaddingValues(16.dp)) {
         items(itineraries) { itinerary ->
@@ -355,9 +358,7 @@ fun DisplayItineraryFromCategory(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomePager(
-    itineraries: List<Itinerary>,
     navigation: Navigation,
-    profile: MutableUserProfile,
     homeViewModel: HomeViewModel = viewModel(),
     innerPadding: PaddingValues,
     test: Boolean = false
@@ -365,9 +366,10 @@ fun HomePager(
   val ambientProfile = AmbientUserProfile.current
   val userEmail = ambientProfile.userProfile.value.mail
   val tabs = listOf(HomeCategory.TRENDING.name, HomeCategory.FOLLOWING.name)
+  val numTabs = tabs.size
   val pagerState =
       rememberPagerState(initialPage = 0) {
-        2 // initial page is 0, trending tab
+        numTabs // initial page is 0, trending tab
       }
   var selectedTab by remember { mutableStateOf(pagerState.currentPage) }
   var isSelected by remember { mutableStateOf(false) }
@@ -375,18 +377,18 @@ fun HomePager(
   // added for page animation, if the animation is not smooth, change to pagerState.scrollToPage
   LaunchedEffect(key1 = selectedTab) {
     pagerState.animateScrollToPage(page = selectedTab)
-    when (selectedTab) {
-      0 -> homeViewModel.filterByTrending()
-      1 -> homeViewModel.filterByFollowing(userEmail)
+    when (HomeCategory.entries[selectedTab]) {
+      HomeCategory.TRENDING -> homeViewModel.filterByTrending()
+      HomeCategory.FOLLOWING -> homeViewModel.filterByFollowing(userEmail)
     }
   }
 
   // LaunchedEffect to synchronize the pager state with the selected tab
   LaunchedEffect(pagerState.currentPage) {
     selectedTab = pagerState.currentPage
-    when (pagerState.currentPage) {
-      0 -> homeViewModel.filterByTrending()
-      1 -> homeViewModel.filterByFollowing(userEmail)
+    when (HomeCategory.entries[pagerState.currentPage]) {
+      HomeCategory.TRENDING -> homeViewModel.filterByTrending()
+      HomeCategory.FOLLOWING -> homeViewModel.filterByFollowing(userEmail)
     }
   }
 
@@ -408,21 +410,19 @@ fun HomePager(
           }
         }
 
-    HorizontalPager(state = pagerState) { page ->
-      when (page) {
-        0 -> {
+    HorizontalPager(state = pagerState, modifier = Modifier.testTag("HomePager")) { page ->
+      when (HomeCategory.entries[page]) {
+        HomeCategory.TRENDING -> {
           val trendingItineraries by homeViewModel.trendingList.observeAsState(emptyList())
-          DisplayItineraryFromCategory(
+          DisplayItineraries(
               itineraries = trendingItineraries,
               navigation = navigation,
               homeViewModel = homeViewModel,
-              category = HomeCategory.TRENDING,
               test = test)
         }
-        1 -> {
+        HomeCategory.FOLLOWING -> {
           val followingItineraries by homeViewModel.followingList.observeAsState(emptyList())
           if (followingItineraries.isEmpty()) {
-
             Text(
                 text = "Not following anyone yet.",
                 modifier =
@@ -435,11 +435,10 @@ fun HomePager(
                 color = md_theme_light_black,
                 fontFamily = FontFamily(Font(R.font.montserrat_regular)))
           }
-          DisplayItineraryFromCategory(
+          DisplayItineraries(
               itineraries = followingItineraries,
               navigation = navigation,
               homeViewModel = homeViewModel,
-              category = HomeCategory.FOLLOWING,
               test = test)
         }
       }
