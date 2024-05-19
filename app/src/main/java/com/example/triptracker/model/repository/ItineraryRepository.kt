@@ -19,7 +19,7 @@ import com.google.firebase.firestore.firestore
 open class ItineraryRepository {
 
   // Initialise the Firebase Firestore
-  val db = Firebase.firestore
+  var db = Firebase.firestore
 
   // Reference to the collection of itineraries
   val itineraryDb = db.collection("itineraries")
