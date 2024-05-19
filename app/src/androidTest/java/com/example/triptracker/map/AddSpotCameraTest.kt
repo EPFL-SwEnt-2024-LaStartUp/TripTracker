@@ -1,6 +1,8 @@
 package com.example.triptracker.map
 
+import android.Manifest
 import android.content.Context
+import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -69,5 +71,7 @@ class AddSpotCameraTest {
     composeTestRule.onNodeWithTag("CameraView").assertExists()
     composeTestRule.onNodeWithTag("TakePictureButton").assertExists()
     composeTestRule.onNodeWithTag("TakePictureButton").performClick()
+    composeTestRule.onNodeWithTag("TakePictureButton").isNotDisplayed()
+    composeTestRule.onNodeWithTag("CameraView").isNotDisplayed()
   }
 }

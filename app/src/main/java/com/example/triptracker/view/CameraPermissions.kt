@@ -15,6 +15,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.core.app.ActivityCompat
 
 /**
@@ -96,6 +98,7 @@ fun AllowCameraPermission(onPermissionGranted: () -> Unit, onPermissionDenied: (
           },
           confirmButton = {
             TextButton(
+                modifier = Modifier.testTag("AllowCameraPermissionButton"),
                 onClick = {
                   cameraPermissionLauncher.launch(
                       arrayOf(
@@ -108,6 +111,7 @@ fun AllowCameraPermission(onPermissionGranted: () -> Unit, onPermissionDenied: (
           },
           dismissButton = {
             TextButton(
+                modifier = Modifier.testTag("NoAllowCameraPermissionButton"),
                 onClick = {
                   onPermissionDenied()
                   openAlertDialog.value = false

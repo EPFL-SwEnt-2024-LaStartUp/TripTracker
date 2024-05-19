@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -25,19 +26,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.triptracker.R
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.Relationship
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
+import com.example.triptracker.view.profile.subviews.FriendListView
+import com.example.triptracker.view.profile.subviews.FriendSearchBar
+import com.example.triptracker.view.theme.Montserrat
+import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
 /**
@@ -47,7 +50,7 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
  * @param userProfileViewModel : the view model to handle the user profile.
  */
 @Composable
-fun UserProfileFriends(
+fun UserProfileFriendsFinder(
     navigation: Navigation,
     profile: MutableUserProfile,
     userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
@@ -65,7 +68,9 @@ fun UserProfileFriends(
   Scaffold(
       topBar = {
         Row(
-            modifier = Modifier.height(100.dp).fillMaxWidth(),
+            modifier =
+                Modifier.height((LocalConfiguration.current.screenHeightDp * 0.075).dp)
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start) {
               // Button to navigate back to the user profile
@@ -82,20 +87,17 @@ fun UserProfileFriends(
                   text = "Friends Finder",
                   style =
                       TextStyle(
-                          fontSize = 24.sp,
-                          lineHeight = 16.sp,
-                          fontFamily = FontFamily(Font(R.font.montserrat)),
+                          fontSize = (LocalConfiguration.current.screenHeightDp * 0.03f).sp,
+                          lineHeight = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
+                          fontFamily = Montserrat,
                           fontWeight = FontWeight(700),
-                          color = MaterialTheme.colorScheme.onSurface,
-                          textAlign = TextAlign.Start,
-                          letterSpacing = 0.5.sp,
+                          color = md_theme_light_dark,
+                          textAlign = TextAlign.Left,
+                          letterSpacing = (LocalConfiguration.current.screenHeightDp * 0.0005f).sp,
                       ),
-                  // modifier = Modifier.weight(1f)
-                  // .padding(horizontal = 16.dp)
                   modifier =
-                      Modifier.width(250.dp)
-                          .height(37.dp)
-                          .padding(5.dp)
+                      Modifier.width((LocalConfiguration.current.screenHeightDp * 0.67f).dp)
+                          .wrapContentHeight()
                           .testTag("FriendsFinderTitle"))
             }
       },
