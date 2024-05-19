@@ -12,9 +12,12 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.action.ViewActions.pressKey
+import androidx.test.espresso.action.ViewActions.swipeLeft
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.itinerary.MockItineraryList
 import com.example.triptracker.model.itinerary.Itinerary
@@ -489,5 +492,32 @@ class HomeTest {
 
     composeTestRule.onNodeWithText("TRENDING", useUnmergedTree = true).assertIsDisplayed()
     composeTestRule.onNodeWithText("FOLLOWING", useUnmergedTree = true).assertIsDisplayed()
+  }
+
+  @Test
+  fun testClickOnFollowing() {
+    every { mockViewModel.itineraryList } returns MutableLiveData(emptyList())
+    composeTestRule.setContent {
+      HomePager(
+          navigation = mockNav,
+          homeViewModel = mockViewModel,
+          innerPadding = PaddingValues(0.dp),
+          test = true)
+    }
+    composeTestRule.onNodeWithText("FOLLOWING", useUnmergedTree = true).performClick()
+  }
+
+  @Test
+  fun testSwipeLeft() {
+    composeTestRule.setContent {
+      HomePager(
+          navigation = mockNav,
+          homeViewModel = mockViewModel,
+          innerPadding = PaddingValues(0.dp),
+          test = true)
+    }
+
+    // Find the node representing the pager
+    composeTestRule.onNodeWithTag("HomePager").performTouchInput { swipeLeft() }
   }
 }

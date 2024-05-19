@@ -410,8 +410,8 @@ fun HomePager(
           }
         }
 
-    HorizontalPager(state = pagerState) { page ->
-      when (HomeCategory.values()[page]) {
+    HorizontalPager(state = pagerState, modifier = Modifier.testTag("HomePager")) { page ->
+      when (HomeCategory.entries[page]) {
         HomeCategory.TRENDING -> {
           val trendingItineraries by homeViewModel.trendingList.observeAsState(emptyList())
           DisplayItineraries(
@@ -423,7 +423,6 @@ fun HomePager(
         HomeCategory.FOLLOWING -> {
           val followingItineraries by homeViewModel.followingList.observeAsState(emptyList())
           if (followingItineraries.isEmpty()) {
-
             Text(
                 text = "Not following anyone yet.",
                 modifier =
