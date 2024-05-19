@@ -22,6 +22,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.itinerary.MockItineraryList
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.profile.MutableUserProfile
+import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.model.repository.UserProfileRepository
 import com.example.triptracker.userProfile.MockUserList
@@ -96,7 +97,12 @@ class HomeTest {
     every { mockNav.getTopLevelDestinations()[0] } returns
         TopLevelDestination(Route.HOME, Icons.Outlined.Home, "Home")
 
-    every { mockUserProfileViewModel.fetchAllUserProfiles { mockUsers } } returns Unit
+    every { mockUserProfileViewModel.fetchAllUserProfiles { any() } } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<UserProfile>) -> Unit>(0)
+          callback(mockUsers)
+        }
   }
 
   @Test
@@ -116,7 +122,11 @@ class HomeTest {
     every { mockProfile.userProfile.value } returns mockUsers[0]
     // Setting up the test composition
     composeTestRule.setContent {
-      HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      HomeScreen(
+          navigation = mockNav,
+          homeViewModel = mockViewModel,
+          userProfileViewModel = mockUserProfileViewModel,
+          test = true)
     }
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
       // Test the UI elements

@@ -74,6 +74,7 @@ var allProfilesFetched: List<UserProfile> = emptyList()
  *
  * @param navigation: Navigation object to use for navigation
  * @param homeViewModel: HomeViewModel to use for fetching itineraries
+ * @param userProfileViewModel: UserProfileViewModel to use for fetching users
  * @param displayPager: Boolean to display or not the home pager
  * @param test: Boolean to test the function
  */
@@ -92,7 +93,7 @@ fun HomeScreen(
       readyToDisplay = true
     }
   }
-  when (readyToDisplay) {
+  when (readyToDisplay || test) {
     false -> {
       Log.d("UserProfileList", "User profile list is null")
     }
