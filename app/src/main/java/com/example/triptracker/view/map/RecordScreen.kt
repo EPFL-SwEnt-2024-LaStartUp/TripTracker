@@ -25,7 +25,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Add
@@ -36,6 +35,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,6 +45,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -79,6 +80,7 @@ import com.example.triptracker.viewmodel.RecordViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -86,6 +88,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -191,11 +194,10 @@ fun Map(
 
   val profile = AmbientUserProfile.current.userProfile.value
 
+  val targetValue = if (viewModel.isInDescription()) 10.dp else 0.dp
   val animatedBlur by
       animateDpAsState(
-          targetValue = if (viewModel.isInDescription()) 10.dp else 0.dp,
-          animationSpec = tween(durationMillis = 500),
-          label = "")
+          targetValue = targetValue, animationSpec = tween(durationMillis = 500), label = "")
 
   // Animate camera to device location
   LaunchedEffect(key1 = deviceLocation) {
@@ -283,27 +285,7 @@ fun Map(
               modifier =
                   Modifier.fillMaxWidth().padding(horizontal = 10.dp).align(Alignment.TopCenter),
               horizontalArrangement = Arrangement.SpaceBetween) {
-                if (viewModel.isInDescription()) {
-                  IconButton(
-                      onClick = {
-                        viewModel.stopDescription()
-                        viewModel.resetRecording()
-                        localLatLngList.clear()
-                      },
-                      modifier =
-                          Modifier.size(50.dp)
-                              .align(Alignment.CenterVertically)
-                              .testTag("CloseButton"),
-                  ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close",
-                        tint = md_theme_light_dark,
-                        modifier = Modifier.size(30.dp))
-                  }
-                } else {
-                  Spacer(modifier = Modifier.width(50.dp))
-                }
+                DisplayCloseButton(viewModel, localLatLngList)
                 // Display the record text
                 Text(
                     text = "Record",
@@ -325,34 +307,15 @@ fun Map(
           modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 20.dp),
           horizontalArrangement = Arrangement.SpaceBetween) {
             Spacer(modifier = Modifier.weight(0.1f))
-            if (ui.myLocationButtonEnabled && properties.isMyLocationEnabled) {
-              DisplayCenterLocationButton(
-                  coroutineScope = coroutineScope,
-                  deviceLocation = deviceLocation,
-                  cameraPositionState = cameraPositionState) { /* DO NOTHING*/}
-            }
+            DisplayCenterLocationButtonOnCondition(
+                ui = ui,
+                properties = properties,
+                coroutineScope = coroutineScope,
+                deviceLocation = deviceLocation,
+                cameraPositionState = cameraPositionState)
+
             Spacer(modifier = Modifier.weight(0.5f))
-            if (properties.isMyLocationEnabled && !viewModel.addSpotClicked.value) {
-              // Button to start/stop recording
-              FilledTonalButton(
-                  onClick = { toggleRecordingDescription(viewModel) },
-                  modifier =
-                      Modifier.fillMaxWidth(0.4f)
-                          .fillMaxHeight(0.08f)
-                          .align(Alignment.CenterVertically),
-                  colors =
-                      ButtonDefaults.filledTonalButtonColors(
-                          containerColor = md_theme_orange,
-                          contentColor = md_theme_light_onPrimary),
-              ) {
-                Text(
-                    text = if (viewModel.isRecording()) "Stop" else "Start",
-                    fontSize = 24.sp,
-                    fontFamily = Montserrat,
-                    fontWeight = FontWeight.SemiBold,
-                    color = md_theme_light_onPrimary)
-              }
-            }
+            DisplayStartStopButton(viewModel = viewModel, properties = properties)
             Spacer(modifier = Modifier.weight(1f))
           }
     }
@@ -751,6 +714,84 @@ fun displayTime(time: Long): String {
   return String.format("%02d:%02d:%02d", hours, minutes, seconds)
 }
 
+/**
+ * Composable function to display the close button when the record was stopped
+ *
+ * @param viewModel The RecordViewModel instance.
+ * @param localLatLngList The local list of LatLng points.
+ */
+@Composable
+fun DisplayCloseButton(viewModel: RecordViewModel, localLatLngList: SnapshotStateList<LatLng>) {
+  if (viewModel.isInDescription()) {
+    IconButton(
+        onClick = {
+          viewModel.stopDescription()
+          viewModel.resetRecording()
+          localLatLngList.clear()
+        },
+        modifier = Modifier.size(50.dp).testTag("CloseButton"),
+    ) {
+      Icon(
+          imageVector = Icons.Default.Close,
+          contentDescription = "Close",
+          tint = md_theme_light_dark,
+          modifier = Modifier.size(30.dp))
+    }
+  } else {
+    Spacer(modifier = Modifier.width(50.dp))
+  }
+}
+
+/**
+ * Composable function to display the center location button on condition check.
+ *
+ * @param ui The map UI settings.
+ * @param properties The map properties.
+ * @param coroutineScope The coroutine scope.
+ * @param deviceLocation The device location.
+ * @param cameraPositionState The camera position state.
+ */
+@Composable
+fun DisplayCenterLocationButtonOnCondition(
+    ui: MapUiSettings,
+    properties: MapProperties,
+    coroutineScope: CoroutineScope,
+    deviceLocation: LatLng,
+    cameraPositionState: CameraPositionState
+) {
+  if (ui.myLocationButtonEnabled && properties.isMyLocationEnabled) {
+    DisplayCenterLocationButton(
+        coroutineScope = coroutineScope,
+        deviceLocation = deviceLocation,
+        cameraPositionState = cameraPositionState) { /* DO NOTHING*/}
+  }
+}
+
+/**
+ * Composable function to display the start stop button.
+ *
+ * @param viewModel The RecordViewModel instance.
+ * @param properties The map properties.
+ */
+@Composable
+fun DisplayStartStopButton(viewModel: RecordViewModel, properties: MapProperties) {
+  if (properties.isMyLocationEnabled && !viewModel.addSpotClicked.value) {
+    FilledTonalButton(
+        onClick = { toggleRecordingDescription(viewModel) },
+        modifier = Modifier.fillMaxWidth(0.4f).fillMaxHeight(0.08f),
+        colors =
+            ButtonDefaults.filledTonalButtonColors(
+                containerColor = md_theme_orange, contentColor = md_theme_light_onPrimary),
+    ) {
+      Text(
+          text = if (viewModel.isRecording()) "Stop" else "Start",
+          fontSize = 24.sp,
+          fontFamily = Montserrat,
+          fontWeight = FontWeight.SemiBold,
+          color = md_theme_light_onPrimary)
+    }
+  }
+}
 /** Function to preview the RecordScreen */
 @Preview
 @Composable
