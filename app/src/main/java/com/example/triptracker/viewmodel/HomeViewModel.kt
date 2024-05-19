@@ -179,21 +179,21 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    *
    * @param query the query to filter by
    */
-  private fun filterByFlame(query: String) {
-    itineraryList.value?.filter {
-      val regex = """^([<>]=?)(\d+)""".toRegex()
-      val matchResult = regex.matchEntire(query)
-      val flameCount = it.flameCount
-      when (matchResult?.groupValues?.get(1)) {
-        "<" -> flameCount < matchResult.groupValues[2].toLong()
-        "<=" -> flameCount <= matchResult.groupValues[2].toLong()
-        ">" -> flameCount > matchResult.groupValues[2].toLong()
-        ">=" -> flameCount >= matchResult.groupValues[2].toLong()
-        "=" -> flameCount == matchResult.groupValues[2].toLong()
-        else -> false
-      }
-    }
-  }
+  //  private fun filterByFlame(query: String) {
+  //    itineraryList.value?.filter {
+  //      val regex = """^([<>]=?)(\d+)""".toRegex()
+  //      val matchResult = regex.matchEntire(query)
+  //      val flameCount = it.flameCount
+  //      when (matchResult?.groupValues?.get(1)) {
+  //        "<" -> flameCount < matchResult.groupValues[2].toLong()
+  //        "<=" -> flameCount <= matchResult.groupValues[2].toLong()
+  //        ">" -> flameCount > matchResult.groupValues[2].toLong()
+  //        ">=" -> flameCount >= matchResult.groupValues[2].toLong()
+  //        "=" -> flameCount == matchResult.groupValues[2].toLong()
+  //        else -> false
+  //      }
+  //    }
+  //  }
 
   /**
    * Filter itineraries by pin name
@@ -331,12 +331,12 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    * @param city the city to filter by
    * @return a list of itineraries that match the query sorted by flame count
    */
-  fun filterTrendingCity(city: String) {
-    _itineraryList.value =
-        itineraryList.value
-            ?.filter { it.location.name.split(", ").first().equals(city, ignoreCase = true) }
-            ?.sortedByDescending { it.flameCount }
-  }
+  //  fun filterTrendingCity(city: String) {
+  //    _itineraryList.value =
+  //        itineraryList.value
+  //            ?.filter { it.location.name.split(", ").first().equals(city, ignoreCase = true) }
+  //            ?.sortedByDescending { it.flameCount }
+  //  }
 
   /**
    * Filter the itinerary list by trending itineraries in a certain country The trending itineraries
@@ -345,12 +345,12 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    * @param country the country to filter by
    * @return a list of itineraries that match the query sorted by flame count
    */
-  fun filterTrendingCountry(country: String) {
-    _itineraryList.value =
-        itineraryList.value
-            ?.filter { it.location.name.split(", ").last().equals(country, ignoreCase = true) }
-            ?.sortedByDescending { it.flameCount }
-  }
+  //  fun filterTrendingCountry(country: String) {
+  //    _itineraryList.value =
+  //        itineraryList.value
+  //            ?.filter { it.location.name.split(", ").last().equals(country, ignoreCase = true) }
+  //            ?.sortedByDescending { it.flameCount }
+  //  }
 
   /**
    * Filter the itinerary list by trending itineraries worldwide The trending itineraries are sorted
@@ -358,9 +358,9 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    *
    * @return a list of itineraries sorted by flame count
    */
-  fun filterTrendingWorldwide() {
-    _itineraryList.value = itineraryList.value?.sortedByDescending { it.flameCount }
-  }
+  //  fun filterTrendingWorldwide() {
+  //    _itineraryList.value = itineraryList.value?.sortedByDescending { it.flameCount }
+  //  }
 
   fun deleteItinerary(itineraryId: String) {
     viewModelScope.launch {

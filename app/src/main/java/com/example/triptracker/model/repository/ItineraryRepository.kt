@@ -19,7 +19,7 @@ import com.google.firebase.firestore.firestore
 open class ItineraryRepository {
 
   // Initialise the Firebase Firestore
-  val db = Firebase.firestore
+  var db = Firebase.firestore
 
   // Reference to the collection of itineraries
   val itineraryDb = db.collection("itineraries")
@@ -62,14 +62,14 @@ open class ItineraryRepository {
    * @param itinerary Itinerary object to get the pinned place names from
    * @return List of pinned place names
    */
-  open fun getPinNames(itinerary: Itinerary): List<String> {
-    val pinNames = mutableListOf<String>()
-    for (pin in itinerary.pinnedPlaces) {
-      pinNames.add(pin.name)
-    }
-    Log.d("PinNames", pinNames.toString())
-    return pinNames
-  }
+  //  open fun getPinNames(itinerary: Itinerary): List<String> {
+  //    val pinNames = mutableListOf<String>()
+  //    for (pin in itinerary.pinnedPlaces) {
+  //      pinNames.add(pin.name)
+  //    }
+  //    Log.d("PinNames", pinNames.toString())
+  //    return pinNames
+  //  }
 
   // Convert the query snapshot to a list of itineraries
   /**
@@ -118,48 +118,49 @@ open class ItineraryRepository {
       _itineraryList.add(itinerary)
     }
   }
-
-  // Update an itinerary in the database
-  /**
-   * Update an itinerary in the database
-   *
-   * @param itinerary Itinerary object to update Serialize the Itinerary object to a map and update
-   *   it in the database
-   */
-  fun updateItinerary(itinerary: Itinerary) {
-    val itineraryData =
-        hashMapOf<String, Any>(
-            "id" to itinerary.id,
-            "title" to itinerary.title,
-            "userMail" to itinerary.userMail,
-            "location" to
-                hashMapOf(
-                    "latitude" to itinerary.location.latitude,
-                    "longitude" to itinerary.location.longitude,
-                    "name" to itinerary.location.name),
-            "flameCount" to itinerary.flameCount,
-            "saves" to itinerary.saves, // Added saves field to Itinerary class
-            "clicks" to itinerary.clicks, // Added clicks field to Itinerary class
-            "numStarts" to itinerary.numStarts, // Added numStarts field to Itinerary class
-            "startDateAndTime" to itinerary.startDateAndTime,
-            "endDateAndTime" to itinerary.endDateAndTime,
-            "pinnedPlaces" to
-                itinerary.pinnedPlaces.map { pin ->
-                  hashMapOf(
-                      "latitude" to pin.latitude,
-                      "longitude" to pin.longitude,
-                      "name" to pin.name,
-                      "description" to pin.description,
-                      "image-url" to pin.image_url)
-                },
-            "description" to itinerary.description,
-            "route" to convertLatLngToMap(itinerary.route))
-    db.collection("itineraries")
-        .document(itinerary.id)
-        .set(itineraryData)
-        .addOnSuccessListener { Log.d(TAG, "Itinerary updated successfully") }
-        .addOnFailureListener { e -> Log.e(TAG, "Error updating itinerary", e) }
-  }
+  //
+  //  // Update an itinerary in the database
+  //  /**
+  //   * Update an itinerary in the database
+  //   *
+  //   * @param itinerary Itinerary object to update Serialize the Itinerary object to a map and
+  // update
+  //   *   it in the database
+  //   */
+  //  fun updateItinerary(itinerary: Itinerary) {
+  //    val itineraryData =
+  //        hashMapOf<String, Any>(
+  //            "id" to itinerary.id,
+  //            "title" to itinerary.title,
+  //            "userMail" to itinerary.userMail,
+  //            "location" to
+  //                hashMapOf(
+  //                    "latitude" to itinerary.location.latitude,
+  //                    "longitude" to itinerary.location.longitude,
+  //                    "name" to itinerary.location.name),
+  //            "flameCount" to itinerary.flameCount,
+  //            "saves" to itinerary.saves, // Added saves field to Itinerary class
+  //            "clicks" to itinerary.clicks, // Added clicks field to Itinerary class
+  //            "numStarts" to itinerary.numStarts, // Added numStarts field to Itinerary class
+  //            "startDateAndTime" to itinerary.startDateAndTime,
+  //            "endDateAndTime" to itinerary.endDateAndTime,
+  //            "pinnedPlaces" to
+  //                itinerary.pinnedPlaces.map { pin ->
+  //                  hashMapOf(
+  //                      "latitude" to pin.latitude,
+  //                      "longitude" to pin.longitude,
+  //                      "name" to pin.name,
+  //                      "description" to pin.description,
+  //                      "image-url" to pin.image_url)
+  //                },
+  //            "description" to itinerary.description,
+  //            "route" to convertLatLngToMap(itinerary.route))
+  //    db.collection("itineraries")
+  //        .document(itinerary.id)
+  //        .set(itineraryData)
+  //        .addOnSuccessListener { Log.d(TAG, "Itinerary updated successfully") }
+  //        .addOnFailureListener { e -> Log.e(TAG, "Error updating itinerary", e) }
+  //  }
 
   /**
    * Add a new itinerary to the database
