@@ -54,7 +54,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.profile.AmbientUserProfile
-import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
@@ -71,14 +70,13 @@ import com.example.triptracker.viewmodel.HomeViewModel
  *
  * @param navigation: Navigation object to use for navigation
  * @param homeViewModel: HomeViewModel to use for fetching itineraries
+ * @param displayPager: Boolean to display or not the home pager
  * @param test: Boolean to test the function
  */
 @Composable
 fun HomeScreen(
     navigation: Navigation,
-    profile: MutableUserProfile,
     homeViewModel: HomeViewModel = viewModel(),
-    category: HomeCategory = HomeCategory.TRENDING,
     test: Boolean = false
 ) {
   Log.d("HomeScreen", "Rendering HomeScreen")
@@ -155,32 +153,36 @@ fun HomeScreen(
                 fontSize = 1.sp)
           }
           else -> {
-            Column(
-                modifier =
-                    Modifier.fillMaxSize()
-                        .padding(
-                            PaddingValues(
-                                0.dp,
-                                80.dp,
-                                0.dp,
-                                0.dp)) // this ensures having a padding at the top
-                ) {
-                  // will display the list of itineraries
-                  HomePager(
-                      itineraries = itineraries,
-                      navigation = navigation,
-                      profile = profile,
-                      homeViewModel = homeViewModel,
-                      innerPadding = innerPadding,
-                      test = test)
-                }
-            /*
-            TODO can be used to scroll to the top of the list
-            val showButton = listState.firstVisibleItemIndex > 0
-            AnimatedVisibility(visible = showButton) {
-                ScrollToTopButton()
+            if (!test) {
+              Column(
+                  modifier =
+                      Modifier.fillMaxSize()
+                          .padding(
+                              PaddingValues(
+                                  0.dp,
+                                  80.dp,
+                                  0.dp,
+                                  0.dp)) // this ensures having a padding at the top
+                  ) {
+                    // will display the list of itineraries
+                    HomePager(
+                        itineraries = itineraries,
+                        navigation = navigation,
+                        homeViewModel = homeViewModel,
+                        innerPadding = innerPadding,
+                        test = test)
+                  }
+              /*
+              TODO can be used to scroll to the top of the list
+              val showButton = listState.firstVisibleItemIndex > 0
+              AnimatedVisibility(visible = showButton) {
+                  ScrollToTopButton()
+              }
+               */
+            } else {
+              DisplayItineraries(
+                  itineraries = itineraries, navigation = navigation, homeViewModel = homeViewModel)
             }
-             */
           }
         }
       }
@@ -354,7 +356,6 @@ fun DisplayItineraries(
 fun HomePager(
     itineraries: List<Itinerary>,
     navigation: Navigation,
-    profile: MutableUserProfile,
     homeViewModel: HomeViewModel = viewModel(),
     innerPadding: PaddingValues,
     test: Boolean = false
