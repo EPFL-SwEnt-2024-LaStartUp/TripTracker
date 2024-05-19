@@ -19,7 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.People
+import androidx.compose.material.icons.outlined.GroupAdd
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -166,8 +166,8 @@ fun UserProfileOverview(
                               onClick = { navigation.navController.navigate(Route.FAVORITES) },
                               modifier = Modifier.testTag("FavoritesButton"))
                           ProfileButton(
-                              label = "Friends",
-                              icon = Icons.Outlined.People,
+                              label = "Find Friends",
+                              icon = Icons.Outlined.GroupAdd,
                               onClick = { navigation.navController.navigate(Route.FRIENDS) },
                               modifier = Modifier.testTag("FriendsButton"))
                         }

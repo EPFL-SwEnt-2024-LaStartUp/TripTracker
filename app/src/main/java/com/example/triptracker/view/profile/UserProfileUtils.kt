@@ -22,7 +22,7 @@ import com.example.triptracker.view.theme.md_theme_light_outlineVariant
 @Composable
 fun bigNumberStyle(size: Int): TextStyle {
   return TextStyle(
-      fontSize = (size * 0.024f).sp,
+      fontSize = (size * 0.027f).sp,
       lineHeight = (size * 0.016f).sp,
       fontFamily = FontFamily(Font(R.font.montserrat)),
       fontWeight = FontWeight.Bold,
@@ -40,7 +40,7 @@ fun bigNumberStyle(size: Int): TextStyle {
 @Composable
 fun categoryTextStyle(size: Int): TextStyle {
   return TextStyle(
-      fontSize = (size * 0.012f).sp,
+      fontSize = (size * 0.017f).sp,
       lineHeight = (size * 0.016f).sp,
       fontFamily = FontFamily(Font(R.font.montserrat)),
       fontWeight = FontWeight.Light,
@@ -75,7 +75,7 @@ fun buttonTextStyle(size: Int): TextStyle {
 @Composable
 fun secondaryTitleStyle(size: Int): TextStyle {
   return TextStyle(
-      fontSize = (size * 0.014f).sp,
+      fontSize = (size * 0.019f).sp,
       lineHeight = (size * 0.016f).sp,
       fontFamily = FontFamily(Font(R.font.montserrat)),
       fontWeight = FontWeight(400),
@@ -93,7 +93,7 @@ fun secondaryTitleStyle(size: Int): TextStyle {
 @Composable
 fun secondaryContentStyle(size: Int): TextStyle {
   return TextStyle(
-      fontSize = (size * 0.012f).sp,
+      fontSize = (size * 0.017f).sp,
       lineHeight = (size * 0.016f).sp,
       fontFamily = FontFamily(Font(R.font.montserrat)),
       fontWeight = FontWeight(400),
