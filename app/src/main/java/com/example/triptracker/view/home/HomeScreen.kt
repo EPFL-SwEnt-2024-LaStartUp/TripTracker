@@ -166,7 +166,6 @@ fun HomeScreen(
                   ) {
                     // will display the list of itineraries
                     HomePager(
-                        itineraries = itineraries,
                         navigation = navigation,
                         homeViewModel = homeViewModel,
                         innerPadding = innerPadding,
@@ -359,7 +358,6 @@ fun DisplayItineraries(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomePager(
-    itineraries: List<Itinerary>,
     navigation: Navigation,
     homeViewModel: HomeViewModel = viewModel(),
     innerPadding: PaddingValues,
