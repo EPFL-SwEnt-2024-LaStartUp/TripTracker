@@ -20,7 +20,7 @@ enum class FilterType {
   USERNAME,
   FLAME,
   PIN,
-  FAVORTIES
+  FAVOURITES
 }
 
 enum class IncrementableField {
@@ -34,6 +34,11 @@ enum class IncrementableField {
   TITLE
 }
 
+enum class HomeCategory {
+  TRENDING,
+  FOLLOWING
+}
+
 /**
  * ViewModel for the Home Screen. Fetches all itineraries from the repository stores them in a
  * LiveData object
@@ -44,8 +49,16 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   private var itineraryInstance = ItineraryList(listOf())
   private var _itineraryList = MutableLiveData<List<Itinerary>>(emptyList())
   val itineraryList: LiveData<List<Itinerary>> = _itineraryList
+
+  private var _trendingList = MutableLiveData<List<Itinerary>>(emptyList())
+  val trendingList: LiveData<List<Itinerary>> = _trendingList
+
+  private var _followingList = MutableLiveData<List<Itinerary>>(emptyList())
+  val followingList: LiveData<List<Itinerary>> = _followingList
+
   private val _searchQuery = MutableLiveData<String>("")
 
+  private var currentCategory = HomeCategory.TRENDING
   val searchQuery: LiveData<String>
     get() = _searchQuery
 
@@ -55,13 +68,11 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
 
   init {
     UserProfileViewModel().fetchAllUserProfiles { userProfileList = it }
-    viewModelScope.launch { fetchItineraries() }
+    viewModelScope.launch { fetchItineraries { updateAllFlameCounts() } }
   }
 
   private val _userProfiles = MutableLiveData<Map<String, UserProfile>>()
   private val userProfiles: LiveData<Map<String, UserProfile>> = _userProfiles
-
-  private val userProfileViewModel: UserProfileViewModel = UserProfileViewModel()
 
   val filteredItineraryList: LiveData<List<Itinerary>> =
       _searchQuery.switchMap { query ->
@@ -72,7 +83,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
                 FilterType.USERNAME -> filterByUsername(query) // now filters by user mail
                 FilterType.FLAME -> parseFlameQuery(query)
                 FilterType.PIN -> filterByPinName(query)
-                FilterType.FAVORTIES -> filterByFavorite(query)
+                FilterType.FAVOURITES -> filterByFavorite(query)
                 else -> emptyList()
               }
 
@@ -82,11 +93,23 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
         }
       }
 
-  /** Fetches all itineraries from the repository and stores them in the itineraryList LiveData */
-  private fun fetchItineraries() {
+  /**
+   * Fetches all itineraries from the repository and stores them in the itineraryList LiveData
+   *
+   * @param userEmail the email of the user to fetch itineraries for, used to filter by following
+   * @param callback a callback, that can be used in various different ways for now, used for
+   *   updating flame counts at launch
+   */
+  // Updated fetchItineraries to include category as an argument and update itineraries accordingly
+  private fun fetchItineraries(callback: () -> Unit = {}) {
     Log.d("HomeViewModel", "Fetching itineraries")
-    itineraryInstance.setItineraryList(repository.getAllItineraries())
-    _itineraryList.value = itineraryInstance.getAllItineraries()
+    repository.getAllItineraries { itineraries ->
+      itineraryInstance.setItineraryList(itineraries)
+      _itineraryList.value = itineraryInstance.getAllItineraries()
+      _followingList.value = itineraryInstance.getAllItineraries()
+      _trendingList.value = itineraryInstance.getAllItineraries()
+      callback()
+    }
   }
 
   /**
@@ -105,15 +128,14 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    * @return a list of itineraries that match the query
    */
   private fun filterByUsername(query: String): List<Itinerary> {
-    val mapProfileItinerary = mutableMapOf<String, Itinerary>()
+    val filteredItineraries = mutableListOf<Itinerary>()
     itineraryList.value?.forEach { itinerary ->
       val profile = userProfileList.firstOrNull { profile -> itinerary.userMail == profile.mail }
-      if (profile != null) {
-        mapProfileItinerary[profile.username] = itinerary
+      if (profile != null && profile.username.contains(query, ignoreCase = true)) {
+        filteredItineraries.add(itinerary)
       }
     }
-
-    return mapProfileItinerary.filter { it.key.contains(query, ignoreCase = true) }.values.toList()
+    return filteredItineraries
   }
 
   /**
@@ -190,9 +212,14 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    * @return a list of itineraries that match the query
    */
   private fun filterByFavorite(usermail: String): List<Itinerary> {
+    val filteredItineraries = mutableListOf<Itinerary>()
     val userProfile = userProfileList.firstOrNull { it.mail == usermail } ?: return emptyList()
-    return _itineraryList.value?.filter { userProfile.favoritesPaths.contains(it.id) }
-        ?: emptyList()
+    _itineraryList.value?.forEach { itinerary ->
+      if (userProfile.favoritesPaths.contains(itinerary.id)) {
+        filteredItineraries.add(itinerary)
+      }
+    }
+    return filteredItineraries
   }
 
   /**
@@ -219,10 +246,14 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    * itineraryList LiveData
    */
   fun filterByTrending() {
-    _itineraryList.value =
-        _itineraryList.value?.sortedByDescending { itinerary -> itinerary.flameCount }
+    _trendingList.value =
+        _trendingList.value?.sortedByDescending { itinerary -> itinerary.flameCount }
   }
 
+  /**
+   * Formula to calculate flame count for each itinerary based on the number of saves, clicks and
+   * the number of users that started the itinerary
+   */
   private fun calculateFlameCounts(saves: Long, clicks: Long, numStarts: Long): Long {
     return 2 * saves + clicks + 5 * numStarts
   }
@@ -245,6 +276,14 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
     }
   }
 
+  /**
+   * Update flame count for all itineraries can be used when flame counts from all itineraries need
+   * to be updated
+   */
+  private fun updateAllFlameCounts() {
+    _itineraryList.value?.forEach { itinerary -> updateFlameCount(itinerary.id) }
+  }
+
   /** Increment the click count of the itinerary with the given id */
   fun incrementClickCount(itineraryId: String) {
     viewModelScope.launch {
@@ -258,18 +297,14 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   fun incrementSaveCount(itineraryId: String) {
     viewModelScope.launch {
       repository.incrementField(itineraryId, IncrementableField.SAVES)
-      val updatedList =
-          _itineraryList.value?.map { itinerary ->
-            if (itinerary.id == itineraryId) {
-              itinerary.copy(saves = itinerary.saves + 1)
-            } else {
-              itinerary
-            }
-          }
-      if (updatedList != null) {
-        _itineraryList = MutableLiveData(updatedList)
+      repository.getItineraryById(itineraryId) { itinerary ->
+        if (itinerary != null) {
+          val updatedItinerary = itinerary.copy(saves = itinerary.saves + 1)
+          updateFlameCount(itinerary.id)
+          _itineraryList.value =
+              _itineraryList.value?.map { if (it.id == itineraryId) updatedItinerary else it }
+        }
       }
-      updateFlameCount(itineraryId)
     }
   }
 
@@ -279,6 +314,51 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
       repository.incrementField(itineraryId, IncrementableField.NUM_STARTS)
       updateFlameCount(itineraryId)
     }
+  }
+
+  /** Filter the itinerary posted by your following users */
+  fun filterByFollowing(usermail: String) {
+    val userProfile = userProfileList.firstOrNull { it.mail == usermail } ?: return
+    _followingList.value =
+        _followingList.value?.filter { userProfile.following.contains(it.userMail) }
+  }
+
+  /**
+   * Filter the itinerary list by trending itineraries in a certain city The trending itineraries
+   * are sorted in descending order of flame count
+   *
+   * @param city the city to filter by
+   * @return a list of itineraries that match the query sorted by flame count
+   */
+  fun filterTrendingCity(city: String) {
+    _itineraryList.value =
+        itineraryList.value
+            ?.filter { it.location.name.split(", ").first().equals(city, ignoreCase = true) }
+            ?.sortedByDescending { it.flameCount }
+  }
+
+  /**
+   * Filter the itinerary list by trending itineraries in a certain country The trending itineraries
+   * are sorted in descending order of flame count
+   *
+   * @param country the country to filter by
+   * @return a list of itineraries that match the query sorted by flame count
+   */
+  fun filterTrendingCountry(country: String) {
+    _itineraryList.value =
+        itineraryList.value
+            ?.filter { it.location.name.split(", ").last().equals(country, ignoreCase = true) }
+            ?.sortedByDescending { it.flameCount }
+  }
+
+  /**
+   * Filter the itinerary list by trending itineraries worldwide The trending itineraries are sorted
+   * in descending order of flame count
+   *
+   * @return a list of itineraries sorted by flame count
+   */
+  fun filterTrendingWorldwide() {
+    _itineraryList.value = itineraryList.value?.sortedByDescending { it.flameCount }
   }
 
   fun deleteItinerary(itineraryId: String) {

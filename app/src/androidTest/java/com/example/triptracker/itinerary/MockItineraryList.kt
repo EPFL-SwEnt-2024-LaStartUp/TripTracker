@@ -20,7 +20,7 @@ class MockItineraryList {
               numStarts = 16, // 2 * 50 + 20 + 5 * 16 = 200
               "10-03-2024",
               "20-03-2024",
-              listOf(Pin(0.2, 0.1, "Eiffel Tower", "yes", listOf("test.com"))),
+              listOf(Pin(0.2, 0.1, "Eiffel Tower", "yes", listOf())),
               "super cool",
               listOf(LatLng(0.1, 0.4))), // Fill in your mock data
           Itinerary(

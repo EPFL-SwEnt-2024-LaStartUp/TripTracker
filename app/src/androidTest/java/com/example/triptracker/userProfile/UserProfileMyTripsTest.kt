@@ -11,7 +11,7 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.itinerary.MockItineraryList
-import com.example.triptracker.model.network.Connection
+import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.screens.home.HomeViewScreen
@@ -43,7 +43,6 @@ class UserProfileMyTripsTest {
   @RelaxedMockK private lateinit var mockViewModel: HomeViewModel
   @RelaxedMockK private lateinit var mockItineraryRepository: ItineraryRepository
   @RelaxedMockK private lateinit var mockProfile: MutableUserProfile
-  @RelaxedMockK private lateinit var mockConnection: Connection
 
   val mockList = MockItineraryList()
   val mockItineraries = mockList.getItineraries()
@@ -57,7 +56,6 @@ class UserProfileMyTripsTest {
     mockNav = mockk(relaxed = true)
     mockItineraryRepository = mockk(relaxed = true)
     mockProfile = mockk(relaxed = true)
-    mockConnection = mockk(relaxed = true)
 
     MockKAnnotations.init(this, relaxUnitFun = true)
 
@@ -67,16 +65,18 @@ class UserProfileMyTripsTest {
 
   @Test
   fun componentsAreCorrectlyDisplayed() {
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
     every { mockViewModel.filteredItineraryList.value } returns mockItineraries
     every { mockProfile.userProfile.value } returns mockUsers[0]
     // Setting up the test composition
     composeTestRule.setContent {
       UserProfileMyTrips(
-          homeViewModel = mockViewModel,
-          navigation = mockNav,
-          userProfile = mockProfile,
-          connection = mockConnection)
+          homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
     }
     composeTestRule.onNodeWithTag("UserProfileMyTripsScreen").assertExists()
     composeTestRule.onNodeWithTag("ScreenTitle").assertExists()
@@ -85,16 +85,18 @@ class UserProfileMyTripsTest {
 
   @Test
   fun noTripsTextIsDisplayed() {
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
     every { mockViewModel.filteredItineraryList.value } returns emptyList()
     every { mockProfile.userProfile.value } returns mockUsers[0]
     // Setting up the test composition
     composeTestRule.setContent {
       UserProfileMyTrips(
-          homeViewModel = mockViewModel,
-          navigation = mockNav,
-          userProfile = mockProfile,
-          connection = mockConnection)
+          homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
     }
     composeTestRule.onNodeWithTag("NoDataText").assertExists()
   }
@@ -103,7 +105,12 @@ class UserProfileMyTripsTest {
   @Test
   fun tripsAreDisplayed() {
     try {
-      every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+      every { mockItineraryRepository.getAllItineraries(any()) } answers
+          {
+            // Invoke the callback with mock data
+            val callback = arg<(List<Itinerary>) -> Unit>(0)
+            callback(mockItineraries)
+          }
 
       every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
       every { mockViewModel.selectedFilter.value } returns FilterType.PIN
@@ -113,10 +120,7 @@ class UserProfileMyTripsTest {
       // Setting up the test composition
       composeTestRule.setContent {
         UserProfileMyTrips(
-            homeViewModel = mockViewModel,
-            navigation = mockNav,
-            userProfile = mockProfile,
-            connection = mockConnection)
+            homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
       }
       composeTestRule.onNodeWithTag("DataList").assertExists()
     } catch (e: Exception) {
@@ -126,7 +130,12 @@ class UserProfileMyTripsTest {
 
   @Test
   fun tripsAreDisplayed2() {
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
 
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.selectedFilter.value } returns FilterType.PIN
@@ -136,18 +145,19 @@ class UserProfileMyTripsTest {
     // Setting up the test composition
     composeTestRule.setContent {
       UserProfileMyTrips(
-          homeViewModel = mockViewModel,
-          navigation = mockNav,
-          userProfile = mockProfile,
-          connection = mockConnection)
+          homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
     }
     composeTestRule.onNodeWithTag("DataList").assertExists()
   }
 
   @Test
   fun itineraryIsLongClickableYes() {
-    every { mockItineraryRepository.getAllItineraries() } returns listOf(mockItineraries[0])
-
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
     every { mockViewModel.filteredItineraryList } returns
         MutableLiveData(listOf(mockItineraries[0]))
     every { mockViewModel.selectedFilter.value } returns FilterType.PIN
@@ -157,10 +167,7 @@ class UserProfileMyTripsTest {
     // Setting up the test composition
     composeTestRule.setContent {
       UserProfileMyTrips(
-          homeViewModel = mockViewModel,
-          navigation = mockNav,
-          userProfile = mockProfile,
-          connection = mockConnection)
+          homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
     }
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
       composeTestRule.onNodeWithTag("Itinerary", useUnmergedTree = true).assertIsDisplayed()
@@ -178,8 +185,12 @@ class UserProfileMyTripsTest {
 
   @Test
   fun itineraryIsLongClickableNo() {
-    every { mockItineraryRepository.getAllItineraries() } returns listOf(mockItineraries[0])
-
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(mockItineraries.size - 1)
+          callback(mockItineraries)
+        }
     every { mockViewModel.filteredItineraryList } returns
         MutableLiveData(listOf(mockItineraries[0]))
     every { mockViewModel.selectedFilter.value } returns FilterType.PIN
@@ -189,10 +200,7 @@ class UserProfileMyTripsTest {
     // Setting up the test composition
     composeTestRule.setContent {
       UserProfileMyTrips(
-          homeViewModel = mockViewModel,
-          navigation = mockNav,
-          userProfile = mockProfile,
-          connection = mockConnection)
+          homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
     }
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
       composeTestRule.onNodeWithTag("Itinerary", useUnmergedTree = true).assertIsDisplayed()
