@@ -96,7 +96,7 @@ class HomeTest {
     every { mockNav.getTopLevelDestinations()[0] } returns
         TopLevelDestination(Route.HOME, Icons.Outlined.Home, "Home")
 
-    every { mockUserProfileViewModel.fetchAllUserProfiles { mockUsers }} returns Unit
+    every { mockUserProfileViewModel.fetchAllUserProfiles { mockUsers } } returns Unit
   }
 
   @Test
