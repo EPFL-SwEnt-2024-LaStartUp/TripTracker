@@ -362,9 +362,10 @@ fun HomePager(
   val ambientProfile = AmbientUserProfile.current
   val userEmail = ambientProfile.userProfile.value.mail
   val tabs = listOf(HomeCategory.TRENDING.name, HomeCategory.FOLLOWING.name)
+  val numTabs = tabs.size
   val pagerState =
       rememberPagerState(initialPage = 0) {
-        2 // initial page is 0, trending tab
+        numTabs // initial page is 0, trending tab
       }
   var selectedTab by remember { mutableStateOf(pagerState.currentPage) }
   var isSelected by remember { mutableStateOf(false) }
@@ -372,18 +373,18 @@ fun HomePager(
   // added for page animation, if the animation is not smooth, change to pagerState.scrollToPage
   LaunchedEffect(key1 = selectedTab) {
     pagerState.animateScrollToPage(page = selectedTab)
-    when (selectedTab) {
-      0 -> homeViewModel.filterByTrending()
-      1 -> homeViewModel.filterByFollowing(userEmail)
+    when (HomeCategory.entries[selectedTab]) {
+      HomeCategory.TRENDING -> homeViewModel.filterByTrending()
+      HomeCategory.FOLLOWING -> homeViewModel.filterByFollowing(userEmail)
     }
   }
 
   // LaunchedEffect to synchronize the pager state with the selected tab
   LaunchedEffect(pagerState.currentPage) {
     selectedTab = pagerState.currentPage
-    when (pagerState.currentPage) {
-      0 -> homeViewModel.filterByTrending()
-      1 -> homeViewModel.filterByFollowing(userEmail)
+    when (HomeCategory.entries[pagerState.currentPage]) {
+      HomeCategory.TRENDING -> homeViewModel.filterByTrending()
+      HomeCategory.FOLLOWING -> homeViewModel.filterByFollowing(userEmail)
     }
   }
 
