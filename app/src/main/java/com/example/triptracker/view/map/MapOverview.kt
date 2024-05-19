@@ -26,15 +26,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.PinDrop
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,6 +57,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.itinerary.ItineraryList
 import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.location.popupState
 import com.example.triptracker.model.profile.MutableUserProfile
@@ -121,7 +123,7 @@ fun MapOverview(
   }
 
   var loadMapScreen by remember {
-    mutableStateOf(if (checkLocationPermission) checkForLocationPermission(context) else false)
+    mutableStateOf(checkLocationPermission && checkForLocationPermission(context))
   }
 
   // Check if the location permission is granted if not re-ask for it. If the result is still
@@ -184,7 +186,7 @@ fun Map(
   val deviceLocation = remember { mutableStateOf(DEFAULT_LOCATION) }
 
   val cameraPositionState = rememberCameraPositionState {
-    if (currentSelectedId == "") {
+    doWhenCurrentSelectedIdIsEmpty(currentSelectedId) {
       getCurrentLocation(
           context = context,
           onLocationFetched = {
@@ -218,7 +220,7 @@ fun Map(
     getCurrentLocation(
         context = context,
         onLocationFetched = {
-          if (currentSelectedId == "") {
+          doWhenCurrentSelectedIdIsEmpty(currentSelectedId) {
             deviceLocation.value = it
             cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLocation.value, 17f)
           }
@@ -228,17 +230,16 @@ fun Map(
   // Get the path list from the view model and trigger the launch effect when the path list is
   // updated
   LaunchedEffect(pathList) {
-    if (currentSelectedId != "") {
+    doWhenCurrentSelectedIdIsNotEmpty(currentSelectedId) {
       // fetch the selected path
       Log.d("MapOverviewPRINT", pathList?.size().toString())
-      if (pathList != null) {
+      doWhenPathListIsNotNull(pathList) {
         val selection = mapViewModel.getPathById(pathList!!, currentSelectedId)
-        if (selection != null) {
-
+        doWhenSelectionIsNotNull(selection) {
           // center the camera on the selected path
           cameraPositionState.position =
               CameraPosition.fromLatLngZoom(
-                  LatLng(selection.location.latitude, selection.location.longitude), 17f)
+                  LatLng(selection!!.location.latitude, selection.location.longitude), 17f)
 
           // set the selected polyline
           mapViewModel.selectedPolylineState.value =
@@ -266,17 +267,19 @@ fun Map(
           properties = properties,
           uiSettings = ui,
           onMapClick = {
-            if (!mapViewModel.asStartItinerary.value) {
-              selectedPolyline = mapViewModel.DUMMY_SELECTED_POLYLINE
-              mapViewModel.displayPopUp.value = false
-              mapViewModel.displayPicturePopUp.value = false
-            } else {
-              if (mapViewModel.displayPicturePopUp.value) {
-                mapViewModel.displayPicturePopUp.value = false
-                mapViewModel.displayPopUp.value = true
-                mapViewModel.popUpState.value = popupState.PATHOVERLAY
-              }
-            }
+            doOnMapClick(
+                mapViewModel.asStartItinerary.value,
+                mapViewModel.displayPicturePopUp.value,
+                callbackIfNullStartItinerary = {
+                  selectedPolyline = mapViewModel.DUMMY_SELECTED_POLYLINE
+                  mapViewModel.displayPopUp.value = false
+                  mapViewModel.displayPicturePopUp.value = false
+                },
+                callbackIfDisplayPicturePopUp = {
+                  mapViewModel.displayPicturePopUp.value = false
+                  mapViewModel.displayPopUp.value = true
+                  mapViewModel.popUpState.value = popupState.PATHOVERLAY
+                })
           },
           onMapLoaded = {
             // decode the city name and update the top bar
@@ -290,12 +293,13 @@ fun Map(
             mapViewModel.filteredPathList.value?.forEach { (location, latLngList) ->
               // Check if the polyline is selected
               val isSelected = selectedPolyline?.itinerary?.id == location.id
+              val width = if (isSelected) 25f else 15f
               // Display the pat polyline
               Polyline(
                   points = latLngList,
                   clickable = true,
                   color = md_theme_orange,
-                  width = if (isSelected) 25f else 15f,
+                  width = width,
                   onClick = {
                     if (!mapViewModel.asStartItinerary.value) {
                       selectedPolyline = MapViewModel.SelectedPolyline(location, latLngList[0])
@@ -375,7 +379,7 @@ fun Map(
                 },
                 colors =
                     ButtonDefaults.buttonColors(
-                        backgroundColor = md_theme_light_dark,
+                        containerColor = md_theme_light_dark,
                         contentColor = md_theme_light_onPrimary),
                 shape = RoundedCornerShape(35.dp),
             ) {
@@ -393,7 +397,7 @@ fun Map(
                 onClick = { showCancelDialog.value = false },
                 colors =
                     ButtonDefaults.buttonColors(
-                        backgroundColor = md_theme_light_black, contentColor = Color.White),
+                        containerColor = md_theme_light_black, contentColor = Color.White),
                 shape = RoundedCornerShape(35.dp)) {
                   Text(
                       text = "No",
@@ -410,7 +414,7 @@ fun Map(
           modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth().padding(10.dp),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.SpaceBetween) {
-            displayCancelItineraryButton(mapViewModel, showCancelDialog)
+            DisplayCancelItineraryButton(mapViewModel, showCancelDialog)
 
             Text(
                 text = mapViewModel.cityNameState.value,
@@ -429,7 +433,7 @@ fun Map(
         Box(
             modifier =
                 Modifier.padding(horizontal = 35.dp, vertical = 65.dp).align(Alignment.Bottom)) {
-              displayCenterLocationButtonIfNeeded(
+              DisplayCenterLocationButtonIfNeeded(
                   ui = ui,
                   properties = properties,
                   mapViewModel = mapViewModel,
@@ -548,7 +552,7 @@ fun Map(
 }
 
 @Composable
-fun displayCancelItineraryButton(
+fun DisplayCancelItineraryButton(
     mapViewModel: MapViewModel,
     showCancelDialog: MutableState<Boolean>
 ) {
@@ -569,7 +573,7 @@ fun displayCancelItineraryButton(
 }
 
 @Composable
-fun displayCenterLocationButtonIfNeeded(
+fun DisplayCenterLocationButtonIfNeeded(
     ui: MapUiSettings,
     properties: MapProperties,
     mapViewModel: MapViewModel,
@@ -617,6 +621,49 @@ fun displayPinImages(selectedPin: Pin?) {
           model = url,
           contentDescription = "Image",
       )
+    }
+  }
+}
+
+/**
+ * Helper functions for complexity that checks if values are empty or null and accordingly call for
+ * callback.
+ */
+fun doWhenCurrentSelectedIdIsEmpty(currentSelectedId: String, callback: () -> Unit) {
+  if (currentSelectedId == "") {
+    callback()
+  }
+}
+
+fun doWhenCurrentSelectedIdIsNotEmpty(currentSelectedId: String, callback: () -> Unit) {
+  if (currentSelectedId != "") {
+    callback()
+  }
+}
+
+fun doWhenPathListIsNotNull(pathList: ItineraryList?, callback: () -> Unit) {
+  if (pathList != null) {
+    callback()
+  }
+}
+
+fun doWhenSelectionIsNotNull(selection: Itinerary?, callback: () -> Unit) {
+  if (selection != null) {
+    callback()
+  }
+}
+
+fun doOnMapClick(
+    startItinerary: Boolean,
+    displayPicturePopUp: Boolean,
+    callbackIfNullStartItinerary: () -> Unit,
+    callbackIfDisplayPicturePopUp: () -> Unit
+) {
+  if (!startItinerary) {
+    callbackIfNullStartItinerary()
+  } else {
+    if (displayPicturePopUp) {
+      callbackIfDisplayPicturePopUp()
     }
   }
 }

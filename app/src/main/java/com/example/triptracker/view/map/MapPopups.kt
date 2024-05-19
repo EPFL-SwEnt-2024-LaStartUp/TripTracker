@@ -32,20 +32,21 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ExpandLess
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.StarBorder
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -61,6 +62,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -308,30 +310,9 @@ fun StartScreen(
                                   .wrapContentHeight(align = Alignment.CenterVertically))
                       Spacer(Modifier.weight(1f))
 
-                      if (userProfile.userProfile.value.favoritesPaths.contains(itinerary.id)) {
-                        // If the user has favorited this itinerary, display a star orange
-                        androidx.compose.material3.Icon(
-                            imageVector = Icons.Outlined.Star,
-                            contentDescription = "Star",
-                            tint = md_theme_orange,
-                            modifier =
-                                Modifier.size(30.dp).clickable {
-                                  userProfileViewModel.removeFavorite(userProfile, itinerary.id)
-                                })
-                      } else {
-                        // If the user has not favorited this itinerary, display a star grey
-                        androidx.compose.material3.Icon(
-                            imageVector = Icons.Outlined.StarBorder,
-                            contentDescription = "Star",
-                            tint = md_theme_grey,
-                            modifier =
-                                Modifier.size(30.dp).clickable {
-                                  userProfileViewModel.addFavorite(userProfile, itinerary.id)
-                                  homeViewModel.incrementSaveCount(
-                                      itinerary.id) // when click on grey star, increment save count
-                                })
-                      }
+                      DisplayStar(userProfileViewModel, userProfile, itinerary, homeViewModel)
                     }
+
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     text = itinerary.title,
@@ -362,57 +343,18 @@ fun StartScreen(
                                   .size(screenWidth, screenHeight * 0.2f)) {
                             items(itinerary.pinnedPlaces) { pin ->
                               val index = itinerary.pinnedPlaces.indexOf(pin)
-                              Row(
-                                  verticalAlignment = Alignment.CenterVertically,
-                                  modifier =
-                                      Modifier.clickable {
-                                            val oldValue = descriptionsOpen.value[index]
-                                            descriptionsOpen.value =
-                                                descriptionsOpen.value.toMutableList().also {
-                                                  it[index] = !oldValue
-                                                }
-                                          }
-                                          .fillMaxWidth()) {
-                                    Text(
-                                        text =
-                                            "•   ${if(!descriptionsOpen.value[index]) pin.name.take(30) else pin.name}" +
-                                                if (pin.name.length > 30 &&
-                                                    !descriptionsOpen.value[index])
-                                                    "..."
-                                                else "",
-                                        color = md_theme_light_outlineVariant,
-                                        fontFamily = Montserrat,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 16.sp,
-                                    )
-                                    Icon(
-                                        imageVector =
-                                            if (descriptionsOpen.value[index])
-                                                Icons.Outlined.ExpandLess
-                                            else Icons.Outlined.ExpandMore,
-                                        contentDescription = "Arrow",
-                                        tint = md_theme_grey,
-                                        modifier = Modifier.size(20.dp))
-                                  }
+                              PinDescription(
+                                  descriptionsOpen = descriptionsOpen, pin = pin, index = index)
                               Spacer(modifier = Modifier.height(5.dp))
-                              if (descriptionsOpen.value[index]) {
-                                Text(
-                                    text = pin.description,
-                                    color = md_theme_light_outlineVariant,
-                                    fontSize = 14.sp,
-                                    fontFamily = Montserrat,
-                                    fontWeight = FontWeight.Light,
-                                    modifier = Modifier.padding(start = 30.dp))
-                                Spacer(modifier = Modifier.height(5.dp))
-                              }
+                              OnDescriptionOpen(
+                                  descriptionsOpen = descriptionsOpen, pin = pin, index = index)
                               Spacer(modifier = Modifier.height(5.dp))
                             }
                           }
                       // check if it is possible to display the images
+                      val height = if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f
                       LazyRow(
-                          modifier =
-                              Modifier.height(
-                                  if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f),
+                          modifier = Modifier.height(height),
                           verticalAlignment = Alignment.CenterVertically) {
                             items(itinerary.pinnedPlaces) { pin ->
                               for (image in pin.image_url) {
@@ -428,13 +370,7 @@ fun StartScreen(
                               }
                             }
                           }
-                      if (imageIsEmpty.value) {
-                        Text(
-                            text = "No images to display",
-                            color = md_theme_light_outlineVariant,
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(start = 20.dp).height(screenHeight * 0.25f))
-                      }
+                      OnImageIsEmpty(imageIsEmpty = imageIsEmpty, screenHeight = screenHeight)
                       // add spacer proportional to the screen height
                       Spacer(modifier = Modifier.height(screenHeight * 0.07f))
                       Button(
@@ -453,7 +389,7 @@ fun StartScreen(
                           shape = RoundedCornerShape(50.dp),
                           colors =
                               ButtonDefaults.buttonColors(
-                                  backgroundColor = Color(0xFFF06F24),
+                                  containerColor = Color(0xFFF06F24),
                               ) // Rounded corners with a radius of 12.dp
                           ) {
                             Text(
@@ -466,5 +402,132 @@ fun StartScreen(
                     }
               }
         }
+  }
+}
+
+/** Helper composable functions to lower complexity */
+
+/**
+ * DisplayStar is a composable function that displays a star icon that changes color based on
+ * whether the user has favorited the itinerary or not
+ *
+ * @param userProfileViewModel ViewModel for the user's profile
+ * @param userProfile MutableUserProfile of the user
+ * @param itinerary Itinerary to be favorited
+ * @param homeViewModel ViewModel for the home screen
+ */
+@Composable
+fun DisplayStar(
+    userProfileViewModel: UserProfileViewModel,
+    userProfile: MutableUserProfile,
+    itinerary: Itinerary,
+    homeViewModel: HomeViewModel
+) {
+  if (userProfile.userProfile.value.favoritesPaths.contains(itinerary.id)) {
+    // If the user has favorited this itinerary, display a star orange
+    Icon(
+        imageVector = Icons.Outlined.Star,
+        contentDescription = "Star",
+        tint = md_theme_orange,
+        modifier =
+            Modifier.size(30.dp).clickable {
+              userProfileViewModel.removeFavorite(userProfile, itinerary.id)
+            })
+  } else {
+    // If the user has not favorited this itinerary, display a star grey
+    Icon(
+        imageVector = Icons.Outlined.StarBorder,
+        contentDescription = "Star",
+        tint = md_theme_grey,
+        modifier =
+            Modifier.size(30.dp).clickable {
+              userProfileViewModel.addFavorite(userProfile, itinerary.id)
+              homeViewModel.incrementSaveCount(
+                  itinerary.id) // when click on grey star, increment save count
+            })
+  }
+}
+
+/**
+ * PinDescription is a composable function that displays the description of a pin
+ *
+ * @param descriptionsOpen MutableState of a list of booleans that keeps track of whether the
+ *   description of a pin is open or not
+ * @param pin Pin to display the description of
+ * @param index Index of the pin in the list of pins
+ */
+@Composable
+fun PinDescription(descriptionsOpen: MutableState<List<Boolean>>, pin: Pin, index: Int) {
+  Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier =
+          Modifier.clickable {
+                val oldValue = descriptionsOpen.value[index]
+                descriptionsOpen.value =
+                    descriptionsOpen.value.toMutableList().also { it[index] = !oldValue }
+              }
+              .fillMaxWidth()) {
+        val displayText =
+            if (!descriptionsOpen.value[index]) {
+              pin.name.take(30) + if (pin.name.length > 30) "..." else ""
+            } else {
+              pin.name
+            }
+        val imageVector =
+            if (descriptionsOpen.value[index]) Icons.Outlined.ExpandLess
+            else Icons.Outlined.ExpandMore
+
+        Text(
+            text = "•   $displayText",
+            color = md_theme_light_outlineVariant,
+            fontFamily = Montserrat,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+        )
+        Icon(
+            imageVector = imageVector,
+            contentDescription = "Arrow",
+            tint = md_theme_grey,
+            modifier = Modifier.size(20.dp))
+      }
+}
+
+/**
+ * OnDescriptionOpen is a composable function that displays the description of a pin if it is open
+ *
+ * @param descriptionsOpen MutableState of a list of booleans that keeps track of whether the
+ *   description of a pin is open or not
+ * @param pin Pin to display the description of
+ * @param index Index of the pin in the list of pins
+ */
+@Composable
+fun OnDescriptionOpen(descriptionsOpen: MutableState<List<Boolean>>, pin: Pin, index: Int) {
+  if (descriptionsOpen.value[index]) {
+    Text(
+        text = pin.description,
+        color = md_theme_light_outlineVariant,
+        fontSize = 14.sp,
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.Light,
+        modifier = Modifier.padding(start = 30.dp))
+    Spacer(modifier = Modifier.height(5.dp))
+  }
+}
+
+/**
+ * OnImageIsEmpty is a composable function that displays a message if there are no images to display
+ *
+ * @param imageIsEmpty MutableState of a boolean that keeps track of whether there are images to
+ *   display or not
+ * @param screenHeight Dp of the screen height
+ */
+@Composable
+fun OnImageIsEmpty(imageIsEmpty: MutableState<Boolean>, screenHeight: Dp) {
+  if (imageIsEmpty.value) {
+    Text(
+        text = "No images to display",
+        color = md_theme_light_outlineVariant,
+        fontSize = 16.sp,
+        modifier = Modifier.padding(start = 20.dp).height(screenHeight * 0.25f))
   }
 }
