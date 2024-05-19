@@ -8,7 +8,6 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -66,6 +65,7 @@ import com.example.triptracker.view.theme.md_theme_light_error
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_light_onSurface
 import com.example.triptracker.view.theme.md_theme_light_outline
+import com.example.triptracker.view.theme.md_theme_light_outlineVariant
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
@@ -77,6 +77,7 @@ val dummyProfile = UserProfile("test@gmail.com", "Test User", "test", "test bio"
  * Displays an itinerary in the list of itineraries
  *
  * @param itinerary: Itinerary object to display
+ * @param navigation: Navigation object to use for navigation
  * @param boxHeight: Height of the box that contains the itinerary
  * @param userProfileViewModel: UserProfileViewModel object to use for fetching user profiles
  * @param onClick: Function to call when the itinerary is clicked
@@ -86,10 +87,11 @@ val dummyProfile = UserProfile("test@gmail.com", "Test User", "test", "test bio"
 @Composable
 fun DisplayItinerary(
     itinerary: Itinerary,
-    boxHeight: Dp = 200.dp,
+    boxHeight: Dp = 220.dp,
     userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
     onClick: () -> Unit,
     homeViewModel: HomeViewModel = viewModel(),
+    displayImage: Boolean = false,
     test: Boolean = false,
     canBeDeleted: Boolean = false,
 ) {
@@ -111,6 +113,9 @@ fun DisplayItinerary(
   // Boolean to check if the profile picture should be displayed
   var showProfilePicture by remember { mutableStateOf(false) }
 
+  // Boolean to check if the image is empty
+  val imageIsEmpty = remember { mutableStateOf(true) }
+
   var showAlert by remember { mutableStateOf(false) }
 
   when (showAlert) {
@@ -128,8 +133,8 @@ fun DisplayItinerary(
   }
 
   var boxHeightToDisplay = 0.dp
-  if (checkIfImage(itinerary)) {
-    boxHeightToDisplay = 525.dp
+  if (checkIfImage(itinerary) && displayImage) {
+    boxHeightToDisplay = 480.dp
   } else {
     boxHeightToDisplay = boxHeight
   }
@@ -267,28 +272,34 @@ fun DisplayItinerary(
                   fontFamily = FontFamily(Font(R.font.montserrat_medium)),
                   color = md_theme_grey)
 
-              Spacer(modifier = Modifier.height(50.dp).weight(1f).padding(5.dp))
-              LazyRow(
-                  contentPadding = PaddingValues(5.dp),
-                  horizontalArrangement = Arrangement.Center,
-                  modifier =
-                      Modifier.testTag(
-                          "SpotPictures") // This will arrange the images in the center of the
-                  // LazyRow
-                  ) {
-                    items(itinerary.pinnedPlaces) { pin ->
-                      for (image in pin.image_url) {
-                        AsyncImage(
-                            model = image,
-                            contentDescription = pin.description,
-                            modifier =
-                                Modifier.clip(RoundedCornerShape(corner = CornerSize(14.dp)))
-                                    .size(screenWidth * 0.9f, screenHeight * 0.3f))
+              if (displayImage) {
+                Spacer(modifier = Modifier.height(30.dp).weight(1f).padding(5.dp))
+                LazyRow(
+                    modifier =
+                        Modifier.height(if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f),
+                    verticalAlignment = Alignment.CenterVertically) {
+                      items(itinerary.pinnedPlaces) { pin ->
+                        for (image in pin.image_url) {
+                          imageIsEmpty.value = false
+                          AsyncImage(
+                              model = image,
+                              contentDescription = pin.description,
+                              modifier =
+                                  Modifier.clip(RoundedCornerShape(corner = CornerSize(15.dp)))
+                                      .background(Color.Red))
 
-                        Spacer(modifier = Modifier.width(20.dp))
+                          Spacer(modifier = Modifier.width(15.dp).weight(1f))
+                        }
                       }
                     }
-                  }
+                if (imageIsEmpty.value) {
+                  Text(
+                      text = "No images to display",
+                      color = md_theme_light_outlineVariant,
+                      fontSize = 16.sp,
+                      modifier = Modifier.height(screenHeight * 0.25f))
+                }
+              }
             }
           }
     }

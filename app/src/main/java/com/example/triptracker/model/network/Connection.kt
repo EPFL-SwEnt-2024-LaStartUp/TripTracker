@@ -6,15 +6,30 @@ import android.net.NetworkCapabilities
 import com.example.triptracker.MainActivity.Companion.applicationContext
 
 /** Class in charge of the network status */
-class Connection(private val context: Context = applicationContext()) {
+class Connection() {
+  private var context: Context? = null
+
+  init {
+    try {
+      context = applicationContext()
+    } catch (e: Exception) { // If the context is not available because of testing
+      e.printStackTrace()
+    }
+  }
 
   /**
    * @return Boolean: True if the device is connected to the internet, false otherwise
-   * @brief Function to check if the device is connected to the internet
+   * @brief Function to check if the device is connected to the internet If the function is called
+   *   when testing, always return true
    */
   fun isDeviceConnectedToInternet(): Boolean {
+    // Context can be null when testing because no application context
+    if (context == null) {
+      return true
+    }
+
     val connectivityManager =
-        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     val network = connectivityManager.activeNetwork ?: return false
     val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
