@@ -160,7 +160,7 @@ class HomeTest {
           callback(mockItineraries)
         }
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
-    every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
+    every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
     every { mockNav.getTopLevelDestinations()[1] } returns
         TopLevelDestination(Route.MAPS, Icons.Outlined.Place, "Maps")
     every { mockProfile.userProfile.value } returns mockUsers[0]

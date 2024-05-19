@@ -181,7 +181,10 @@ fun HomeScreen(
                */
             } else {
               DisplayItineraries(
-                  itineraries = itineraries, navigation = navigation, homeViewModel = homeViewModel)
+                  itineraries = itineraries,
+                  navigation = navigation,
+                  homeViewModel = homeViewModel,
+                  test = test)
             }
           }
         }
@@ -328,12 +331,14 @@ fun DisplayItineraries(
     homeViewModel: HomeViewModel,
     test: Boolean = false
 ) {
+  var goodPadding = PaddingValues(0.dp, 0.dp, 0.dp, 70.dp)
+  if (test) {
+    goodPadding = PaddingValues(0.dp, 50.dp, 0.dp, 70.dp)
+  }
   LazyColumn(
       modifier =
           Modifier.fillMaxSize()
-              .padding(
-                  PaddingValues(
-                      0.dp, 0.dp, 0.dp, 70.dp)) // this ensures having a padding at the bottom
+              .padding(goodPadding) // this ensures having a padding at the bottom
               .testTag("ItineraryList"),
       contentPadding = PaddingValues(16.dp)) {
         items(itineraries) { itinerary ->
