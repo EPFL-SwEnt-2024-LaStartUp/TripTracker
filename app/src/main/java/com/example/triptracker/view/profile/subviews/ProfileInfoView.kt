@@ -62,12 +62,12 @@ fun ProfileInfoView(navigation: Navigation, userProfile: UserProfile, editable: 
           contentDescription = "Profile picture",
           placeholder = painterResource(id = R.drawable.blankprofile),
           modifier =
-              Modifier.shadow(
+              Modifier.padding(start = (LocalConfiguration.current.screenWidthDp * 0.08f).dp)
+                  .shadow(
                       elevation = 15.dp,
                       shape = CircleShape,
                       ambientColor = md_theme_light_primary,
                       spotColor = md_theme_light_primary)
-                  .padding(start = 15.dp)
                   .size((LocalConfiguration.current.screenHeightDp * 0.11f).dp)
                   .clip(CircleShape)
                   .testTag("ProfilePicture"),
