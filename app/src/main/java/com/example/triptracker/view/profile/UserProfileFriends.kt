@@ -60,7 +60,7 @@ fun UserProfileFriends(
 
   userProfileViewModel.setListToFilter(usersList)
   var filteredList =
-      userProfileViewModel.filteredUserProfileList(false).observeAsState(initial = emptyList())
+      userProfileViewModel.filteredUserProfileList.observeAsState(initial = emptyList())
 
   Scaffold(
       topBar = {

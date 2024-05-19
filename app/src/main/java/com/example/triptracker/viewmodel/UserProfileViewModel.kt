@@ -185,14 +185,14 @@ class UserProfileViewModel(
    *   profiles or no
    * @return filtered user profile list based on the search query
    */
-  fun filteredUserProfileList(aware: Boolean): LiveData<List<UserProfile>> =
+  val filteredUserProfileList: LiveData<List<UserProfile>> =
       _searchQuery.switchMap { query ->
         liveData {
           val filteredList =
               listToFilter.value?.filter {
                 (it.username.contains(query, ignoreCase = true) ||
                     it.surname.contains(query, ignoreCase = true) ||
-                    it.name.contains(query, ignoreCase = true)) && (it.profilePrivacy == 0 || aware)
+                    it.name.contains(query, ignoreCase = true)) && (it.profilePrivacy == 0)
               } ?: emptyList()
           emit(filteredList)
         }

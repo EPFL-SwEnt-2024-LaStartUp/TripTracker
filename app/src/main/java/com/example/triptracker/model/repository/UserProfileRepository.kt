@@ -132,8 +132,8 @@ open class UserProfileRepository {
         follower,
         following,
         favoritesPaths,
-        itineraryPrivacy.toInt(),
-        profilePrivacy.toInt())
+        profilePrivacy.toInt(),
+        itineraryPrivacy.toInt())
   }
 
   private fun createFavoritesPaths(id: String): List<String> {
@@ -211,8 +211,8 @@ open class UserProfileRepository {
               followers,
               following,
               favoritesPaths,
-              itineraryPrivacy.toInt(),
-              profilePrivacy.toInt())
+              profilePrivacy.toInt(),
+              itineraryPrivacy.toInt())
       _userProfileList.add(userProfile)
     }
   }

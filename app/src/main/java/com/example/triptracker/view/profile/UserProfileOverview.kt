@@ -48,7 +48,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.R
-import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
@@ -74,8 +73,7 @@ fun UserProfileOverview(
     profile: MutableUserProfile,
     homeViewModel: HomeViewModel = viewModel()
 ) {
-  val myTripsList =
-      homeViewModel.filteredItineraryList(AmbientUserProfile.current.userProfile.value, true)
+  val myTripsList = homeViewModel.filteredItineraryList
   var myTripsCount = 0
   myTripsList.observeForever(Observer { list -> myTripsCount = list.size })
 
