@@ -62,6 +62,7 @@ class HomeTest {
   val mockUserList = MockUserList()
   val mockUsers = mockUserList.getUserProfiles()
   val mockMail = "test@gmail.com"
+
   /**
    * This method is run before each test to set up the necessary mocks. It is used to initialize the
    * mocks and set up the necessary dependencies.
@@ -95,7 +96,12 @@ class HomeTest {
     // Have to repeat code to have specific mock data for each test!!
     every { mockUserProfileRepository.getUserProfileByEmail(mockMail) {} } returns
         mockk(relaxUnitFun = true)
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
     every { mockProfile.userProfile.value } returns mockUsers[0]
@@ -121,7 +127,12 @@ class HomeTest {
 
   @Test
   fun clickingOnItineraryOpensItineraryPreview() {
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
     every { mockNav.getTopLevelDestinations()[1] } returns
@@ -143,7 +154,12 @@ class HomeTest {
 
   @Test
   fun clickingOnProfilePictureOpensPreview() {
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
     every { mockNav.getTopLevelDestinations()[1] } returns
@@ -172,7 +188,13 @@ class HomeTest {
 
   @Test
   fun testSearchBarDisplaysComponentsCorrectly() {
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
+
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
     every { mockProfile.userProfile.value } returns mockUsers[0]
@@ -190,7 +212,13 @@ class HomeTest {
 
   @Test
   fun searchBarIsDisplayed() {
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
+
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
     every { mockProfile.userProfile.value } returns mockUsers[0]
@@ -213,7 +241,12 @@ class HomeTest {
    */
   @Test
   fun setSearchQuery() {
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns
         MutableLiveData(listOf(mockItineraries[0]))
@@ -237,7 +270,12 @@ class HomeTest {
 
   @Test
   fun itineraryIsClickable() {
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
     every { mockNav.getTopLevelDestinations()[1] } returns
@@ -253,7 +291,12 @@ class HomeTest {
 
   @Test
   fun noItinerariesTextIsDisplayed() {
-    every { mockItineraryRepository.getAllItineraries() } returns emptyList()
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
     every { mockViewModel.itineraryList } returns MutableLiveData(null)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
     every { mockProfile.userProfile.value } returns mockUsers[0]
@@ -269,7 +312,12 @@ class HomeTest {
 
   @Test
   fun profileIconClickOpensProfileScreen() {
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
     every { mockProfile.userProfile.value } returns mockUsers[0]
@@ -289,7 +337,12 @@ class HomeTest {
   fun searchFilterTest() {
     val filteredItineraryLiveData = MutableLiveData<List<Itinerary>>(listOf(mockItineraries[0]))
 
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns filteredItineraryLiveData
     every { mockViewModel.searchQuery } returns MutableLiveData("Tr")
@@ -327,7 +380,12 @@ class HomeTest {
 
   @Test
   fun clickOnDropDownMenu() {
-    every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
     every { mockProfile.userProfile.value } returns mockUsers[0]
@@ -355,7 +413,12 @@ class HomeTest {
       every { mockUserProfileViewModel.getUserProfile(mockMail) {} } returns
           mockk(relaxUnitFun = true)
 
-      every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+      every { mockItineraryRepository.getAllItineraries(any()) } answers
+          {
+            // Invoke the callback with mock data
+            val callback = arg<(List<Itinerary>) -> Unit>(0)
+            callback(mockItineraries)
+          }
       every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
       every { mockViewModel.filteredItineraryList } returns MutableLiveData(emptyList())
       every { mockViewModel.searchQuery } returns MutableLiveData("test")
@@ -390,7 +453,12 @@ class HomeTest {
       every { mockUserProfileViewModel.getUserProfile(mockMail) {} } returns
           mockk(relaxUnitFun = true)
 
-      every { mockItineraryRepository.getAllItineraries() } returns mockItineraries
+      every { mockItineraryRepository.getAllItineraries(any()) } answers
+          {
+            // Invoke the callback with mock data
+            val callback = arg<(List<Itinerary>) -> Unit>(0)
+            callback(mockItineraries)
+          }
       every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
       every { mockViewModel.filteredItineraryList } returns MutableLiveData(emptyList())
       every { mockViewModel.searchQuery } returns MutableLiveData("test")

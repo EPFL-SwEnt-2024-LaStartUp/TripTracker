@@ -60,7 +60,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
-import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.ItineraryRepository
@@ -106,8 +105,7 @@ var isDescriptionEmpty by mutableStateOf(true)
 fun RecordScreen(
     context: Context,
     navigation: Navigation,
-    viewModel: RecordViewModel = RecordViewModel(),
-    connection: Connection = Connection()
+    viewModel: RecordViewModel = RecordViewModel()
 ) {
   // default device location is EPFL
   var deviceLocation = DEFAULT_LOCATION
@@ -131,8 +129,8 @@ fun RecordScreen(
   when (loadMapScreen) {
     true -> {
       Scaffold(
-          bottomBar = { NavigationBar(navigation, connection) },
-          modifier = Modifier.testTag("RecordScreen")) { innerPadding ->
+          bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("RecordScreen")) {
+              innerPadding ->
             Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
               Map(context, viewModel, deviceLocation, mapProperties, uiSettings)
             }

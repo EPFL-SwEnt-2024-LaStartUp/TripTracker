@@ -145,7 +145,7 @@ fun HomeScreen(
               }
         }
       },
-      bottomBar = { NavigationBar(navigation) },
+      bottomBar = { NavigationBar(navigation = navigation) },
       modifier = Modifier.fillMaxWidth().testTag("HomeScreen")) { innerPadding ->
         when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
           emptyList<Itinerary>() -> {
