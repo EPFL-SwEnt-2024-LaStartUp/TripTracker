@@ -194,6 +194,8 @@ class UserProfileViewModel(
   /**
    * This function returns the filtered user profile list based on the search query.
    *
+   * @param aware : parameter that indicates if the filtered list should contain the private
+   *   profiles or no
    * @return filtered user profile list based on the search query
    */
   val filteredUserProfileList: LiveData<List<UserProfile>> =
@@ -201,9 +203,9 @@ class UserProfileViewModel(
         liveData {
           val filteredList =
               listToFilter.value?.filter {
-                it.username.contains(query, ignoreCase = true) ||
+                (it.username.contains(query, ignoreCase = true) ||
                     it.surname.contains(query, ignoreCase = true) ||
-                    it.name.contains(query, ignoreCase = true)
+                    it.name.contains(query, ignoreCase = true)) && (it.profilePrivacy == 0)
               } ?: emptyList()
           emit(filteredList)
         }

@@ -31,6 +31,7 @@ data class Itinerary(
         List<Pin>, // For now implemented as a list of Pins, Pin.kt defined in model/location
     val description: String = "", // description of the trip, set to empty string by default
     val route: List<LatLng>
+
     // val participants : List<User> TODO : need to add the friends who are part of the trip as a
     // class Friend
 )

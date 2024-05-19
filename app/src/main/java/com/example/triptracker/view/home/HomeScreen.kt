@@ -54,6 +54,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.profile.AmbientUserProfile
+import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
@@ -64,12 +65,16 @@ import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeCategory
 import com.example.triptracker.viewmodel.HomeViewModel
+import com.example.triptracker.viewmodel.UserProfileViewModel
+
+var allProfilesFetched: List<UserProfile> = emptyList()
 
 /**
  * HomeScreen composable that displays the list of itineraries
  *
  * @param navigation: Navigation object to use for navigation
  * @param homeViewModel: HomeViewModel to use for fetching itineraries
+ * @param userProfileViewModel: UserProfileViewModel to use for fetching users
  * @param displayPager: Boolean to display or not the home pager
  * @param test: Boolean to test the function
  */
@@ -77,117 +82,138 @@ import com.example.triptracker.viewmodel.HomeViewModel
 fun HomeScreen(
     navigation: Navigation,
     homeViewModel: HomeViewModel = viewModel(),
+    userProfileViewModel: UserProfileViewModel = viewModel(),
     test: Boolean = false
 ) {
-  Log.d("HomeScreen", "Rendering HomeScreen")
-  val selectedFilterType by homeViewModel.selectedFilter.observeAsState(FilterType.TITLE)
-
-  // Filtered list of itineraries based on search query
-  val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
-  var showFilterDropdown by remember { mutableStateOf(false) }
-  var isSearchActive by remember { mutableStateOf(false) }
-  val isNoResultFound =
-      remember(filteredList, isSearchActive) {
-        isSearchActive && filteredList.isEmpty() && homeViewModel.searchQuery.value!!.isNotEmpty()
-      }
-
-  Scaffold(
-      topBar = {
-        Column {
-          // Assuming a SearchBar composable is defined elsewhere
-          SearchBarImplementation(
-              onBackClicked = {
-                // Navigate back to the home
-                navigation.goBack()
-              },
-              viewModel = homeViewModel,
-              onSearchActivated = { isActive -> isSearchActive = isActive },
-              navigation = navigation,
-              selectedFilterType = selectedFilterType,
-              isNoResultFound = isNoResultFound)
-        }
-        if (isSearchActive) {
-          Box(
-              modifier =
-                  Modifier.padding(290.dp, 25.dp, 25.dp, 235.dp)
-                      .width(200.dp)
-                      .testTag("DropDownBox")) {
-                DropdownMenu(
-                    expanded = showFilterDropdown,
-                    onDismissRequest = { showFilterDropdown = false },
-                    modifier = Modifier.testTag("DropDownFilter")) {
-                      FilterType.entries.forEach { filterType ->
-                        DropdownMenuItem(
-                            text = {
-                              Text(
-                                  text = filterType.name.replace('_', ' '),
-                                  modifier = Modifier.testTag("FilterText"))
-                            },
-                            onClick = {
-                              homeViewModel.setSearchFilter(filterType)
-                              showFilterDropdown = false
-                            })
-                      }
-                    }
-                Text(
-                    text = selectedFilterType.name,
-                    modifier =
-                        Modifier.clickable { showFilterDropdown = true }
-                            .background(
-                                MaterialTheme.colorScheme.surfaceVariant,
-                                shape = MaterialTheme.shapes.medium)
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                    fontFamily = FontFamily(Font(R.font.montserrat_semi_bold)),
-                    fontSize = 12.sp,
-                )
-              }
-        }
-      },
-      bottomBar = { NavigationBar(navigation = navigation) },
-      modifier = Modifier.fillMaxWidth().testTag("HomeScreen")) { innerPadding ->
-        when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
-          emptyList<Itinerary>() -> {
-            Text(
-                text = "You do not have any itineraries yet.",
-                modifier = Modifier.padding(10.dp).testTag("NoItinerariesText"),
-                fontSize = 1.sp)
+  var readyToDisplay by remember { mutableStateOf(false) }
+  var allProfiles by remember { mutableStateOf(emptyList<UserProfile>()) }
+  userProfileViewModel.fetchAllUserProfiles() { fetch ->
+    if (fetch != null) {
+      allProfiles = fetch
+      readyToDisplay = true
+    }
+  }
+  when (readyToDisplay || test) {
+    false -> {
+      Log.d("UserProfileList", "User profile list is null")
+    }
+    true -> {
+      val selectedFilterType by homeViewModel.selectedFilter.observeAsState(FilterType.TITLE)
+      allProfilesFetched = allProfiles
+      // Filtered list of itineraries based on search query
+      val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
+      var showFilterDropdown by remember { mutableStateOf(false) }
+      var isSearchActive by remember { mutableStateOf(false) }
+      val isNoResultFound =
+          remember(filteredList, isSearchActive) {
+            isSearchActive &&
+                filteredList.isEmpty() &&
+                homeViewModel.searchQuery.value!!.isNotEmpty()
           }
-          else -> {
-            if (!test) {
-              Column(
-                  modifier =
-                      Modifier.fillMaxSize()
-                          .padding(
-                              PaddingValues(
-                                  0.dp,
-                                  80.dp,
-                                  0.dp,
-                                  0.dp)) // this ensures having a padding at the top
-                  ) {
-                    // will display the list of itineraries
-                    HomePager(
-                        navigation = navigation,
-                        homeViewModel = homeViewModel,
-                        innerPadding = innerPadding,
-                        test = test)
-                  }
-              /*
-              TODO can be used to scroll to the top of the list
-              val showButton = listState.firstVisibleItemIndex > 0
-              AnimatedVisibility(visible = showButton) {
-                  ScrollToTopButton()
-              }
-               */
-            } else {
-              DisplayItineraries(
-                  itineraries = itineraries,
+
+      Scaffold(
+          topBar = {
+            Column {
+              // Assuming a SearchBar composable is defined elsewhere
+              SearchBarImplementation(
+                  onBackClicked = {
+                    // Navigate back to the home
+                    navigation.goBack()
+                  },
+                  viewModel = homeViewModel,
+                  onSearchActivated = { isActive -> isSearchActive = isActive },
                   navigation = navigation,
-                  homeViewModel = homeViewModel,
-                  test = test)
+                  selectedFilterType = selectedFilterType,
+                  isNoResultFound = isNoResultFound)
+            }
+            if (isSearchActive) {
+              Box(
+                  modifier =
+                      Modifier.padding(290.dp, 25.dp, 25.dp, 235.dp)
+                          .width(200.dp)
+                          .testTag("DropDownBox")) {
+                    DropdownMenu(
+                        expanded = showFilterDropdown,
+                        onDismissRequest = { showFilterDropdown = false },
+                        modifier = Modifier.testTag("DropDownFilter")) {
+                          FilterType.entries.forEach { filterType ->
+                            DropdownMenuItem(
+                                text = {
+                                  Text(
+                                      text = filterType.name.replace('_', ' '),
+                                      modifier = Modifier.testTag("FilterText"))
+                                },
+                                onClick = {
+                                  homeViewModel.setSearchFilter(filterType)
+                                  showFilterDropdown = false
+                                })
+                          }
+                        }
+                    Text(
+                        text = selectedFilterType.name,
+                        modifier =
+                            Modifier.clickable { showFilterDropdown = true }
+                                .background(
+                                    MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = MaterialTheme.shapes.medium)
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                        fontFamily = FontFamily(Font(R.font.montserrat_semi_bold)),
+                        fontSize = 12.sp,
+                    )
+                  }
+            }
+          },
+          bottomBar = { NavigationBar(navigation = navigation) },
+          modifier = Modifier.fillMaxWidth().testTag("HomeScreen")) { innerPadding ->
+            when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
+              emptyList<Itinerary>() -> {
+                Text(
+                    text = "You do not have any itineraries yet.",
+                    modifier = Modifier.padding(10.dp).testTag("NoItinerariesText"),
+                    fontSize = 1.sp)
+              }
+              else -> {
+                if (!test) {
+                  Column(
+                      modifier =
+                          Modifier.fillMaxSize()
+                              .padding(
+                                  PaddingValues(
+                                      0.dp,
+                                      80.dp,
+                                      0.dp,
+                                      0.dp)) // this ensures having a padding at the top
+                      ) {
+                        // will display the list of itineraries
+                        HomePager(
+                            navigation = navigation,
+                            homeViewModel = homeViewModel,
+                            innerPadding = innerPadding,
+                            test = test)
+                      }
+
+                  // will display the list of itineraries
+
+                  /*
+                  TODO can be used to scroll to the top of the list
+                  val showButton = listState.firstVisibleItemIndex > 0
+                  AnimatedVisibility(visible = showButton) {
+                      ScrollToTopButton()
+                  }
+                   */
+                } else {
+                  DisplayItineraries(
+                      itineraries = itineraries,
+                      navigation = navigation,
+                      homeViewModel = homeViewModel,
+                      test = test)
+                }
+              }
             }
           }
-        }
-      }
+    }
+  }
+  Log.d("HomeScreen", "Rendering HomeScreen")
 }
 
 /**
@@ -209,6 +235,7 @@ fun SearchBarImplementation(
     isNoResultFound: Boolean = false,
     navigation: Navigation
 ) {
+  val currProfile = AmbientUserProfile.current.userProfile.value
   var searchText by remember { mutableStateOf("") }
   val items = viewModel.filteredItineraryList.value ?: listOf()
   val focusManager = LocalFocusManager.current
@@ -311,8 +338,21 @@ fun SearchBarImplementation(
             color = Color.Red)
       }
       // Itinerary items list
-      val listToShow = if (isActive) items else viewModel.itineraryList.value ?: listOf()
+      var listToShow = if (isActive) items else viewModel.itineraryList.value ?: listOf()
       LazyColumn {
+        listToShow =
+            listToShow.filter {
+              val itin = it
+              val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
+              if (ownerProfile != null) {
+                ownerProfile.itineraryPrivacy == 0 ||
+                    (ownerProfile.itineraryPrivacy == 1 &&
+                        currProfile.followers.contains(ownerProfile.mail) &&
+                        currProfile.following.contains(ownerProfile.mail))
+              } else {
+                false
+              }
+            }
         items(listToShow) { itinerary ->
           ItineraryItem(
               itinerary = itinerary,
@@ -414,8 +454,23 @@ fun HomePager(
       when (HomeCategory.entries[page]) {
         HomeCategory.TRENDING -> {
           val trendingItineraries by homeViewModel.trendingList.observeAsState(emptyList())
+
           DisplayItineraries(
-              itineraries = trendingItineraries,
+              itineraries =
+                  trendingItineraries.filter {
+                    val itin = it
+                    val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
+                    if (ownerProfile != null) {
+                      ownerProfile.itineraryPrivacy == 0 ||
+                          (ownerProfile.itineraryPrivacy == 1 &&
+                              ambientProfile.userProfile.value.followers.contains(
+                                  ownerProfile.mail) &&
+                              ambientProfile.userProfile.value.following.contains(
+                                  ownerProfile.mail))
+                    } else {
+                      false
+                    }
+                  },
               navigation = navigation,
               homeViewModel = homeViewModel,
               test = test)
@@ -436,7 +491,21 @@ fun HomePager(
                 fontFamily = FontFamily(Font(R.font.montserrat_regular)))
           }
           DisplayItineraries(
-              itineraries = followingItineraries,
+              itineraries =
+                  followingItineraries.filter {
+                    val itin = it
+                    val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
+                    if (ownerProfile != null) {
+                      ownerProfile.itineraryPrivacy == 0 ||
+                          (ownerProfile.itineraryPrivacy == 1 &&
+                              ambientProfile.userProfile.value.followers.contains(
+                                  ownerProfile.mail) &&
+                              ambientProfile.userProfile.value.following.contains(
+                                  ownerProfile.mail))
+                    } else {
+                      false
+                    }
+                  },
               navigation = navigation,
               homeViewModel = homeViewModel,
               test = test)

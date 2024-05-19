@@ -88,6 +88,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
               }
 
           if (filteredList != null) {
+
             emit(filteredList)
           }
         }

@@ -31,8 +31,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.MainActivity
 import com.example.triptracker.authentication.GoogleAuthenticator
+import com.example.triptracker.model.profile.AmbientUserProfile
+import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.theme.Montserrat
@@ -40,6 +43,7 @@ import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_orange
+import com.example.triptracker.viewmodel.UserProfileViewModel
 
 /**
  * Composable function to display the user's settings
@@ -47,7 +51,13 @@ import com.example.triptracker.view.theme.md_theme_orange
  * @param navigation: Navigation object to navigate to other screens
  */
 @Composable
-fun UserProfileSettings(navigation: Navigation) {
+fun UserProfileSettings(
+    navigation: Navigation,
+    userProfileViewModel: UserProfileViewModel = viewModel()
+) {
+  val userProfile = AmbientUserProfile.current.userProfile.value
+  val userAmbient = AmbientUserProfile.current.userProfile
+
   Scaffold(bottomBar = { NavigationBar(navigation) }) { paddingValues ->
     Box(
         modifier =
@@ -84,15 +94,41 @@ fun UserProfileSettings(navigation: Navigation) {
                 "Profile",
                 actions = {
                   // Remember the state of the button to toggle between texts
-                  val (isPrivate, setIsPrivate) = remember { mutableStateOf(true) }
+                  var curr = false
+                  if (userAmbient.value.profilePrivacy == 0) {
+                    curr = true
+                  }
+                  val (isPublic, setIsPrivate) = remember { mutableStateOf(curr) }
 
                   // Determine the text and background colors based on the state
-                  val textColor = if (isPrivate) md_theme_dark_gray else Color.White
-                  val backgroundColor = if (isPrivate) md_theme_grey else md_theme_orange
-                  val buttonText = if (isPrivate) "Private" else "Public"
+                  val textColor = if (isPublic) md_theme_dark_gray else Color.White
+                  val backgroundColor = if (isPublic) md_theme_grey else md_theme_orange
+                  val buttonText = if (isPublic) "Public" else "Private"
                   FilledTonalButton(
                       modifier = Modifier.size(width = 94.dp, height = 35.dp),
-                      onClick = { setIsPrivate(!isPrivate) },
+                      onClick = {
+                        setIsPrivate(!isPublic)
+                        var privacy = userProfile.profilePrivacy
+                        if (!isPublic) {
+                          privacy = 0
+                        } else {
+                          privacy = 1
+                        }
+                        val newProfile =
+                            UserProfile(
+                                mail = userProfile.mail,
+                                name = userProfile.name,
+                                surname = userProfile.surname,
+                                birthdate = userProfile.birthdate,
+                                username = userProfile.username,
+                                profileImageUrl = userProfile.profileImageUrl,
+                                followers = userProfile.followers,
+                                following = userProfile.following,
+                                profilePrivacy = privacy,
+                                itineraryPrivacy = userProfile.itineraryPrivacy)
+                        userAmbient.value = newProfile
+                        userProfileViewModel.updateUserProfileInDb(newProfile)
+                      },
                       colors =
                           ButtonDefaults.filledTonalButtonColors(
                               containerColor = backgroundColor, contentColor = textColor)) {
@@ -108,14 +144,33 @@ fun UserProfileSettings(navigation: Navigation) {
                 "Path Visibility",
                 actions = {
                   // Remember the state of the button to toggle between texts
-                  val (buttonState, setButtonState) = remember { mutableIntStateOf(0) }
+                  val (buttonState, setButtonState) =
+                      remember { mutableIntStateOf(userProfile.itineraryPrivacy) }
                   TriStateButton(
-                      state1 = "Me",
+                      state1 = "Public",
                       state2 = "Friends",
-                      state3 = "Public",
+                      state3 = "Me",
                       state = buttonState,
                       modifier = Modifier.size(width = 94.dp, height = 35.dp),
-                      onClick = { setButtonState((buttonState + 1) % 3) })
+                      onClick = {
+                        setButtonState((buttonState + 1) % 3)
+
+                        var itinPrivacy = (buttonState + 1) % 3
+                        val newProfile =
+                            UserProfile(
+                                mail = userProfile.mail,
+                                name = userProfile.name,
+                                surname = userProfile.surname,
+                                birthdate = userProfile.birthdate,
+                                username = userProfile.username,
+                                profileImageUrl = userProfile.profileImageUrl,
+                                followers = userProfile.followers,
+                                following = userProfile.following,
+                                profilePrivacy = userProfile.profilePrivacy,
+                                itineraryPrivacy = itinPrivacy)
+                        userAmbient.value = newProfile
+                        userProfileViewModel.updateUserProfileInDb(newProfile)
+                      })
                 })
             Divider()
             SettingsElement(
@@ -215,13 +270,13 @@ fun TriStateButton(
   val backgroundColor: Color
 
   when (state) {
-    0 -> {
-      buttonText = state1
+    1 -> {
+      buttonText = state2
       textColor = md_theme_dark_gray
       backgroundColor = md_theme_light_dark
     }
-    1 -> {
-      buttonText = state2
+    0 -> {
+      buttonText = state1
       textColor = md_theme_dark_gray
       backgroundColor = md_theme_grey
     }
