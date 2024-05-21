@@ -51,6 +51,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,6 +86,7 @@ import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.MapPopupViewModel
 import com.example.triptracker.viewmodel.MapViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
+import kotlinx.coroutines.delay
 
 /**
  * PathOverlaySheet is a composable function that displays the all of the pins of a path
@@ -96,7 +98,7 @@ fun PathOverlaySheet(
     itinerary: Itinerary,
     userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
     onClick: (Pin) -> Unit
-) {
+    ) {
   var readyToDisplay by remember { mutableStateOf(false) }
   var profile by remember { mutableStateOf(UserProfile("")) }
   var expanded by remember { mutableStateOf(false) }
@@ -189,7 +191,7 @@ fun PathItem(pinnedPlace: Pin, onClick: (Pin) -> Unit) {
 
           // Fetch address
           AddressText(
-              mpv = MapPopupViewModel(),
+              mapPopupViewModel = MapPopupViewModel(),
               latitude = pinnedPlace.latitude.toFloat(),
               longitude = pinnedPlace.longitude.toFloat())
         }
@@ -202,26 +204,52 @@ fun PathItem(pinnedPlace: Pin, onClick: (Pin) -> Unit) {
   Spacer(modifier = Modifier.height(16.dp))
 }
 
-@SuppressLint("SuspiciousIndentation")
 @Composable
-fun AddressText(mpv: MapPopupViewModel, latitude: Float, longitude: Float) {
-  val address by mpv.address.observeAsState("Loading address...")
-  Log.d("AddressText", "Address: $address")
+fun AddressText(mapPopupViewModel: MapPopupViewModel, latitude: Float, longitude: Float) {
+    val address = remember { mutableStateOf("Loading address...") }
 
-  // take only the first part of the address (the street)
-  val addressParts = address.split(",")
-  val street = addressParts[0]
+    // Launch a coroutine to fetch the address
+    LaunchedEffect(Unit) {
+        while (address.value == "Loading address...") {
+            mapPopupViewModel.fetchAddressForPin(latitude, longitude)
+            // Simulate a delay for fetching the address
+            delay(1000)
+            address.value = mapPopupViewModel.address.value ?: "Loading address..."
+        }
+    }
 
-  // Trigger the address fetch
-  LaunchedEffect(key1 = latitude, key2 = longitude) { mpv.fetchAddressForPin(latitude, longitude) }
+    Text(
+        text = getDisplayAddress(address.value),
+        modifier = Modifier.testTag("AddressText"),
+        color = md_theme_grey,
+        fontSize = 13.sp,
+        fontFamily = FontFamily(Font(R.font.montserrat_light)),
+        fontWeight = FontWeight.Light
+    )
+}
 
-  Text(
-      text = street,
-      modifier = Modifier.testTag("AddressText"),
-      color = md_theme_grey,
-      fontSize = 13.sp,
-      fontFamily = FontFamily(Font(R.font.montserrat_light)),
-      fontWeight = FontWeight.Light)
+/**
+ * getDisplayAddress is a helper function that formats the address to display
+ *
+ * @param address String of the address to format
+ *
+ * @return String of the formatted address
+
+ */
+fun getDisplayAddress(address: String): String {
+    val addressParts = address.split(",")
+    return if (addressParts.isNotEmpty()) {
+        val firstPart = addressParts[0].trim()
+        if (firstPart.toIntOrNull() != null && addressParts.size > 1) {
+            // The first part is a number, take the string between the first and second comma
+            addressParts[0].trim()+ ", " + addressParts[1].trim()
+        } else {
+            // The first part is not a number, take only the first part
+            firstPart
+        }
+    } else {
+        address
+    }
 }
 
 @Composable
@@ -469,7 +497,7 @@ fun PinDescription(descriptionsOpen: MutableState<List<Boolean>>, pin: Pin, inde
               .fillMaxWidth()) {
         val displayText =
             if (!descriptionsOpen.value[index]) {
-              pin.name.take(30) + if (pin.name.length > 30) "..." else ""
+              pin.name.take(20) + if (pin.name.length > 20) "..." else ""
             } else {
               pin.name
             }
@@ -478,7 +506,7 @@ fun PinDescription(descriptionsOpen: MutableState<List<Boolean>>, pin: Pin, inde
             else Icons.Outlined.ExpandMore
 
         Text(
-            text = "•   $displayText",
+            text = "•  " + displayText.split(",")[0],
             color = md_theme_light_outlineVariant,
             fontFamily = Montserrat,
             fontWeight = FontWeight.Normal,
