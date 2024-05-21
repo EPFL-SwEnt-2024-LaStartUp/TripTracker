@@ -116,11 +116,18 @@ open class UserProfileRepository {
     // if favoritesPaths doesn't exist create the fiald in the database
     val favoritesPaths =
         document.data?.get("favoritesPaths") as? List<String> ?: createFavoritesPaths(document.id)
-
     val profilePrivacy = document.getLong("profilePrivacy") ?: createProfilePrivacy(document.id)
-
     val itineraryPrivacy =
         document.getLong("itineraryPrivacy") ?: createItineraryPrivacy(document.id)
+    val interest =
+        document.data?.get("interests") as? List<String>
+            ?: throw IllegalStateException("Interests is missing")
+    val travelStyle =
+        document.data?.get("travelStyle") as? List<String>
+            ?: throw IllegalStateException("Travel style is missing")
+    val languages =
+        document.data?.get("languages") as? List<String>
+            ?: throw IllegalStateException("Languages is missing")
 
     return UserProfile(
         document.id,
@@ -133,7 +140,10 @@ open class UserProfileRepository {
         following,
         favoritesPaths,
         profilePrivacy.toInt(),
-        itineraryPrivacy.toInt())
+        itineraryPrivacy.toInt(),
+        interest,
+        travelStyle,
+        languages)
   }
 
   private fun createFavoritesPaths(id: String): List<String> {
@@ -194,11 +204,18 @@ open class UserProfileRepository {
               ?: throw IllegalStateException("Following is missing")
       val favoritesPaths =
           document.data["favoritesPaths"] as? List<String> ?: createFavoritesPaths(document.id)
-
       val profilePrivacy = document.getLong("profilePrivacy") ?: createProfilePrivacy(document.id)
-
       val itineraryPrivacy =
           document.getLong("itineraryPrivacy") ?: createItineraryPrivacy(document.id)
+      val interest =
+          document.data["interests"] as? List<String>
+              ?: throw IllegalStateException("Interests is missing")
+      val travelStyle =
+          document.data["travelStyle"] as? List<String>
+              ?: throw IllegalStateException("Travel style is missing")
+      val languages =
+          document.data["languages"] as? List<String>
+              ?: throw IllegalStateException("Languages is missing")
 
       val userProfile =
           UserProfile(
@@ -212,7 +229,10 @@ open class UserProfileRepository {
               following,
               favoritesPaths,
               profilePrivacy.toInt(),
-              itineraryPrivacy.toInt())
+              itineraryPrivacy.toInt(),
+              interest,
+              travelStyle,
+              languages)
       _userProfileList.add(userProfile)
     }
   }
