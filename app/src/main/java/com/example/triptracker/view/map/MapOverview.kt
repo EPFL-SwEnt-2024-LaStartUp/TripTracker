@@ -487,9 +487,7 @@ fun Map(
       }
     }
   }
-  Box(
-      modifier = Modifier.fillMaxHeight().fillMaxWidth()
-  ) {
+  Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
     AnimatedVisibility(
         visible = mapViewModel.displayPicturePopUp.value,
         enter =

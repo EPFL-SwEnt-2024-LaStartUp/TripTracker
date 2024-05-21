@@ -1,6 +1,5 @@
 package com.example.triptracker.view.map
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -48,10 +47,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -98,7 +95,7 @@ fun PathOverlaySheet(
     itinerary: Itinerary,
     userProfileViewModel: UserProfileViewModel = UserProfileViewModel(),
     onClick: (Pin) -> Unit
-    ) {
+) {
   var readyToDisplay by remember { mutableStateOf(false) }
   var profile by remember { mutableStateOf(UserProfile("")) }
   var expanded by remember { mutableStateOf(false) }
@@ -206,50 +203,47 @@ fun PathItem(pinnedPlace: Pin, onClick: (Pin) -> Unit) {
 
 @Composable
 fun AddressText(mapPopupViewModel: MapPopupViewModel, latitude: Float, longitude: Float) {
-    val address = remember { mutableStateOf("Loading address...") }
+  val address = remember { mutableStateOf("Loading address...") }
 
-    // Launch a coroutine to fetch the address
-    LaunchedEffect(Unit) {
-        while (address.value == "Loading address...") {
-            mapPopupViewModel.fetchAddressForPin(latitude, longitude)
-            // Simulate a delay for fetching the address
-            delay(1000)
-            address.value = mapPopupViewModel.address.value ?: "Loading address..."
-        }
+  // Launch a coroutine to fetch the address
+  LaunchedEffect(Unit) {
+    while (address.value == "Loading address...") {
+      mapPopupViewModel.fetchAddressForPin(latitude, longitude)
+      // Simulate a delay for fetching the address
+      delay(1000)
+      address.value = mapPopupViewModel.address.value ?: "Loading address..."
     }
+  }
 
-    Text(
-        text = getDisplayAddress(address.value),
-        modifier = Modifier.testTag("AddressText"),
-        color = md_theme_grey,
-        fontSize = 13.sp,
-        fontFamily = FontFamily(Font(R.font.montserrat_light)),
-        fontWeight = FontWeight.Light
-    )
+  Text(
+      text = getDisplayAddress(address.value),
+      modifier = Modifier.testTag("AddressText"),
+      color = md_theme_grey,
+      fontSize = 13.sp,
+      fontFamily = FontFamily(Font(R.font.montserrat_light)),
+      fontWeight = FontWeight.Light)
 }
 
 /**
  * getDisplayAddress is a helper function that formats the address to display
  *
  * @param address String of the address to format
- *
  * @return String of the formatted address
-
  */
 fun getDisplayAddress(address: String): String {
-    val addressParts = address.split(",")
-    return if (addressParts.isNotEmpty()) {
-        val firstPart = addressParts[0].trim()
-        if (firstPart.toIntOrNull() != null && addressParts.size > 1) {
-            // The first part is a number, take the string between the first and second comma
-            addressParts[0].trim()+ ", " + addressParts[1].trim()
-        } else {
-            // The first part is not a number, take only the first part
-            firstPart
-        }
+  val addressParts = address.split(",")
+  return if (addressParts.isNotEmpty()) {
+    val firstPart = addressParts[0].trim()
+    if (firstPart.toIntOrNull() != null && addressParts.size > 1) {
+      // The first part is a number, take the string between the first and second comma
+      addressParts[0].trim() + ", " + addressParts[1].trim()
     } else {
-        address
+      // The first part is not a number, take only the first part
+      firstPart
     }
+  } else {
+    address
+  }
 }
 
 @Composable

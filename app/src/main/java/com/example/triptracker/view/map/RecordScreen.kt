@@ -51,14 +51,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.profile.AmbientUserProfile
@@ -355,9 +352,7 @@ fun Map(
                       // add a text field for the description
                       OutlinedTextField(
                           value = viewModel.title.value,
-                          onValueChange = {
-                            viewModel.title.value = it
-                          },
+                          onValueChange = { viewModel.title.value = it },
                           label = {
                             Text(
                                 text = "Title",
@@ -379,8 +374,10 @@ fun Map(
                           colors =
                               OutlinedTextFieldDefaults.colors(
                                   unfocusedTextColor = md_theme_light_onPrimary,
-                                  unfocusedBorderColor = getBorderColor(viewModel.title.value.isEmpty()),
-                                  unfocusedLabelColor = getBorderColor(viewModel.title.value.isEmpty()),
+                                  unfocusedBorderColor =
+                                      getBorderColor(viewModel.title.value.isEmpty()),
+                                  unfocusedLabelColor =
+                                      getBorderColor(viewModel.title.value.isEmpty()),
                                   cursorColor = md_theme_light_onPrimary,
                                   focusedBorderColor = md_theme_light_onPrimary,
                                   focusedLabelColor = md_theme_light_onPrimary,
@@ -400,9 +397,7 @@ fun Map(
                       // add a text field for the description
                       OutlinedTextField(
                           value = viewModel.description.value,
-                          onValueChange = {
-                            viewModel.description.value = it
-                          },
+                          onValueChange = { viewModel.description.value = it },
                           label = {
                             Text(
                                 text = "Description",
@@ -428,8 +423,10 @@ fun Map(
                           colors =
                               OutlinedTextFieldDefaults.colors(
                                   unfocusedTextColor = md_theme_light_onPrimary,
-                                  unfocusedBorderColor = getBorderColor(viewModel.description.value.isEmpty()),
-                                  unfocusedLabelColor = getBorderColor(viewModel.description.value.isEmpty()),
+                                  unfocusedBorderColor =
+                                      getBorderColor(viewModel.description.value.isEmpty()),
+                                  unfocusedLabelColor =
+                                      getBorderColor(viewModel.description.value.isEmpty()),
                                   cursorColor = md_theme_light_onPrimary,
                                   focusedBorderColor = md_theme_light_onPrimary,
                                   focusedLabelColor = md_theme_light_onPrimary,
@@ -677,7 +674,6 @@ fun RecordControls(viewModel: RecordViewModel) {
  * Function to get the pause/resume string given the view model.
  *
  * @param viewModel The RecordViewModel instance.
- *
  * @return The pause/resume text.
  */
 fun getPauseResumeText(viewModel: RecordViewModel): String {
