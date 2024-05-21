@@ -176,12 +176,12 @@ open class UserProfileRepository {
     return itineraryPrivacy
   }
 
-    /**
-     * This function creates an empty list for the specified parameter.
-     *
-     * @param id : Unique identifier of the user's profile
-     * @param parameter : Parameter to create an empty list for
-     */
+  /**
+   * This function creates an empty list for the specified parameter.
+   *
+   * @param id : Unique identifier of the user's profile
+   * @param parameter : Parameter to create an empty list for
+   */
   private fun createEmptyList(id: String, parameter: String): List<String> {
     val emptyList = mutableListOf<String>()
     userProfileDb
@@ -224,14 +224,12 @@ open class UserProfileRepository {
       val itineraryPrivacy =
           document.getLong("itineraryPrivacy") ?: createItineraryPrivacy(document.id)
       val interest =
-          document.data["interests"] as? List<String>
-              ?: createEmptyList(document.id, "interests")
+          document.data["interests"] as? List<String> ?: createEmptyList(document.id, "interests")
       val travelStyle =
           document.data["travelStyle"] as? List<String>
               ?: createEmptyList(document.id, "travelStyle")
       val languages =
-          document.data["languages"] as? List<String>
-              ?: createEmptyList(document.id, "languages")
+          document.data["languages"] as? List<String> ?: createEmptyList(document.id, "languages")
 
       val userProfile =
           UserProfile(
