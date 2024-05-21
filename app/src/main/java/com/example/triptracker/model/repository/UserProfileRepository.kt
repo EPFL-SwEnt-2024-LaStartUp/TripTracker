@@ -121,13 +121,13 @@ open class UserProfileRepository {
         document.getLong("itineraryPrivacy") ?: createItineraryPrivacy(document.id)
     val interest =
         document.data?.get("interests") as? List<String>
-            ?: throw IllegalStateException("Interests is missing")
+            ?: createEmptyList(document.id, "interests")
     val travelStyle =
         document.data?.get("travelStyle") as? List<String>
-            ?: throw IllegalStateException("Travel style is missing")
+            ?: createEmptyList(document.id, "travelStyle")
     val languages =
         document.data?.get("languages") as? List<String>
-            ?: throw IllegalStateException("Languages is missing")
+            ?: createEmptyList(document.id, "languages")
 
     return UserProfile(
         document.id,
@@ -176,6 +176,22 @@ open class UserProfileRepository {
     return itineraryPrivacy
   }
 
+    /**
+     * This function creates an empty list for the specified parameter.
+     *
+     * @param id : Unique identifier of the user's profile
+     * @param parameter : Parameter to create an empty list for
+     */
+  private fun createEmptyList(id: String, parameter: String): List<String> {
+    val emptyList = mutableListOf<String>()
+    userProfileDb
+        .document(id)
+        .update(parameter, emptyList)
+        .addOnSuccessListener { Log.d(TAG, "$parameter created successfully") }
+        .addOnFailureListener { e -> Log.e(TAG, "Error creating $parameter", e) }
+    return emptyList
+  }
+
   /**
    * This function converts the QuerySnapshot to a list of user's profiles.
    *
@@ -209,13 +225,13 @@ open class UserProfileRepository {
           document.getLong("itineraryPrivacy") ?: createItineraryPrivacy(document.id)
       val interest =
           document.data["interests"] as? List<String>
-              ?: throw IllegalStateException("Interests is missing")
+              ?: createEmptyList(document.id, "interests")
       val travelStyle =
           document.data["travelStyle"] as? List<String>
-              ?: throw IllegalStateException("Travel style is missing")
+              ?: createEmptyList(document.id, "travelStyle")
       val languages =
           document.data["languages"] as? List<String>
-              ?: throw IllegalStateException("Languages is missing")
+              ?: createEmptyList(document.id, "languages")
 
       val userProfile =
           UserProfile(
