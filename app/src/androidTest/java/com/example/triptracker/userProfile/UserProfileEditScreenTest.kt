@@ -168,7 +168,6 @@ class UserProfileEditScreenTest : TestCase() {
       UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
     }
     composeTestRule.onNodeWithText("Interests").assertIsDisplayed()
-
   }
 
   @Test
@@ -179,11 +178,11 @@ class UserProfileEditScreenTest : TestCase() {
     composeTestRule.onNodeWithText("Travel Style").assertIsDisplayed()
   }
 
-    @Test
-    fun languagesTest() {
-      composeTestRule.setContent {
-        UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
-      }
-      composeTestRule.onNodeWithText("Languages").assertIsDisplayed()
+  @Test
+  fun languagesTest() {
+    composeTestRule.setContent {
+      UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
     }
+    composeTestRule.onNodeWithText("Languages").assertIsDisplayed()
+  }
 }

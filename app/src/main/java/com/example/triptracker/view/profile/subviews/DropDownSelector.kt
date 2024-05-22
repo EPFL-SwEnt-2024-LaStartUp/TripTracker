@@ -71,17 +71,15 @@ fun <T> DropdownSelector(
         placeholder = { Text(placeholder) },
         trailingIcon = {
           IconButton(
-              onClick = { expanded = !expanded },
-              modifier = Modifier.testTag("DropDownButton")
-          ) {
-            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-          }
+              onClick = { expanded = !expanded }, modifier = Modifier.testTag("DropDownButton")) {
+                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+              }
         },
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 65.dp)
-            .clickable { expanded = !expanded }
-            .testTag("DropDownTextField"),
+        modifier =
+            Modifier.fillMaxWidth()
+                .heightIn(min = 65.dp)
+                .clickable { expanded = !expanded }
+                .testTag("DropDownTextField"),
         textStyle =
             TextStyle(
                 color = Color.White,
@@ -101,7 +99,8 @@ fun <T> DropdownSelector(
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = { expanded = false },
-        modifier = Modifier.fillMaxWidth().background(md_theme_light_dark).testTag("DropDownMenu")) {
+        modifier =
+            Modifier.fillMaxWidth().background(md_theme_light_dark).testTag("DropDownMenu")) {
           options.forEach { option ->
             val isSelected = selectedOptions.contains(option.toString())
             DropdownMenuItem(
