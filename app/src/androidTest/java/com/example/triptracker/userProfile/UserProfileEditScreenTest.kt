@@ -176,7 +176,7 @@ class UserProfileEditScreenTest : TestCase() {
     composeTestRule.setContent {
       UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
     }
-    composeTestRule.onNodeWithText("Travel Style").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithText("Travel style").performScrollTo().assertIsDisplayed()
   }
 
   @Test
