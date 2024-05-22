@@ -487,7 +487,7 @@ fun Map(
       }
     }
   }
-  Box() {
+  Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
     AnimatedVisibility(
         visible = mapViewModel.displayPicturePopUp.value,
         enter =
@@ -512,20 +512,18 @@ fun Map(
                       Column(
                           modifier =
                               Modifier.fillMaxWidth()
-                                  .padding(start = 30.dp, top = 10.dp)
+                                  .padding(start = 20.dp, top = 5.dp)
                                   .verticalScroll(rememberScrollState()),
                           verticalArrangement = Arrangement.Center,
                           horizontalAlignment = Alignment.Start) {
                             Text(
                                 text = mapViewModel.selectedPin.value?.description ?: "",
-                                modifier = Modifier.padding(vertical = 10.dp),
                                 fontSize = 20.sp,
                                 fontFamily = Montserrat,
                                 fontWeight = FontWeight.Bold,
                                 color = md_theme_light_onPrimary)
                             Text(
                                 text = mapViewModel.selectedPin.value?.name ?: "",
-                                modifier = Modifier.padding(vertical = 10.dp),
                                 fontSize = 12.sp,
                                 fontFamily = Montserrat,
                                 fontWeight = FontWeight.Normal,
@@ -541,7 +539,7 @@ fun Map(
                         Modifier.fillMaxSize()
                             .horizontalScroll(scrollState)
                             .align(Alignment.BottomStart)
-                            .padding(vertical = 10.dp, horizontal = 20.dp),
+                            .padding(bottom = 20.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.Bottom) {
                       displayPinImages(selectedPin)
@@ -617,7 +615,7 @@ fun displayPinImages(selectedPin: Pin?) {
           modifier =
               Modifier.clip(shape = RoundedCornerShape(20.dp))
                   .height(200.dp)
-                  .padding(horizontal = 2.dp),
+                  .padding(horizontal = 10.dp),
           model = url,
           contentDescription = "Image",
       )

@@ -51,14 +51,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.profile.AmbientUserProfile
@@ -94,9 +91,6 @@ import kotlinx.coroutines.launch
 
 // Define the delay for the location update
 const val DELAY = 5000L
-
-var isTitleEmpty by mutableStateOf(true)
-var isDescriptionEmpty by mutableStateOf(true)
 
 /**
  * Composable function for displaying the RecordScreen.
@@ -358,10 +352,7 @@ fun Map(
                       // add a text field for the description
                       OutlinedTextField(
                           value = viewModel.title.value,
-                          onValueChange = {
-                            viewModel.title.value = it
-                            isDescriptionEmpty = it.isEmpty() // Update empty state
-                          },
+                          onValueChange = { viewModel.title.value = it },
                           label = {
                             Text(
                                 text = "Title",
@@ -383,8 +374,10 @@ fun Map(
                           colors =
                               OutlinedTextFieldDefaults.colors(
                                   unfocusedTextColor = md_theme_light_onPrimary,
-                                  unfocusedBorderColor = getBorderColor(isTitleEmpty),
-                                  unfocusedLabelColor = getBorderColor(isTitleEmpty),
+                                  unfocusedBorderColor =
+                                      getBorderColor(viewModel.title.value.isEmpty()),
+                                  unfocusedLabelColor =
+                                      getBorderColor(viewModel.title.value.isEmpty()),
                                   cursorColor = md_theme_light_onPrimary,
                                   focusedBorderColor = md_theme_light_onPrimary,
                                   focusedLabelColor = md_theme_light_onPrimary,
@@ -404,10 +397,7 @@ fun Map(
                       // add a text field for the description
                       OutlinedTextField(
                           value = viewModel.description.value,
-                          onValueChange = {
-                            viewModel.description.value = it
-                            isDescriptionEmpty = it.isEmpty() // Update empty state
-                          },
+                          onValueChange = { viewModel.description.value = it },
                           label = {
                             Text(
                                 text = "Description",
@@ -433,8 +423,10 @@ fun Map(
                           colors =
                               OutlinedTextFieldDefaults.colors(
                                   unfocusedTextColor = md_theme_light_onPrimary,
-                                  unfocusedBorderColor = getBorderColor(isDescriptionEmpty),
-                                  unfocusedLabelColor = getBorderColor(isDescriptionEmpty),
+                                  unfocusedBorderColor =
+                                      getBorderColor(viewModel.description.value.isEmpty()),
+                                  unfocusedLabelColor =
+                                      getBorderColor(viewModel.description.value.isEmpty()),
                                   cursorColor = md_theme_light_onPrimary,
                                   focusedBorderColor = md_theme_light_onPrimary,
                                   focusedLabelColor = md_theme_light_onPrimary,
@@ -458,6 +450,14 @@ fun Map(
   }
 }
 
+/**
+ * Composable function to dispaly the save button.
+ *
+ * @param viewModel The RecordViewModel instance.
+ * @param itineraryRepository The itinerary repository.
+ * @param profile The user profile.
+ * @param localLatLngList The local list of LatLng points.
+ */
 @Composable
 fun SaveButton(
     viewModel: RecordViewModel,
@@ -467,13 +467,7 @@ fun SaveButton(
 ) {
   FilledTonalButton(
       onClick = {
-        if (viewModel.title.value.isEmpty()) {
-          isTitleEmpty = true
-        }
-        if (viewModel.description.value.isEmpty()) {
-          isDescriptionEmpty = true
-        }
-        if (!isTitleEmpty && !isDescriptionEmpty) {
+        if (viewModel.title.value.isNotEmpty() && viewModel.description.value.isNotEmpty()) {
           // Add itinerary to database
           val id = itineraryRepository.getUID()
           val title = viewModel.title.value
@@ -676,10 +670,21 @@ fun RecordControls(viewModel: RecordViewModel) {
       }
 }
 
+/**
+ * Function to get the pause/resume string given the view model.
+ *
+ * @param viewModel The RecordViewModel instance.
+ * @return The pause/resume text.
+ */
 fun getPauseResumeText(viewModel: RecordViewModel): String {
   return if (viewModel.isPaused.value) "Resume" else "Pause"
 }
 
+/**
+ * Function to toggle the recording description.
+ *
+ * @param viewModel The RecordViewModel instance.
+ */
 fun toggleRecordingDescription(viewModel: RecordViewModel) {
   if (viewModel.isRecording()) {
     viewModel.stopRecording()
@@ -689,10 +694,20 @@ fun toggleRecordingDescription(viewModel: RecordViewModel) {
   }
 }
 
+/**
+ * Function to get the border color based on the boolean value.
+ *
+ * @param bool The boolean value.
+ */
 fun getBorderColor(bool: Boolean): Color {
-  return if (isDescriptionEmpty) md_theme_light_error else md_theme_grey
+  return if (bool) md_theme_light_error else md_theme_grey
 }
 
+/**
+ * Function to toggle the recording.
+ *
+ * @param viewModel The RecordViewModel instance.
+ */
 fun toggleRecording(viewModel: RecordViewModel) {
   if (viewModel.isPaused.value) {
     viewModel.resumeRecording()
@@ -791,13 +806,4 @@ fun DisplayStartStopButton(viewModel: RecordViewModel, properties: MapProperties
           color = md_theme_light_onPrimary)
     }
   }
-}
-/** Function to preview the RecordScreen */
-@Preview
-@Composable
-fun RecordScreenPreview() {
-  val context = LocalContext.current
-  val navController = rememberNavController()
-  val navigation = remember(navController) { Navigation(navController) }
-  RecordScreen(context, navigation)
 }
