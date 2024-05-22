@@ -104,41 +104,41 @@ fun secondaryContentStyle(size: Int): TextStyle {
 
 /** This class contains all the selectable interests */
 enum class Interests {
-  Walking,
-  Hiking,
-  Running,
-  Cycling,
-  Photography,
-  Food,
   Culture,
-  Nature
+  Cycling,
+  Food,
+  Hiking,
+  Nature,
+  Photography,
+  Running,
+  Walking
 }
 
 /** This class contains all the selectable travel styles */
 enum class TravelStyle {
-    Adventurous,
-    Cultural,
-    Relaxing,
-    Solo,
-    Group,
-    Backpacking,
-    RoadTrip,
-    Camping,
-    Luxury,
+  Adventurous,
+  Backpacking,
+  Camping,
+  Cultural,
+  Group,
+  Luxury,
+  Relaxing,
+  RoadTrip,
+  Solo
 }
 
 /** This class contains all the selectable languages */
 enum class Languages {
-  French,
-  English,
-  Spanish,
-  Italian,
-  German,
-  Portuguese,
-  Dutch,
-  Russian,
+  Arabic,
   Chinese,
+  Dutch,
+  English,
+  French,
+  German,
+  Italian,
   Japanese,
   Korean,
-  Arabic
+  Portuguese,
+  Russian,
+  Spanish,
 }

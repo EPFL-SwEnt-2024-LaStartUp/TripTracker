@@ -69,6 +69,7 @@ import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
+import com.example.triptracker.view.profile.subviews.DropdownSelector
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
@@ -117,6 +118,15 @@ fun UserProfileEditScreen(
 
   /* Mutable state variable that holds the image url of the user profile */
   var imageUrl by remember { mutableStateOf(profile.userProfile.value.profileImageUrl) }
+
+  /* Mutable state variable that holds the user's interests list */
+  var selectedInterests by remember { mutableStateOf(profile.userProfile.value.interests) }
+
+  /* Mutable state variable that holds the user's travel style list */
+  var selectedTravelStyle by remember { mutableStateOf(profile.userProfile.value.travelStyle) }
+
+  /* Mutable state variable that holds the user's languages list */
+  var selectedLanguages by remember { mutableStateOf(profile.userProfile.value.languages) }
 
   /* Mutable state variable that holds the loading state of the screen */
   var isLoading by remember { mutableStateOf(false) }
@@ -352,6 +362,37 @@ fun UserProfileEditScreen(
                             })
                       }
                     }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    DropdownSelector(
+                        label = "Interests",
+                        options = Interests.entries,
+                        selectedOptions = selectedInterests,
+                        onOptionSelected = { selectedInterests = it as List<String> },
+                        placeholder = "No Interests",
+                        modifier = Modifier.padding(start = 30.dp, end = 30.dp))
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    DropdownSelector(
+                        label = "Travel style",
+                        options = TravelStyle.entries,
+                        selectedOptions = selectedTravelStyle,
+                        onOptionSelected = { selectedTravelStyle = it },
+                        placeholder = "No Travel Style",
+                        modifier = Modifier.padding(start = 30.dp, end = 30.dp))
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    DropdownSelector(
+                        label = "Languages",
+                        options = Languages.entries,
+                        selectedOptions = selectedLanguages,
+                        onOptionSelected = { selectedLanguages = it as List<String> },
+                        placeholder = "No Languages",
+                        modifier = Modifier.padding(start = 30.dp, end = 30.dp))
+
                     Box(
                         modifier = Modifier.fillMaxWidth().height(200.dp),
                         contentAlignment = Alignment.Center) {
@@ -371,7 +412,10 @@ fun UserProfileEditScreen(
                                         username = username,
                                         profileImageUrl = imageUrl,
                                         followers = profile.userProfile.value.followers,
-                                        following = profile.userProfile.value.following)
+                                        following = profile.userProfile.value.following,
+                                        interests = selectedInterests,
+                                        travelStyle = selectedTravelStyle,
+                                        languages = selectedLanguages)
                                 userProfileViewModel.tryToUpdateProfile(
                                     navigation = navigation,
                                     isCreated = isCreated,
