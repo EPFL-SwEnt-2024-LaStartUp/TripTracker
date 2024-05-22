@@ -85,6 +85,9 @@ import com.example.triptracker.viewmodel.MapViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import kotlinx.coroutines.delay
 
+val DELAY_ADDRESS = 1000L
+val numberOfCharVisible = 20
+
 /**
  * PathOverlaySheet is a composable function that displays the all of the pins of a path
  *
@@ -210,7 +213,7 @@ fun AddressText(mapPopupViewModel: MapPopupViewModel, latitude: Float, longitude
     while (address.value == "Loading address...") {
       mapPopupViewModel.fetchAddressForPin(latitude, longitude)
       // Simulate a delay for fetching the address
-      delay(1000)
+      delay(DELAY_ADDRESS)
       address.value = mapPopupViewModel.address.value ?: "Loading address..."
     }
   }
@@ -491,7 +494,8 @@ fun PinDescription(descriptionsOpen: MutableState<List<Boolean>>, pin: Pin, inde
               .fillMaxWidth()) {
         val displayText =
             if (!descriptionsOpen.value[index]) {
-              pin.name.take(20) + if (pin.name.length > 20) "..." else ""
+              pin.name.take(numberOfCharVisible) +
+                  if (pin.name.length > numberOfCharVisible) "..." else ""
             } else {
               pin.name
             }
