@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -59,7 +60,7 @@ fun <T> DropdownSelector(
         fontFamily = Montserrat,
         fontWeight = FontWeight.Normal,
         color = md_theme_grey,
-        modifier = Modifier.padding(bottom = 4.dp),
+        modifier = Modifier.padding(bottom = 4.dp).testTag("Label"),
     )
     OutlinedTextField(
         value =
@@ -69,11 +70,18 @@ fun <T> DropdownSelector(
         readOnly = true,
         placeholder = { Text(placeholder) },
         trailingIcon = {
-          IconButton(onClick = { expanded = !expanded }) {
+          IconButton(
+              onClick = { expanded = !expanded },
+              modifier = Modifier.testTag("DropDownButton")
+          ) {
             Icon(Icons.Default.ArrowDropDown, contentDescription = null)
           }
         },
-        modifier = Modifier.fillMaxWidth().heightIn(min = 65.dp).clickable { expanded = !expanded },
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 65.dp)
+            .clickable { expanded = !expanded }
+            .testTag("DropDownTextField"),
         textStyle =
             TextStyle(
                 color = Color.White,
@@ -93,10 +101,11 @@ fun <T> DropdownSelector(
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = { expanded = false },
-        modifier = Modifier.fillMaxWidth().background(md_theme_light_dark)) {
+        modifier = Modifier.fillMaxWidth().background(md_theme_light_dark).testTag("DropDownMenu")) {
           options.forEach { option ->
             val isSelected = selectedOptions.contains(option.toString())
             DropdownMenuItem(
+                modifier = Modifier.testTag("DropDownMenuItem$option"),
                 text = {
                   Text(option.toString(), color = if (isSelected) md_theme_orange else Color.White)
                 },

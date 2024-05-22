@@ -1,4 +1,4 @@
-package com.example.triptracker.screens.userProfile
+package com.example.triptracker.userProfile
 
 import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -161,4 +161,29 @@ class UserProfileEditScreenTest : TestCase() {
     }
     composeTestRule.onNodeWithText("Save").performClick()
   }
+
+  @Test
+  fun interestsTest() {
+    composeTestRule.setContent {
+      UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
+    }
+    composeTestRule.onNodeWithText("Interests").assertIsDisplayed()
+
+  }
+
+  @Test
+  fun travelStyleTest() {
+    composeTestRule.setContent {
+      UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
+    }
+    composeTestRule.onNodeWithText("Travel Style").assertIsDisplayed()
+  }
+
+    @Test
+    fun languagesTest() {
+      composeTestRule.setContent {
+        UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
+      }
+      composeTestRule.onNodeWithText("Languages").assertIsDisplayed()
+    }
 }
