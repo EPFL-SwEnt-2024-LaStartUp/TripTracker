@@ -21,6 +21,9 @@ import androidx.compose.runtime.mutableStateOf
  * @property profilePrivacy : privacy of the user's profile 0 = public and 1 = private
  * @property itineraryPrivacy : privacy of the user's itineraries 0 = public, 1 = friends, 2 =
  *   private
+ * @property interests : list of user's interests. (Defaults: empty list)
+ * @property travelStyle : list of user's travel style. (Defaults: empty list)
+ * @property languages : list of user's spoken languages. (Defaults: empty list)
  */
 data class UserProfile(
     val mail: String,
@@ -34,6 +37,9 @@ data class UserProfile(
     val favoritesPaths: List<String> = emptyList(),
     val profilePrivacy: Int = 0,
     val itineraryPrivacy: Int = 0,
+    val interests: List<String> = emptyList(),
+    val travelStyle: List<String> = emptyList(),
+    val languages: List<String> = emptyList(),
 )
 
 /** This data class represents a mutable user's profile information. */

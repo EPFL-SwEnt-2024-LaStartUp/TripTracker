@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -37,11 +38,12 @@ fun ProfileCounts(
 ) {
   Row(
       modifier =
-          Modifier.height((LocalConfiguration.current.screenHeightDp * 0.1f).dp).fillMaxWidth(),
+          Modifier.height((LocalConfiguration.current.screenHeightDp * 0.12f).dp).fillMaxWidth(),
       horizontalArrangement = Arrangement.Center) {
         Column(
             modifier =
                 Modifier.align(Alignment.CenterVertically)
+                    .fillMaxHeight()
                     .width((LocalConfiguration.current.screenWidthDp * 0.33f).dp)) {
               Text(
                   text = "$tripsCount",
@@ -55,11 +57,11 @@ fun ProfileCounts(
         Column(
             modifier =
                 Modifier.align(Alignment.CenterVertically)
+                    .fillMaxHeight()
                     .width((LocalConfiguration.current.screenWidthDp * 0.33f).dp)
                     .clickable(enabled = currentUserProfile) {
-                      // Navigate to the followers screen if the user displayed is the user logged
-                      // in
-
+                      // Navigate to the followers screen if the user displayed is the user
+                      // logged-in
                       navigation.navController.navigate(Route.FOLLOWERS)
                     }) {
               Text(
@@ -74,10 +76,11 @@ fun ProfileCounts(
         Column(
             modifier =
                 Modifier.align(Alignment.CenterVertically)
+                    .fillMaxHeight()
                     .width((LocalConfiguration.current.screenWidthDp * 0.33f).dp)
                     .clickable(enabled = currentUserProfile) {
-                      // Navigate to the following screen if the user displayed is the user logged
-                      // in
+                      // Navigate to the following screen if the user displayed is the user
+                      // logged-in
                       navigation.navController.navigate(Route.FOLLOWING)
                     }) {
               Text(

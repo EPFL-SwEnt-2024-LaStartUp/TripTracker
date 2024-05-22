@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,7 +31,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
@@ -145,10 +147,11 @@ fun UserProfileOverview(
 
                     // Profile picture and user information
                     ProfileInfoView(navigation, profile.userProfile.value)
+                    Spacer(modifier = Modifier.height(20.dp))
                     // Number of trips, followers and following when implemented in the data classes
                     ProfileCounts(navigation, profile.userProfile.value, myTripsCount)
-                    // Favourites, Friends, Settings and MyTrips tiles
                   }
+              // Favourites, Friends, Settings and MyTrips tiles
               Column(
                   modifier = Modifier.height((LocalConfiguration.current.screenHeightDp * 0.55).dp),
                   horizontalAlignment = Alignment.CenterHorizontally,

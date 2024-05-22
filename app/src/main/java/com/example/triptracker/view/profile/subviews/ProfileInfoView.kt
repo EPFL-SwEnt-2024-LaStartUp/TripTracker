@@ -122,7 +122,12 @@ fun ProfileInfoView(navigation: Navigation, userProfile: UserProfile, editable: 
                   .padding(end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp)
                   .testTag("InterestTitle"))
       Text(
-          text = "Hiking, Photography", // profile.interestsList
+          text =
+              if (userProfile.interests.isEmpty()) {
+                "No interests"
+              } else {
+                userProfile.interests.joinToString(separator = ", ")
+              },
           style = secondaryContentStyle(LocalConfiguration.current.screenHeightDp),
           modifier =
               Modifier.align(Alignment.End)
@@ -139,7 +144,12 @@ fun ProfileInfoView(navigation: Navigation, userProfile: UserProfile, editable: 
                   .padding(end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp)
                   .testTag("TravelStyleTitle"))
       Text(
-          text = "Adventure, Cultural", // profile.travelStyleList
+          text =
+              if (userProfile.travelStyle.isEmpty()) {
+                "No travel style"
+              } else {
+                userProfile.travelStyle.joinToString(separator = ", ")
+              },
           style = secondaryContentStyle(LocalConfiguration.current.screenHeightDp),
           modifier =
               Modifier.align(Alignment.End)
@@ -156,7 +166,12 @@ fun ProfileInfoView(navigation: Navigation, userProfile: UserProfile, editable: 
                   .padding(end = (LocalConfiguration.current.screenHeightDp * 0.033f).dp)
                   .testTag("LanguagesTitle"))
       Text(
-          text = "English, Spanish", // profile.languagesList
+          text =
+              if (userProfile.languages.isEmpty()) {
+                "No languages"
+              } else {
+                userProfile.languages.joinToString(separator = ", ")
+              },
           style = secondaryContentStyle(LocalConfiguration.current.screenHeightDp),
           modifier =
               Modifier.align(Alignment.End)

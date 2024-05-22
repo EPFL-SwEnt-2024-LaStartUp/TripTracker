@@ -101,3 +101,44 @@ fun secondaryContentStyle(size: Int): TextStyle {
       textAlign = TextAlign.Right,
       letterSpacing = (size * 0.0005f).sp)
 }
+
+/** This class contains all the selectable interests */
+enum class Interests {
+  Culture,
+  Cycling,
+  Food,
+  Hiking,
+  Nature,
+  Photography,
+  Running,
+  Walking
+}
+
+/** This class contains all the selectable travel styles */
+enum class TravelStyle {
+  Adventurous,
+  Backpacking,
+  Camping,
+  Cultural,
+  Group,
+  Luxury,
+  Relaxing,
+  RoadTrip,
+  Solo
+}
+
+/** This class contains all the selectable languages */
+enum class Languages {
+  Arabic,
+  Chinese,
+  Dutch,
+  English,
+  French,
+  German,
+  Italian,
+  Japanese,
+  Korean,
+  Portuguese,
+  Russian,
+  Spanish,
+}
