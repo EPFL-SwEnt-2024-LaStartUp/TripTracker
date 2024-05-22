@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
@@ -167,7 +168,7 @@ class UserProfileEditScreenTest : TestCase() {
     composeTestRule.setContent {
       UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
     }
-    composeTestRule.onNodeWithText("Interests").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Interests").performScrollTo().assertIsDisplayed()
   }
 
   @Test
@@ -175,7 +176,7 @@ class UserProfileEditScreenTest : TestCase() {
     composeTestRule.setContent {
       UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
     }
-    composeTestRule.onNodeWithText("Travel Style").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Travel Style").performScrollTo().assertIsDisplayed()
   }
 
   @Test
@@ -183,6 +184,6 @@ class UserProfileEditScreenTest : TestCase() {
     composeTestRule.setContent {
       UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
     }
-    composeTestRule.onNodeWithText("Languages").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Languages").performScrollTo().assertIsDisplayed()
   }
 }
