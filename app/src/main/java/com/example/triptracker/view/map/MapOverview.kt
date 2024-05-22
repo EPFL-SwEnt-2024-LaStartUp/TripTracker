@@ -32,9 +32,11 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -357,7 +359,7 @@ fun Map(
                 fontSize = 20.sp,
                 fontFamily = Montserrat,
                 fontWeight = FontWeight.Bold,
-                color = md_theme_light_onPrimary)
+                color = MaterialTheme.colorScheme.onBackground)
           },
           text = {
             Text(
@@ -379,7 +381,7 @@ fun Map(
                 },
                 colors =
                     ButtonDefaults.buttonColors(
-                        containerColor = md_theme_light_dark,
+                        containerColor = md_theme_orange,
                         contentColor = md_theme_light_onPrimary),
                 shape = RoundedCornerShape(35.dp),
             ) {
@@ -397,7 +399,7 @@ fun Map(
                 onClick = { showCancelDialog.value = false },
                 colors =
                     ButtonDefaults.buttonColors(
-                        containerColor = md_theme_light_black, contentColor = Color.White),
+                        containerColor = md_theme_orange, contentColor = Color.White),
                 shape = RoundedCornerShape(35.dp)) {
                   Text(
                       text = "No",
