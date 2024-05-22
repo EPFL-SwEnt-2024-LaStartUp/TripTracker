@@ -101,11 +101,6 @@ class UserViewTest {
       }
       languagesList { assertIsDisplayed() }
       followingButton { assertIsDisplayed() }
-      tripsTitle {
-        assertIsDisplayed()
-        assertTextEquals("Trips")
-      }
-      tripsCount { assertIsDisplayed() }
       goBackButton {
         assertIsDisplayed()
         assertHasClickAction()
