@@ -473,12 +473,6 @@ fun SaveButton(
           val title = viewModel.title.value
           val username = profile.mail
           val meanLocation = meanLocation(viewModel.latLongList.toList())
-          var locationName = ""
-          viewModel.getCityAndCountry(
-              meanLocation.latitude.toFloat(), meanLocation.longitude.toFloat()) {
-                locationName = it
-              }
-          val location = Location(meanLocation.latitude, meanLocation.longitude, locationName)
           val flameCount = 0L
           val saves = 0L
           val clicks = 0L
@@ -487,26 +481,30 @@ fun SaveButton(
           val endDate = viewModel.endDate.value
           val pinList = viewModel.pinList
           val description = viewModel.description.value
-          val itinerary =
-              Itinerary(
-                  id,
-                  title,
-                  username,
-                  location,
-                  flameCount,
-                  saves,
-                  clicks,
-                  numStarts,
-                  startDate,
-                  endDate,
-                  pinList,
-                  description,
-                  viewModel.latLongList.toList())
-
-          viewModel.addNewItinerary(itinerary, itineraryRepository)
-          viewModel.stopDescription()
-          viewModel.resetRecording()
-          localLatLngList.clear()
+          viewModel.getCityAndCountry(
+              meanLocation.latitude.toFloat(), meanLocation.longitude.toFloat()) {
+                val locationName = it
+                val location = Location(meanLocation.latitude, meanLocation.longitude, locationName)
+                val itinerary =
+                    Itinerary(
+                        id,
+                        title,
+                        username,
+                        location,
+                        flameCount,
+                        saves,
+                        clicks,
+                        numStarts,
+                        startDate,
+                        endDate,
+                        pinList,
+                        description,
+                        viewModel.latLongList.toList())
+                viewModel.addNewItinerary(itinerary, itineraryRepository)
+                viewModel.stopDescription()
+                viewModel.resetRecording()
+                localLatLngList.clear()
+              }
         }
       },
       modifier = Modifier.size(150.dp, 70.dp),
