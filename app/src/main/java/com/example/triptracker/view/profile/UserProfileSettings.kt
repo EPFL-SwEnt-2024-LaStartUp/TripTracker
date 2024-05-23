@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,8 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,9 +37,9 @@ import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.profile.subviews.ScaffoldTopBar
 import com.example.triptracker.view.theme.Montserrat
-import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
+import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
@@ -78,11 +81,14 @@ fun UserProfileSettings(
                   val (isPublic, setIsPrivate) = remember { mutableStateOf(curr) }
 
                   // Determine the text and background colors based on the state
-                  val textColor = if (isPublic) md_theme_dark_gray else Color.White
+                  val textColor = md_theme_light_onPrimary
                   val backgroundColor = if (isPublic) md_theme_grey else md_theme_orange
                   val buttonText = if (isPublic) "Public" else "Private"
                   FilledTonalButton(
-                      modifier = Modifier.size(width = 94.dp, height = 35.dp),
+                      modifier = Modifier.size(
+                          width = (LocalConfiguration.current.screenWidthDp * 0.27).dp,
+                          height = (LocalConfiguration.current.screenHeightDp * 0.06).dp
+                      ),
                       onClick = {
                         setIsPrivate(!isPublic)
                         var privacy = userProfile.profilePrivacy
@@ -111,9 +117,10 @@ fun UserProfileSettings(
                               containerColor = backgroundColor, contentColor = textColor)) {
                         Text(
                             text = buttonText,
-                            fontSize = 12.sp,
+                            fontSize = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
                             fontFamily = Montserrat,
-                            fontWeight = FontWeight.Bold)
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center)
                       }
                 })
             Divider()
@@ -128,11 +135,14 @@ fun UserProfileSettings(
                       state2 = "Friends",
                       state3 = "Me",
                       state = buttonState,
-                      modifier = Modifier.size(width = 94.dp, height = 35.dp),
+                      modifier = Modifier.size(
+                          width = (LocalConfiguration.current.screenWidthDp * 0.27).dp,
+                          height = (LocalConfiguration.current.screenHeightDp * 0.06).dp
+                      ),
                       onClick = {
                         setButtonState((buttonState + 1) % 3)
 
-                        var itinPrivacy = (buttonState + 1) % 3
+                        val itinPrivacy = (buttonState + 1) % 3
                         val newProfile =
                             UserProfile(
                                 mail = userProfile.mail,
@@ -160,7 +170,10 @@ fun UserProfileSettings(
                       state2 = "When the app is running",
                       state3 = "Always",
                       state = buttonState,
-                      modifier = Modifier.size(width = 208.dp, height = 35.dp),
+                      modifier = Modifier.size(
+                          width = (LocalConfiguration.current.screenWidthDp * 0.50).dp,
+                          height = (LocalConfiguration.current.screenHeightDp * 0.06).dp
+                      ),
                       onClick = { setButtonState((buttonState + 1) % 3) })
                 })
 
@@ -171,7 +184,10 @@ fun UserProfileSettings(
                 "Account",
                 actions = {
                   FilledTonalButton(
-                      modifier = Modifier.size(width = 120.dp, height = 35.dp),
+                      modifier = Modifier.size(
+                          width = (LocalConfiguration.current.screenWidthDp * 0.27).dp,
+                          height = (LocalConfiguration.current.screenHeightDp * 0.06).dp
+                      ),
                       onClick = {
                         val context = MainActivity.applicationContext()
                         GoogleAuthenticator().signOut(context)
@@ -184,10 +200,10 @@ fun UserProfileSettings(
                       },
                       colors =
                           ButtonDefaults.filledTonalButtonColors(
-                              containerColor = md_theme_grey, contentColor = md_theme_dark_gray)) {
+                              containerColor = md_theme_grey, contentColor = md_theme_light_onPrimary)) {
                         Text(
                             text = "Sign out",
-                            fontSize = 12.sp,
+                            fontSize = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
                             fontFamily = Montserrat,
                             fontWeight = FontWeight.Bold)
                       }
@@ -243,23 +259,19 @@ fun TriStateButton(
 
   // Determine the text and background colors based on the state
   val buttonText: String
-  val textColor: Color
   val backgroundColor: Color
 
   when (state) {
     1 -> {
       buttonText = state2
-      textColor = md_theme_dark_gray
       backgroundColor = md_theme_light_dark
     }
     0 -> {
       buttonText = state1
-      textColor = md_theme_dark_gray
       backgroundColor = md_theme_grey
     }
     else -> {
       buttonText = state3
-      textColor = Color.White
       backgroundColor = md_theme_orange
     }
   }
@@ -269,13 +281,14 @@ fun TriStateButton(
       onClick = { onClick() },
       colors =
           ButtonDefaults.filledTonalButtonColors(
-              containerColor = backgroundColor, contentColor = textColor)) {
+              containerColor = backgroundColor, contentColor = md_theme_light_onPrimary)) {
         Text(
             text = buttonText,
-            fontSize = 12.sp,
+            fontSize = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
             fontFamily = Montserrat,
             fontWeight = FontWeight.Bold,
-            color = textColor)
+            textAlign = TextAlign.Center,
+            color = md_theme_light_onPrimary)
       }
 }
 
@@ -295,19 +308,11 @@ fun SettingsElement(elementName: String, actions: @Composable () -> Unit = {}) {
             .weight(1f)) {
           Text(
               text = elementName,
-              fontSize = 18.sp,
+              fontSize = (LocalConfiguration.current.screenHeightDp * 0.025f).sp,
               fontFamily = Montserrat,
               fontWeight = FontWeight.SemiBold,
-              color = md_theme_dark_gray)
+              color = MaterialTheme.colorScheme.onBackground)
         }
         actions()
       }
 }
-
-// @Preview
-// @Composable
-// fun UserProfileSettingsPreview() {
-//  val navController = rememberNavController()
-//  val navigation = remember(navController) { Navigation(navController) }
-//  UserProfileSettings(navigation = navigation)
-// }
