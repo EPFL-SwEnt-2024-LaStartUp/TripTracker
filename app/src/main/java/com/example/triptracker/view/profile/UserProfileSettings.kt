@@ -5,19 +5,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +32,7 @@ import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
+import com.example.triptracker.view.profile.subviews.ScaffoldTopBar
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_grey
@@ -58,36 +53,18 @@ fun UserProfileSettings(
   val userProfile = AmbientUserProfile.current.userProfile.value
   val userAmbient = AmbientUserProfile.current.userProfile
 
-  Scaffold(bottomBar = { NavigationBar(navigation) }) { paddingValues ->
+  Scaffold(
+      topBar = { ScaffoldTopBar(navigation = navigation, label = "Settings")},
+      bottomBar = { NavigationBar(navigation) }) { paddingValues ->
     Box(
         modifier =
-            Modifier.testTag("UserProfileSettings")
-                .padding(paddingValues)
-                .fillMaxSize()
-                .padding(start = 30.dp, end = 30.dp, top = 0.dp, bottom = 0.dp)) {
-          Column() {
-            Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.1f)) {
-              Row(
-                  horizontalArrangement = Arrangement.SpaceBetween,
-                  verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = { navigation.goBack() }) {
-                      Icon(
-                          imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                          contentDescription = "Back")
-                    }
-                    Box(
-                        modifier = Modifier.fillMaxSize().padding(end = 52.dp),
-                        contentAlignment = Alignment.Center) {
-                          Text(
-                              text = "Settings",
-                              fontSize = 25.sp,
-                              fontFamily = Montserrat,
-                              fontWeight = FontWeight.Bold)
-                        }
-                  }
-            }
-
-            Spacer(modifier = Modifier.height(60.dp))
+        Modifier
+            .testTag("UserProfileSettings")
+            .padding(paddingValues)
+            .fillMaxSize()
+            .padding(start = 30.dp, end = 30.dp, top = 0.dp, bottom = 0.dp)) {
+          Column {
+              Spacer(modifier = Modifier.height(50.dp))
 
             SettingsGroup("Account Privacy")
             SettingsElement(
@@ -313,7 +290,9 @@ fun SettingsElement(elementName: String, actions: @Composable () -> Unit = {}) {
   Row(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically) {
-        Box(modifier = Modifier.padding(start = 10.dp).weight(1f)) {
+        Box(modifier = Modifier
+            .padding(start = 10.dp)
+            .weight(1f)) {
           Text(
               text = elementName,
               fontSize = 18.sp,

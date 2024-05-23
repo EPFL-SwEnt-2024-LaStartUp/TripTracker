@@ -41,7 +41,6 @@ import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.profile.subviews.FriendListView
 import com.example.triptracker.view.profile.subviews.FriendSearchBar
 import com.example.triptracker.view.theme.Montserrat
-import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
 /**
@@ -89,7 +88,7 @@ fun UserProfileFollowing(
                   colors =
                       ButtonDefaults.buttonColors(
                           containerColor = Color.Transparent,
-                          contentColor = MaterialTheme.colorScheme.onSurface),
+                          contentColor = MaterialTheme.colorScheme.onBackground),
                   modifier = Modifier.testTag("GoBackButton")) {
                     Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
                   }
@@ -102,7 +101,7 @@ fun UserProfileFollowing(
                           lineHeight = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
                           fontFamily = Montserrat,
                           fontWeight = FontWeight(700),
-                          color = md_theme_light_dark,
+                          color = MaterialTheme.colorScheme.onBackground,
                           textAlign = TextAlign.Left,
                           letterSpacing = (LocalConfiguration.current.screenHeightDp * 0.0005f).sp,
                       ),
