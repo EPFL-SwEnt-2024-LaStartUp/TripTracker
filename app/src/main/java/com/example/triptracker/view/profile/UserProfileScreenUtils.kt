@@ -74,7 +74,7 @@ fun UserProfileScreen(
         Box {
           when (filteredList) {
             emptyList<Itinerary>() -> {
-              Box(modifier = Modifier.fillMaxWidth().padding(top = 100.dp)) {
+              Box(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
                 Text(
                     text = noDataText,
                     modifier =
@@ -88,16 +88,12 @@ fun UserProfileScreen(
             else -> {
               val listState = rememberLazyListState()
               LazyColumn(
-                  modifier =
-                      Modifier.fillMaxSize()
-                          .padding(innerPadding)
-                          .padding(top = 20.dp)
-                          .testTag("DataList"),
+                  modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("DataList"),
                   contentPadding = PaddingValues(16.dp),
                   state = listState) {
                     items(filteredList) { itinerary ->
                       if (itinerary == filteredList.first())
-                          Spacer(modifier = Modifier.height(64.dp))
+                          Spacer(modifier = Modifier.height(10.dp))
                       Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
                       DisplayItinerary(
                           itinerary = itinerary,
