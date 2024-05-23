@@ -79,7 +79,7 @@ class UserProfileMyTripsTest {
           homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
     }
     composeTestRule.onNodeWithTag("UserProfileMyTripsScreen").assertExists()
-    composeTestRule.onNodeWithTag("ScreenTitle").assertExists()
+    composeTestRule.onNodeWithTag("Title").assertExists()
     composeTestRule.onNodeWithTag("GoBackButton").assertExists()
   }
 
