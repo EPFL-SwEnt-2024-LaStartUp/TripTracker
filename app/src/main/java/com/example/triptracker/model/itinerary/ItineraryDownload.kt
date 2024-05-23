@@ -3,6 +3,7 @@ package com.example.triptracker.model.itinerary
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import com.example.triptracker.MainActivity.Companion.applicationContext
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
@@ -17,7 +18,7 @@ import java.util.UUID
  *
  * @param context the context of the activity
  */
-class ItineraryDownload(private val context: Context) {
+class ItineraryDownload(private val context: Context = applicationContext()) {
 
   private val gson = Gson()
   private val itinerarySuffix = "_itinerary"
@@ -71,6 +72,16 @@ class ItineraryDownload(private val context: Context) {
   }
 
   /**
+   * Delete an image from the internal storage
+   *
+   * @param imagePath the path of the image to be deleted
+   */
+  private fun deleteImageFromInternalStorage(imagePath: String): Boolean {
+    val file = File(imagePath)
+    return file.delete()
+  }
+
+  /**
    * Delete the itinerary from the internal storage
    *
    * @param itineraryId the id of the itinerary to be deleted
@@ -78,6 +89,12 @@ class ItineraryDownload(private val context: Context) {
   fun deleteItinerary(itineraryId: String): Boolean {
     val fileName = "$itineraryId$itinerarySuffix.json"
     val file = File(context.filesDir, fileName)
+    val itinerary = loadItineraryFromInternalStorage(fileName)
+
+    itinerary?.pinnedPlaces?.forEach { pin ->
+      pin.image_url.forEach { imagePath -> deleteImageFromInternalStorage(imagePath) }
+    }
+
     return file.delete()
   }
 

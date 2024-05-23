@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.Font
@@ -55,6 +56,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.itinerary.ItineraryDownload
 import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.theme.Montserrat
@@ -97,6 +99,10 @@ fun DisplayItinerary(
   val configuration = LocalConfiguration.current
   val screenWidth = configuration.screenWidthDp.dp
   val screenHeight = configuration.screenHeightDp.dp
+
+  // The object that contains the download function for the itinerary
+  val itineraryDownload = ItineraryDownload(context = LocalContext.current)
+
   // Number of additional itineraries not displayed
   val pinListString = fetchPinNames(itinerary)
   Log.d("PinListString", pinListString)
@@ -231,6 +237,8 @@ fun DisplayItinerary(
                           modifier =
                               Modifier.size(20.dp).clickable {
                                 userProfileViewModel.removeFavorite(ambientProfile, itinerary.id)
+                                // delete the itinerary from internal storage
+                                itineraryDownload.deleteItinerary(itinerary.id)
                               })
                     } else {
                       // If the user has not favorited this itinerary, display a star grey
@@ -243,6 +251,8 @@ fun DisplayItinerary(
                                 userProfileViewModel.addFavorite(ambientProfile, itinerary.id)
                                 homeViewModel.incrementSaveCount(
                                     itinerary.id) // when click on grey star, increment save count
+                                // save the itinerary to internal storage
+                                itineraryDownload.saveItineraryToInternalStorage(itinerary)
                               })
                     }
                   }

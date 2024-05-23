@@ -8,7 +8,9 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.itinerary.ItineraryDownload
 import com.example.triptracker.model.itinerary.ItineraryList
+import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.view.home.dummyProfile
@@ -42,9 +44,17 @@ enum class HomeCategory {
 /**
  * ViewModel for the Home Screen. Fetches all itineraries from the repository stores them in a
  * LiveData object
+ *
+ * @param repository the repository to fetch itineraries from
+ * @param connection the connection object to check if the device is connected to the internet
+ * @param itineraryDownload the itinerary download object to fetch itineraries from the internal
+ *   storage
  */
-class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepository()) :
-    ViewModel() {
+class HomeViewModel(
+    private val repository: ItineraryRepository = ItineraryRepository(),
+    private val connection: Connection = Connection(),
+    itineraryDownload: ItineraryDownload = ItineraryDownload()
+) : ViewModel() {
 
   private var itineraryInstance = ItineraryList(listOf())
   private var _itineraryList = MutableLiveData<List<Itinerary>>(emptyList())
@@ -67,8 +77,14 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   private var userProfileList = List(0) { dummyProfile }
 
   init {
-    UserProfileViewModel().fetchAllUserProfiles { userProfileList = it }
-    viewModelScope.launch { fetchItineraries { updateAllFlameCounts() } }
+    if (connection.isDeviceConnectedToInternet()) {
+      UserProfileViewModel().fetchAllUserProfiles { userProfileList = it }
+      viewModelScope.launch { fetchItineraries { updateAllFlameCounts() } }
+    } else {
+      // If the device is not connected to the internet, fetch itineraries from the internal storage
+      _itineraryList.value = itineraryDownload.loadAllItineraries()
+      Log.d("HomeViewModel", "Fetched itineraries from local storage: ${_itineraryList.value}")
+    }
   }
 
   private val _userProfiles = MutableLiveData<Map<String, UserProfile>>()
@@ -214,6 +230,13 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    */
   private fun filterByFavorite(usermail: String): List<Itinerary> {
     val filteredItineraries = mutableListOf<Itinerary>()
+
+    /**
+     * If the device is not connected to the internet, return the list of itineraries from the
+     * internal storage
+     */
+    if (!connection.isDeviceConnectedToInternet()) return _itineraryList.value ?: emptyList()
+
     val userProfile = userProfileList.firstOrNull { it.mail == usermail } ?: return emptyList()
     _itineraryList.value?.forEach { itinerary ->
       if (userProfile.favoritesPaths.contains(itinerary.id)) {
