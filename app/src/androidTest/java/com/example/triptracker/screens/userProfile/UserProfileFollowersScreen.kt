@@ -11,7 +11,7 @@ class UserProfileFollowersScreen(semanticsProvider: SemanticsNodeInteractionsPro
         viewBuilderAction = { hasTestTag("FollowersScreen") }) {
 
   // Structural elements of the UI
-  val followersTitle: KNode = child { hasTestTag("FollowersTitle") }
+  val followersTitle: KNode = child { hasTestTag("Title") }
   val goBackButton: KNode = child { hasTestTag("GoBackButton") }
   val followersList: KNode = child { hasTestTag("FollowersList") }
 
