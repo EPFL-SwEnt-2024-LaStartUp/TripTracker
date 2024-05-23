@@ -390,7 +390,7 @@ fun DisplayItineraries(
               },
               displayImage = true,
               test = test,
-          )
+              navigation = navigation)
         }
       }
 }

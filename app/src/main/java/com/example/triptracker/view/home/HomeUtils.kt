@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
@@ -57,15 +59,16 @@ import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.view.Navigation
+import com.example.triptracker.view.Route
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_background
 import com.example.triptracker.view.theme.md_theme_light_black
+import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_light_error
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
-import com.example.triptracker.view.theme.md_theme_light_onSurface
 import com.example.triptracker.view.theme.md_theme_light_outline
-import com.example.triptracker.view.theme.md_theme_light_outlineVariant
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
@@ -93,6 +96,7 @@ fun DisplayItinerary(
     displayImage: Boolean = false,
     test: Boolean = false,
     canBeDeleted: Boolean = false,
+    navigation: Navigation
 ) {
   val configuration = LocalConfiguration.current
   val screenWidth = configuration.screenWidthDp.dp
@@ -102,7 +106,7 @@ fun DisplayItinerary(
   Log.d("PinListString", pinListString)
   // The height of the box that contains the itinerary, fixed
   // The padding around the box
-  val paddingAround = 15.dp
+  val paddingAround = 10.dp
   // The size of the user's avatar/profile picture
   val avatarSize = 25.dp
   // The user profile fetched from the database for each path
@@ -165,14 +169,20 @@ fun DisplayItinerary(
                       tint = md_theme_light_onPrimary)
                 }
 
-            AsyncImage(
-                model = dbProfile.profileImageUrl,
-                contentDescription = "User Avatar",
+            Box(
                 modifier =
-                    Modifier.align(Alignment.Center)
-                        .padding(15.dp)
+                    Modifier.padding(15.dp)
+                        .size(200.dp) // Adjust the size as needed
                         .clip(CircleShape)
-                        .testTag("ProfilePicBig"))
+                        .background(Color.Gray) // Optional: background color to see the boundaries
+                        .align(Alignment.Center)
+                        .testTag("ProfilePicBig")) {
+                  AsyncImage(
+                      model = dbProfile.profileImageUrl,
+                      contentDescription = "User Avatar",
+                      contentScale = ContentScale.Crop,
+                      modifier = Modifier.fillMaxSize())
+                }
           }
     }
     false -> {
@@ -182,29 +192,24 @@ fun DisplayItinerary(
               Modifier.fillMaxWidth()
                   .padding(paddingAround)
                   .height(boxHeightToDisplay)
-                  .background(color = md_theme_light_onSurface, shape = RoundedCornerShape(35.dp))
-                  .combinedClickable(
-                      onClick = {
-                        onClick()
-                      }, // When you click on an itinerary, it should bring you to the map
-                      // overview with the selected itinerary highlighted and the first pinned
-                      // places
-                      onLongClick = {
-                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                        if (canBeDeleted) {
-                          showAlert = true
-                        }
-                      })
+                  .background(color = md_theme_light_dark, shape = RoundedCornerShape(35.dp))
                   .testTag("Itinerary")) {
             Column(modifier = Modifier.fillMaxWidth().padding(25.dp)) {
               Row(
                   modifier = Modifier.fillMaxWidth(),
                   horizontalArrangement = Arrangement.SpaceBetween) {
                     // change the image to the user's profile picture
-                    Row() {
+                    Row(
+                        modifier =
+                            Modifier.clickable {
+                              navigation.navController.navigate(
+                                  Route.USER + "/${itinerary.userMail}")
+                            },
+                    ) {
                       AsyncImage(
                           model = dbProfile.profileImageUrl,
                           contentDescription = "User Avatar",
+                          contentScale = ContentScale.Crop,
                           modifier =
                               Modifier.size(avatarSize)
                                   .clip(CircleShape)
@@ -221,7 +226,7 @@ fun DisplayItinerary(
                           modifier = Modifier.testTag("Username"))
                     }
 
-                    Spacer(modifier = Modifier.width(120.dp))
+                    Spacer(modifier = Modifier.width(1.dp))
                     if (ambientProfile.userProfile.value.favoritesPaths.contains(itinerary.id)) {
                       // If the user has favorited this itinerary, display a star orange
                       Icon(
@@ -229,7 +234,7 @@ fun DisplayItinerary(
                           contentDescription = "Star",
                           tint = md_theme_orange,
                           modifier =
-                              Modifier.size(20.dp).clickable {
+                              Modifier.size(28.dp).clickable {
                                 userProfileViewModel.removeFavorite(ambientProfile, itinerary.id)
                               })
                     } else {
@@ -239,66 +244,92 @@ fun DisplayItinerary(
                           contentDescription = "Star",
                           tint = md_theme_grey,
                           modifier =
-                              Modifier.size(20.dp).clickable {
+                              Modifier.size(28.dp).clickable {
                                 userProfileViewModel.addFavorite(ambientProfile, itinerary.id)
                                 homeViewModel.incrementSaveCount(
                                     itinerary.id) // when click on grey star, increment save count
                               })
                     }
                   }
-              Spacer(modifier = Modifier.width(120.dp))
-              Spacer(modifier = Modifier.height(5.dp))
-              Log.d("ItineraryRoute", itinerary.route.toString())
-              Text(
-                  text = itinerary.title,
-                  fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                  fontWeight = FontWeight.Bold,
-                  fontSize = 24.sp,
-                  color = md_theme_light_onPrimary,
-                  modifier = Modifier.testTag("Title"))
-              Text(
-                  text = "${itinerary.flameCount}🔥",
-                  color = md_theme_orange, // This is the orange color
-                  fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                  fontSize = 14.sp)
-              Spacer(modifier = Modifier.height(20.dp).weight(1f))
-              Text(
-                  text = pinListString,
-                  fontSize = 14.sp,
-                  modifier = Modifier.fillMaxWidth().testTag("PinList"),
-                  maxLines = 2,
-                  overflow = "and more".let { TextOverflow.Ellipsis },
-                  fontFamily = FontFamily(Font(R.font.montserrat_medium)),
-                  color = md_theme_grey)
+              Box(
+                  modifier =
+                      Modifier.combinedClickable(
+                          onClick = {
+                            onClick()
+                          }, // When you click on an itinerary, it should bring you to the map
+                          // overview with the selected itinerary highlighted and the first pinned
+                          // places
+                          onLongClick = {
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            if (canBeDeleted) {
+                              showAlert = true
+                            }
+                          })) {
+                    Column(
+                        modifier =
+                            Modifier.combinedClickable(
+                                onClick = {
+                                  onClick()
+                                }, // When you click on an itinerary, it should bring you to the map
+                                // overview with the selected itinerary highlighted and the first
+                                // pinned
+                                // places
+                                onLongClick = {
+                                  haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                                  if (canBeDeleted) {
+                                    showAlert = true
+                                  }
+                                })) {
+                          Spacer(modifier = Modifier.width(120.dp))
+                          Spacer(modifier = Modifier.height(5.dp))
+                          Log.d("ItineraryRoute", itinerary.route.toString())
+                          Text(
+                              text = itinerary.title,
+                              fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                              fontWeight = FontWeight.Bold,
+                              fontSize = 24.sp,
+                              color = md_theme_light_onPrimary,
+                              modifier = Modifier.testTag("Title"))
+                          Text(
+                              text = "${itinerary.flameCount} 🔥",
+                              color = md_theme_orange, // This is the orange color
+                              fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                              fontSize = 14.sp)
+                          Spacer(modifier = Modifier.height(screenHeight * 0.02f))
+                          Text(
+                              text = pinListString,
+                              fontSize = 14.sp,
+                              modifier = Modifier.fillMaxWidth().testTag("PinList"),
+                              maxLines = 2,
+                              overflow = "and more".let { TextOverflow.Ellipsis },
+                              fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                              color = md_theme_grey)
 
-              if (displayImage) {
-                Spacer(modifier = Modifier.height(30.dp).weight(1f).padding(5.dp))
-                LazyRow(
-                    modifier =
-                        Modifier.height(if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f),
-                    verticalAlignment = Alignment.CenterVertically) {
-                      items(itinerary.pinnedPlaces) { pin ->
-                        for (image in pin.image_url) {
-                          imageIsEmpty.value = false
-                          AsyncImage(
-                              model = image,
-                              contentDescription = pin.description,
-                              modifier =
-                                  Modifier.clip(RoundedCornerShape(corner = CornerSize(15.dp)))
-                                      .background(Color.Red))
-
-                          Spacer(modifier = Modifier.width(15.dp).weight(1f))
+                          if (displayImage) {
+                            Spacer(modifier = Modifier.height(screenHeight * 0.02f))
+                            LazyRow(
+                                modifier =
+                                    Modifier.height(
+                                        if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f),
+                                verticalAlignment = Alignment.CenterVertically) {
+                                  items(itinerary.pinnedPlaces) { pin ->
+                                    for (image in pin.image_url) {
+                                      imageIsEmpty.value = false
+                                      AsyncImage(
+                                          model = image,
+                                          contentDescription = pin.description,
+                                          modifier =
+                                              Modifier.clip(
+                                                      RoundedCornerShape(
+                                                          corner = CornerSize(15.dp)))
+                                                  .background(Color.Red))
+                                      Spacer(modifier = Modifier.width(15.dp).weight(1f))
+                                    }
+                                  }
+                                }
+                          }
                         }
-                      }
-                    }
-                if (imageIsEmpty.value) {
-                  Text(
-                      text = "No images to display",
-                      color = md_theme_light_outlineVariant,
-                      fontSize = 16.sp,
-                      modifier = Modifier.height(screenHeight * 0.25f))
-                }
-              }
+                  }
             }
           }
     }

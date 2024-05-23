@@ -256,7 +256,7 @@ fun UserView(
                                           navigation.navigateTo(Route.MAPS, itinerary.id)
                                         },
                                         test = test,
-                                    )
+                                        navigation = navigation)
                                   }
                                 }
                           }
