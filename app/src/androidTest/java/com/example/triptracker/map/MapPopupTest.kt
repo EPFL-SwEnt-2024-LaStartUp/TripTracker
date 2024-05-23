@@ -1,5 +1,6 @@
 package com.example.triptracker.map
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -8,10 +9,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.map.AddressText
+import com.example.triptracker.view.map.OnDescriptionOpen
 import com.example.triptracker.view.map.PathItem
 import com.example.triptracker.view.map.PathOverlaySheet
+import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.MapPopupViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import io.mockk.Runs
@@ -31,10 +35,17 @@ class MapPopupTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   @RelaxedMockK private lateinit var mockViewModel: UserProfileViewModel
+  @RelaxedMockK private lateinit var mockHomeViewModel: HomeViewModel
+  @RelaxedMockK private lateinit var mockUserVm: UserProfileViewModel
+  @RelaxedMockK private lateinit var mockProfile: MutableUserProfile
 
   @Before
   fun setUp() {
+    mockHomeViewModel = mockk(relaxed = true)
+    mockUserVm = mockk(relaxed = true)
+    mockProfile = mockk(relaxed = true)
     mockViewModel = mockk(relaxed = true)
+
     mockViewModel = mockk {
       coEvery { fetchAllUserProfiles(any()) } just Runs
       coEvery { getUserProfileList() } returns listOf()
@@ -126,6 +137,27 @@ class MapPopupTest {
       // If any exception occurs, fail the test
       TestCase.assertTrue("Test failed due to exception: ${e.message}", true)
     }
+  }
+
+  @Test
+  fun testOnDescriptionOpen() {
+
+    val p =
+        Pin(
+            51.50991301840581,
+            -0.13424873072712565,
+            "Picadilly Circus",
+            "hi",
+            listOf("https://www.google.com"))
+
+    // make a mutablestate of list of boolean of true
+    val descriptionsOpen = mutableStateOf(listOf(true, false, true))
+
+    composeTestRule.setContent {
+      OnDescriptionOpen(descriptionsOpen = descriptionsOpen, pin = p, index = 0)
+    }
+
+    composeTestRule.onNodeWithText(p.description).assertIsDisplayed()
   }
 
   @Test
