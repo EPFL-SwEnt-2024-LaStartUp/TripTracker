@@ -252,7 +252,7 @@ fun UserProfileEditScreen(
                                       }
                                     },
                                     modifier =
-                                        Modifier.height(65.dp).padding(bottom = 5.dp, end = 30.dp),
+                                        Modifier.height(65.dp).padding(bottom = 5.dp, end = 30.dp).testTag("UserModif"),
                                     textStyle =
                                         TextStyle(
                                             color = Color.White,
@@ -333,7 +333,7 @@ fun UserProfileEditScreen(
                                   focusedLabelColor = Color.White,
                               ))
                       IconButton(
-                          modifier = Modifier.padding(end = 30.dp),
+                          modifier = Modifier.padding(end = 30.dp).testTag("iconDate"),
                           onClick = { isOpen.value = true } // show de dialog
                           ) {
                             Icon(
@@ -463,7 +463,7 @@ fun ProfileEditTextField(
       modifier =
           Modifier.height(65.dp)
               .fillMaxWidth(1f)
-              .padding(bottom = 5.dp, start = 30.dp, end = 30.dp),
+              .padding(bottom = 5.dp, start = 30.dp, end = 30.dp).testTag("testTag"),
       textStyle =
           TextStyle(
               color = Color.White,
