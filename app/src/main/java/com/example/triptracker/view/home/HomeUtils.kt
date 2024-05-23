@@ -248,11 +248,12 @@ fun DisplayItinerary(
                           tint = md_theme_grey,
                           modifier =
                               Modifier.size(20.dp).clickable {
-                                userProfileViewModel.addFavorite(ambientProfile, itinerary.id)
-                                homeViewModel.incrementSaveCount(
-                                    itinerary.id) // when click on grey star, increment save count
                                 // save the itinerary to internal storage
-                                itineraryDownload.saveItineraryToInternalStorage(itinerary)
+                                itineraryDownload.saveItineraryToInternalStorage(itinerary) {
+                                  userProfileViewModel.addFavorite(ambientProfile, itinerary.id)
+                                  homeViewModel.incrementSaveCount(
+                                      itinerary.id) // when click on grey star, increment save count
+                                }
                               })
                     }
                   }

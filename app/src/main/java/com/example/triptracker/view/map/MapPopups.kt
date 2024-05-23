@@ -55,6 +55,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -67,6 +68,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.itinerary.ItineraryDownload
 import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.location.popupState
 import com.example.triptracker.model.profile.AmbientUserProfile
@@ -252,11 +254,12 @@ fun getDisplayAddress(address: String): String {
 @Composable
 fun StartScreen(
     itinerary: Itinerary,
-    userProfileViewModel: UserProfileViewModel,
+    userProfileViewModel: UserProfileViewModel = viewModel(),
     onClick: () -> Unit,
     userProfile: MutableUserProfile,
     homeViewModel: HomeViewModel = viewModel(),
-    mapViewModel: MapViewModel
+    mapViewModel: MapViewModel = viewModel(),
+    offline: Boolean = false
 ) {
   val configuration = LocalConfiguration.current
   val screenWidth = configuration.screenWidthDp.dp
@@ -275,6 +278,15 @@ fun StartScreen(
   val imageIsEmpty = remember { mutableStateOf(true) }
   val descriptionsOpen = remember { mutableStateOf(List(itinerary.pinnedPlaces.size) { false }) }
   Log.d("descriptionsOpen", descriptionsOpen.value.toString())
+  val onClickGoBack =
+      if (offline) {
+        onClick
+      } else {
+        {
+          // When you click on the back button, it should bring you back to the map
+          mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
+        }
+      }
   Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(), contentAlignment = Alignment.Center) {
     Box(
         modifier =
@@ -294,10 +306,7 @@ fun StartScreen(
                       .verticalScroll(rememberScrollState())
                       .padding(top = 15.dp, start = 25.dp, end = 25.dp, bottom = 0.dp)) {
                 IconButton(
-                    onClick = {
-                      // When you click on the back button, it should bring you back to the map
-                      mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
-                    },
+                    onClick = onClickGoBack,
                     modifier =
                         Modifier.size(40.dp)
                             .align(Alignment.CenterHorizontally)
@@ -398,32 +407,35 @@ fun StartScreen(
                       OnImageIsEmpty(imageIsEmpty = imageIsEmpty, screenHeight = screenHeight)
                       // add spacer proportional to the screen height
                       Spacer(modifier = Modifier.height(screenHeight * 0.07f))
-                      Button(
-                          onClick = {
-                            onClick()
-                            mapViewModel.asStartItinerary.value = true
-                          },
-                          modifier =
-                              Modifier.align(Alignment.CenterHorizontally)
-                                  .height(
-                                      screenHeight *
-                                          0.07f) // Set a specific height for the button to make it
-                                  // larger
-                                  .fillMaxWidth(
-                                      fraction = 0.5f), // Make the button fill 90% of the width
-                          shape = RoundedCornerShape(50.dp),
-                          colors =
-                              ButtonDefaults.buttonColors(
-                                  containerColor = Color(0xFFF06F24),
-                              ) // Rounded corners with a radius of 12.dp
-                          ) {
-                            Text(
-                                "Start",
-                                fontSize = 24.sp,
-                                color = Color.White,
-                                fontFamily = Montserrat,
-                                fontWeight = FontWeight.Bold)
-                          }
+                      if (!offline) {
+                        Button(
+                            onClick = {
+                              onClick()
+                              mapViewModel.asStartItinerary.value = true
+                            },
+                            modifier =
+                                Modifier.align(Alignment.CenterHorizontally)
+                                    .height(
+                                        screenHeight *
+                                            0.07f) // Set a specific height for the button to make
+                                    // it
+                                    // larger
+                                    .fillMaxWidth(
+                                        fraction = 0.5f), // Make the button fill 90% of the width
+                            shape = RoundedCornerShape(50.dp),
+                            colors =
+                                ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFFF06F24),
+                                ) // Rounded corners with a radius of 12.dp
+                            ) {
+                              Text(
+                                  "Start",
+                                  fontSize = 24.sp,
+                                  color = Color.White,
+                                  fontFamily = Montserrat,
+                                  fontWeight = FontWeight.Bold)
+                            }
+                      }
                     }
               }
         }
@@ -448,6 +460,9 @@ fun DisplayStar(
     itinerary: Itinerary,
     homeViewModel: HomeViewModel
 ) {
+  // The object that contains the download function for the itinerary
+  val itineraryDownload = ItineraryDownload(context = LocalContext.current)
+
   if (userProfile.userProfile.value.favoritesPaths.contains(itinerary.id)) {
     // If the user has favorited this itinerary, display a star orange
     Icon(
@@ -457,6 +472,8 @@ fun DisplayStar(
         modifier =
             Modifier.size(30.dp).clickable {
               userProfileViewModel.removeFavorite(userProfile, itinerary.id)
+              // delete the itinerary from internal storage
+              itineraryDownload.deleteItinerary(itinerary.id)
             })
   } else {
     // If the user has not favorited this itinerary, display a star grey
@@ -466,9 +483,12 @@ fun DisplayStar(
         tint = md_theme_grey,
         modifier =
             Modifier.size(30.dp).clickable {
-              userProfileViewModel.addFavorite(userProfile, itinerary.id)
-              homeViewModel.incrementSaveCount(
-                  itinerary.id) // when click on grey star, increment save count
+              // save the itinerary to internal storage
+              itineraryDownload.saveItineraryToInternalStorage(itinerary) {
+                userProfileViewModel.addFavorite(userProfile, itinerary.id)
+                homeViewModel.incrementSaveCount(
+                    itinerary.id) // when click on grey star, increment save count
+              }
             })
   }
 }
