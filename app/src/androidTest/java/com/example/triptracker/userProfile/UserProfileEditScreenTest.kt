@@ -172,22 +172,22 @@ class UserProfileEditScreenTest : TestCase() {
 
     val mutableUser = MutableUserProfile()
     mutableUser.userProfile.value =
-      UserProfile(
-        "jake@gmail.com",
-        "Test User",
-        "Stupid",
-        "Yesterday",
-        "TestUser",
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
-        emptyList(),
-        emptyList(),
-        emptyList())
+        UserProfile(
+            "jake@gmail.com",
+            "Test User",
+            "Stupid",
+            "Yesterday",
+            "TestUser",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
+            emptyList(),
+            emptyList(),
+            emptyList())
 
     composeTestRule.setContent {
       UserProfileEditScreen(navigation = navigation, profile = mutableUser)
     }
 
-    //write long username in text field
+    // write long username in text field
     composeTestRule.onNodeWithTag("UserModif").performTextInput("TestUserButTheNameWillBeLong")
     composeTestRule.onNodeWithText("Save").performClick()
   }
@@ -196,30 +196,30 @@ class UserProfileEditScreenTest : TestCase() {
   fun AcceptDate() {
     val mutableUser = MutableUserProfile()
     mutableUser.userProfile.value =
-      UserProfile(
-        "J",
-        "S",
-        "S",
-        "S",
-        "S",
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
-        emptyList(),
-        emptyList(),
-        emptyList())
+        UserProfile(
+            "J",
+            "S",
+            "S",
+            "S",
+            "S",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
+            emptyList(),
+            emptyList(),
+            emptyList())
 
     composeTestRule.setContent {
       UserProfileEditScreen(navigation = navigation, profile = mutableUser)
     }
 
     /* Try to accept */
-    //write long username in text field
+    // write long username in text field
     composeTestRule.onNodeWithTag("iconDate").performClick()
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     val accept = device.findObject(UiSelector().text("Accept"))
     if (accept.exists()) {
       accept.click()
     }
-    //verify CustomDatePicker is open
+    // verify CustomDatePicker is open
     composeTestRule.onNodeWithTag("CustomDatePickerDialog").assertExists()
   }
 
@@ -227,23 +227,23 @@ class UserProfileEditScreenTest : TestCase() {
   fun SelctDate() {
     val mutableUser = MutableUserProfile()
     mutableUser.userProfile.value =
-      UserProfile(
-        "J",
-        "S",
-        "S",
-        "S",
-        "S",
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
-        emptyList(),
-        emptyList(),
-        emptyList())
+        UserProfile(
+            "J",
+            "S",
+            "S",
+            "S",
+            "S",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
+            emptyList(),
+            emptyList(),
+            emptyList())
 
     composeTestRule.setContent {
       UserProfileEditScreen(navigation = navigation, profile = mutableUser)
     }
 
     /* Try to accept */
-    //write long username in text field
+    // write long username in text field
     composeTestRule.onNodeWithTag("iconDate").performClick()
 
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
@@ -257,24 +257,22 @@ class UserProfileEditScreenTest : TestCase() {
     if (accept.exists()) {
       accept.click()
     }
-
-
   }
 
   @Test
   fun RejectDate() {
     val mutableUser = MutableUserProfile()
     mutableUser.userProfile.value =
-      UserProfile(
-        "J",
-        "S",
-        "S",
-        "S",
-        "S",
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
-        emptyList(),
-        emptyList(),
-        emptyList())
+        UserProfile(
+            "J",
+            "S",
+            "S",
+            "S",
+            "S",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
+            emptyList(),
+            emptyList(),
+            emptyList())
 
     composeTestRule.setContent {
       UserProfileEditScreen(navigation = navigation, profile = mutableUser)
@@ -282,18 +280,15 @@ class UserProfileEditScreenTest : TestCase() {
 
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     /* Try to cancel */
-    //write long username in text field
+    // write long username in text field
     composeTestRule.onNodeWithTag("iconDate").performClick()
     val cancel = device.findObject(UiSelector().text("Cancel"))
     if (cancel.exists()) {
       cancel.click()
     }
-    //verify CustomDatePicker is open
+    // verify CustomDatePicker is open
     composeTestRule.onNodeWithTag("CustomDatePickerDialog").assertExists()
   }
-
-
-
 
   @Test
   fun interestsTest() {
