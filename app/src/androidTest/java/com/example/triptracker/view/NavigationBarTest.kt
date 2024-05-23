@@ -48,6 +48,7 @@ class NavigationBarTest {
         TopLevelDestination(Route.PROFILE, Icons.Outlined.Person, "Profile")
 
     every { navigation.navigateTo(any()) } returns Unit
+    every { navigation.goBack() } returns Unit
 
     connectionMock = mockk(relaxed = true)
 
