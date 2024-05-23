@@ -29,7 +29,10 @@ fun NavigationBar(navigation: Navigation, connection: Connection = Connection())
               icon = { Icon(destination.icon, contentDescription = destination.textId) },
               label = { Text(destination.textId) },
               selected = navigation.getCurrentDestination().route == destination.route,
-              onClick = { navigation.navigateTo(destination) })
+              onClick = {
+                if (destination.route == Route.PROFILE) navigation.goBack()
+                navigation.navigateTo(destination)
+              })
         }
       })
 }

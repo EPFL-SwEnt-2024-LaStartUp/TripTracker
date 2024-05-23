@@ -362,10 +362,9 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
   //    _itineraryList.value = itineraryList.value?.sortedByDescending { it.flameCount }
   //  }
 
-  fun deleteItinerary(itineraryId: String) {
+  fun deleteItinerary(itineraryId: String, callback: () -> Unit = {}) {
     viewModelScope.launch {
-      repository.removeItinerary(itineraryId)
-      fetchItineraries()
+      repository.removeItinerary(itineraryId) { fetchItineraries() { callback() } }
     }
   }
 }
