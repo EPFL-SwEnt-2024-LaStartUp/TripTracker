@@ -46,13 +46,8 @@ fun UserProfileFriendsFinder(
   Scaffold(
       topBar = { ScaffoldTopBar(navigation = navigation, label = "Friends Finder") },
       bottomBar = { NavigationBar(navigation) },
-      modifier = Modifier
-          .fillMaxSize()
-          .testTag("FriendsFinderScreen")) { innerPadding ->
-        Column(modifier = Modifier
-            .padding(innerPadding)
-            .fillMaxSize()
-            .testTag("FriendsList")) {
+      modifier = Modifier.fillMaxSize().testTag("FriendsFinderScreen")) { innerPadding ->
+        Column(modifier = Modifier.padding(innerPadding).fillMaxSize().testTag("FriendsList")) {
           FriendSearchBar(
               viewModel = userProfileViewModel,
               onSearchActivated = { isActive -> isSearchActive = isActive })

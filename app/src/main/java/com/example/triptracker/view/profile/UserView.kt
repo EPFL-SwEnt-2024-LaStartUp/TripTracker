@@ -217,7 +217,8 @@ fun UserView(
                             currentUserProfile = false)
                       }
                   Column(
-                      modifier = Modifier.height((LocalConfiguration.current.screenHeightDp * 0.45).dp),
+                      modifier =
+                          Modifier.height((LocalConfiguration.current.screenHeightDp * 0.45).dp),
                       horizontalAlignment = Alignment.CenterHorizontally,
                       verticalArrangement = Arrangement.Center) {
                         when (filteredList) {

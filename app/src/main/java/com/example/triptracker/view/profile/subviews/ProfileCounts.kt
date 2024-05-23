@@ -37,15 +37,13 @@ fun ProfileCounts(
     currentUserProfile: Boolean = true
 ) {
   Row(
-      modifier =
-          Modifier.wrapContentHeight().fillMaxWidth(),
+      modifier = Modifier.wrapContentHeight().fillMaxWidth(),
       horizontalArrangement = Arrangement.Center) {
         Column(
             modifier =
                 Modifier.align(Alignment.CenterVertically)
                     .wrapContentHeight()
-                    .width((LocalConfiguration.current.screenWidthDp * 0.33f).dp)
-        ) {
+                    .width((LocalConfiguration.current.screenWidthDp * 0.33f).dp)) {
               Text(
                   text = "$tripsCount",
                   modifier = Modifier.align(Alignment.CenterHorizontally).testTag("TripsCount"),

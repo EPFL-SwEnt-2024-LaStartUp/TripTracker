@@ -34,41 +34,37 @@ import com.example.triptracker.view.theme.Montserrat
  * @param label : the label to display in the top bar.
  */
 @Composable
-fun ScaffoldTopBar(
-    navigation: Navigation,
-    label: String
-) {
-    Row(
-    modifier =
-    Modifier.height((LocalConfiguration.current.screenHeightDp * 0.075).dp)
-    .fillMaxWidth(),
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.Start) {
+fun ScaffoldTopBar(navigation: Navigation, label: String) {
+  Row(
+      modifier =
+          Modifier.height((LocalConfiguration.current.screenHeightDp * 0.075).dp).fillMaxWidth(),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.Start) {
         // Button to navigate back to the user profile
         Button(
             onClick = { navigation.goBack() },
             colors =
-            ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.onBackground),
+                ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = MaterialTheme.colorScheme.onBackground),
             modifier = Modifier.testTag("GoBackButton")) {
-            Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
-        }
+              Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
+            }
         Text(
             text = label,
             style =
-            TextStyle(
-                fontSize = (LocalConfiguration.current.screenHeightDp * 0.03f).sp,
-                lineHeight = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
-                fontFamily = Montserrat,
-                fontWeight = FontWeight(700),
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = TextAlign.Left,
-                letterSpacing = (LocalConfiguration.current.screenHeightDp * 0.0005f).sp,
-            ),
+                TextStyle(
+                    fontSize = (LocalConfiguration.current.screenHeightDp * 0.03f).sp,
+                    lineHeight = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
+                    fontFamily = Montserrat,
+                    fontWeight = FontWeight(700),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Left,
+                    letterSpacing = (LocalConfiguration.current.screenHeightDp * 0.0005f).sp,
+                ),
             modifier =
-            Modifier.width((LocalConfiguration.current.screenHeightDp * 0.67f).dp)
-                .wrapContentHeight()
-                .testTag("Title"))
-    }
+                Modifier.width((LocalConfiguration.current.screenHeightDp * 0.67f).dp)
+                    .wrapContentHeight()
+                    .testTag("Title"))
+      }
 }

@@ -57,160 +57,160 @@ fun UserProfileSettings(
   val userAmbient = AmbientUserProfile.current.userProfile
 
   Scaffold(
-      topBar = { ScaffoldTopBar(navigation = navigation, label = "Settings")},
+      topBar = { ScaffoldTopBar(navigation = navigation, label = "Settings") },
       bottomBar = { NavigationBar(navigation) }) { paddingValues ->
-    Box(
-        modifier =
-        Modifier
-            .testTag("UserProfileSettings")
-            .padding(paddingValues)
-            .fillMaxSize()
-            .padding(start = 30.dp, end = 30.dp, top = 0.dp, bottom = 0.dp)) {
-          Column {
-              Spacer(modifier = Modifier.height(50.dp))
+        Box(
+            modifier =
+                Modifier.testTag("UserProfileSettings")
+                    .padding(paddingValues)
+                    .fillMaxSize()
+                    .padding(start = 30.dp, end = 30.dp, top = 0.dp, bottom = 0.dp)) {
+              Column {
+                Spacer(modifier = Modifier.height(50.dp))
 
-            SettingsGroup("Account Privacy")
-            SettingsElement(
-                "Profile",
-                actions = {
-                  // Remember the state of the button to toggle between texts
-                  var curr = false
-                  if (userAmbient.value.profilePrivacy == 0) {
-                    curr = true
-                  }
-                  val (isPublic, setIsPrivate) = remember { mutableStateOf(curr) }
-
-                  // Determine the text and background colors based on the state
-                  val textColor = md_theme_light_onPrimary
-                  val backgroundColor = if (isPublic) md_theme_grey else md_theme_orange
-                  val buttonText = if (isPublic) "Public" else "Private"
-                  FilledTonalButton(
-                      modifier = Modifier.size(
-                          width = (LocalConfiguration.current.screenWidthDp * 0.27).dp,
-                          height = (LocalConfiguration.current.screenHeightDp * 0.06).dp
-                      ),
-                      onClick = {
-                        setIsPrivate(!isPublic)
-                        var privacy = userProfile.profilePrivacy
-                        if (!isPublic) {
-                          privacy = 0
-                        } else {
-                          privacy = 1
-                        }
-                        val newProfile =
-                            UserProfile(
-                                mail = userProfile.mail,
-                                name = userProfile.name,
-                                surname = userProfile.surname,
-                                birthdate = userProfile.birthdate,
-                                username = userProfile.username,
-                                profileImageUrl = userProfile.profileImageUrl,
-                                followers = userProfile.followers,
-                                following = userProfile.following,
-                                profilePrivacy = privacy,
-                                itineraryPrivacy = userProfile.itineraryPrivacy)
-                        userAmbient.value = newProfile
-                        userProfileViewModel.updateUserProfileInDb(newProfile)
-                      },
-                      colors =
-                          ButtonDefaults.filledTonalButtonColors(
-                              containerColor = backgroundColor, contentColor = textColor)) {
-                        Text(
-                            text = buttonText,
-                            fontSize = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
-                            fontFamily = Montserrat,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center)
+                SettingsGroup("Account Privacy")
+                SettingsElement(
+                    "Profile",
+                    actions = {
+                      // Remember the state of the button to toggle between texts
+                      var curr = false
+                      if (userAmbient.value.profilePrivacy == 0) {
+                        curr = true
                       }
-                })
-            Divider()
-            SettingsElement(
-                "Path Visibility",
-                actions = {
-                  // Remember the state of the button to toggle between texts
-                  val (buttonState, setButtonState) =
-                      remember { mutableIntStateOf(userProfile.itineraryPrivacy) }
-                  TriStateButton(
-                      state1 = "Public",
-                      state2 = "Friends",
-                      state3 = "Me",
-                      state = buttonState,
-                      modifier = Modifier.size(
-                          width = (LocalConfiguration.current.screenWidthDp * 0.27).dp,
-                          height = (LocalConfiguration.current.screenHeightDp * 0.06).dp
-                      ),
-                      onClick = {
-                        setButtonState((buttonState + 1) % 3)
+                      val (isPublic, setIsPrivate) = remember { mutableStateOf(curr) }
 
-                        val itinPrivacy = (buttonState + 1) % 3
-                        val newProfile =
-                            UserProfile(
-                                mail = userProfile.mail,
-                                name = userProfile.name,
-                                surname = userProfile.surname,
-                                birthdate = userProfile.birthdate,
-                                username = userProfile.username,
-                                profileImageUrl = userProfile.profileImageUrl,
-                                followers = userProfile.followers,
-                                following = userProfile.following,
-                                profilePrivacy = userProfile.profilePrivacy,
-                                itineraryPrivacy = itinPrivacy)
-                        userAmbient.value = newProfile
-                        userProfileViewModel.updateUserProfileInDb(newProfile)
-                      })
-                })
-            Divider()
-            SettingsElement(
-                "Location",
-                actions = {
-                  // Remember the state of the button to toggle between texts
-                  val (buttonState, setButtonState) = remember { mutableIntStateOf(0) }
-                  TriStateButton(
-                      state1 = "Never",
-                      state2 = "When the app is running",
-                      state3 = "Always",
-                      state = buttonState,
-                      modifier = Modifier.size(
-                          width = (LocalConfiguration.current.screenWidthDp * 0.50).dp,
-                          height = (LocalConfiguration.current.screenHeightDp * 0.06).dp
-                      ),
-                      onClick = { setButtonState((buttonState + 1) % 3) })
-                })
+                      // Determine the text and background colors based on the state
+                      val textColor = md_theme_light_onPrimary
+                      val backgroundColor = if (isPublic) md_theme_grey else md_theme_orange
+                      val buttonText = if (isPublic) "Public" else "Private"
+                      FilledTonalButton(
+                          modifier =
+                              Modifier.size(
+                                  width = (LocalConfiguration.current.screenWidthDp * 0.27).dp,
+                                  height = (LocalConfiguration.current.screenHeightDp * 0.06).dp),
+                          onClick = {
+                            setIsPrivate(!isPublic)
+                            var privacy = userProfile.profilePrivacy
+                            if (!isPublic) {
+                              privacy = 0
+                            } else {
+                              privacy = 1
+                            }
+                            val newProfile =
+                                UserProfile(
+                                    mail = userProfile.mail,
+                                    name = userProfile.name,
+                                    surname = userProfile.surname,
+                                    birthdate = userProfile.birthdate,
+                                    username = userProfile.username,
+                                    profileImageUrl = userProfile.profileImageUrl,
+                                    followers = userProfile.followers,
+                                    following = userProfile.following,
+                                    profilePrivacy = privacy,
+                                    itineraryPrivacy = userProfile.itineraryPrivacy)
+                            userAmbient.value = newProfile
+                            userProfileViewModel.updateUserProfileInDb(newProfile)
+                          },
+                          colors =
+                              ButtonDefaults.filledTonalButtonColors(
+                                  containerColor = backgroundColor, contentColor = textColor)) {
+                            Text(
+                                text = buttonText,
+                                fontSize = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
+                                fontFamily = Montserrat,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center)
+                          }
+                    })
+                Divider()
+                SettingsElement(
+                    "Path Visibility",
+                    actions = {
+                      // Remember the state of the button to toggle between texts
+                      val (buttonState, setButtonState) =
+                          remember { mutableIntStateOf(userProfile.itineraryPrivacy) }
+                      TriStateButton(
+                          state1 = "Public",
+                          state2 = "Friends",
+                          state3 = "Me",
+                          state = buttonState,
+                          modifier =
+                              Modifier.size(
+                                  width = (LocalConfiguration.current.screenWidthDp * 0.27).dp,
+                                  height = (LocalConfiguration.current.screenHeightDp * 0.06).dp),
+                          onClick = {
+                            setButtonState((buttonState + 1) % 3)
 
-            Spacer(modifier = Modifier.height(100.dp))
+                            val itinPrivacy = (buttonState + 1) % 3
+                            val newProfile =
+                                UserProfile(
+                                    mail = userProfile.mail,
+                                    name = userProfile.name,
+                                    surname = userProfile.surname,
+                                    birthdate = userProfile.birthdate,
+                                    username = userProfile.username,
+                                    profileImageUrl = userProfile.profileImageUrl,
+                                    followers = userProfile.followers,
+                                    following = userProfile.following,
+                                    profilePrivacy = userProfile.profilePrivacy,
+                                    itineraryPrivacy = itinPrivacy)
+                            userAmbient.value = newProfile
+                            userProfileViewModel.updateUserProfileInDb(newProfile)
+                          })
+                    })
+                Divider()
+                SettingsElement(
+                    "Location",
+                    actions = {
+                      // Remember the state of the button to toggle between texts
+                      val (buttonState, setButtonState) = remember { mutableIntStateOf(0) }
+                      TriStateButton(
+                          state1 = "Never",
+                          state2 = "When the app is running",
+                          state3 = "Always",
+                          state = buttonState,
+                          modifier =
+                              Modifier.size(
+                                  width = (LocalConfiguration.current.screenWidthDp * 0.50).dp,
+                                  height = (LocalConfiguration.current.screenHeightDp * 0.06).dp),
+                          onClick = { setButtonState((buttonState + 1) % 3) })
+                    })
 
-            SettingsGroup("Account Settings")
-            SettingsElement(
-                "Account",
-                actions = {
-                  FilledTonalButton(
-                      modifier = Modifier.size(
-                          width = (LocalConfiguration.current.screenWidthDp * 0.27).dp,
-                          height = (LocalConfiguration.current.screenHeightDp * 0.06).dp
-                      ),
-                      onClick = {
-                        val context = MainActivity.applicationContext()
-                        GoogleAuthenticator().signOut(context)
-                        // Go back to the main profile page
-                        navigation.goBack()
-                        // Go to the home screen per default when restarting the app
-                        navigation.navigateTo(navigation.getStartingDestination())
-                        // Go to the login screen
-                        navigation.navController.navigate("login")
-                      },
-                      colors =
-                          ButtonDefaults.filledTonalButtonColors(
-                              containerColor = md_theme_grey, contentColor = md_theme_light_onPrimary)) {
-                        Text(
-                            text = "Sign out",
-                            fontSize = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
-                            fontFamily = Montserrat,
-                            fontWeight = FontWeight.Bold)
-                      }
-                })
-          }
-        }
-  }
+                Spacer(modifier = Modifier.height(100.dp))
+
+                SettingsGroup("Account Settings")
+                SettingsElement(
+                    "Account",
+                    actions = {
+                      FilledTonalButton(
+                          modifier =
+                              Modifier.size(
+                                  width = (LocalConfiguration.current.screenWidthDp * 0.27).dp,
+                                  height = (LocalConfiguration.current.screenHeightDp * 0.06).dp),
+                          onClick = {
+                            val context = MainActivity.applicationContext()
+                            GoogleAuthenticator().signOut(context)
+                            // Go back to the main profile page
+                            navigation.goBack()
+                            // Go to the home screen per default when restarting the app
+                            navigation.navigateTo(navigation.getStartingDestination())
+                            // Go to the login screen
+                            navigation.navController.navigate("login")
+                          },
+                          colors =
+                              ButtonDefaults.filledTonalButtonColors(
+                                  containerColor = md_theme_grey,
+                                  contentColor = md_theme_light_onPrimary)) {
+                            Text(
+                                text = "Sign out",
+                                fontSize = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
+                                fontFamily = Montserrat,
+                                fontWeight = FontWeight.Bold)
+                          }
+                    })
+              }
+            }
+      }
 }
 
 /** Composable function to display a divider */
@@ -303,9 +303,7 @@ fun SettingsElement(elementName: String, actions: @Composable () -> Unit = {}) {
   Row(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically) {
-        Box(modifier = Modifier
-            .padding(start = 10.dp)
-            .weight(1f)) {
+        Box(modifier = Modifier.padding(start = 10.dp).weight(1f)) {
           Text(
               text = elementName,
               fontSize = (LocalConfiguration.current.screenHeightDp * 0.025f).sp,
