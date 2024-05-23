@@ -121,7 +121,7 @@ fun UserView(
                       colors =
                           ButtonDefaults.buttonColors(
                               containerColor = Color.Transparent,
-                              contentColor = MaterialTheme.colorScheme.onSurface),
+                              contentColor = MaterialTheme.colorScheme.onBackground),
                       modifier = Modifier.testTag("GoBackButton")) {
                         Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
                       }
@@ -134,7 +134,7 @@ fun UserView(
                               lineHeight = 16.sp,
                               fontFamily = FontFamily(Font(R.font.montserrat)),
                               fontWeight = FontWeight(700),
-                              color = MaterialTheme.colorScheme.onSurface,
+                              color = MaterialTheme.colorScheme.onBackground,
                               textAlign = TextAlign.Start,
                               letterSpacing = 0.5.sp,
                           ),
@@ -150,7 +150,7 @@ fun UserView(
                 horizontalAlignment = Alignment.CenterHorizontally) {
                   Column(
                       modifier =
-                          Modifier.height((LocalConfiguration.current.screenHeightDp * 0.4).dp),
+                          Modifier.height((LocalConfiguration.current.screenHeightDp * 0.45).dp),
                       horizontalAlignment = Alignment.CenterHorizontally,
                       verticalArrangement = Arrangement.Center) {
                         // Composable function to display the user profile information
@@ -204,7 +204,7 @@ fun UserView(
                                             lineHeight = 12.sp,
                                             fontFamily = Montserrat,
                                             fontWeight = FontWeight(500),
-                                            color = MaterialTheme.colorScheme.surface,
+                                            color = md_theme_light_onPrimary,
                                             textAlign = TextAlign.Center,
                                             letterSpacing = 0.5.sp))
                               }
@@ -217,7 +217,8 @@ fun UserView(
                             currentUserProfile = false)
                       }
                   Column(
-                      modifier = Modifier.fillMaxHeight(),
+                      modifier =
+                          Modifier.height((LocalConfiguration.current.screenHeightDp * 0.45).dp),
                       horizontalAlignment = Alignment.CenterHorizontally,
                       verticalArrangement = Arrangement.Center) {
                         when (filteredList) {
