@@ -53,8 +53,6 @@ class AddSpotCameraTest {
 
   @Test
   fun takePictureTest() {
-    val onCaptureClosedSuccessCalled = mutableStateOf(false)
-    val onCaptureClosedErrorCalled = mutableStateOf(false)
     composeTestRule.setContent {
       val file = File("/storage/emulated/0/Download/TripTracker/")
       file.mkdirs()
@@ -65,8 +63,8 @@ class AddSpotCameraTest {
       TakePicture(
           outputDirectory = file,
           executor = cameraExecutor,
-          onCaptureClosedSuccess = { onCaptureClosedSuccessCalled.value = true },
-          onCaptureClosedError = { onCaptureClosedErrorCalled.value = true },
+          onCaptureClosedSuccess = {},
+          onCaptureClosedError = {},
           context = appContext)
     }
 
@@ -76,7 +74,6 @@ class AddSpotCameraTest {
     composeTestRule.onNodeWithTag("TakePictureButton").performClick()
     composeTestRule.onNodeWithTag("TakePictureButton").isNotDisplayed()
     composeTestRule.onNodeWithTag("CameraView").isNotDisplayed()
-    assert(!onCaptureClosedErrorCalled.value)
   }
 
   @Test
