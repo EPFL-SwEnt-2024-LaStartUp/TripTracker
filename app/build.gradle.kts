@@ -155,9 +155,9 @@ dependencies {
   implementation("androidx.compose.runtime:runtime")
   implementation("androidx.compose.runtime:runtime-rxjava2")
   implementation("androidx.compose.runtime:runtime-livedata")
-    implementation(libs.androidx.exifinterface)
+  implementation(libs.androidx.exifinterface)
 
-    // Camera
+  // Camera
   val cameraVersion = "1.3.1"
   implementation("androidx.camera:camera-lifecycle:$cameraVersion")
   implementation("androidx.camera:camera-camera2:$cameraVersion")
@@ -169,13 +169,11 @@ dependencies {
   debugImplementation("androidx.compose.ui:ui-tooling")
   debugImplementation("androidx.compose.ui:ui-test-manifest")
 
-
   // --------------- AndroidActivity ----------------
   val activityVersion = "1.8.2"
   implementation("androidx.activity:activity:$activityVersion")
   implementation("androidx.activity:activity-compose:$activityVersion")
   implementation("androidx.activity:activity-ktx:$activityVersion")
-
 
   // --------------- Navigation ----------------
   val navVersion = "2.7.7"
@@ -188,11 +186,9 @@ dependencies {
   // Testing navigation
   androidTestImplementation("androidx.navigation:navigation-testing:$navVersion")
 
-
   // --------------- Location ----------------
   implementation("com.google.android.gms:play-services-location:21.2.0")
   implementation("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
-
 
   // --------------- Firebase ----------------
   // When using the BoM, you don't specify versions in Firebase library dependencies
@@ -206,7 +202,7 @@ dependencies {
   implementation("com.google.android.play:core-ktx:1.8.1")
   implementation("androidx.core:core-ktx:1.12.0")
   implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-  
+
   // --------------- Google Authentication ----------------
   implementation("com.google.android.gms:play-services-auth:21.1.0")
 
@@ -225,6 +221,7 @@ dependencies {
 
   // --------------- JSON ----------------
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+  implementation("com.google.code.gson:gson:2.8.8")
 
   // --------------- Espresso ----------------
   val espressoVersion = "3.5.1"
@@ -234,8 +231,10 @@ dependencies {
   // --------------- Kaspresso ----------------
   val kaspressoVersion = "1.4.3"
   androidTestImplementation("com.kaspersky.android-components:kaspresso:$kaspressoVersion")
-  androidTestImplementation("com.kaspersky.android-components:kaspresso-allure-support:$kaspressoVersion")
-  androidTestImplementation("com.kaspersky.android-components:kaspresso-compose-support:$kaspressoVersion")
+  androidTestImplementation(
+      "com.kaspersky.android-components:kaspresso-allure-support:$kaspressoVersion")
+  androidTestImplementation(
+      "com.kaspersky.android-components:kaspresso-compose-support:$kaspressoVersion")
 
   // --------------- Robolectric ----------------
   testImplementation(libs.robolectric)
@@ -257,12 +256,9 @@ dependencies {
 
   // --------------- Appcompat ---------------
   implementation("androidx.appcompat:appcompat:1.5.1")
-
 }
 
-configurations.all {
-  resolutionStrategy.force("com.google.protobuf:protobuf-javalite:3.22.3")
-}
+configurations.all { resolutionStrategy.force("com.google.protobuf:protobuf-javalite:3.22.3") }
 
 tasks.withType<Test> {
   // Configure Jacoco for each tests
