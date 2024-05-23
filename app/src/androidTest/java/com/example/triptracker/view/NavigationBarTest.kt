@@ -98,6 +98,7 @@ class NavigationBarTest {
     verify { navigation.getTopLevelDestinations() }
 
     composeTestRule.onNodeWithText("Profile").performClick()
+    verify { navigation.goBack() }
     verify {
       navigation.navigateTo(TopLevelDestination(Route.PROFILE, Icons.Outlined.Person, "Profile"))
     }
@@ -107,6 +108,7 @@ class NavigationBarTest {
     verify { navigation.getCurrentDestination() }
 
     composeTestRule.onNodeWithText("Home").performClick()
+    verify { navigation.goBack() }
     verify { navigation.navigateTo(TopLevelDestination(Route.HOME, Icons.Outlined.Home, "Home")) }
     verify { navigation.getCurrentDestination() }
     verify { navigation.getCurrentDestination() }
