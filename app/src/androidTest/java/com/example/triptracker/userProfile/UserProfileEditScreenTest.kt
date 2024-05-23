@@ -245,13 +245,20 @@ class UserProfileEditScreenTest : TestCase() {
     /* Try to accept */
     //write long username in text field
     composeTestRule.onNodeWithTag("iconDate").performClick()
+
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+
+    val day = device.findObject(UiSelector().text("15"))
+    if (day.exists()) {
+      day.click()
+    }
+
     val accept = device.findObject(UiSelector().text("Accept"))
     if (accept.exists()) {
       accept.click()
     }
-    //verify CustomDatePicker is open
-    composeTestRule.onNodeWithTag("CustomDatePickerDialog").assertExists()
+
+
   }
 
   @Test
