@@ -2,6 +2,7 @@ package com.example.triptracker.map
 
 import android.Manifest
 import android.content.Context
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -52,6 +53,8 @@ class AddSpotCameraTest {
 
   @Test
   fun takePictureTest() {
+    val onCaptureClosedSuccessCalled = mutableStateOf(false)
+    val onCaptureClosedErrorCalled = mutableStateOf(false)
     composeTestRule.setContent {
       val file = File("/storage/emulated/0/Download/TripTracker/")
       file.mkdirs()
@@ -62,8 +65,8 @@ class AddSpotCameraTest {
       TakePicture(
           outputDirectory = file,
           executor = cameraExecutor,
-          onCaptureClosedSuccess = {},
-          onCaptureClosedError = {},
+          onCaptureClosedSuccess = { onCaptureClosedSuccessCalled.value = true },
+          onCaptureClosedError = { onCaptureClosedErrorCalled.value = true },
           context = appContext)
     }
 
@@ -73,5 +76,35 @@ class AddSpotCameraTest {
     composeTestRule.onNodeWithTag("TakePictureButton").performClick()
     composeTestRule.onNodeWithTag("TakePictureButton").isNotDisplayed()
     composeTestRule.onNodeWithTag("CameraView").isNotDisplayed()
+    assert(!onCaptureClosedErrorCalled.value)
+  }
+
+  @Test
+  fun closeCameraTest() {
+    val onCaptureClosedSuccessCalled = mutableStateOf(false)
+    val onCaptureClosedErrorCalled = mutableStateOf(false)
+    composeTestRule.setContent {
+      val file = File("/storage/emulated/0/Download/TripTracker/")
+      file.mkdirs()
+
+      // Create the executor for the camera
+      val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+
+      TakePicture(
+          outputDirectory = file,
+          executor = cameraExecutor,
+          onCaptureClosedSuccess = { onCaptureClosedSuccessCalled.value = true },
+          onCaptureClosedError = { onCaptureClosedErrorCalled.value = true },
+          context = appContext)
+    }
+
+    // Check if the camera is displayed
+    composeTestRule.onNodeWithTag("CameraView").assertExists()
+    composeTestRule.onNodeWithTag("TakePictureButton").assertExists()
+    composeTestRule.onNodeWithTag("CloseCameraScreen").performClick()
+    composeTestRule.onNodeWithTag("TakePictureButton").isNotDisplayed()
+    composeTestRule.onNodeWithTag("CameraView").isNotDisplayed()
+    assert(!onCaptureClosedSuccessCalled.value)
+    assert(onCaptureClosedErrorCalled.value)
   }
 }
