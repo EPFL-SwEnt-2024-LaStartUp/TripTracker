@@ -492,10 +492,7 @@ class HomeTest {
   @Test
   fun testTabIsDisplayed() {
     composeTestRule.setContent {
-      HomePager(
-          navigation = mockNav,
-          homeViewModel = mockViewModel,
-          test = true)
+      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
     }
 
     composeTestRule.onNodeWithText("TRENDING", useUnmergedTree = true).assertIsDisplayed()
@@ -506,10 +503,7 @@ class HomeTest {
   fun testClickOnFollowing() {
     every { mockViewModel.itineraryList } returns MutableLiveData(emptyList())
     composeTestRule.setContent {
-      HomePager(
-          navigation = mockNav,
-          homeViewModel = mockViewModel,
-          test = true)
+      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
     }
     composeTestRule.onNodeWithText("FOLLOWING", useUnmergedTree = true).performClick()
   }
@@ -517,10 +511,7 @@ class HomeTest {
   @Test
   fun testSwipeLeft() {
     composeTestRule.setContent {
-      HomePager(
-          navigation = mockNav,
-          homeViewModel = mockViewModel,
-          test = true)
+      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
     }
 
     // Find the node representing the pager

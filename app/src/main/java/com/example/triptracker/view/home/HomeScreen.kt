@@ -186,9 +186,7 @@ fun HomeScreen(
                       ) {
                         // will display the list of itineraries
                         HomePager(
-                            navigation = navigation,
-                            homeViewModel = homeViewModel,
-                            test = test)
+                            navigation = navigation, homeViewModel = homeViewModel, test = test)
                       }
 
                   // will display the list of itineraries

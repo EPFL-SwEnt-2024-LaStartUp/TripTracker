@@ -31,17 +31,12 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class UserViewTest {
-  @get:Rule
-  val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-  @RelaxedMockK
-  private lateinit var mockUserVm: UserProfileViewModel
-  @RelaxedMockK
-  private lateinit var homevm: HomeViewModel
-  @RelaxedMockK
-  private lateinit var mockNavigation: Navigation
-  @RelaxedMockK
-  private lateinit var mockRepo: UserProfileRepository
+  @RelaxedMockK private lateinit var mockUserVm: UserProfileViewModel
+  @RelaxedMockK private lateinit var homevm: HomeViewModel
+  @RelaxedMockK private lateinit var mockNavigation: Navigation
+  @RelaxedMockK private lateinit var mockRepo: UserProfileRepository
 
   private val mockList = MockUserList()
   private val mockUserProfiles = mockList.getUserProfiles()
@@ -62,9 +57,9 @@ class UserViewTest {
     mockUserVm = mockk {
       every { getUserProfileList() } returns mockUserProfiles
       every { getUserProfile(any(), any()) } coAnswers
-              {
-                secondArg<(UserProfile?) -> Unit>().invoke(mockUserProfiles[0])
-              }
+          {
+            secondArg<(UserProfile?) -> Unit>().invoke(mockUserProfiles[0])
+          }
       every { removeFollowing(any(), any()) } just Runs
       every { addFollowing(any(), any()) } just Runs
     }
@@ -79,12 +74,11 @@ class UserViewTest {
     // Setting up the test composition
     composeTestRule.setContent {
       UserView(
-        profile = MutableUserProfile(mutableStateOf(mockUserProfiles[1])),
-        navigation = mockNavigation,
-        userMail = "example@gmail.com",
-        homeViewModel = homevm,
-        test = true
-      )
+          profile = MutableUserProfile(mutableStateOf(mockUserProfiles[1])),
+          navigation = mockNavigation,
+          userMail = "example@gmail.com",
+          homeViewModel = homevm,
+          test = true)
     }
 
     composeTestRule.waitForIdle() // Wait for the UI to stabilize
@@ -123,9 +117,9 @@ class UserViewTest {
     mockUserVm = mockk {
       every { getUserProfileList() } returns mockUserProfiles
       every { getUserProfile(any(), any()) } coAnswers
-              {
-                secondArg<(UserProfile?) -> Unit>().invoke(mockUserProfiles[0])
-              }
+          {
+            secondArg<(UserProfile?) -> Unit>().invoke(mockUserProfiles[0])
+          }
       every { removeFollowing(any(), any()) } just Runs
       every { addFollowing(any(), any()) } just Runs
     }
@@ -140,12 +134,11 @@ class UserViewTest {
     // Setting up the test composition
     composeTestRule.setContent {
       UserView(
-        profile = MutableUserProfile(mutableStateOf(mockUserProfiles[1])),
-        navigation = mockNavigation,
-        userMail = "example@gmail.com",
-        homeViewModel = homevm,
-        test = true
-      )
+          profile = MutableUserProfile(mutableStateOf(mockUserProfiles[1])),
+          navigation = mockNavigation,
+          userMail = "example@gmail.com",
+          homeViewModel = homevm,
+          test = true)
     }
 
     composeTestRule.waitForIdle()
@@ -159,9 +152,9 @@ class UserViewTest {
     mockUserVm = mockk {
       every { getUserProfileList() } returns mockUserProfiles
       every { getUserProfile(any(), any()) } coAnswers
-              {
-                secondArg<(UserProfile?) -> Unit>().invoke(mockUserProfiles[0])
-              }
+          {
+            secondArg<(UserProfile?) -> Unit>().invoke(mockUserProfiles[0])
+          }
       every { removeFollowing(any(), any()) } just Runs
       every { addFollowing(any(), any()) } just Runs
     }
@@ -176,12 +169,11 @@ class UserViewTest {
     // Setting up the test composition
     composeTestRule.setContent {
       UserView(
-        profile = MutableUserProfile(mutableStateOf(mockUserProfiles[1])),
-        navigation = mockNavigation,
-        userMail = "example@gmail.com",
-        homeViewModel = homevm,
-        test = true
-      )
+          profile = MutableUserProfile(mutableStateOf(mockUserProfiles[1])),
+          navigation = mockNavigation,
+          userMail = "example@gmail.com",
+          homeViewModel = homevm,
+          test = true)
     }
 
     composeTestRule.waitForIdle() // Wait for the UI to stabilize
