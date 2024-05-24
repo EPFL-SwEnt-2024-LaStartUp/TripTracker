@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.Place
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -642,9 +643,10 @@ class HomeTest {
         composeTestRule.waitForIdle()
         // Interact with the dropdown menu
         composeTestRule.onNodeWithTag("DropDownBox").performClick()
-        composeTestRule.onNodeWithText("TITLE").assertIsDisplayed()
-        // click on Dropdown
-        composeTestRule.onNodeWithText("TITLE").performClick()
+        composeTestRule
+            .onAllNodesWithText("TITLE", useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
         composeTestRule.onNodeWithText("USERNAME").assertIsDisplayed().performClick()
       }
     }
