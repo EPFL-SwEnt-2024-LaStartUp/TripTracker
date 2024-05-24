@@ -48,7 +48,7 @@ fun getFilePathFromUri(uri: Uri?, context: Context?): Uri? {
  * @param out The output stream.
  */
 @Throws(IOException::class)
-private fun copyFile(`in`: InputStream?, out: OutputStream) {
+fun copyFile(`in`: InputStream?, out: OutputStream) {
   val buffer = ByteArray(1024)
   var read: Int? = null
   while (`in`?.read(buffer).also { read = it!! } != -1) {
@@ -62,7 +62,7 @@ private fun copyFile(`in`: InputStream?, out: OutputStream) {
  * @param uri The URI of the file.
  * @param context The context of the application.
  */
-private fun getFileName(uri: Uri?, context: Context?): String? {
+fun getFileName(uri: Uri?, context: Context?): String? {
   var fileName: String? = getFileNameFromCursor(uri, context)
   if (fileName == null) {
     val fileExtension: String? = getFileExtension(uri, context)
@@ -80,7 +80,7 @@ private fun getFileName(uri: Uri?, context: Context?): String? {
  * @param uri The URI of the file.
  * @param context The context of the application.
  */
-private fun getFileExtension(uri: Uri?, context: Context?): String? {
+fun getFileExtension(uri: Uri?, context: Context?): String? {
   val fileType: String? = uri?.let { context?.contentResolver?.getType(it) }
   return MimeTypeMap.getSingleton().getExtensionFromMimeType(fileType)
 }
@@ -92,7 +92,7 @@ private fun getFileExtension(uri: Uri?, context: Context?): String? {
  * @param context The context of the application.
  */
 @SuppressLint("Recycle")
-private fun getFileNameFromCursor(uri: Uri?, context: Context?): String? {
+fun getFileNameFromCursor(uri: Uri?, context: Context?): String? {
   val fileCursor: Cursor? =
       uri?.let {
         context
@@ -135,7 +135,7 @@ fun adjustBitmapOrientation(filePath: String, bitmap: Bitmap): Bitmap {
  * @param angle The angle of rotation.
  * @return The rotated bitmap.
  */
-private fun rotateImage(source: Bitmap, angle: Float): Bitmap {
+fun rotateImage(source: Bitmap, angle: Float): Bitmap {
   val matrix = Matrix()
   matrix.postRotate(angle)
   return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)

@@ -156,8 +156,9 @@ dependencies {
   implementation("androidx.compose.runtime:runtime-rxjava2")
   implementation("androidx.compose.runtime:runtime-livedata")
     implementation(libs.androidx.exifinterface)
+  implementation(libs.core.ktx)
 
-    // Camera
+  // Camera
   val cameraVersion = "1.3.1"
   implementation("androidx.camera:camera-lifecycle:$cameraVersion")
   implementation("androidx.camera:camera-camera2:$cameraVersion")
@@ -249,7 +250,11 @@ dependencies {
   androidTestImplementation("io.mockk:mockk-agent:$mockVersion")
 
   // --------------- Mockito ----------------
-  testImplementation("org.mockito:mockito-android:5.11.0")
+  testImplementation ("org.mockito:mockito-core:4.0.0")
+  androidTestImplementation ("org.mockito:mockito-android:4.0.0")
+  testImplementation ("org.mockito:mockito-inline:2.13.0")
+  testImplementation ("org.robolectric:robolectric:4.6.1")
+
 
   // --------------- JUnit ---------------
   testImplementation("junit:junit:4.13.2")
