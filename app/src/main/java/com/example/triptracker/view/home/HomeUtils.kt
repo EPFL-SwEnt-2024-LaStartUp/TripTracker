@@ -91,7 +91,6 @@ fun DisplayItinerary(
     onClick: () -> Unit,
     homeViewModel: HomeViewModel = viewModel(),
     displayImage: Boolean = false,
-    test: Boolean = false,
     canBeDeleted: Boolean = false,
 ) {
   val configuration = LocalConfiguration.current

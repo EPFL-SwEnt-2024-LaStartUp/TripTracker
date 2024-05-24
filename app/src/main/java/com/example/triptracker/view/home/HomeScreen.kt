@@ -400,7 +400,6 @@ fun DisplayItineraries(
 fun HomePager(
     navigation: Navigation,
     homeViewModel: HomeViewModel = viewModel(),
-    innerPadding: PaddingValues,
     test: Boolean = false
 ) {
   val ambientProfile = AmbientUserProfile.current
