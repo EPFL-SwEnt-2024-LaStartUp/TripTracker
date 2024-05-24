@@ -9,7 +9,7 @@ class UserProfileFavouritesScreen(semanticsProvider: SemanticsNodeInteractionsPr
         semanticsProvider = semanticsProvider,
         viewBuilderAction = { hasTestTag("FavouritesScreen") }) {
 
-  val favouritesTitle: KNode = child { hasTestTag("FavouritesTitle") }
+  val favouritesTitle: KNode = child { hasTestTag("Title") }
   val goBackButton: KNode = child { hasTestTag("GoBackButton") }
   val favouritesList: KNode = child { hasTestTag("FavouritesList") }
 }

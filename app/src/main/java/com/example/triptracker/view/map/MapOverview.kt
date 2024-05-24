@@ -110,7 +110,7 @@ fun MapOverview(
     navigation: Navigation,
     checkLocationPermission: Boolean = true, // Default value true, can be overridden during tests
     selectedId: String = "",
-    userProfile: MutableUserProfile,
+    userProfile: MutableUserProfile
 ) {
   var mapProperties by remember {
     mutableStateOf(
@@ -465,7 +465,6 @@ fun Map(
                   DisplayItinerary(
                       itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
                       onClick = { mapViewModel.popUpState.value = popupState.DISPLAYPIN },
-                      test = false,
                       navigation = navigation,
                   )
                 }

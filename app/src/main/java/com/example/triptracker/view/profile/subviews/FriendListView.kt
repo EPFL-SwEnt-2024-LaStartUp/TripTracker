@@ -50,6 +50,7 @@ import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_dark_gray
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
+import com.example.triptracker.view.theme.md_theme_light_onSurface
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
@@ -114,7 +115,7 @@ fun FriendListView(
                       Modifier.fillMaxWidth()
                           .height((LocalConfiguration.current.screenHeightDp * 0.14).dp)
                           .background(
-                              MaterialTheme.colorScheme.onBackground,
+                              md_theme_light_onSurface,
                               shape =
                                   RoundedCornerShape(
                                       (LocalConfiguration.current.screenHeightDp * 0.05f).dp))
@@ -159,8 +160,8 @@ fun FriendListView(
                                                 (LocalConfiguration.current.screenHeightDp * 0.02f)
                                                     .sp,
                                             fontFamily = Montserrat,
-                                            fontWeight = FontWeight(600),
-                                            color = MaterialTheme.colorScheme.surface,
+                                            fontWeight = FontWeight(550),
+                                            color = md_theme_light_onPrimary,
                                             textAlign = TextAlign.Left,
                                             letterSpacing = 0.5.sp),
                                     overflow = TextOverflow.Ellipsis,
@@ -276,11 +277,11 @@ fun RemoveFriendButton(
             modifier = Modifier.fillMaxWidth(),
             style =
                 TextStyle(
-                    fontSize = (LocalConfiguration.current.screenHeightDp * 0.017f).sp,
-                    lineHeight = (LocalConfiguration.current.screenHeightDp * 0.017f).sp,
+                    fontSize = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
+                    lineHeight = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
                     fontFamily = Montserrat,
                     fontWeight = FontWeight(500),
-                    color = MaterialTheme.colorScheme.surface,
+                    color = md_theme_light_onPrimary,
                     textAlign = TextAlign.Center,
                     letterSpacing = 0.5.sp))
       }
