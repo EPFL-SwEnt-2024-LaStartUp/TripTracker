@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.onFocusedBoundsChanged
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CornerSize
@@ -378,7 +377,7 @@ fun DisplayItineraries(
           Modifier.fillMaxSize()
               .padding(goodPadding) // this ensures having a padding at the bottom
               .testTag("ItineraryList")
-              .background(color= MaterialTheme.colorScheme.background),
+              .background(color = MaterialTheme.colorScheme.background),
       contentPadding = PaddingValues(16.dp)) {
         items(itineraries) { itinerary ->
           Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
@@ -440,7 +439,9 @@ fun HomePager(
             Tab(selected = isSelected, onClick = { selectedTab = index }) {
               Text(
                   title,
-                  color = if (isSelected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurface,
+                  color =
+                      if (isSelected) MaterialTheme.colorScheme.onBackground
+                      else MaterialTheme.colorScheme.onSurface,
                   fontFamily = Montserrat,
                   fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                   fontSize = 20.sp) // same size as itinerary title
