@@ -1,5 +1,6 @@
 package com.example.triptracker.view.home
 
+import android.graphics.BlurMaskFilter
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -40,7 +41,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -192,6 +197,13 @@ fun DisplayItinerary(
               Modifier.fillMaxWidth()
                   .padding(paddingAround)
                   .height(boxHeightToDisplay)
+                  .shadow(
+                      color = md_theme_light_dark.copy(alpha = 0.4f),
+                      borderRadius = 35.dp,
+                      blurRadius = 25.dp,
+                      offsetY = 20.dp,
+                      offsetX = 0.dp,
+                      spread = 9.dp)
                   .background(color = md_theme_light_dark, shape = RoundedCornerShape(35.dp))
                   .testTag("Itinerary")) {
             Column(modifier = Modifier.fillMaxWidth().padding(25.dp)) {
@@ -424,3 +436,51 @@ private fun checkIfImage(itinerary: Itinerary): Boolean {
   }
   return false // Return false if no valid URLs are found after checking all
 }
+
+/**
+ * Modifier function to add a shadow to a composable element
+ *
+ * @param color: Color of the shadow
+ * @param borderRadius: Radius of the shadow
+ * @param blurRadius: Blur radius of the shadow
+ * @param offsetY: Offset of the shadow in the y direction
+ * @param offsetX: Offset of the shadow in the x direction
+ * @param spread: Spread of the shadow
+ * @param modifier: Modifier to apply the shadow to
+ */
+fun Modifier.shadow(
+    color: Color = Color.Black,
+    borderRadius: Dp = 0.dp,
+    blurRadius: Dp = 0.dp,
+    offsetY: Dp = 0.dp,
+    offsetX: Dp = 0.dp,
+    spread: Dp = 0f.dp,
+    modifier: Modifier = Modifier
+) =
+    this.then(
+        modifier.drawBehind {
+          this.drawIntoCanvas {
+            val paint = Paint()
+            val frameworkPaint = paint.asFrameworkPaint()
+            val spreadPixel = spread.toPx()
+            val leftPixel = (0f - spreadPixel) + offsetX.toPx()
+            val topPixel = (0f - spreadPixel) + offsetY.toPx()
+            val rightPixel = (this.size.width + spreadPixel)
+            val bottomPixel = (this.size.height + spreadPixel)
+
+            if (blurRadius != 0.dp) {
+              frameworkPaint.maskFilter =
+                  (BlurMaskFilter(blurRadius.toPx(), BlurMaskFilter.Blur.NORMAL))
+            }
+
+            frameworkPaint.color = color.toArgb()
+            it.drawRoundRect(
+                left = leftPixel,
+                top = topPixel,
+                right = rightPixel,
+                bottom = bottomPixel,
+                radiusX = borderRadius.toPx(),
+                radiusY = borderRadius.toPx(),
+                paint)
+          }
+        })
