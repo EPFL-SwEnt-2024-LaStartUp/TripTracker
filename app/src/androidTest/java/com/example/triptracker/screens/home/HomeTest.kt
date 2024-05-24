@@ -17,7 +17,6 @@ import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.action.ViewActions.pressKey
-import androidx.test.espresso.action.ViewActions.swipeLeft
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.itinerary.MockItineraryList
 import com.example.triptracker.model.itinerary.Itinerary
@@ -31,6 +30,8 @@ import com.example.triptracker.view.Route
 import com.example.triptracker.view.TopLevelDestination
 import com.example.triptracker.view.home.HomePager
 import com.example.triptracker.view.home.HomeScreen
+import com.example.triptracker.view.home.ItineraryItem
+import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import io.github.kakaocup.compose.node.element.ComposeScreen
@@ -39,6 +40,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
+import io.mockk.verify
 import junit.framework.TestCase
 import org.junit.Before
 import org.junit.Rule
@@ -619,7 +621,7 @@ class HomeTest {
           callback(mockItineraries)
         }
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
-    every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
     every { mockProfile.userProfile.value } returns mockUsers[0]
 
     // Setting up the test composition
@@ -636,5 +638,67 @@ class HomeTest {
           test = false)
     }
     composeTestRule.onNodeWithTag("HomePager").performTouchInput { swipeLeft() }
+  }
+
+  /** This test clicks on the drop down menu and selects an item */
+  @Test
+  fun clickOnDropDownMenuDisplaysFilters() {
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
+    every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
+    every { mockProfile.userProfile.value } returns mockUsers[0]
+
+    // Setting up the test composition
+    composeTestRule.setContent {
+      HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+    }
+    ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
+      searchBar {
+        assertIsDisplayed()
+        performClick()
+        composeTestRule.waitForIdle()
+        // Interact with the dropdown menu
+        composeTestRule.onNodeWithTag("DropDownBox").performClick()
+        composeTestRule.onNodeWithText("TITLE").assertIsDisplayed()
+        // click on Dropdown
+        composeTestRule.onNodeWithText("TITLE").performClick()
+        composeTestRule.onNodeWithText("USERNAME").assertIsDisplayed().performClick()
+      }
+    }
+
+    // Verify the filter was set in the view model
+    verify { mockViewModel.setSearchFilter(FilterType.entries[1]) }
+  }
+
+  @Test
+  fun itineraryItemDisplayed() {
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
+    every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
+    every { mockProfile.userProfile.value } returns mockUsers[0]
+
+    // Setting up the test composition
+    composeTestRule.setContent {
+      HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      ItineraryItem(itinerary = mockItineraries[0]) {}
+    }
+    ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
+      searchBar {
+        assertIsDisplayed()
+        performClick()
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("ItineraryItem").assertIsDisplayed()
+      }
+    }
   }
 }
