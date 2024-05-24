@@ -575,11 +575,7 @@ class HomeTest {
         }
 
     composeTestRule.setContent {
-      HomePager(
-          navigation = mockNav,
-          homeViewModel = mockViewModel,
-          innerPadding = PaddingValues(0.dp),
-          test = true)
+      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
       HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
     }
 
@@ -617,11 +613,7 @@ class HomeTest {
           homeViewModel = mockViewModel,
           userProfileViewModel = mockUserProfileViewModel,
           test = false)
-      HomePager(
-          navigation = mockNav,
-          homeViewModel = mockViewModel,
-          innerPadding = PaddingValues(0.dp),
-          test = false)
+      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = false)
     }
     composeTestRule.onNodeWithTag("HomePager").performTouchInput { swipeLeft() }
   }
