@@ -182,7 +182,6 @@ fun Map(
     currentSelectedId: String,
     userProfile: MutableUserProfile,
     navigation: Navigation,
-    userProfile: MutableUserProfile,
     userProfileViewModel: UserProfileViewModel = viewModel()
 ) {
   // Used to display the gradient with the top bar and the changing city location
