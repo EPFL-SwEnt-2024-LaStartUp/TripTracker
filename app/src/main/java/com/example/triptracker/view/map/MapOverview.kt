@@ -457,7 +457,6 @@ fun Map(
                   DisplayItinerary(
                       itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
                       onClick = { mapViewModel.popUpState.value = popupState.DISPLAYPIN },
-                      test = false,
                   )
                 }
           }

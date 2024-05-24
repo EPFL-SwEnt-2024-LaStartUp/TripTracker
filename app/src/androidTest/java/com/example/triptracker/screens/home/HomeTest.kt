@@ -1,7 +1,6 @@
 package com.example.triptracker.screens.home
 
 import android.util.Log
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Place
@@ -14,7 +13,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeLeft
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.action.ViewActions.pressKey
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -524,11 +522,7 @@ class HomeTest {
   @Test
   fun testTabIsDisplayed() {
     composeTestRule.setContent {
-      HomePager(
-          navigation = mockNav,
-          homeViewModel = mockViewModel,
-          innerPadding = PaddingValues(0.dp),
-          test = true)
+      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
     }
 
     composeTestRule.onNodeWithText("TRENDING", useUnmergedTree = true).assertIsDisplayed()
@@ -540,11 +534,7 @@ class HomeTest {
   fun testClickOnFollowing() {
     every { mockViewModel.itineraryList } returns MutableLiveData(emptyList())
     composeTestRule.setContent {
-      HomePager(
-          navigation = mockNav,
-          homeViewModel = mockViewModel,
-          innerPadding = PaddingValues(0.dp),
-          test = true)
+      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
     }
     composeTestRule.onNodeWithText("FOLLOWING", useUnmergedTree = true).performClick()
   }
@@ -553,11 +543,7 @@ class HomeTest {
   @Test
   fun testSwipeLeft() {
     composeTestRule.setContent {
-      HomePager(
-          navigation = mockNav,
-          homeViewModel = mockViewModel,
-          innerPadding = PaddingValues(0.dp),
-          test = true)
+      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
     }
 
     // Find the node representing the pager
