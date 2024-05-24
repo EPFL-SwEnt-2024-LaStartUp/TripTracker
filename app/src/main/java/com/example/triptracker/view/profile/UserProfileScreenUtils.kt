@@ -78,17 +78,23 @@ fun UserProfileScreen(
   var itineraryToDisplay: Itinerary? by remember { mutableStateOf(null) }
 
   Scaffold(
-      topBar = { ScaffoldTopBar(navigation = navigation, label = titleText) },
+      topBar = {
+        if (itineraryToDisplay == null) {
+          ScaffoldTopBar(navigation = navigation, label = titleText)
+        }
+      },
       bottomBar = { NavigationBar(navigation) },
       modifier = Modifier.testTag(screenTag)) { innerPadding ->
         Box {
           if (itineraryToDisplay != null) {
-            StartScreen(
-                itinerary = itineraryToDisplay!!,
-                onClick = { itineraryToDisplay = null },
-                userProfile = userProfile,
-                homeViewModel = homeViewModel,
-                offline = true)
+            Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+              StartScreen(
+                  itinerary = itineraryToDisplay!!,
+                  onClick = { itineraryToDisplay = null },
+                  userProfile = userProfile,
+                  homeViewModel = homeViewModel,
+                  offline = true)
+            }
           } else {
 
             when (filteredList) {
