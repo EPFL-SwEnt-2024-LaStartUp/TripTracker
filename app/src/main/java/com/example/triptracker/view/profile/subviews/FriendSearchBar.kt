@@ -57,7 +57,8 @@ fun FriendSearchBar(viewModel: UserProfileViewModel, onSearchActivated: (Boolean
               .padding(horizontal = 30.dp)
               .background(
                   color = Color.LightGray.copy(alpha = 0.3f),
-                  shape = MaterialTheme.shapes.small.copy(CornerSize(50))),
+                  shape = MaterialTheme.shapes.small.copy(CornerSize(50)))
+              .testTag("SearchBarContainer"),
       contentAlignment = Alignment.Center) {
         TextField(
             value = searchText,
@@ -70,7 +71,6 @@ fun FriendSearchBar(viewModel: UserProfileViewModel, onSearchActivated: (Boolean
             placeholder = {
               Text(
                   "Find Friends",
-                  modifier = Modifier.testTag("SearchBarText"),
                   textAlign = TextAlign.Start,
                   fontFamily = FontFamily(Font(R.font.montserrat_bold)),
                   fontSize = (LocalConfiguration.current.screenHeightDp * 0.025f).sp,
@@ -82,8 +82,7 @@ fun FriendSearchBar(viewModel: UserProfileViewModel, onSearchActivated: (Boolean
             leadingIcon = {
               Icon(
                   imageVector = Icons.Default.Search,
-                  contentDescription = "Search",
-                  modifier = Modifier.testTag("SearchIcon"),
+                  contentDescription = "SearchIcon",
                   tint = if (isActive) Color.DarkGray else Color.Gray)
             },
             trailingIcon = {
