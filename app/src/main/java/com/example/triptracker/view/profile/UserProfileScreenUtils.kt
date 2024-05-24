@@ -98,7 +98,8 @@ fun UserProfileScreen(
                       DisplayItinerary(
                           itinerary = itinerary,
                           onClick = { navigation.navigateTo(Route.MAPS, itinerary.id) },
-                          canBeDeleted = true)
+                          canBeDeleted = true,
+                          navigation = navigation)
                     }
                   }
             }

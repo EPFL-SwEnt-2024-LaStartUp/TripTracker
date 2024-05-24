@@ -137,7 +137,14 @@ fun MapOverview(
           bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
               innerPadding ->
             Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-              Map(mapViewModel, context, mapProperties, uiSettings, selectedId, userProfile)
+              Map(
+                  mapViewModel,
+                  context,
+                  mapProperties,
+                  uiSettings,
+                  selectedId,
+                  userProfile,
+                  navigation)
             }
           }
     }
@@ -173,6 +180,8 @@ fun Map(
     mapProperties: MapProperties,
     uiSettings: MapUiSettings,
     currentSelectedId: String,
+    userProfile: MutableUserProfile,
+    navigation: Navigation,
     userProfile: MutableUserProfile,
     userProfileViewModel: UserProfileViewModel = viewModel()
 ) {
@@ -476,6 +485,7 @@ fun Map(
                   DisplayItinerary(
                       itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
                       onClick = { mapViewModel.popUpState.value = popupState.DISPLAYPIN },
+                      navigation = navigation,
                   )
                 }
           }
