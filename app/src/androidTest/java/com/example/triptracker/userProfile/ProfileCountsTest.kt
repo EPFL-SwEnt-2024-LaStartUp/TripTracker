@@ -31,9 +31,8 @@ class ProfileCountsTest {
   fun setup() {
     mockNavigation = mockk(relaxed = true)
 
-      every { mockNavigation.navController.navigate(Route.FOLLOWERS) } answers {}
-      every { mockNavigation.navController.navigate(Route.FOLLOWING) } answers {}
-
+    every { mockNavigation.navController.navigate(Route.FOLLOWERS) } answers {}
+    every { mockNavigation.navController.navigate(Route.FOLLOWING) } answers {}
   }
 
   @Test
@@ -66,26 +65,25 @@ class ProfileCountsTest {
     composeTestRule.onNodeWithText("3").assertIsDisplayed()
   }
 
-    @Test
-    fun testProfileCountsNavigation() {
-        // Test the profile counts
-        composeTestRule.setContent {
-            ProfileCounts(
-                navigation = mockNavigation,
-                profile =
-                UserProfile(
-                    mail = "test@gmail.com",
-                    followers = listOf("follower1", "follower2"),
-                    following = listOf("following1", "following2", "following3"),
-                ),
-                tripsCount = 4
-            )
-        }
-
-        composeTestRule.onNodeWithTag("FollowersColumn").assertHasClickAction().performClick()
-        verify { mockNavigation.navController.navigate(Route.FOLLOWERS) }
-
-        composeTestRule.onNodeWithTag("FollowingColumn").assertHasClickAction().performClick()
-        verify { mockNavigation.navController.navigate(Route.FOLLOWING) }
+  @Test
+  fun testProfileCountsNavigation() {
+    // Test the profile counts
+    composeTestRule.setContent {
+      ProfileCounts(
+          navigation = mockNavigation,
+          profile =
+              UserProfile(
+                  mail = "test@gmail.com",
+                  followers = listOf("follower1", "follower2"),
+                  following = listOf("following1", "following2", "following3"),
+              ),
+          tripsCount = 4)
     }
+
+    composeTestRule.onNodeWithTag("FollowersColumn").assertHasClickAction().performClick()
+    verify { mockNavigation.navController.navigate(Route.FOLLOWERS) }
+
+    composeTestRule.onNodeWithTag("FollowingColumn").assertHasClickAction().performClick()
+    verify { mockNavigation.navController.navigate(Route.FOLLOWING) }
+  }
 }
