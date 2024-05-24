@@ -221,27 +221,32 @@ fun UserView(
                           Modifier.height((LocalConfiguration.current.screenHeightDp * 0.45).dp),
                       horizontalAlignment = Alignment.CenterHorizontally,
                       verticalArrangement = Arrangement.Center) {
-                        when (filteredList) {
-                          // If the displayed user doesn't have any itineraries we display a message
-                          emptyList<Itinerary>() -> {
+                        if(filteredList.isEmpty()  ||
+                            displayedUser.itineraryPrivacy == 2 ||
+                            (displayedUser.itineraryPrivacy == 1 && !(displayedUser.following.contains(loggedUser.userProfile.value.mail) && displayedUser.followers.contains(loggedUser.userProfile.value.mail)))) {
+                            // If the displayed user doesn't have any itineraries we display a message
+
                             // Display a message when the list is empty
                             Box(
                                 modifier = Modifier.fillMaxWidth().fillMaxHeight(),
-                                contentAlignment = Alignment.Center) {
-                                  Text(
-                                      text =
-                                          "${displayedUser.name} ${displayedUser.surname} does not have any trips yet",
-                                      modifier =
-                                          Modifier.padding(30.dp)
-                                              .align(Alignment.Center)
-                                              .testTag("NoTripsText"),
-                                      fontSize = 16.sp,
-                                      fontFamily = Montserrat,
-                                      fontWeight = FontWeight.SemiBold,
-                                      color = md_theme_grey)
-                                }
-                          }
-                          else -> {
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text =
+                                    "${displayedUser.name} ${displayedUser.surname} does not have any trips yet",
+                                    modifier =
+                                    Modifier.padding(30.dp)
+                                        .align(Alignment.Center)
+                                        .testTag("NoTripsText"),
+                                    fontSize = 16.sp,
+                                    fontFamily = Montserrat,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = md_theme_grey
+                                )
+
+                            }
+                        }
+                          else {
                             // Display the list of itineraries when the list is not empty
                             val listState = rememberLazyListState()
                             LazyColumn(
@@ -266,4 +271,4 @@ fun UserView(
           }
     }
   }
-}
+
