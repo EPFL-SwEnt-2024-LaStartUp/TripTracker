@@ -121,6 +121,7 @@ fun AddSpot(
       FillAddSpot(
           latLng = latLng,
           recordViewModel = recordViewModel,
+          context = context,
           onDismiss = {
             boxDisplayed = AddSpotStatus.HIDE
             onDismiss()
@@ -209,6 +210,7 @@ private fun checkDistance(
 fun FillAddSpot(
     latLng: LatLng,
     recordViewModel: RecordViewModel,
+    context: Context,
     onDismiss: () -> Unit = {},
     onCameraLaunch: () -> Unit = {}
 ) {
@@ -469,7 +471,7 @@ fun FillAddSpot(
                               description,
                               position,
                               selectedPictures,
-                          )
+                              context)
                           // Or save the spot with the location found by nominatim
                         } else {
                           saveSpot(
@@ -478,7 +480,7 @@ fun FillAddSpot(
                               description,
                               position,
                               selectedPictures,
-                          )
+                              context)
                         }
                         alertIsDisplayed = false
                         onDismiss()
@@ -507,6 +509,7 @@ private fun saveSpot(
     description: String,
     position: LatLng,
     selectedPictures: List<Uri?>,
+    context: Context
 ) {
 
   recordViewModel.addImageToStorageResponse = emptyList()
@@ -527,7 +530,8 @@ private fun saveSpot(
                   }))
   var counter = 1
   selectedPictures.forEach { picture ->
-    recordViewModel.addImageToStorage(picture!!) { resp ->
+    val newPictureUrl = getFilePathFromUri(picture, context)
+    recordViewModel.addImageToStorage(newPictureUrl!!) { resp ->
       recordViewModel.addImageToStorageResponse += resp
       pin.value =
           Pin(

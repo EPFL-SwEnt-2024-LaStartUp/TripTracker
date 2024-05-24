@@ -5,11 +5,12 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import androidx.core.net.toFile
+import com.example.triptracker.view.map.adjustBitmapOrientation
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
+import java.io.ByteArrayOutputStream
 import java.util.UUID
 import kotlinx.coroutines.tasks.await
-import java.io.ByteArrayOutputStream
 
 /** Repository for interacting with Firebase Storage to upload and download images. */
 class ImageRepository {
@@ -32,17 +33,20 @@ class ImageRepository {
   suspend fun addImageToFirebaseStorage(folder: String, imageUri: Uri): Response<Uri> {
     return try {
 
-        val bitmap = BitmapFactory.decodeStream(imageUri.toFile().inputStream())
+      val bitmap = BitmapFactory.decodeStream(imageUri.toFile().inputStream())
 
-        // Resize the Bitmap
-        val resizedBitmap = resizeBitmap(bitmap)
+      // Resize the Bitmap
+      val resizedBitmap = resizeBitmap(bitmap)
 
-        // Encode the resized Bitmap to a ByteArray
-        val byteArray = ByteArrayOutputStream().apply {
-            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, this)
-        }.toByteArray()
-        
-        
+      // Adjust the orientation of the Bitmap
+      val adjustedBitmap = adjustBitmapOrientation(imageUri.toFile().path, resizedBitmap)
+
+      // Encode the resized Bitmap to a ByteArray
+      val byteArray =
+          ByteArrayOutputStream()
+              .apply { adjustedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, this) }
+              .toByteArray()
+
       val downloadUrl =
           storage.reference
               .child(PICTURE_FOLDER)
@@ -61,22 +65,22 @@ class ImageRepository {
     }
   }
 
-    private fun resizeBitmap(bitmap: Bitmap, maxWidth: Int = 800, maxHeight: Int = 800): Bitmap {
-        val width = bitmap.width
-        val height = bitmap.height
+  private fun resizeBitmap(bitmap: Bitmap, maxWidth: Int = 800, maxHeight: Int = 800): Bitmap {
+    val width = bitmap.width
+    val height = bitmap.height
 
-        val aspectRatio = width.toFloat() / height.toFloat()
-        val newWidth: Int
-        val newHeight: Int
+    val aspectRatio = width.toFloat() / height.toFloat()
+    val newWidth: Int
+    val newHeight: Int
 
-        if (width > height) {
-            newWidth = maxWidth
-            newHeight = (newWidth / aspectRatio).toInt()
-        } else {
-            newHeight = maxHeight
-            newWidth = (newHeight * aspectRatio).toInt()
-        }
-
-        return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
+    if (width > height) {
+      newWidth = maxWidth
+      newHeight = (newWidth / aspectRatio).toInt()
+    } else {
+      newHeight = maxHeight
+      newWidth = (newHeight * aspectRatio).toInt()
     }
+
+    return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
+  }
 }

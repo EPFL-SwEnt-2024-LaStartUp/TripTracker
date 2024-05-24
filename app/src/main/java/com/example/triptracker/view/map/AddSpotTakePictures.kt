@@ -4,9 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.icu.text.SimpleDateFormat
-import android.media.ExifInterface
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
@@ -16,7 +14,6 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,7 +44,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
 import com.example.triptracker.view.AllowCameraPermission
 import com.example.triptracker.view.checkForCameraPermission
 import com.example.triptracker.view.theme.md_theme_dark_black
@@ -55,8 +51,6 @@ import com.example.triptracker.view.theme.md_theme_light_black
 import java.io.File
 import java.util.Locale
 import java.util.concurrent.Executor
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * Composable that displays the camera view and allows the user to take a picture and saves it to
@@ -266,38 +260,6 @@ private fun takePhoto(
 }
 
 /**
- * Function that adjusts the orientation of the bitmap.
- *
- * @param filePath The path of the file.
- * @param bitmap The bitmap that will be adjusted.
- * @return The adjusted bitmap.
- */
-private fun adjustBitmapOrientation(filePath: String, bitmap: Bitmap): Bitmap {
-  val ei = ExifInterface(filePath)
-  val orientation =
-      ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
-  return when (orientation) {
-    ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(bitmap, 90f)
-    ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(bitmap, 180f)
-    ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(bitmap, 270f)
-    else -> bitmap
-  }
-}
-
-/**
- * Function that rotates the image.
- *
- * @param source The source bitmap.
- * @param angle The angle of rotation.
- * @return The rotated bitmap.
- */
-private fun rotateImage(source: Bitmap, angle: Float): Bitmap {
-  val matrix = Matrix()
-  matrix.postRotate(angle)
-  return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
-}
-
-/**
  * Function that saves the image to the gallery.
  *
  * @param photoFile The file where the image will be saved.
@@ -333,16 +295,3 @@ private fun saveImageToGallery(
     }
   }
 }
-
-/**
- * Function that gets the camera provider.
- *
- * @return The camera provider.
- */
-private suspend fun Context.getCameraProvider(): ProcessCameraProvider =
-    suspendCoroutine { continuation ->
-      ProcessCameraProvider.getInstance(this).also { cameraProvider ->
-        cameraProvider.addListener(
-            { continuation.resume(cameraProvider.get()) }, ContextCompat.getMainExecutor(this))
-      }
-    }
