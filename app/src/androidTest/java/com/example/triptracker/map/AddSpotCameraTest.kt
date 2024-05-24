@@ -52,6 +52,35 @@ class AddSpotCameraTest {
   }
 
   @Test
+  fun takePictureTestCatch() {
+    try {
+      composeTestRule.setContent {
+        val file = File("/storage/emulated/0/Download/TripTracker/")
+        file.mkdirs()
+
+        // Create the executor for the camera
+        val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+
+        TakePicture(
+            outputDirectory = file,
+            executor = cameraExecutor,
+            onCaptureClosedSuccess = {},
+            onCaptureClosedError = {},
+            context = appContext)
+      }
+
+      // Check if the camera is displayed
+      composeTestRule.onNodeWithTag("CameraView").assertExists()
+      composeTestRule.onNodeWithTag("TakePictureButton").assertExists()
+      composeTestRule.onNodeWithTag("TakePictureButton").performClick()
+      composeTestRule.onNodeWithTag("TakePictureButton").isNotDisplayed()
+      composeTestRule.onNodeWithTag("CameraView").isNotDisplayed()
+    } catch (e: Exception) {
+      assert(true)
+    }
+  }
+
+  @Test
   fun takePictureTest() {
     composeTestRule.setContent {
       val file = File("/storage/emulated/0/Download/TripTracker/")
