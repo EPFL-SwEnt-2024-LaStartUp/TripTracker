@@ -37,20 +37,21 @@ fun ProfileCounts(
     currentUserProfile: Boolean = true
 ) {
   Row(
-      modifier = Modifier.wrapContentHeight().fillMaxWidth(),
+      modifier = Modifier.wrapContentHeight().fillMaxWidth().testTag("ProfileCounts"),
       horizontalArrangement = Arrangement.Center) {
         Column(
             modifier =
                 Modifier.align(Alignment.CenterVertically)
                     .wrapContentHeight()
-                    .width((LocalConfiguration.current.screenWidthDp * 0.33f).dp)) {
+                    .width((LocalConfiguration.current.screenWidthDp * 0.33f).dp)
+                    .testTag("TripsColumn")) {
               Text(
                   text = "$tripsCount",
-                  modifier = Modifier.align(Alignment.CenterHorizontally).testTag("TripsCount"),
+                  modifier = Modifier.align(Alignment.CenterHorizontally),
                   style = bigNumberStyle(LocalConfiguration.current.screenHeightDp))
               Text(
                   text = "Trips",
-                  modifier = Modifier.align(Alignment.CenterHorizontally).testTag("TripsTitle"),
+                  modifier = Modifier.align(Alignment.CenterHorizontally),
                   style = categoryTextStyle(LocalConfiguration.current.screenHeightDp))
             }
         Column(
@@ -59,6 +60,7 @@ fun ProfileCounts(
                     .wrapContentHeight()
                     .width((LocalConfiguration.current.screenWidthDp * 0.33f).dp)
                     .padding(vertical = 5.dp)
+                    .testTag("FollowersColumn")
                     .clickable(enabled = currentUserProfile) {
                       // Navigate to the followers screen if the user displayed is the user
                       // logged-in
@@ -66,11 +68,11 @@ fun ProfileCounts(
                     }) {
               Text(
                   text = "${profile.followers.size}",
-                  modifier = Modifier.align(Alignment.CenterHorizontally).testTag("FollowersCount"),
+                  modifier = Modifier.align(Alignment.CenterHorizontally),
                   style = bigNumberStyle(LocalConfiguration.current.screenHeightDp))
               Text(
                   text = "Followers",
-                  modifier = Modifier.align(Alignment.CenterHorizontally).testTag("FollowersTitle"),
+                  modifier = Modifier.align(Alignment.CenterHorizontally),
                   style = categoryTextStyle(LocalConfiguration.current.screenHeightDp))
             }
         Column(
@@ -79,6 +81,7 @@ fun ProfileCounts(
                     .wrapContentHeight()
                     .width((LocalConfiguration.current.screenWidthDp * 0.33f).dp)
                     .padding(vertical = 5.dp)
+                    .testTag("FollowingColumn")
                     .clickable(enabled = currentUserProfile) {
                       // Navigate to the following screen if the user displayed is the user
                       // logged-in
@@ -86,11 +89,11 @@ fun ProfileCounts(
                     }) {
               Text(
                   text = "${profile.following.size}",
-                  modifier = Modifier.align(Alignment.CenterHorizontally).testTag("FollowingCount"),
+                  modifier = Modifier.align(Alignment.CenterHorizontally),
                   style = bigNumberStyle(LocalConfiguration.current.screenHeightDp))
               Text(
                   text = "Following",
-                  modifier = Modifier.align(Alignment.CenterHorizontally).testTag("FollowingTitle"),
+                  modifier = Modifier.align(Alignment.CenterHorizontally),
                   style = categoryTextStyle(LocalConfiguration.current.screenHeightDp))
             }
       }
