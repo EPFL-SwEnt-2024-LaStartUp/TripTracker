@@ -1,9 +1,11 @@
 package com.example.triptracker.userProfile
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.itinerary.MockItineraryList
@@ -21,6 +23,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -28,12 +31,17 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class UserViewTest {
-  @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule
+  val composeTestRule = createComposeRule()
 
-  @RelaxedMockK private lateinit var mockUserVm: UserProfileViewModel
-  @RelaxedMockK private lateinit var homevm: HomeViewModel
-  @RelaxedMockK private lateinit var mockNavigation: Navigation
-  @RelaxedMockK private lateinit var mockRepo: UserProfileRepository
+  @RelaxedMockK
+  private lateinit var mockUserVm: UserProfileViewModel
+  @RelaxedMockK
+  private lateinit var homevm: HomeViewModel
+  @RelaxedMockK
+  private lateinit var mockNavigation: Navigation
+  @RelaxedMockK
+  private lateinit var mockRepo: UserProfileRepository
 
   private val mockList = MockUserList()
   private val mockUserProfiles = mockList.getUserProfiles()
@@ -54,9 +62,9 @@ class UserViewTest {
     mockUserVm = mockk {
       every { getUserProfileList() } returns mockUserProfiles
       every { getUserProfile(any(), any()) } coAnswers
-          {
-            secondArg<(UserProfile?) -> Unit>().invoke(mockUserProfiles[0])
-          }
+              {
+                secondArg<(UserProfile?) -> Unit>().invoke(mockUserProfiles[0])
+              }
       every { removeFollowing(any(), any()) } just Runs
       every { addFollowing(any(), any()) } just Runs
     }
@@ -71,11 +79,12 @@ class UserViewTest {
     // Setting up the test composition
     composeTestRule.setContent {
       UserView(
-          profile = MutableUserProfile(mutableStateOf(mockUserProfiles[1])),
-          navigation = mockNavigation,
-          userMail = "example@gmail.com",
-          homeViewModel = homevm,
-          test = true)
+        profile = MutableUserProfile(mutableStateOf(mockUserProfiles[1])),
+        navigation = mockNavigation,
+        userMail = "example@gmail.com",
+        homeViewModel = homevm,
+        test = true
+      )
     }
 
     composeTestRule.waitForIdle() // Wait for the UI to stabilize
@@ -114,9 +123,9 @@ class UserViewTest {
     mockUserVm = mockk {
       every { getUserProfileList() } returns mockUserProfiles
       every { getUserProfile(any(), any()) } coAnswers
-          {
-            secondArg<(UserProfile?) -> Unit>().invoke(mockUserProfiles[0])
-          }
+              {
+                secondArg<(UserProfile?) -> Unit>().invoke(mockUserProfiles[0])
+              }
       every { removeFollowing(any(), any()) } just Runs
       every { addFollowing(any(), any()) } just Runs
     }
@@ -131,14 +140,54 @@ class UserViewTest {
     // Setting up the test composition
     composeTestRule.setContent {
       UserView(
-          profile = MutableUserProfile(mutableStateOf(mockUserProfiles[1])),
-          navigation = mockNavigation,
-          userMail = "example@gmail.com",
-          homeViewModel = homevm,
-          test = true)
+        profile = MutableUserProfile(mutableStateOf(mockUserProfiles[1])),
+        navigation = mockNavigation,
+        userMail = "example@gmail.com",
+        homeViewModel = homevm,
+        test = true
+      )
     }
 
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("NoTripsText").assertIsDisplayed()
+  }
+
+  @Test
+  fun backButtonTest() {
+    every { mockNavigation.goBack() } answers {}
+
+    mockUserVm = mockk {
+      every { getUserProfileList() } returns mockUserProfiles
+      every { getUserProfile(any(), any()) } coAnswers
+              {
+                secondArg<(UserProfile?) -> Unit>().invoke(mockUserProfiles[0])
+              }
+      every { removeFollowing(any(), any()) } just Runs
+      every { addFollowing(any(), any()) } just Runs
+    }
+
+    homevm = mockk {
+      every { setSearchFilter(any()) } just Runs
+      every { setSearchQuery(any()) } just Runs
+      every { filteredItineraryList.value } returns mockItineraries
+      every { filteredItineraryList } returns MutableLiveData(mockItineraries)
+    }
+
+    // Setting up the test composition
+    composeTestRule.setContent {
+      UserView(
+        profile = MutableUserProfile(mutableStateOf(mockUserProfiles[1])),
+        navigation = mockNavigation,
+        userMail = "example@gmail.com",
+        homeViewModel = homevm,
+        test = true
+      )
+    }
+
+    composeTestRule.waitForIdle() // Wait for the UI to stabilize
+
+    composeTestRule.onNodeWithTag("GoBackButton").assertIsDisplayed().assertHasClickAction()
+    composeTestRule.onNodeWithTag("GoBackButton").performClick()
+    verify { mockNavigation.goBack() }
   }
 }
