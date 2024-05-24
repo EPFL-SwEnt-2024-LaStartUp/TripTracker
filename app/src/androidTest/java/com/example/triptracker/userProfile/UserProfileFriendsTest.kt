@@ -1,7 +1,11 @@
 package com.example.triptracker.userProfile
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.profile.MutableUserProfile
@@ -59,7 +63,6 @@ class UserProfileFriendsTest {
 
   @Test
   fun componentAreCorrectlyDisplayed() {
-
     // Setting up the test composition
     composeTestRule.setContent {
       UserProfileFriendsFinder(
@@ -77,5 +80,9 @@ class UserProfileFriendsTest {
         assertHasClickAction()
       }
     }
+
+    composeTestRule.onNodeWithTag("FriendsFinderScreen").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Friends Finder").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("SearchBar").assertIsDisplayed().assertHasClickAction()
   }
 }
