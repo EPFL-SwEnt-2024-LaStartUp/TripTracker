@@ -11,7 +11,7 @@ class UserProfileFollowingScreen(semanticsProvider: SemanticsNodeInteractionsPro
         viewBuilderAction = { hasTestTag("FollowingScreen") }) {
 
   // Structural elements of the UI
-  val followingTitle: KNode = child { hasTestTag("FollowingTitle") }
+  val followingTitle: KNode = child { hasTestTag("Title") }
   val goBackButton: KNode = child { hasTestTag("GoBackButton") }
   val followingList: KNode = child { hasTestTag("FollowingList") }
 

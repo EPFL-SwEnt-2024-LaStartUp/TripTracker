@@ -9,7 +9,7 @@ class UserProfileMyTripsScreen(semanticsProvider: SemanticsNodeInteractionsProvi
         semanticsProvider = semanticsProvider,
         viewBuilderAction = { hasTestTag("UserProfileMyTripsScreen") }) {
 
-  val myTripsTitle: KNode = child { hasTestTag("MyTripsTitle") }
+  val myTripsTitle: KNode = child { hasTestTag("Title") }
   val goBackButton: KNode = child { hasTestTag("GoBackButton") }
   val myTripsList: KNode = child { hasTestTag("MyTripsList") }
 }

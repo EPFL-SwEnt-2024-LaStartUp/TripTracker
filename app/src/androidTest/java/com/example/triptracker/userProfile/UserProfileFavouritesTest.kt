@@ -72,7 +72,7 @@ class UserProfileFavouritesTest {
           homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
     }
     composeTestRule.onNodeWithTag("UserProfileFavouriteScreen").assertExists()
-    composeTestRule.onNodeWithTag("ScreenTitle").assertExists()
+    composeTestRule.onNodeWithTag("Title").assertExists()
     composeTestRule.onNodeWithTag("GoBackButton").assertExists()
   }
 

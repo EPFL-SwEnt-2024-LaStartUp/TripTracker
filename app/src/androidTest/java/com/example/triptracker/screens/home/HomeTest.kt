@@ -1,7 +1,6 @@
 package com.example.triptracker.screens.home
 
 import android.util.Log
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Place
@@ -14,10 +13,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeLeft
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.action.ViewActions.pressKey
-import androidx.test.espresso.action.ViewActions.swipeLeft
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.itinerary.MockItineraryList
 import com.example.triptracker.model.itinerary.Itinerary
@@ -139,6 +136,44 @@ class HomeTest {
         assertIsDisplayed()
         assertHasClickAction()
         Log.d("Itinerary", "Itinerary is displayed and clickable")
+      }
+    }
+  }
+
+  @Test
+  fun homeScreenComponentsAreDisplayedWhenClick() {
+    // Have to repeat code to have specific mock data for each test!!
+    every { mockUserProfileRepository.getUserProfileByEmail(mockMail) {} } returns
+        mockk(relaxUnitFun = true)
+    // this removes previous problem
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
+    every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
+    every { mockProfile.userProfile.value } returns mockUsers[0]
+    // Setting up the test composition
+    composeTestRule.setContent {
+      HomeScreen(
+          navigation = mockNav,
+          homeViewModel = mockViewModel,
+          userProfileViewModel = mockUserProfileViewModel,
+          test = true)
+    }
+    ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
+      // Test the UI elements
+      composeTestRule
+          .onNodeWithText("Find Itineraries", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .assertTextEquals("Find Itineraries")
+
+      itineraryUsernameBox {
+        assertIsDisplayed()
+        assertHasClickAction()
+        Log.d("Itinerary", "username is displayed and clickable")
       }
     }
   }
@@ -495,11 +530,7 @@ class HomeTest {
   @Test
   fun testTabIsDisplayed() {
     composeTestRule.setContent {
-      HomePager(
-          navigation = mockNav,
-          homeViewModel = mockViewModel,
-          innerPadding = PaddingValues(0.dp),
-          test = true)
+      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
     }
 
     composeTestRule.onNodeWithText("TRENDING", useUnmergedTree = true).assertIsDisplayed()
@@ -510,11 +541,7 @@ class HomeTest {
   fun testClickOnFollowing() {
     every { mockViewModel.itineraryList } returns MutableLiveData(emptyList())
     composeTestRule.setContent {
-      HomePager(
-          navigation = mockNav,
-          homeViewModel = mockViewModel,
-          innerPadding = PaddingValues(0.dp),
-          test = true)
+      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
     }
     composeTestRule.onNodeWithText("FOLLOWING", useUnmergedTree = true).performClick()
   }
@@ -522,11 +549,7 @@ class HomeTest {
   @Test
   fun testSwipeLeft() {
     composeTestRule.setContent {
-      HomePager(
-          navigation = mockNav,
-          homeViewModel = mockViewModel,
-          innerPadding = PaddingValues(0.dp),
-          test = true)
+      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
     }
 
     // Find the node representing the pager

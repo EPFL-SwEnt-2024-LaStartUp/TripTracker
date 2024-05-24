@@ -14,16 +14,20 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.example.triptracker.itinerary.MockItineraryList
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.TopLevelDestination
 import com.example.triptracker.view.map.RecordScreen
+import com.example.triptracker.view.map.SaveButton
 import com.example.triptracker.viewmodel.RecordViewModel
+import com.google.android.gms.maps.model.LatLng
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
+import java.util.LinkedList
 import junit.framework.TestCase.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -674,5 +678,40 @@ class RecordTest {
     composeTestRule.onNodeWithTag("RecordScreen").performClick()
 
     composeTestRule.onNodeWithTag("RecordText").assertExists()
+  }
+
+  @Test
+  fun saveButton() {
+    every { mockViewModel.isRecording() } returns true
+    every { mockViewModel.isPaused.value } returns false
+    every { mockViewModel.isInDescription() } returns false
+    every { mockViewModel.addSpotClicked.value } returns false
+    every { mockViewModel.description.value } returns "Description"
+    every { mockViewModel.title.value } returns "Title"
+    every { mockViewModel.startDate.value } returns "2021-10-10"
+    every { mockViewModel.endDate.value } returns "2021-10-10"
+    every { mockViewModel.latLongList } returns listOf()
+    every { mockViewModel.namePOI.value } returns "Name"
+    every { mockViewModel.displayNameDropDown.value } returns "Name"
+
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
+
+    composeTestRule.setContent {
+      SaveButton(
+          viewModel = mockViewModel,
+          itineraryRepository = mockItineraryRepository,
+          profile = UserProfile(",", "", "", "", "", "", listOf(), listOf()),
+          localLatLngList = LinkedList<LatLng>())
+    }
+
+    composeTestRule.onNodeWithText("Save").performClick()
+
+    // Check if the save button is displayed
+    composeTestRule.onNodeWithText("Save").assertExists()
   }
 }

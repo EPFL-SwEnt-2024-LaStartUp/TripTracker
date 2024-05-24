@@ -29,6 +29,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -158,6 +159,24 @@ fun CameraView(
               ViewGroup.LayoutParams(
                   ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
           view.clipToOutline = true
+        }
+
+        IconButton(
+            modifier =
+                Modifier.padding(bottom = 20.dp)
+                    .align(Alignment.TopEnd)
+                    .size(60.dp)
+                    .testTag("CloseCameraScreen"),
+            onClick = {
+              onError(
+                  ImageCaptureException(ImageCapture.ERROR_CAMERA_CLOSED, "Camera closed", null))
+            },
+        ) {
+          Icon(
+              imageVector = Icons.Default.Close,
+              contentDescription = "Close Camera",
+              tint = md_theme_dark_black,
+              modifier = Modifier.size(30.dp).padding(1.dp))
         }
 
         IconButton(

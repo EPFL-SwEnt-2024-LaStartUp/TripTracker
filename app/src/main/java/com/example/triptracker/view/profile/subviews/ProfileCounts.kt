@@ -4,10 +4,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,28 +37,30 @@ fun ProfileCounts(
     currentUserProfile: Boolean = true
 ) {
   Row(
-      modifier =
-          Modifier.height((LocalConfiguration.current.screenHeightDp * 0.12f).dp).fillMaxWidth(),
+      modifier = Modifier.wrapContentHeight().fillMaxWidth().testTag("ProfileCounts"),
       horizontalArrangement = Arrangement.Center) {
         Column(
             modifier =
                 Modifier.align(Alignment.CenterVertically)
-                    .fillMaxHeight()
-                    .width((LocalConfiguration.current.screenWidthDp * 0.33f).dp)) {
+                    .wrapContentHeight()
+                    .width((LocalConfiguration.current.screenWidthDp * 0.33f).dp)
+                    .testTag("TripsColumn")) {
               Text(
                   text = "$tripsCount",
-                  modifier = Modifier.align(Alignment.CenterHorizontally).testTag("TripsCount"),
+                  modifier = Modifier.align(Alignment.CenterHorizontally),
                   style = bigNumberStyle(LocalConfiguration.current.screenHeightDp))
               Text(
                   text = "Trips",
-                  modifier = Modifier.align(Alignment.CenterHorizontally).testTag("TripsTitle"),
+                  modifier = Modifier.align(Alignment.CenterHorizontally),
                   style = categoryTextStyle(LocalConfiguration.current.screenHeightDp))
             }
         Column(
             modifier =
                 Modifier.align(Alignment.CenterVertically)
-                    .fillMaxHeight()
+                    .wrapContentHeight()
                     .width((LocalConfiguration.current.screenWidthDp * 0.33f).dp)
+                    .padding(vertical = 5.dp)
+                    .testTag("FollowersColumn")
                     .clickable(enabled = currentUserProfile) {
                       // Navigate to the followers screen if the user displayed is the user
                       // logged-in
@@ -66,18 +68,20 @@ fun ProfileCounts(
                     }) {
               Text(
                   text = "${profile.followers.size}",
-                  modifier = Modifier.align(Alignment.CenterHorizontally).testTag("FollowersCount"),
+                  modifier = Modifier.align(Alignment.CenterHorizontally),
                   style = bigNumberStyle(LocalConfiguration.current.screenHeightDp))
               Text(
                   text = "Followers",
-                  modifier = Modifier.align(Alignment.CenterHorizontally).testTag("FollowersTitle"),
+                  modifier = Modifier.align(Alignment.CenterHorizontally),
                   style = categoryTextStyle(LocalConfiguration.current.screenHeightDp))
             }
         Column(
             modifier =
                 Modifier.align(Alignment.CenterVertically)
-                    .fillMaxHeight()
+                    .wrapContentHeight()
                     .width((LocalConfiguration.current.screenWidthDp * 0.33f).dp)
+                    .padding(vertical = 5.dp)
+                    .testTag("FollowingColumn")
                     .clickable(enabled = currentUserProfile) {
                       // Navigate to the following screen if the user displayed is the user
                       // logged-in
@@ -85,11 +89,11 @@ fun ProfileCounts(
                     }) {
               Text(
                   text = "${profile.following.size}",
-                  modifier = Modifier.align(Alignment.CenterHorizontally).testTag("FollowingCount"),
+                  modifier = Modifier.align(Alignment.CenterHorizontally),
                   style = bigNumberStyle(LocalConfiguration.current.screenHeightDp))
               Text(
                   text = "Following",
-                  modifier = Modifier.align(Alignment.CenterHorizontally).testTag("FollowingTitle"),
+                  modifier = Modifier.align(Alignment.CenterHorizontally),
                   style = categoryTextStyle(LocalConfiguration.current.screenHeightDp))
             }
       }
