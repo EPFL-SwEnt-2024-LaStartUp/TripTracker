@@ -141,6 +141,44 @@ class HomeTest {
   }
 
   @Test
+  fun homeScreenComponentsAreDisplayedWhenClick() {
+    // Have to repeat code to have specific mock data for each test!!
+    every { mockUserProfileRepository.getUserProfileByEmail(mockMail) {} } returns
+        mockk(relaxUnitFun = true)
+    // this removes previous problem
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
+    every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
+    every { mockProfile.userProfile.value } returns mockUsers[0]
+    // Setting up the test composition
+    composeTestRule.setContent {
+      HomeScreen(
+          navigation = mockNav,
+          homeViewModel = mockViewModel,
+          userProfileViewModel = mockUserProfileViewModel,
+          test = true)
+    }
+    ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
+      // Test the UI elements
+      composeTestRule
+          .onNodeWithText("Find Itineraries", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .assertTextEquals("Find Itineraries")
+
+      itineraryUsernameBox {
+        assertIsDisplayed()
+        assertHasClickAction()
+        Log.d("Itinerary", "username is displayed and clickable")
+      }
+    }
+  }
+
+  @Test
   fun clickingOnItineraryOpensItineraryPreview() {
     every { mockItineraryRepository.getAllItineraries(any()) } answers
         {

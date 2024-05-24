@@ -387,8 +387,7 @@ fun DisplayItineraries(
                 homeViewModel.incrementClickCount(itinerary.id)
               },
               displayImage = true,
-              navigation = navigation
-          )
+              navigation = navigation)
         }
       }
 }

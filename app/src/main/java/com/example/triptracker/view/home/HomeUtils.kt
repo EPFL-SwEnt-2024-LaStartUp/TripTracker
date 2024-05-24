@@ -203,8 +203,7 @@ fun DisplayItinerary(
                       offsetY = 20.dp,
                       offsetX = 0.dp,
                       spread = 9.dp)
-                  .background(color = md_theme_light_dark, shape = RoundedCornerShape(35.dp))
-                  .testTag("Itinerary")) {
+                  .background(color = md_theme_light_dark, shape = RoundedCornerShape(35.dp))) {
             Column(modifier = Modifier.fillMaxWidth().padding(25.dp)) {
               Row(
                   modifier = Modifier.fillMaxWidth(),
@@ -212,7 +211,7 @@ fun DisplayItinerary(
                     // change the image to the user's profile picture
                     Row(
                         modifier =
-                            Modifier.clickable {
+                            Modifier.testTag("UsernameBox").clickable {
                               navigation.navController.navigate(
                                   Route.USER + "/${itinerary.userMail}")
                             },
@@ -264,18 +263,20 @@ fun DisplayItinerary(
                   }
               Box(
                   modifier =
-                      Modifier.combinedClickable(
-                          onClick = {
-                            onClick()
-                          }, // When you click on an itinerary, it should bring you to the map
-                          // overview with the selected itinerary highlighted and the first pinned
-                          // places
-                          onLongClick = {
-                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                            if (canBeDeleted) {
-                              showAlert = true
-                            }
-                          })) {
+                      Modifier.testTag("Itinerary")
+                          .combinedClickable(
+                              onClick = {
+                                onClick()
+                              }, // When you click on an itinerary, it should bring you to the map
+                              // overview with the selected itinerary highlighted and the first
+                              // pinned
+                              // places
+                              onLongClick = {
+                                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                                if (canBeDeleted) {
+                                  showAlert = true
+                                }
+                              })) {
                     Column(
                         modifier =
                             Modifier.combinedClickable(
