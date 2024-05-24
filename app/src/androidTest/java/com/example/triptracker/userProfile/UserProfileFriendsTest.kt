@@ -6,6 +6,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.profile.MutableUserProfile
@@ -22,6 +23,7 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -84,5 +86,27 @@ class UserProfileFriendsTest {
     composeTestRule.onNodeWithTag("FriendsFinderScreen").assertIsDisplayed()
     composeTestRule.onNodeWithText("Friends Finder").assertIsDisplayed()
     composeTestRule.onNodeWithTag("SearchBar").assertIsDisplayed().assertHasClickAction()
+  }
+
+  @Test
+  fun navigationTest() {
+    every { mockNav.goBack() } answers {}
+    // Setting up the test composition
+    composeTestRule.setContent {
+      UserProfileFriendsFinder(
+          navigation = mockNav,
+          profile = MutableUserProfile(mutableStateOf(mockUserProfiles[0])),
+          userProfileViewModel = mockViewModel,
+      )
+    }
+
+    ComposeScreen.onComposeScreen<UserProfileFriendsScreen>(composeTestRule) {
+      goBackButton {
+        assertIsDisplayed()
+        assertHasClickAction()
+      }
+    }
+    composeTestRule.onNodeWithTag("GoBackButton").assertHasClickAction().performClick()
+    verify { mockNav.goBack() }
   }
 }
