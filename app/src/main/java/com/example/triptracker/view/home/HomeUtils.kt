@@ -100,8 +100,8 @@ fun DisplayItinerary(
     homeViewModel: HomeViewModel = viewModel(),
     displayImage: Boolean = false,
     canBeDeleted: Boolean = false,
+    navigation: Navigation,
     onDelete: () -> Unit = {}
-    navigation: Navigation
 ) {
   val configuration = LocalConfiguration.current
   val screenWidth = configuration.screenWidthDp.dp
