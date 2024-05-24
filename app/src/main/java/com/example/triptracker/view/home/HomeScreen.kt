@@ -1,5 +1,6 @@
 package com.example.triptracker.view.home
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -76,9 +77,9 @@ var allProfilesFetched: List<UserProfile> = emptyList()
  * @param navigation: Navigation object to use for navigation
  * @param homeViewModel: HomeViewModel to use for fetching itineraries
  * @param userProfileViewModel: UserProfileViewModel to use for fetching users
- * @param displayPager: Boolean to display or not the home pager
  * @param test: Boolean to test the function
  */
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
     navigation: Navigation,
@@ -165,7 +166,7 @@ fun HomeScreen(
             }
           },
           bottomBar = { NavigationBar(navigation = navigation) },
-          modifier = Modifier.fillMaxWidth().testTag("HomeScreen")) { innerPadding ->
+          modifier = Modifier.fillMaxWidth().testTag("HomeScreen")) {
             when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
               emptyList<Itinerary>() -> {
                 Text(
@@ -187,10 +188,7 @@ fun HomeScreen(
                       ) {
                         // will display the list of itineraries
                         HomePager(
-                            navigation = navigation,
-                            homeViewModel = homeViewModel,
-                            innerPadding = innerPadding,
-                            test = test)
+                            navigation = navigation, homeViewModel = homeViewModel, test = test)
                       }
 
                   // will display the list of itineraries
@@ -391,8 +389,7 @@ fun DisplayItineraries(
                 homeViewModel.incrementClickCount(itinerary.id)
               },
               displayImage = true,
-              test = test,
-          )
+              navigation = navigation)
         }
       }
 }
@@ -402,7 +399,6 @@ fun DisplayItineraries(
 fun HomePager(
     navigation: Navigation,
     homeViewModel: HomeViewModel = viewModel(),
-    innerPadding: PaddingValues,
     test: Boolean = false
 ) {
   val ambientProfile = AmbientUserProfile.current

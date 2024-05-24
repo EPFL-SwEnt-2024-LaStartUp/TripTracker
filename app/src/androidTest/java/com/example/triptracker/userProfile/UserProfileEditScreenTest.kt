@@ -12,7 +12,11 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiSelector
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
@@ -161,6 +165,129 @@ class UserProfileEditScreenTest : TestCase() {
       UserProfileEditScreen(navigation = navigation, profile = mutableUser)
     }
     composeTestRule.onNodeWithText("Save").performClick()
+  }
+
+  @Test
+  fun SaveProfileUserLongName() {
+
+    val mutableUser = MutableUserProfile()
+    mutableUser.userProfile.value =
+        UserProfile(
+            "jake@gmail.com",
+            "Test User",
+            "Stupid",
+            "Yesterday",
+            "TestUser",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
+            emptyList(),
+            emptyList(),
+            emptyList())
+
+    composeTestRule.setContent {
+      UserProfileEditScreen(navigation = navigation, profile = mutableUser)
+    }
+
+    // write long username in text field
+    composeTestRule.onNodeWithTag("UserModif").performTextInput("TestUserButTheNameWillBeLong")
+    composeTestRule.onNodeWithText("Save").performClick()
+  }
+
+  @Test
+  fun AcceptDate() {
+    val mutableUser = MutableUserProfile()
+    mutableUser.userProfile.value =
+        UserProfile(
+            "J",
+            "S",
+            "S",
+            "S",
+            "S",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
+            emptyList(),
+            emptyList(),
+            emptyList())
+
+    composeTestRule.setContent {
+      UserProfileEditScreen(navigation = navigation, profile = mutableUser)
+    }
+
+    /* Try to accept */
+    // write long username in text field
+    composeTestRule.onNodeWithTag("iconDate").performClick()
+    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    val accept = device.findObject(UiSelector().text("Accept"))
+    if (accept.exists()) {
+      accept.click()
+    }
+    // verify CustomDatePicker is open
+    composeTestRule.onNodeWithTag("CustomDatePickerDialog").assertExists()
+  }
+
+  @Test
+  fun SelctDate() {
+    val mutableUser = MutableUserProfile()
+    mutableUser.userProfile.value =
+        UserProfile(
+            "J",
+            "S",
+            "S",
+            "S",
+            "S",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
+            emptyList(),
+            emptyList(),
+            emptyList())
+
+    composeTestRule.setContent {
+      UserProfileEditScreen(navigation = navigation, profile = mutableUser)
+    }
+
+    /* Try to accept */
+    // write long username in text field
+    composeTestRule.onNodeWithTag("iconDate").performClick()
+
+    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+
+    val day = device.findObject(UiSelector().text("15"))
+    if (day.exists()) {
+      day.click()
+    }
+
+    val accept = device.findObject(UiSelector().text("Accept"))
+    if (accept.exists()) {
+      accept.click()
+    }
+  }
+
+  @Test
+  fun RejectDate() {
+    val mutableUser = MutableUserProfile()
+    mutableUser.userProfile.value =
+        UserProfile(
+            "J",
+            "S",
+            "S",
+            "S",
+            "S",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Prague_%286365119737%29.jpg/800px-Prague_%286365119737%29.jpg",
+            emptyList(),
+            emptyList(),
+            emptyList())
+
+    composeTestRule.setContent {
+      UserProfileEditScreen(navigation = navigation, profile = mutableUser)
+    }
+
+    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    /* Try to cancel */
+    // write long username in text field
+    composeTestRule.onNodeWithTag("iconDate").performClick()
+    val cancel = device.findObject(UiSelector().text("Cancel"))
+    if (cancel.exists()) {
+      cancel.click()
+    }
+    // verify CustomDatePicker is open
+    composeTestRule.onNodeWithTag("CustomDatePickerDialog").assertExists()
   }
 
   @Test
