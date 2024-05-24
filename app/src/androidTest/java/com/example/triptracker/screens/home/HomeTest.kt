@@ -1,7 +1,6 @@
 package com.example.triptracker.screens.home
 
 import android.util.Log
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Place
@@ -14,10 +13,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeLeft
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.action.ViewActions.pressKey
-import androidx.test.espresso.action.ViewActions.swipeLeft
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.itinerary.MockItineraryList
 import com.example.triptracker.model.itinerary.Itinerary
@@ -498,7 +495,6 @@ class HomeTest {
       HomePager(
           navigation = mockNav,
           homeViewModel = mockViewModel,
-          innerPadding = PaddingValues(0.dp),
           test = true)
     }
 
@@ -513,7 +509,6 @@ class HomeTest {
       HomePager(
           navigation = mockNav,
           homeViewModel = mockViewModel,
-          innerPadding = PaddingValues(0.dp),
           test = true)
     }
     composeTestRule.onNodeWithText("FOLLOWING", useUnmergedTree = true).performClick()
@@ -525,7 +520,6 @@ class HomeTest {
       HomePager(
           navigation = mockNav,
           homeViewModel = mockViewModel,
-          innerPadding = PaddingValues(0.dp),
           test = true)
     }
 

@@ -188,7 +188,6 @@ fun HomeScreen(
                         HomePager(
                             navigation = navigation,
                             homeViewModel = homeViewModel,
-                            innerPadding = innerPadding,
                             test = test)
                       }
 
@@ -389,7 +388,6 @@ fun DisplayItineraries(
                 homeViewModel.incrementClickCount(itinerary.id)
               },
               displayImage = true,
-              test = test,
           )
         }
       }
