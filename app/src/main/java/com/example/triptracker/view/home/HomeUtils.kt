@@ -100,7 +100,8 @@ fun DisplayItinerary(
     homeViewModel: HomeViewModel = viewModel(),
     displayImage: Boolean = false,
     canBeDeleted: Boolean = false,
-    navigation: Navigation
+    navigation: Navigation,
+    onDelete: () -> Unit = {}
 ) {
   val configuration = LocalConfiguration.current
   val screenWidth = configuration.screenWidthDp.dp
@@ -130,7 +131,7 @@ fun DisplayItinerary(
       ShowAlert(
           onDismiss = { showAlert = false },
           onConfirm = {
-            homeViewModel.deleteItinerary(itinerary.id)
+            onDelete()
             showAlert = false
           })
     }

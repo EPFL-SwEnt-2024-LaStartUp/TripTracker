@@ -209,11 +209,14 @@ open class ItineraryRepository {
   }
 
   // Remove an itinerary from the database
-  fun removeItinerary(id: String) {
+  fun removeItinerary(id: String, callback: () -> Unit = {}) {
     db.collection("itineraries")
         .document(id)
         .delete()
-        .addOnSuccessListener { Log.d(TAG, "Itinerary removed successfully") }
+        .addOnSuccessListener {
+          Log.d(TAG, "Itinerary removed successfully")
+          callback()
+        }
         .addOnFailureListener { e -> Log.e(TAG, "Error removing itinerary", e) }
   }
 
