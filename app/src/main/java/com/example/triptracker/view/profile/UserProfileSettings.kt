@@ -86,8 +86,10 @@ fun UserProfileSettings(
                       FilledTonalButton(
                           modifier =
                               Modifier.size(
-                                  width = (LocalConfiguration.current.screenWidthDp * 0.30).dp,
-                                  height = (LocalConfiguration.current.screenHeightDp * 0.06).dp),
+                                      width = (LocalConfiguration.current.screenWidthDp * 0.30).dp,
+                                      height =
+                                          (LocalConfiguration.current.screenHeightDp * 0.06).dp)
+                                  .testTag("ProfilePrivacyButton"),
                           onClick = {
                             setIsPrivate(!isPublic)
                             var privacy = userProfile.profilePrivacy
@@ -136,8 +138,10 @@ fun UserProfileSettings(
                           state = buttonState,
                           modifier =
                               Modifier.size(
-                                  width = (LocalConfiguration.current.screenWidthDp * 0.30).dp,
-                                  height = (LocalConfiguration.current.screenHeightDp * 0.06).dp),
+                                      width = (LocalConfiguration.current.screenWidthDp * 0.30).dp,
+                                      height =
+                                          (LocalConfiguration.current.screenHeightDp * 0.06).dp)
+                                  .testTag("PathVisibilityButton"),
                           onClick = {
                             setButtonState((buttonState + 1) % 3)
 
@@ -185,8 +189,10 @@ fun UserProfileSettings(
                       FilledTonalButton(
                           modifier =
                               Modifier.size(
-                                  width = (LocalConfiguration.current.screenWidthDp * 0.30).dp,
-                                  height = (LocalConfiguration.current.screenHeightDp * 0.06).dp),
+                                      width = (LocalConfiguration.current.screenWidthDp * 0.30).dp,
+                                      height =
+                                          (LocalConfiguration.current.screenHeightDp * 0.06).dp)
+                                  .testTag("LogOutButton"),
                           onClick = {
                             val context = MainActivity.applicationContext()
                             GoogleAuthenticator().signOut(context)
@@ -284,6 +290,7 @@ fun TriStateButton(
               containerColor = backgroundColor, contentColor = md_theme_light_onPrimary)) {
         Text(
             text = buttonText,
+            lineHeight = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
             fontSize = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
             fontFamily = Montserrat,
             fontWeight = FontWeight.Bold,
