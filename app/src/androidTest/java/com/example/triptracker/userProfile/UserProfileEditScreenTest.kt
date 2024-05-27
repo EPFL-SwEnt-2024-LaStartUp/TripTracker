@@ -74,6 +74,7 @@ class UserProfileEditScreenTest : TestCase() {
       composeTestRule.setContent {
         UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
       }
+      composeTestRule.onNodeWithContentDescription("Calendar").performScrollTo()
       composeTestRule.onNodeWithContentDescription("Calendar").assertHasClickAction()
       composeTestRule.onNodeWithContentDescription("Calendar").performClick()
       composeTestRule.onNodeWithTag("CustomDatePickerDialog").assertExists()
@@ -88,6 +89,7 @@ class UserProfileEditScreenTest : TestCase() {
       composeTestRule.setContent {
         UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
       }
+      composeTestRule.onNodeWithContentDescription("Calendar").performScrollTo()
       composeTestRule.onNodeWithContentDescription("Calendar").assertHasClickAction()
       composeTestRule.onNodeWithContentDescription("Calendar").performClick()
       composeTestRule.onNodeWithTag("CustomDatePickerDialog").assertExists()
@@ -139,7 +141,7 @@ class UserProfileEditScreenTest : TestCase() {
   }
 
   @Test
-  fun SaveProfile() {
+  fun saveProfile() {
     composeTestRule.setContent {
       UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
     }
@@ -147,7 +149,7 @@ class UserProfileEditScreenTest : TestCase() {
   }
 
   @Test
-  fun SaveProfileUserPassed() {
+  fun saveProfileUserPassed() {
 
     val mutableUser = MutableUserProfile()
     mutableUser.userProfile.value =
@@ -169,7 +171,7 @@ class UserProfileEditScreenTest : TestCase() {
   }
 
   @Test
-  fun SaveProfileUserLongName() {
+  fun saveProfileUserLongName() {
 
     val mutableUser = MutableUserProfile()
     mutableUser.userProfile.value =
@@ -194,7 +196,7 @@ class UserProfileEditScreenTest : TestCase() {
   }
 
   @Test
-  fun AcceptDate() {
+  fun acceptDate() {
     val mutableUser = MutableUserProfile()
     mutableUser.userProfile.value =
         UserProfile(
@@ -214,6 +216,7 @@ class UserProfileEditScreenTest : TestCase() {
 
     /* Try to accept */
     // write long username in text field
+    composeTestRule.onNodeWithTag("iconDate").performScrollTo()
     composeTestRule.onNodeWithTag("iconDate").performClick()
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     val accept = device.findObject(UiSelector().text("Accept"))
@@ -225,7 +228,7 @@ class UserProfileEditScreenTest : TestCase() {
   }
 
   @Test
-  fun SelctDate() {
+  fun selectDate() {
     val mutableUser = MutableUserProfile()
     mutableUser.userProfile.value =
         UserProfile(
@@ -245,6 +248,7 @@ class UserProfileEditScreenTest : TestCase() {
 
     /* Try to accept */
     // write long username in text field
+    composeTestRule.onNodeWithTag("iconDate").performScrollTo()
     composeTestRule.onNodeWithTag("iconDate").performClick()
 
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
@@ -261,7 +265,7 @@ class UserProfileEditScreenTest : TestCase() {
   }
 
   @Test
-  fun RejectDate() {
+  fun rejectDate() {
     val mutableUser = MutableUserProfile()
     mutableUser.userProfile.value =
         UserProfile(
@@ -282,6 +286,7 @@ class UserProfileEditScreenTest : TestCase() {
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     /* Try to cancel */
     // write long username in text field
+    composeTestRule.onNodeWithTag("iconDate").performScrollTo()
     composeTestRule.onNodeWithTag("iconDate").performClick()
     val cancel = device.findObject(UiSelector().text("Cancel"))
     if (cancel.exists()) {
