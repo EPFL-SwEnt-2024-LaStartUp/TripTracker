@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -48,10 +50,14 @@ import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -76,6 +82,7 @@ import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_light_error
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.UserProfileViewModel
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -137,6 +144,8 @@ fun UserProfileEditScreen(
   /* Mutable state variable that holds the scroll state of the screen */
   val scrollState = rememberScrollState()
 
+    val coroutineScope = rememberCoroutineScope()
+
   // Variable to store the state of the new profile picture
   var selectedPicture by remember { mutableStateOf<Uri?>(null) }
   // Launcher for the pick multiple media activity
@@ -158,7 +167,8 @@ fun UserProfileEditScreen(
   Scaffold(
       topBar = {},
       bottomBar = { NavigationBar(navigation) },
-      modifier = Modifier.testTag("UserProfileEditScreen")) { innerPadding ->
+      modifier = Modifier.testTag("UserProfileEditScreen")
+  ) {  innerPadding ->
         if (!isCreated) {
           Button(
               onClick = { navigation.goBack() },
@@ -170,264 +180,318 @@ fun UserProfileEditScreen(
                 Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
               }
         }
-        Box(
-            modifier =
-                Modifier.fillMaxHeight()
-                    .padding(innerPadding)
-                    .padding(top = 30.dp, bottom = 30.dp, start = 25.dp, end = 25.dp)
-                    .fillMaxWidth()
-                    .background(md_theme_light_dark, shape = RoundedCornerShape(20.dp)),
-            contentAlignment = Alignment.TopCenter) {
+      Column(
+          modifier = Modifier
+              .fillMaxSize()
+              .padding(innerPadding)
+              .padding(top = 37.dp, bottom = 25.dp, start = 25.dp, end = 25.dp)
+              .background(md_theme_light_dark, shape = RoundedCornerShape(20.dp)),
+      ) {
+          val showArrow by remember {
+              derivedStateOf {
+                  scrollState.maxValue > 0 && scrollState.value < scrollState.maxValue
+              }
+          }
 
+          LaunchedEffect(scrollState) {
+              snapshotFlow { scrollState.value }
+          }
+
+          Box(
+              modifier =
+              Modifier
+                  .fillMaxWidth()
+                  .weight(1f),
+              contentAlignment = Alignment.TopCenter
+          ) {
               // Loading bar for when the save button is clicked
               when (isLoading) {
-                true -> {
-                  CircularProgressIndicator(
-                      modifier = Modifier.width(64.dp).align(Alignment.Center),
-                      color = md_theme_orange,
-                      trackColor = md_theme_grey,
-                  )
-                }
-                false -> {}
+                  true -> {
+                      CircularProgressIndicator(
+                          modifier = Modifier.width(64.dp).align(Alignment.Center),
+                          color = md_theme_orange,
+                          trackColor = md_theme_grey,
+                      )
+                  }
+
+                  false -> {}
               }
               Column(
                   modifier = Modifier.alpha(alpha).fillMaxSize().verticalScroll(scrollState),
                   horizontalAlignment = Alignment.Start,
-                  verticalArrangement = Arrangement.SpaceEvenly) {
-                    Spacer(modifier = Modifier.height(25.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.17f),
-                        verticalAlignment = Alignment.CenterVertically) {
-                          Spacer(modifier = Modifier.width(25.dp))
-                          Box(modifier = Modifier.size(90.dp)) {
-                            Box(
-                                modifier =
-                                    Modifier.size(90.dp)
-                                        .background(Color.White, shape = CircleShape)) {
-                                  InsertPicture(pickMedia, selectedPicture, imageUrl)
-                                }
-                            // Position the small orange circle with a plus sign
-                            Box(
-                                modifier =
-                                    Modifier.size(21.dp)
-                                        .background(md_theme_light_dark, shape = CircleShape)
-                                        .align(Alignment.BottomEnd)
-                                        .clickable {
-                                          pickMedia.launch(
-                                              PickVisualMediaRequest(
-                                                  ActivityResultContracts.PickVisualMedia
-                                                      .ImageAndVideo))
-                                        }) {
-                                  Box(
-                                      modifier =
-                                          Modifier.size(15.dp)
-                                              .background(md_theme_orange, shape = CircleShape)
-                                              .align(Alignment.Center)) {
-                                        Icon(
-                                            imageVector = Icons.Default.Add,
-                                            contentDescription = "Add",
-                                            tint = Color.White,
-                                            modifier = Modifier.padding(1.dp))
-                                      }
-                                }
+                  verticalArrangement = Arrangement.SpaceEvenly
+              ) {
+                  Spacer(modifier = Modifier.height(25.dp))
+                  Row(
+                      modifier = Modifier.fillMaxWidth().fillMaxHeight(0.17f),
+                      verticalAlignment = Alignment.CenterVertically
+                  ) {
+                      Spacer(modifier = Modifier.width(25.dp))
+                      Box(modifier = Modifier.size(90.dp)) {
+                          Box(
+                              modifier =
+                              Modifier.size(90.dp)
+                                  .background(Color.White, shape = CircleShape)
+                          ) {
+                              InsertPicture(pickMedia, selectedPicture, imageUrl)
                           }
-                          Spacer(modifier = Modifier.width(25.dp))
-                          Column(
-                              modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8f),
-                              verticalArrangement = Arrangement.Center) {
-                                Text(
-                                    modifier = Modifier.padding(bottom = 4.dp, end = 30.dp),
-                                    text = "Username",
-                                    fontSize = 14.sp,
-                                    fontFamily = Montserrat,
-                                    fontWeight = FontWeight.Normal,
-                                    color = md_theme_grey)
-                                OutlinedTextField(
-                                    singleLine = true,
-                                    value = username,
-                                    onValueChange = {
-                                      if (it.length <= MAX_CHARS_USERNAME) {
-                                        username = it
-                                        isUsernameEmpty = it.isEmpty()
-                                      }
-                                    },
-                                    modifier =
-                                        Modifier.height(65.dp)
-                                            .padding(bottom = 5.dp, end = 30.dp)
-                                            .testTag("UserModif"),
-                                    textStyle =
-                                        TextStyle(
-                                            color = Color.White,
-                                            fontSize = 16.sp,
-                                            fontFamily = Montserrat,
-                                            fontWeight = FontWeight.Normal),
-                                    colors =
-                                        OutlinedTextFieldDefaults.colors(
-                                            unfocusedTextColor = md_theme_grey,
-                                            unfocusedBorderColor = colorUsername,
-                                            unfocusedLabelColor = colorUsername,
-                                            cursorColor = md_theme_grey,
-                                            focusedBorderColor = colorUsername,
-                                            focusedLabelColor = Color.White,
-                                        ))
+                          // Position the small orange circle with a plus sign
+                          Box(
+                              modifier =
+                              Modifier.size(21.dp)
+                                  .background(md_theme_light_dark, shape = CircleShape)
+                                  .align(Alignment.BottomEnd)
+                                  .clickable {
+                                      pickMedia.launch(
+                                          PickVisualMediaRequest(
+                                              ActivityResultContracts.PickVisualMedia
+                                                  .ImageAndVideo
+                                          )
+                                      )
+                                  }) {
+                              Box(
+                                  modifier =
+                                  Modifier.size(15.dp)
+                                      .background(md_theme_orange, shape = CircleShape)
+                                      .align(Alignment.Center)
+                              ) {
+                                  Icon(
+                                      imageVector = Icons.Default.Add,
+                                      contentDescription = "Add",
+                                      tint = Color.White,
+                                      modifier = Modifier.padding(1.dp)
+                                  )
                               }
-                        }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    ProfileEditTextField(
-                        "Name",
-                        name,
-                        {
+                          }
+                      }
+                      Spacer(modifier = Modifier.width(25.dp))
+                      Column(
+                          modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8f),
+                          verticalArrangement = Arrangement.Center
+                      ) {
+                          Text(
+                              modifier = Modifier.padding(bottom = 4.dp, end = 30.dp),
+                              text = "Username",
+                              fontSize = 14.sp,
+                              fontFamily = Montserrat,
+                              fontWeight = FontWeight.Normal,
+                              color = md_theme_grey
+                          )
+                          OutlinedTextField(
+                              singleLine = true,
+                              value = username,
+                              onValueChange = {
+                                  if (it.length <= MAX_CHARS_USERNAME) {
+                                      username = it
+                                      isUsernameEmpty = it.isEmpty()
+                                  }
+                              },
+                              modifier =
+                              Modifier.height(65.dp)
+                                  .padding(bottom = 5.dp, end = 30.dp)
+                                  .testTag("UserModif"),
+                              textStyle =
+                              TextStyle(
+                                  color = Color.White,
+                                  fontSize = 16.sp,
+                                  fontFamily = Montserrat,
+                                  fontWeight = FontWeight.Normal
+                              ),
+                              colors =
+                              OutlinedTextFieldDefaults.colors(
+                                  unfocusedTextColor = md_theme_grey,
+                                  unfocusedBorderColor = colorUsername,
+                                  unfocusedLabelColor = colorUsername,
+                                  cursorColor = md_theme_grey,
+                                  focusedBorderColor = colorUsername,
+                                  focusedLabelColor = Color.White,
+                              )
+                          )
+                      }
+                  }
+                  Spacer(modifier = Modifier.height(10.dp))
+                  ProfileEditTextField(
+                      "Name",
+                      name,
+                      {
                           name = it
                           isNameEmpty = it.isEmpty()
-                        },
-                        isNameEmpty)
-                    Spacer(modifier = Modifier.height(10.dp))
-                    ProfileEditTextField(
-                        "Surname",
-                        surname,
-                        {
+                      },
+                      isNameEmpty
+                  )
+                  Spacer(modifier = Modifier.height(10.dp))
+                  ProfileEditTextField(
+                      "Surname",
+                      surname,
+                      {
                           surname = it
                           isSurnameEmpty = it.isEmpty()
-                        },
-                        isSurnameEmpty)
-                    Spacer(modifier = Modifier.height(10.dp))
-                    ProfileEditTextField(
-                        "Mail",
-                        mail,
-                        {
+                      },
+                      isSurnameEmpty
+                  )
+                  Spacer(modifier = Modifier.height(10.dp))
+                  ProfileEditTextField(
+                      "Mail",
+                      mail,
+                      {
                           mail = it
                           isMailEmpty = it.isEmpty()
-                        },
-                        isMailEmpty,
-                        true)
-                    Spacer(modifier = Modifier.height(10.dp))
+                      },
+                      isMailEmpty,
+                      true
+                  )
+                  Spacer(modifier = Modifier.height(10.dp))
 
-                    val isOpen = remember { mutableStateOf(false) }
-                    Text(
-                        text = "Date of birth",
-                        fontSize = 14.sp,
-                        fontFamily = Montserrat,
-                        fontWeight = FontWeight.Normal,
-                        color = md_theme_grey,
-                        modifier = Modifier.padding(bottom = 4.dp, start = 30.dp, end = 30.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                  val isOpen = remember { mutableStateOf(false) }
+                  Text(
+                      text = "Date of birth",
+                      fontSize = 14.sp,
+                      fontFamily = Montserrat,
+                      fontWeight = FontWeight.Normal,
+                      color = md_theme_grey,
+                      modifier = Modifier.padding(bottom = 4.dp, start = 30.dp, end = 30.dp)
+                  )
+                  Row(verticalAlignment = Alignment.CenterVertically) {
                       OutlinedTextField(
                           readOnly = true,
                           value = birthdate,
                           onValueChange = {},
                           modifier =
-                              Modifier.height(65.dp)
-                                  .padding(bottom = 5.dp, start = 30.dp)
-                                  .weight(1f),
+                          Modifier.height(65.dp)
+                              .padding(bottom = 5.dp, start = 30.dp)
+                              .weight(1f),
                           textStyle =
-                              TextStyle(
-                                  color = Color.White,
-                                  fontSize = 16.sp,
-                                  fontFamily = Montserrat,
-                                  fontWeight = FontWeight.Normal),
+                          TextStyle(
+                              color = Color.White,
+                              fontSize = 16.sp,
+                              fontFamily = Montserrat,
+                              fontWeight = FontWeight.Normal
+                          ),
                           colors =
-                              OutlinedTextFieldDefaults.colors(
-                                  unfocusedTextColor = md_theme_grey,
-                                  unfocusedBorderColor = colorBirthdate,
-                                  unfocusedLabelColor = colorBirthdate,
-                                  cursorColor = md_theme_grey,
-                                  focusedBorderColor = colorBirthdate,
-                                  focusedLabelColor = Color.White,
-                              ))
+                          OutlinedTextFieldDefaults.colors(
+                              unfocusedTextColor = md_theme_grey,
+                              unfocusedBorderColor = colorBirthdate,
+                              unfocusedLabelColor = colorBirthdate,
+                              cursorColor = md_theme_grey,
+                              focusedBorderColor = colorBirthdate,
+                              focusedLabelColor = Color.White,
+                          )
+                      )
                       IconButton(
                           modifier = Modifier.padding(end = 30.dp).testTag("iconDate"),
                           onClick = { isOpen.value = true } // show de dialog
-                          ) {
-                            Icon(
-                                imageVector = Icons.Default.CalendarMonth,
-                                contentDescription = "Calendar",
-                                tint = Color.Gray)
-                          }
-                    }
-
-                    if (isOpen.value) {
-                      Box(modifier = Modifier.testTag("CustomDatePickerDialog")) {
-                        CustomDatePickerDialog(
-                            onAccept = {
-                              isOpen.value = false // close dialog
-
-                              if (it != null) { // Set the date
-                                birthdate =
-                                    Instant.ofEpochMilli(it)
-                                        .atZone(ZoneId.of("UTC"))
-                                        .toLocalDate()
-                                        .format(DateTimeFormatter.ISO_DATE)
-                              }
-                            },
-                            onCancel = {
-                              isOpen.value = false // close dialog
-                            })
+                      ) {
+                          Icon(
+                              imageVector = Icons.Default.CalendarMonth,
+                              contentDescription = "Calendar",
+                              tint = Color.Gray
+                          )
                       }
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    DropdownSelector(
-                        label = "Interests",
-                        options = Interests.entries,
-                        selectedOptions = selectedInterests,
-                        onOptionSelected = { selectedInterests = it as List<String> },
-                        placeholder = "No Interests",
-                        modifier = Modifier.padding(start = 30.dp, end = 30.dp))
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    DropdownSelector(
-                        label = "Travel style",
-                        options = TravelStyle.entries,
-                        selectedOptions = selectedTravelStyle,
-                        onOptionSelected = { selectedTravelStyle = it },
-                        placeholder = "No Travel Style",
-                        modifier = Modifier.padding(start = 30.dp, end = 30.dp))
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    DropdownSelector(
-                        label = "Languages",
-                        options = Languages.entries,
-                        selectedOptions = selectedLanguages,
-                        onOptionSelected = { selectedLanguages = it as List<String> },
-                        placeholder = "No Languages",
-                        modifier = Modifier.padding(start = 30.dp, end = 30.dp))
-
-                    Box(
-                        modifier = Modifier.fillMaxWidth().height(200.dp),
-                        contentAlignment = Alignment.Center) {
-                          SaveButton(
-                              canSave =
-                                  !isNameEmpty &&
-                                      !isSurnameEmpty &&
-                                      !isBirthdateEmpty &&
-                                      !isUsernameEmpty,
-                              action = {
-                                profile.userProfile.value =
-                                    UserProfile(
-                                        mail = mail,
-                                        name = name,
-                                        surname = surname,
-                                        birthdate = birthdate,
-                                        username = username,
-                                        profileImageUrl = imageUrl,
-                                        followers = profile.userProfile.value.followers,
-                                        following = profile.userProfile.value.following,
-                                        interests = selectedInterests,
-                                        travelStyle = selectedTravelStyle,
-                                        languages = selectedLanguages)
-                                userProfileViewModel.tryToUpdateProfile(
-                                    navigation = navigation,
-                                    isCreated = isCreated,
-                                    onLoadingChange = { isLoading = !isLoading },
-                                    selectedPicture = selectedPicture,
-                                    profile = profile)
-                              })
-                        }
                   }
-            }
+
+                  if (isOpen.value) {
+                      Box(modifier = Modifier.testTag("CustomDatePickerDialog")) {
+                          CustomDatePickerDialog(
+                              onAccept = {
+                                  isOpen.value = false // close dialog
+
+                                  if (it != null) { // Set the date
+                                      birthdate =
+                                          Instant.ofEpochMilli(it)
+                                              .atZone(ZoneId.of("UTC"))
+                                              .toLocalDate()
+                                              .format(DateTimeFormatter.ISO_DATE)
+                                  }
+                              },
+                              onCancel = {
+                                  isOpen.value = false // close dialog
+                              })
+                      }
+                  }
+
+                  Spacer(modifier = Modifier.height(10.dp))
+
+                  DropdownSelector(
+                      label = "Interests",
+                      options = Interests.entries,
+                      selectedOptions = selectedInterests,
+                      onOptionSelected = { selectedInterests = it as List<String> },
+                      placeholder = "No Interests",
+                      modifier = Modifier.padding(start = 30.dp, end = 30.dp)
+                  )
+
+                  Spacer(modifier = Modifier.height(10.dp))
+
+                  DropdownSelector(
+                      label = "Travel style",
+                      options = TravelStyle.entries,
+                      selectedOptions = selectedTravelStyle,
+                      onOptionSelected = { selectedTravelStyle = it },
+                      placeholder = "No Travel Style",
+                      modifier = Modifier.padding(start = 30.dp, end = 30.dp)
+                  )
+
+                  Spacer(modifier = Modifier.height(10.dp))
+
+                  DropdownSelector(
+                      label = "Languages",
+                      options = Languages.entries,
+                      selectedOptions = selectedLanguages,
+                      onOptionSelected = { selectedLanguages = it as List<String> },
+                      placeholder = "No Languages",
+                      modifier = Modifier.padding(start = 30.dp, end = 30.dp)
+                  )
+              }
+          }
+          if (showArrow) {
+              Icon(
+                  imageVector = Icons.Default.ExpandMore,
+                  contentDescription = "Scroll down",
+                  tint = Color.White,
+                  modifier = Modifier.align(Alignment.CenterHorizontally)
+                      .clickable {
+                          coroutineScope.launch {
+                              scrollState.animateScrollTo(scrollState.maxValue)
+                          }
+                      }
+              )
+          }
+
+          Box(
+              modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(vertical = 20.dp),
+              contentAlignment = Alignment.Center
+          ) {
+              SaveButton(
+                  canSave =
+                  !isNameEmpty &&
+                          !isSurnameEmpty &&
+                          !isBirthdateEmpty &&
+                          !isUsernameEmpty,
+                  action = {
+                      profile.userProfile.value =
+                          UserProfile(
+                              mail = mail,
+                              name = name,
+                              surname = surname,
+                              birthdate = birthdate,
+                              username = username,
+                              profileImageUrl = imageUrl,
+                              followers = profile.userProfile.value.followers,
+                              following = profile.userProfile.value.following,
+                              interests = selectedInterests,
+                              travelStyle = selectedTravelStyle,
+                              languages = selectedLanguages
+                          )
+                      userProfileViewModel.tryToUpdateProfile(
+                          navigation = navigation,
+                          isCreated = isCreated,
+                          onLoadingChange = { isLoading = !isLoading },
+                          selectedPicture = selectedPicture,
+                          profile = profile
+                      )
+                  })
+          }
+      }
       }
 }
 
