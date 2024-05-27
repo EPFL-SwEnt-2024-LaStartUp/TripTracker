@@ -35,6 +35,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -136,7 +137,14 @@ fun MapOverview(
           bottomBar = { NavigationBar(navigation) }, modifier = Modifier.testTag("MapOverview")) {
               innerPadding ->
             Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-              Map(mapViewModel, context, mapProperties, uiSettings, selectedId, userProfile)
+              Map(
+                  mapViewModel,
+                  context,
+                  mapProperties,
+                  uiSettings,
+                  selectedId,
+                  userProfile,
+                  navigation)
             }
           }
     }
@@ -172,7 +180,8 @@ fun Map(
     mapProperties: MapProperties,
     uiSettings: MapUiSettings,
     currentSelectedId: String,
-    userProfile: MutableUserProfile
+    userProfile: MutableUserProfile,
+    navigation: Navigation,
 ) {
   // Used to display the gradient with the top bar and the changing city location
   val ui by remember { mutableStateOf(uiSettings) }
@@ -357,7 +366,7 @@ fun Map(
                 fontSize = 20.sp,
                 fontFamily = Montserrat,
                 fontWeight = FontWeight.Bold,
-                color = md_theme_light_onPrimary)
+                color = MaterialTheme.colorScheme.onBackground)
           },
           text = {
             Text(
@@ -379,8 +388,7 @@ fun Map(
                 },
                 colors =
                     ButtonDefaults.buttonColors(
-                        containerColor = md_theme_light_dark,
-                        contentColor = md_theme_light_onPrimary),
+                        containerColor = md_theme_orange, contentColor = md_theme_light_onPrimary),
                 shape = RoundedCornerShape(35.dp),
             ) {
               Text(
@@ -397,7 +405,7 @@ fun Map(
                 onClick = { showCancelDialog.value = false },
                 colors =
                     ButtonDefaults.buttonColors(
-                        containerColor = md_theme_light_black, contentColor = Color.White),
+                        containerColor = md_theme_orange, contentColor = Color.White),
                 shape = RoundedCornerShape(35.dp)) {
                   Text(
                       text = "No",
@@ -457,7 +465,7 @@ fun Map(
                   DisplayItinerary(
                       itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
                       onClick = { mapViewModel.popUpState.value = popupState.DISPLAYPIN },
-                      test = false,
+                      navigation = navigation,
                   )
                 }
           }

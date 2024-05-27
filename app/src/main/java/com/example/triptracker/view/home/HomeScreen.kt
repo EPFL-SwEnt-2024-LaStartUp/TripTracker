@@ -1,5 +1,6 @@
 package com.example.triptracker.view.home
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -75,9 +76,9 @@ var allProfilesFetched: List<UserProfile> = emptyList()
  * @param navigation: Navigation object to use for navigation
  * @param homeViewModel: HomeViewModel to use for fetching itineraries
  * @param userProfileViewModel: UserProfileViewModel to use for fetching users
- * @param displayPager: Boolean to display or not the home pager
  * @param test: Boolean to test the function
  */
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
     navigation: Navigation,
@@ -164,7 +165,7 @@ fun HomeScreen(
             }
           },
           bottomBar = { NavigationBar(navigation = navigation) },
-          modifier = Modifier.fillMaxWidth().testTag("HomeScreen")) { innerPadding ->
+          modifier = Modifier.fillMaxWidth().testTag("HomeScreen")) {
             when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
               emptyList<Itinerary>() -> {
                 Text(
@@ -186,10 +187,7 @@ fun HomeScreen(
                       ) {
                         // will display the list of itineraries
                         HomePager(
-                            navigation = navigation,
-                            homeViewModel = homeViewModel,
-                            innerPadding = innerPadding,
-                            test = test)
+                            navigation = navigation, homeViewModel = homeViewModel, test = test)
                       }
 
                   // will display the list of itineraries
@@ -378,7 +376,8 @@ fun DisplayItineraries(
       modifier =
           Modifier.fillMaxSize()
               .padding(goodPadding) // this ensures having a padding at the bottom
-              .testTag("ItineraryList"),
+              .testTag("ItineraryList")
+              .background(color = MaterialTheme.colorScheme.background),
       contentPadding = PaddingValues(16.dp)) {
         items(itineraries) { itinerary ->
           Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
@@ -389,8 +388,7 @@ fun DisplayItineraries(
                 homeViewModel.incrementClickCount(itinerary.id)
               },
               displayImage = true,
-              test = test,
-          )
+              navigation = navigation)
         }
       }
 }
@@ -400,7 +398,6 @@ fun DisplayItineraries(
 fun HomePager(
     navigation: Navigation,
     homeViewModel: HomeViewModel = viewModel(),
-    innerPadding: PaddingValues,
     test: Boolean = false
 ) {
   val ambientProfile = AmbientUserProfile.current
@@ -436,13 +433,15 @@ fun HomePager(
     TabRow(
         selectedTabIndex = pagerState.currentPage,
         modifier = Modifier.fillMaxWidth().height(50.dp),
-        backgroundColor = md_theme_light_onPrimary) {
+        backgroundColor = MaterialTheme.colorScheme.background) {
           tabs.forEachIndexed { index, title ->
             isSelected = index == selectedTab
             Tab(selected = isSelected, onClick = { selectedTab = index }) {
               Text(
                   title,
-                  color = if (isSelected) md_theme_light_black else md_theme_grey,
+                  color =
+                      if (isSelected) MaterialTheme.colorScheme.onBackground
+                      else MaterialTheme.colorScheme.onSurface,
                   fontFamily = Montserrat,
                   fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                   fontSize = 20.sp) // same size as itinerary title

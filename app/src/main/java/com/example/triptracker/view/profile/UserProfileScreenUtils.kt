@@ -129,8 +129,14 @@ fun UserProfileScreen(
                         DisplayItinerary(
                             itinerary = itinerary,
                             onClick = onClick,
-                            test = test,
-                            canBeDeleted = true)
+                            canBeDeleted = canBeDeleted(filterType),
+                            navigation = navigation,
+                            onDelete = {
+                                homeViewModel.deleteItinerary(itinerary.id) {
+                                    homeViewModel.setSearchFilter(filterType)
+                                    homeViewModel.setSearchQuery(userProfile.userProfile.value.username)
+                                }
+                            })
                       }
                     }
               }
@@ -138,4 +144,13 @@ fun UserProfileScreen(
           }
         }
       }
+}
+
+/**
+ * This function checks if the filter type can be deleted.
+ *
+ * @param filterType FilterType object for filtering the user's trips.
+ */
+private fun canBeDeleted(filterType: FilterType): Boolean {
+  return filterType == FilterType.USERNAME
 }
