@@ -1,9 +1,10 @@
-package com.example.triptracker.screens.userProfile
+package com.example.triptracker.userProfile
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -74,5 +75,53 @@ class UserProfileSettingsTest : TestCase() {
 
     val button3 = composeTestRule.onNodeWithText("button3")
     button3.assertExists().assertHasClickAction().performClick()
+  }
+
+  @Test
+  fun pathVisibilityButtonWorks() {
+    composeTestRule.setContent { UserProfileSettings(navigation) }
+    // we ensure the button is displayed and tests its different states
+    composeTestRule
+        .onNodeWithTag("PathVisibilityButton")
+        .assertIsDisplayed()
+        .assertTextEquals("Public")
+    composeTestRule.onNodeWithTag("PathVisibilityButton").assertHasClickAction().performClick()
+    composeTestRule
+        .onNodeWithTag("PathVisibilityButton")
+        .assertIsDisplayed()
+        .assertTextEquals("Friends")
+    composeTestRule.onNodeWithTag("PathVisibilityButton").assertHasClickAction().performClick()
+    composeTestRule.onNodeWithTag("PathVisibilityButton").assertIsDisplayed().assertTextEquals("Me")
+    composeTestRule.onNodeWithTag("PathVisibilityButton").assertHasClickAction().performClick()
+    composeTestRule
+        .onNodeWithTag("PathVisibilityButton")
+        .assertIsDisplayed()
+        .assertTextEquals("Public")
+  }
+
+  @Test
+  fun profilePrivacyButtonWorks() {
+    composeTestRule.setContent { UserProfileSettings(navigation) }
+    // we ensure the button is displayed and tests its different states
+    composeTestRule
+        .onNodeWithTag("ProfilePrivacyButton")
+        .assertIsDisplayed()
+        .assertTextEquals("Public")
+    composeTestRule.onNodeWithTag("ProfilePrivacyButton").assertHasClickAction().performClick()
+    composeTestRule
+        .onNodeWithTag("ProfilePrivacyButton")
+        .assertIsDisplayed()
+        .assertTextEquals("Private")
+    composeTestRule.onNodeWithTag("ProfilePrivacyButton").assertHasClickAction().performClick()
+    composeTestRule
+        .onNodeWithTag("ProfilePrivacyButton")
+        .assertIsDisplayed()
+        .assertTextEquals("Public")
+  }
+
+  @Test
+  fun logOutButtonIsDisplayed() {
+    composeTestRule.setContent { UserProfileSettings(navigation) }
+    composeTestRule.onNodeWithTag("LogOutButton").assertIsDisplayed().assertHasClickAction()
   }
 }
