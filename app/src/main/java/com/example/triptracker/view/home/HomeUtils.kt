@@ -311,20 +311,19 @@ fun DisplayItinerary(
                   }
               Box(
                   modifier =
-                      Modifier.testTag("Itinerary")
-                          .combinedClickable(
-                              onClick = {
-                                onClick()
-                              }, // When you click on an itinerary, it should bring you to the map
-                              // overview with the selected itinerary highlighted and the first
-                              // pinned
-                              // places
-                              onLongClick = {
-                                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                                if (canBeDeleted) {
-                                  showAlert = true
-                                }
-                              })) {
+                      Modifier.combinedClickable(
+                          onClick = {
+                            onClick()
+                          }, // When you click on an itinerary, it should bring you to the map
+                          // overview with the selected itinerary highlighted and the first
+                          // pinned
+                          // places
+                          onLongClick = {
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            if (canBeDeleted) {
+                              showAlert = true
+                            }
+                          })) {
                     Column(
                         modifier =
                             Modifier.combinedClickable(

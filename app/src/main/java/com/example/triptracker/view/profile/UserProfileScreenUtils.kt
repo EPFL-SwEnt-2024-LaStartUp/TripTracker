@@ -77,26 +77,23 @@ fun UserProfileScreen(
   /* The itinerary to display the information of when offline */
   var itineraryToDisplay: Itinerary? by remember { mutableStateOf(null) }
 
-  Scaffold(
-      topBar = {
-        if (itineraryToDisplay == null) {
-          ScaffoldTopBar(navigation = navigation, label = titleText)
-        }
-      },
-      bottomBar = { NavigationBar(navigation) },
-      modifier = Modifier.testTag(screenTag)) { innerPadding ->
-        Box {
-          if (itineraryToDisplay != null) {
-            Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-              StartScreen(
-                  itinerary = itineraryToDisplay!!,
-                  onClick = { itineraryToDisplay = null },
-                  userProfile = userProfile,
-                  homeViewModel = homeViewModel,
-                  offline = true)
-            }
-          } else {
-
+  if (itineraryToDisplay != null) {
+    Scaffold(bottomBar = { NavigationBar(navigation) }) { innerPadding ->
+      Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+        StartScreen(
+            itinerary = itineraryToDisplay!!,
+            onClick = { itineraryToDisplay = null },
+            userProfile = userProfile,
+            homeViewModel = homeViewModel,
+            offline = true)
+      }
+    }
+  } else {
+    Scaffold(
+        topBar = { ScaffoldTopBar(navigation = navigation, label = titleText) },
+        bottomBar = { NavigationBar(navigation) },
+        modifier = Modifier.testTag(screenTag)) { innerPadding ->
+          Box {
             when (filteredList) {
               emptyList<Itinerary>() -> {
                 Box(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
@@ -120,7 +117,8 @@ fun UserProfileScreen(
                         if (itinerary == filteredList.first())
                             Spacer(modifier = Modifier.height(10.dp))
                         val onClick =
-                            if (!connection.isDeviceConnectedToInternet()) {
+                            if (!connection.isDeviceConnectedToInternet() &&
+                                filterType == FilterType.FAVOURITES) {
                               { itineraryToDisplay = itinerary }
                             } else {
                               { navigation.navigateTo(Route.MAPS, itinerary.id) }
@@ -143,7 +141,7 @@ fun UserProfileScreen(
             }
           }
         }
-      }
+  }
 }
 
 /**

@@ -47,13 +47,10 @@ enum class HomeCategory {
  *
  * @param repository the repository to fetch itineraries from
  * @param connection the connection object to check if the device is connected to the internet
- * @param itineraryDownload the itinerary download object to fetch itineraries from the internal
- *   storage
  */
 class HomeViewModel(
     private val repository: ItineraryRepository = ItineraryRepository(),
-    private val connection: Connection = Connection(),
-    itineraryDownload: ItineraryDownload = ItineraryDownload()
+    private val connection: Connection = Connection()
 ) : ViewModel() {
 
   private var itineraryInstance = ItineraryList(listOf())
@@ -82,7 +79,7 @@ class HomeViewModel(
       viewModelScope.launch { fetchItineraries { updateAllFlameCounts() } }
     } else {
       // If the device is not connected to the internet, fetch itineraries from the internal storage
-      _itineraryList.value = itineraryDownload.loadAllItineraries()
+      _itineraryList.value = ItineraryDownload().loadAllItineraries()
       Log.d("HomeViewModel", "Fetched itineraries from local storage: ${_itineraryList.value}")
     }
   }
