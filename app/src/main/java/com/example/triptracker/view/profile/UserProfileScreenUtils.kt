@@ -78,16 +78,13 @@ fun UserProfileScreen(
   var itineraryToDisplay: Itinerary? by remember { mutableStateOf(null) }
 
   if (itineraryToDisplay != null) {
-    Scaffold(bottomBar = { NavigationBar(navigation) }) { innerPadding ->
-      Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-        StartScreen(
-            itinerary = itineraryToDisplay!!,
-            onClick = { itineraryToDisplay = null },
-            userProfile = userProfile,
-            homeViewModel = homeViewModel,
-            offline = true)
-      }
-    }
+    ItineraryDescWhenOffline(
+        navigation = navigation,
+        itineraryToDisplay = itineraryToDisplay!!,
+        userProfile = userProfile,
+        homeViewModel = homeViewModel) {
+          itineraryToDisplay = null
+        }
   } else {
     Scaffold(
         topBar = { ScaffoldTopBar(navigation = navigation, label = titleText) },
@@ -144,6 +141,37 @@ fun UserProfileScreen(
   }
 }
 
+/**
+ * ItineraryDescWhenOffline is a Composable function that displays the itinerary description when
+ * offline.
+ *
+ * @param navigation Navigation object for navigating between screens.
+ * @param itineraryToDisplay Itinerary object to display.
+ * @param userProfile MutableUserProfile object for the user's profile.
+ * @param homeViewModel ViewModel for the home screen.
+ * @param onClick Function to be called when the user clicks on the itinerary.
+ */
+@Composable
+fun ItineraryDescWhenOffline(
+    navigation: Navigation,
+    itineraryToDisplay: Itinerary,
+    userProfile: MutableUserProfile,
+    homeViewModel: HomeViewModel,
+    onClick: () -> Unit
+) {
+  Scaffold(bottomBar = { NavigationBar(navigation) }) { innerPadding ->
+    Box(
+        modifier =
+            Modifier.fillMaxSize().padding(innerPadding).testTag("ItineraryDescWhenOffline")) {
+          StartScreen(
+              itinerary = itineraryToDisplay,
+              onClick = onClick,
+              userProfile = userProfile,
+              homeViewModel = homeViewModel,
+              offline = true)
+        }
+  }
+}
 /**
  * This function checks if the filter type can be deleted.
  *

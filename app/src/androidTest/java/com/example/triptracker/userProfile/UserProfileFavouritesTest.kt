@@ -15,6 +15,7 @@ import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.TopLevelDestination
+import com.example.triptracker.view.profile.ItineraryDescWhenOffline
 import com.example.triptracker.view.profile.UserProfileFavourite
 import com.example.triptracker.viewmodel.HomeViewModel
 import io.mockk.MockKAnnotations
@@ -168,5 +169,19 @@ class UserProfileFavouritesTest {
     composeTestRule.onNodeWithTag("UserProfileFavouriteScreen").assertExists()
     composeTestRule.onNodeWithTag("Title").assertExists()
     composeTestRule.onNodeWithTag("GoBackButton").assertExists()
+  }
+
+  @Test
+  fun testItineraryDescWhenOffline() {
+    every { mockProfile.userProfile.value.favoritesPaths.contains(any()) } returns true
+    composeTestRule.setContent {
+      ItineraryDescWhenOffline(
+          navigation = mockNav,
+          itineraryToDisplay = mockItineraries[0],
+          userProfile = mockProfile,
+          homeViewModel = mockViewModel,
+          onClick = {})
+    }
+    composeTestRule.onNodeWithTag("ItineraryDescWhenOffline").assertExists()
   }
 }
