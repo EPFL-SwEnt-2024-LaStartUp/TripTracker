@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.Place
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -28,6 +29,8 @@ import com.example.triptracker.view.Route
 import com.example.triptracker.view.TopLevelDestination
 import com.example.triptracker.view.home.HomePager
 import com.example.triptracker.view.home.HomeScreen
+import com.example.triptracker.view.home.ItineraryItem
+import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import io.github.kakaocup.compose.node.element.ComposeScreen
@@ -36,6 +39,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
+import io.mockk.verify
 import junit.framework.TestCase
 import org.junit.Before
 import org.junit.Rule
@@ -102,6 +106,7 @@ class HomeTest {
         }
   }
 
+  /** This test checks if the home screen components are displayed correctly */
   @Test
   fun homeScreenComponentsAreDisplayed() {
     // Have to repeat code to have specific mock data for each test!!
@@ -140,6 +145,7 @@ class HomeTest {
     }
   }
 
+  /** This test checks if itinerary is displayed and clicks on it */
   @Test
   fun homeScreenComponentsAreDisplayedWhenClick() {
     // Have to repeat code to have specific mock data for each test!!
@@ -204,6 +210,7 @@ class HomeTest {
     }
   }
 
+  /** This test checks if the profile picture is displayed and clicks on it */
   @Test
   fun clickingOnProfilePictureOpensPreview() {
     every { mockItineraryRepository.getAllItineraries(any()) } answers
@@ -237,6 +244,10 @@ class HomeTest {
     }
   }
 
+  /**
+   * This test checks if the search bar is displayed correctly and if the search bar text is
+   * displayed correctly
+   */
   @Test
   fun testSearchBarDisplaysComponentsCorrectly() {
     every { mockItineraryRepository.getAllItineraries(any()) } answers
@@ -260,6 +271,7 @@ class HomeTest {
     composeTestRule.onNodeWithTag("searchBarText", useUnmergedTree = true).assertIsDisplayed()
   }
 
+  /** This test checks if the search bar is displayed correctly */
   @Test
   fun searchBarIsDisplayed() {
     every { mockItineraryRepository.getAllItineraries(any()) } answers
@@ -277,10 +289,7 @@ class HomeTest {
       HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
     }
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
-      searchBar {
-        assertIsDisplayed()
-        // This test is failing because of an internal error in Firestore
-      }
+      searchBar { assertIsDisplayed() }
     }
   }
 
@@ -316,6 +325,7 @@ class HomeTest {
     }
   }
 
+  /** This checks if itinerary is clickable */
   @Test
   fun itineraryIsClickable() {
     every { mockItineraryRepository.getAllItineraries(any()) } answers
@@ -336,6 +346,7 @@ class HomeTest {
     ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) { itinerary { performClick() } }
   }
 
+  /** This test checks if no itineraries text is displayed when there are no itineraries */
   @Test
   fun noItinerariesTextIsDisplayed() {
     every { mockItineraryRepository.getAllItineraries(any()) } answers
@@ -356,6 +367,7 @@ class HomeTest {
     }
   }
 
+  /** This test clicks on the profile icon */
   @Test
   fun profileIconClickOpensProfileScreen() {
     every { mockItineraryRepository.getAllItineraries(any()) } answers
@@ -387,6 +399,12 @@ class HomeTest {
           // Invoke the callback with mock data
           val callback = arg<(List<Itinerary>) -> Unit>(0)
           callback(mockItineraries)
+        }
+    every { mockUserProfileViewModel.fetchAllUserProfiles(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<UserProfile>) -> Unit>(0)
+          callback(mockUsers)
         }
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns filteredItineraryLiveData
@@ -422,6 +440,10 @@ class HomeTest {
     }
   }
 
+  /**
+   * This test checks if the search bar is displayed correctly and if the search bar text is
+   * displayed correctly Check if itineraries are displayed.
+   */
   @Test
   fun clickOnDropDownMenu() {
     every { mockItineraryRepository.getAllItineraries(any()) } answers
@@ -433,6 +455,7 @@ class HomeTest {
     every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
     every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
     every { mockProfile.userProfile.value } returns mockUsers[0]
+
     // Setting up the test composition
     composeTestRule.setContent {
       HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
@@ -441,14 +464,21 @@ class HomeTest {
       searchBar {
         assertIsDisplayed()
         performClick()
+        pressKey(84)
+        composeTestRule.waitForIdle()
       }
+
+      every { mockViewModel.searchQuery } returns MutableLiveData("Tr")
       composeTestRule
           .onNodeWithTag("DropDownBox", useUnmergedTree = true)
           .assertIsDisplayed()
           .performClick()
+
+      // composeTestRule.onNodeWithTag("DropDownFilter").performClick().assertIsDisplayed()
     }
   }
 
+  /** This test checks if no results are displayed when searching for an inexistent itinerary */
   @Test
   fun noResultWhenSearchingForInexistantItinerary() {
     try {
@@ -488,6 +518,7 @@ class HomeTest {
     }
   }
 
+  /** This test checks if no results are displayed when searching for a non-existent itinerary */
   @Test
   fun noResultWhenSearchingForNonExistentItinerary() {
     try {
@@ -537,6 +568,7 @@ class HomeTest {
     composeTestRule.onNodeWithText("FOLLOWING", useUnmergedTree = true).assertIsDisplayed()
   }
 
+  /** This test clicks on the following tab */
   @Test
   fun testClickOnFollowing() {
     every { mockViewModel.itineraryList } returns MutableLiveData(emptyList())
@@ -546,6 +578,7 @@ class HomeTest {
     composeTestRule.onNodeWithText("FOLLOWING", useUnmergedTree = true).performClick()
   }
 
+  /** This test swipes left on the pager */
   @Test
   fun testSwipeLeft() {
     composeTestRule.setContent {
@@ -554,5 +587,136 @@ class HomeTest {
 
     // Find the node representing the pager
     composeTestRule.onNodeWithTag("HomePager").performTouchInput { swipeLeft() }
+  }
+
+  /** This test swipes left on the pager with non-empty itineraries */
+  @Test
+  fun SwipeLeftWithItineraries() {
+    every { mockUserProfileViewModel.getUserProfile(mockMail) {} } returns
+        mockk(relaxUnitFun = true)
+
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
+    every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.trendingList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.followingList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.searchQuery } returns MutableLiveData("test")
+    every { mockUserProfileViewModel.fetchAllUserProfiles(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<UserProfile>) -> Unit>(0)
+          callback(mockUsers)
+        }
+
+    composeTestRule.setContent {
+      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+    }
+
+    ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
+      itinerary {
+        assertIsDisplayed()
+        performClick()
+      }
+    }
+
+    composeTestRule.onNodeWithTag("HomePager").performTouchInput { swipeLeft() }
+  }
+
+  /** This covers uncovered code in HomeScreen */
+  @Test
+  fun testWithBooleanFalseHomeScreen() {
+    // Have to repeat code to have specific mock data for each test!!
+    every { mockUserProfileRepository.getUserProfileByEmail(mockMail) {} } returns
+        mockk(relaxUnitFun = true)
+    // this removes previous problem
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
+    every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
+    every { mockProfile.userProfile.value } returns mockUsers[0]
+
+    // Setting up the test composition
+    composeTestRule.setContent {
+      HomeScreen(
+          navigation = mockNav,
+          homeViewModel = mockViewModel,
+          userProfileViewModel = mockUserProfileViewModel,
+          test = false)
+      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = false)
+    }
+    composeTestRule.onNodeWithTag("HomePager").performTouchInput { swipeLeft() }
+  }
+
+  /** This test clicks on the drop down menu and selects an item */
+  @Test
+  fun clickOnDropDownMenuDisplaysFilters() {
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
+    every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
+    every { mockProfile.userProfile.value } returns mockUsers[0]
+
+    // Setting up the test composition
+    composeTestRule.setContent {
+      HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+    }
+    ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
+      searchBar {
+        assertIsDisplayed()
+        performClick()
+        composeTestRule.waitForIdle()
+        // Interact with the dropdown menu
+        composeTestRule.onNodeWithTag("DropDownBox").performClick()
+        composeTestRule
+            .onAllNodesWithText("TITLE", useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+        composeTestRule.onNodeWithText("USERNAME").assertIsDisplayed().performClick()
+      }
+    }
+
+    // Verify the filter was set in the view model
+    verify { mockViewModel.setSearchFilter(FilterType.entries[1]) }
+  }
+
+  @Test
+  fun itineraryItemDisplayed() {
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
+    every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
+    every { mockProfile.userProfile.value } returns mockUsers[0]
+
+    // Setting up the test composition
+    composeTestRule.setContent {
+      HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      ItineraryItem(itinerary = mockItineraries[0]) {}
+    }
+    ComposeScreen.onComposeScreen<HomeViewScreen>(composeTestRule) {
+      searchBar {
+        assertIsDisplayed()
+        performClick()
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("ItineraryItem").assertIsDisplayed()
+      }
+    }
   }
 }
