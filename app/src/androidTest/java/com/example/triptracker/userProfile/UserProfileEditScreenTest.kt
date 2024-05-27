@@ -74,6 +74,7 @@ class UserProfileEditScreenTest : TestCase() {
       composeTestRule.setContent {
         UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
       }
+      // we scroll to the calendar
       composeTestRule.onNodeWithContentDescription("Calendar").performScrollTo()
       composeTestRule.onNodeWithContentDescription("Calendar").assertHasClickAction()
       composeTestRule.onNodeWithContentDescription("Calendar").performClick()
@@ -89,6 +90,7 @@ class UserProfileEditScreenTest : TestCase() {
       composeTestRule.setContent {
         UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
       }
+      // we scroll to the calendar
       composeTestRule.onNodeWithContentDescription("Calendar").performScrollTo()
       composeTestRule.onNodeWithContentDescription("Calendar").assertHasClickAction()
       composeTestRule.onNodeWithContentDescription("Calendar").performClick()
@@ -216,6 +218,7 @@ class UserProfileEditScreenTest : TestCase() {
 
     /* Try to accept */
     // write long username in text field
+    // we scroll to the iconDate
     composeTestRule.onNodeWithTag("iconDate").performScrollTo()
     composeTestRule.onNodeWithTag("iconDate").performClick()
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
@@ -248,6 +251,7 @@ class UserProfileEditScreenTest : TestCase() {
 
     /* Try to accept */
     // write long username in text field
+    // we scroll to the iconDate
     composeTestRule.onNodeWithTag("iconDate").performScrollTo()
     composeTestRule.onNodeWithTag("iconDate").performClick()
 
@@ -286,6 +290,7 @@ class UserProfileEditScreenTest : TestCase() {
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     /* Try to cancel */
     // write long username in text field
+    // we scroll to the iconDate
     composeTestRule.onNodeWithTag("iconDate").performScrollTo()
     composeTestRule.onNodeWithTag("iconDate").performClick()
     val cancel = device.findObject(UiSelector().text("Cancel"))
@@ -301,6 +306,7 @@ class UserProfileEditScreenTest : TestCase() {
     composeTestRule.setContent {
       UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
     }
+    // we scroll to the interests
     composeTestRule.onNodeWithText("Interests").performScrollTo().assertIsDisplayed()
   }
 
@@ -309,6 +315,7 @@ class UserProfileEditScreenTest : TestCase() {
     composeTestRule.setContent {
       UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
     }
+    // we scroll to the travel style
     composeTestRule.onNodeWithText("Travel style").performScrollTo().assertIsDisplayed()
   }
 
@@ -317,6 +324,7 @@ class UserProfileEditScreenTest : TestCase() {
     composeTestRule.setContent {
       UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
     }
+    // we scroll to the languages
     composeTestRule.onNodeWithText("Languages").performScrollTo().assertIsDisplayed()
   }
 
