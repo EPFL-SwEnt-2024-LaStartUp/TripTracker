@@ -102,7 +102,7 @@ class HomeViewModel(private val repository: ItineraryRepository = ItineraryRepos
    *   updating flame counts at launch
    */
   // Updated fetchItineraries to include category as an argument and update itineraries accordingly
-  private fun fetchItineraries(callback: () -> Unit = {}) {
+  fun fetchItineraries(callback: () -> Unit = {}) {
     Log.d("HomeViewModel", "Fetching itineraries")
     repository.getAllItineraries { itineraries ->
       itineraryInstance.setItineraryList(itineraries)

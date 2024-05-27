@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,10 +14,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CornerSize
@@ -34,6 +38,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,8 +47,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.Font
@@ -70,6 +78,62 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
 
 var allProfilesFetched: List<UserProfile> = emptyList()
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun <T> PullToRefreshLazyColumn(
+    items: List<T>,
+    content: @Composable (T) -> Unit,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
+    modifier: Modifier = Modifier,
+    lazyListState: LazyListState = rememberLazyListState()
+) {
+    val pullToRefreshState = rememberPullToRefreshState()
+    Box(
+        modifier = modifier
+            .nestedScroll(pullToRefreshState.nestedScrollConnection)
+    ) {
+        LazyColumn(
+            state = lazyListState,
+            contentPadding = PaddingValues(8.dp),
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(items) {
+                content(it)
+            }
+        }
+
+        if (pullToRefreshState.isRefreshing) {
+            LaunchedEffect(true) {
+                onRefresh()
+
+            }
+        }
+
+        LaunchedEffect(isRefreshing) {
+            if (isRefreshing) {
+                pullToRefreshState.startRefresh()
+            } else {
+                Log.e("MAMAMIA", "endRefresh")
+                pullToRefreshState.endRefresh()
+            }
+        }
+
+        PullToRefreshContainer(
+            state = pullToRefreshState,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .offset(y = (-40).dp),
+            containerColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.onBackground
+
+        )
+    }
+}
+
 /**
  * HomeScreen composable that displays the list of itineraries
  *
@@ -86,133 +150,115 @@ fun HomeScreen(
     userProfileViewModel: UserProfileViewModel = viewModel(),
     test: Boolean = false
 ) {
-  var readyToDisplay by remember { mutableStateOf(false) }
-  var allProfiles by remember { mutableStateOf(emptyList<UserProfile>()) }
-  userProfileViewModel.fetchAllUserProfiles() { fetch ->
-    if (fetch != null) {
-      allProfiles = fetch
-      readyToDisplay = true
+    var readyToDisplay by remember { mutableStateOf(false) }
+    var allProfiles by remember { mutableStateOf(emptyList<UserProfile>()) }
+    userProfileViewModel.fetchAllUserProfiles() { fetch ->
+        allProfiles = fetch
+        readyToDisplay = true
     }
-  }
-  when (readyToDisplay || test) {
-    false -> {
-      Log.d("UserProfileList", "User profile list is null")
-    }
-    true -> {
-      val selectedFilterType by homeViewModel.selectedFilter.observeAsState(FilterType.TITLE)
-      allProfilesFetched = allProfiles
-      // Filtered list of itineraries based on search query
-      val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
-      var showFilterDropdown by remember { mutableStateOf(false) }
-      var isSearchActive by remember { mutableStateOf(false) }
-      val isNoResultFound =
-          remember(filteredList, isSearchActive) {
-            isSearchActive &&
-                filteredList.isEmpty() &&
-                homeViewModel.searchQuery.value!!.isNotEmpty()
-          }
-
-      Scaffold(
-          topBar = {
-            Column {
-              // Assuming a SearchBar composable is defined elsewhere
-              SearchBarImplementation(
-                  onBackClicked = {
-                    // Navigate back to the home
-                    navigation.goBack()
-                  },
-                  viewModel = homeViewModel,
-                  onSearchActivated = { isActive -> isSearchActive = isActive },
-                  navigation = navigation,
-                  selectedFilterType = selectedFilterType,
-                  isNoResultFound = isNoResultFound)
+    when (readyToDisplay || test) {
+        false -> {
+            Log.d("UserProfileList", "User profile list is null")
+        }
+        true -> {
+            val selectedFilterType by homeViewModel.selectedFilter.observeAsState(FilterType.TITLE)
+            allProfilesFetched = allProfiles
+            val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
+            var showFilterDropdown by remember { mutableStateOf(false) }
+            var isSearchActive by remember { mutableStateOf(false) }
+            val isNoResultFound = remember(filteredList, isSearchActive) {
+                isSearchActive && filteredList.isEmpty() && homeViewModel.searchQuery.value!!.isNotEmpty()
             }
-            if (isSearchActive) {
-              Box(
-                  modifier =
-                      Modifier.padding(290.dp, 25.dp, 25.dp, 235.dp)
-                          .width(200.dp)
-                          .testTag("DropDownBox")) {
-                    DropdownMenu(
-                        expanded = showFilterDropdown,
-                        onDismissRequest = { showFilterDropdown = false },
-                        modifier = Modifier.testTag("DropDownFilter")) {
-                          FilterType.entries.forEach { filterType ->
-                            DropdownMenuItem(
-                                text = {
-                                  Text(
-                                      text = filterType.name.replace('_', ' '),
-                                      modifier = Modifier.testTag("FilterText"))
-                                },
-                                onClick = {
-                                  homeViewModel.setSearchFilter(filterType)
-                                  showFilterDropdown = false
-                                })
-                          }
+
+            Scaffold(
+                topBar = {
+                    Column {
+                        SearchBarImplementation(
+                            onBackClicked = { navigation.goBack() },
+                            viewModel = homeViewModel,
+                            onSearchActivated = { isActive -> isSearchActive = isActive },
+                            navigation = navigation,
+                            selectedFilterType = selectedFilterType,
+                            isNoResultFound = isNoResultFound
+                        )
+                    }
+                    if (isSearchActive) {
+                        Box(
+                            modifier = Modifier
+                                .padding(290.dp, 25.dp, 25.dp, 235.dp)
+                                .width(200.dp)
+                                .testTag("DropDownBox")
+                        ) {
+                            DropdownMenu(
+                                expanded = showFilterDropdown,
+                                onDismissRequest = { showFilterDropdown = false },
+                                modifier = Modifier.testTag("DropDownFilter")
+                            ) {
+                                FilterType.entries.forEach { filterType ->
+                                    DropdownMenuItem(
+                                        text = { Text(text = filterType.name.replace('_', ' '), modifier = Modifier.testTag("FilterText")) },
+                                        onClick = {
+                                            homeViewModel.setSearchFilter(filterType)
+                                            showFilterDropdown = false
+                                        }
+                                    )
+                                }
+                            }
+                            Text(
+                                text = selectedFilterType.name,
+                                modifier = Modifier
+                                    .clickable { showFilterDropdown = true }
+                                    .background(MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.medium)
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                fontFamily = FontFamily(Font(R.font.montserrat_semi_bold)),
+                                fontSize = 12.sp,
+                            )
                         }
-                    Text(
-                        text = selectedFilterType.name,
-                        modifier =
-                            Modifier.clickable { showFilterDropdown = true }
-                                .background(
-                                    MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = MaterialTheme.shapes.medium)
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                        fontFamily = FontFamily(Font(R.font.montserrat_semi_bold)),
-                        fontSize = 12.sp,
-                    )
-                  }
-            }
-          },
-          bottomBar = { NavigationBar(navigation = navigation) },
-          modifier = Modifier.fillMaxWidth().testTag("HomeScreen")) {
-            when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
-              emptyList<Itinerary>() -> {
-                Text(
-                    text = "You do not have any itineraries yet.",
-                    modifier = Modifier.padding(10.dp).testTag("NoItinerariesText"),
-                    fontSize = 1.sp)
-              }
-              else -> {
-                if (!test) {
-                  Column(
-                      modifier =
-                          Modifier.fillMaxSize()
-                              .padding(
-                                  PaddingValues(
-                                      0.dp,
-                                      80.dp,
-                                      0.dp,
-                                      0.dp)) // this ensures having a padding at the top
-                      ) {
-                        // will display the list of itineraries
-                        HomePager(
-                            navigation = navigation, homeViewModel = homeViewModel, test = test)
-                      }
-
-                  // will display the list of itineraries
-
-                  /*
-                  TODO can be used to scroll to the top of the list
-                  val showButton = listState.firstVisibleItemIndex > 0
-                  AnimatedVisibility(visible = showButton) {
-                      ScrollToTopButton()
-                  }
-                   */
-                } else {
-                  DisplayItineraries(
-                      itineraries = itineraries,
-                      navigation = navigation,
-                      homeViewModel = homeViewModel,
-                      test = test)
+                    }
+                },
+                bottomBar = { NavigationBar(navigation = navigation) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("HomeScreen")
+            ) {
+                when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
+                    emptyList<Itinerary>() -> {
+                        Text(
+                            text = "You do not have any itineraries yet.",
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .testTag("NoItinerariesText"),
+                            fontSize = 1.sp
+                        )
+                    }
+                    else -> {
+                        if (!test) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(PaddingValues(0.dp, 80.dp, 0.dp, 0.dp))
+                            ) {
+                                HomePager(
+                                    navigation = navigation, homeViewModel = homeViewModel, test = test
+                                )
+                            }
+                        } else {
+                            DisplayItineraries(
+                                itineraries = itineraries,
+                                navigation = navigation,
+                                homeViewModel = homeViewModel,
+                                test = test,
+                                tabSelected = HomeCategory.TRENDING
+                            )
+                        }
+                    }
                 }
-              }
             }
-          }
+        }
     }
-  }
-  Log.d("HomeScreen", "Rendering HomeScreen")
+    Log.d("HomeScreen", "Rendering HomeScreen")
 }
+
 
 /**
  * Displays the search bar at the top of the screen
@@ -366,31 +412,46 @@ fun DisplayItineraries(
     itineraries: List<Itinerary>,
     navigation: Navigation,
     homeViewModel: HomeViewModel,
-    test: Boolean = false
+    test: Boolean = false,
+    tabSelected: HomeCategory = HomeCategory.TRENDING,
 ) {
   var goodPadding = PaddingValues(0.dp, 0.dp, 0.dp, 70.dp)
+  val usermail = AmbientUserProfile.current.userProfile.value.mail
   if (test) {
     goodPadding = PaddingValues(0.dp, 50.dp, 0.dp, 70.dp)
   }
-  LazyColumn(
+  val isRefreshing = remember { mutableStateOf(false) }
+  PullToRefreshLazyColumn(
       modifier =
           Modifier.fillMaxSize()
               .padding(goodPadding) // this ensures having a padding at the bottom
               .testTag("ItineraryList")
               .background(color = MaterialTheme.colorScheme.background),
-      contentPadding = PaddingValues(16.dp)) {
-        items(itineraries) { itinerary ->
-          Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
-          DisplayItinerary(
-              itinerary = itinerary,
-              onClick = {
-                navigation.navigateTo(Route.MAPS, itinerary.id)
-                homeViewModel.incrementClickCount(itinerary.id)
-              },
-              displayImage = true,
-              navigation = navigation)
-        }
-      }
+      items = itineraries,
+      isRefreshing = isRefreshing.value,
+      onRefresh = {
+          isRefreshing.value = true
+          homeViewModel.fetchItineraries() {
+              isRefreshing.value = false
+              if(tabSelected == HomeCategory.TRENDING){
+                  homeViewModel.filterByTrending()
+              } else {
+                  homeViewModel.filterByFollowing(usermail)
+              }
+              //navigation.goBack() // Simulate back button press
+          }
+                  },
+      content = { itinerary ->
+        DisplayItinerary(
+            itinerary = itinerary,
+            onClick = {
+              navigation.navigateTo(Route.MAPS, itinerary.id)
+              homeViewModel.incrementClickCount(itinerary.id)
+            },
+            displayImage = true,
+            navigation = navigation)
+      })
+
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -432,6 +493,7 @@ fun HomePager(
   Column(modifier = Modifier.background(md_theme_light_onPrimary)) {
     TabRow(
         selectedTabIndex = pagerState.currentPage,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         modifier = Modifier.fillMaxWidth().height(50.dp),
         backgroundColor = MaterialTheme.colorScheme.background) {
           tabs.forEachIndexed { index, title ->
@@ -449,7 +511,7 @@ fun HomePager(
           }
         }
 
-    HorizontalPager(state = pagerState, modifier = Modifier.testTag("HomePager")) { page ->
+    HorizontalPager(state = pagerState, modifier = Modifier.testTag("HomePager").background(MaterialTheme.colorScheme.background)) { page ->
       when (HomeCategory.entries[page]) {
         HomeCategory.TRENDING -> {
           val trendingItineraries by homeViewModel.trendingList.observeAsState(emptyList())
@@ -472,7 +534,8 @@ fun HomePager(
                   },
               navigation = navigation,
               homeViewModel = homeViewModel,
-              test = test)
+              test = test,
+              tabSelected = HomeCategory.TRENDING)
         }
         HomeCategory.FOLLOWING -> {
           val followingItineraries by homeViewModel.followingList.observeAsState(emptyList())
@@ -486,7 +549,7 @@ fun HomePager(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Medium,
                 letterSpacing = 0.15.sp,
-                color = md_theme_light_black,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontFamily = FontFamily(Font(R.font.montserrat_regular)))
           }
           DisplayItineraries(
@@ -507,7 +570,8 @@ fun HomePager(
                   },
               navigation = navigation,
               homeViewModel = homeViewModel,
-              test = test)
+              test = test,
+              tabSelected = HomeCategory.FOLLOWING)
         }
       }
     }
