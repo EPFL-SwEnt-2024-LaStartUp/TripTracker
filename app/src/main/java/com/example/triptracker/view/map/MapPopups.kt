@@ -483,6 +483,7 @@ fun StartScreen(
  * @param itinerary Itinerary to be favorited
  * @param homeViewModel ViewModel for the home screen
  * @param offline Boolean flag for offline mode
+ * @param itineraryDownload Object that contains the download function for the itinerary
  * @param onLoadingChange Function to change the loading state
  */
 @Composable
@@ -492,10 +493,9 @@ fun DisplayStar(
     itinerary: Itinerary,
     homeViewModel: HomeViewModel,
     offline: Boolean,
+    itineraryDownload: ItineraryDownload = ItineraryDownload(context = LocalContext.current),
     onLoadingChange: () -> Unit
 ) {
-  // The object that contains the download function for the itinerary
-  val itineraryDownload = ItineraryDownload(context = LocalContext.current)
 
   val actionOnStarFull: () -> Unit = {
     userProfileViewModel.removeFavorite(userProfile, itinerary.id)
@@ -525,14 +525,14 @@ fun DisplayStar(
         imageVector = Icons.Outlined.Star,
         contentDescription = "Star",
         tint = md_theme_orange,
-        modifier = Modifier.size(30.dp).clickable { actionOnStarFull() })
+        modifier = Modifier.size(30.dp).testTag("Star").clickable { actionOnStarFull() })
   } else {
     // If the user has not favorited this itinerary, display a star grey
     Icon(
         imageVector = Icons.Outlined.StarBorder,
-        contentDescription = "Star",
+        contentDescription = "EmptyStar",
         tint = md_theme_grey,
-        modifier = Modifier.size(30.dp).clickable { actionOnStarEmpty() })
+        modifier = Modifier.size(30.dp).testTag("EmptyStar").clickable { actionOnStarEmpty() })
   }
 }
 

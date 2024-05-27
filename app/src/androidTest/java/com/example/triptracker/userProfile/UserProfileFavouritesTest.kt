@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.itinerary.MockItineraryList
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.example.triptracker.view.Navigation
@@ -36,6 +37,7 @@ class UserProfileFavouritesTest {
   @RelaxedMockK private lateinit var mockViewModel: HomeViewModel
   @RelaxedMockK private lateinit var mockItineraryRepository: ItineraryRepository
   @RelaxedMockK private lateinit var mockProfile: MutableUserProfile
+  @RelaxedMockK private lateinit var mockConnection: Connection
 
   val mockList = MockItineraryList()
   val mockItineraries = mockList.getItineraries()
@@ -49,6 +51,7 @@ class UserProfileFavouritesTest {
     mockNav = mockk(relaxed = true)
     mockItineraryRepository = mockk(relaxed = true)
     mockProfile = mockk(relaxed = true)
+    mockConnection = mockk(relaxed = true)
 
     MockKAnnotations.init(this, relaxUnitFun = true)
 
@@ -140,5 +143,30 @@ class UserProfileFavouritesTest {
           homeViewModel = mockViewModel, navigation = mockNav, userProfile = mockProfile)
     }
     composeTestRule.onNodeWithTag("DataList").assertExists()
+  }
+
+  @Test
+  fun componentsAreCorrectlyDisplayedWhenOffline() {
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
+    every { mockViewModel.filteredItineraryList.value } returns mockItineraries
+    every { mockProfile.userProfile.value } returns mockUsers[0]
+    every { mockConnection.isDeviceConnectedToInternet() } returns false
+
+    // Setting up the test composition
+    composeTestRule.setContent {
+      UserProfileFavourite(
+          connection = mockConnection,
+          homeViewModel = mockViewModel,
+          navigation = mockNav,
+          userProfile = mockProfile)
+    }
+    composeTestRule.onNodeWithTag("UserProfileFavouriteScreen").assertExists()
+    composeTestRule.onNodeWithTag("Title").assertExists()
+    composeTestRule.onNodeWithTag("GoBackButton").assertExists()
   }
 }

@@ -1,17 +1,21 @@
 package com.example.triptracker.map
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.itinerary.ItineraryDownload
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.map.AddressText
+import com.example.triptracker.view.map.DisplayStar
 import com.example.triptracker.view.map.OnDescriptionOpen
 import com.example.triptracker.view.map.PathItem
 import com.example.triptracker.view.map.PathOverlaySheet
@@ -20,6 +24,7 @@ import com.example.triptracker.viewmodel.MapPopupViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import io.mockk.Runs
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.just
 import io.mockk.mockk
@@ -38,6 +43,7 @@ class MapPopupTest {
   @RelaxedMockK private lateinit var mockHomeViewModel: HomeViewModel
   @RelaxedMockK private lateinit var mockUserVm: UserProfileViewModel
   @RelaxedMockK private lateinit var mockProfile: MutableUserProfile
+  @RelaxedMockK private lateinit var mockItineraryDownload: ItineraryDownload
 
   @Before
   fun setUp() {
@@ -45,6 +51,7 @@ class MapPopupTest {
     mockUserVm = mockk(relaxed = true)
     mockProfile = mockk(relaxed = true)
     mockViewModel = mockk(relaxed = true)
+    mockItineraryDownload = mockk(relaxed = true)
 
     mockViewModel = mockk {
       coEvery { fetchAllUserProfiles(any()) } just Runs
@@ -171,5 +178,72 @@ class MapPopupTest {
             listOf("https://www.google.com"))
     composeTestRule.setContent { PathItem(pin, onClick = {}) }
     composeTestRule.onNodeWithTag("PathItem").assertIsDisplayed()
+  }
+
+  @Test
+  fun testDisplayStarWhenOffline() {
+    every { mockProfile.userProfile.value.favoritesPaths.contains(any()) } returns true
+    every { mockViewModel.removeFavorite(any(), any()) } returns Unit
+    every { mockItineraryDownload.deleteItinerary(any()) } returns true
+    composeTestRule.setContent {
+      DisplayStar(
+          userProfileViewModel = mockViewModel,
+          homeViewModel = mockHomeViewModel,
+          userProfile = mockProfile,
+          itinerary =
+              Itinerary(
+                  "1",
+                  "Jack's Path",
+                  "Jack",
+                  Location(34.5, 34.5, "jo"),
+                  0,
+                  0,
+                  0,
+                  0,
+                  "start",
+                  "end",
+                  listOf(),
+                  "description",
+                  listOf()),
+          offline = true,
+          itineraryDownload = mockItineraryDownload,
+          onLoadingChange = {})
+    }
+    composeTestRule.onNodeWithTag("Star").assertIsDisplayed().assertHasClickAction().performClick()
+  }
+
+  @Test
+  fun testDisplayStarWhenOnline() {
+    every { mockProfile.userProfile.value.favoritesPaths.contains(any()) } returns false
+    every { mockItineraryDownload.saveItineraryToInternalStorage(any()) } returns Unit
+    composeTestRule.setContent {
+      DisplayStar(
+          userProfileViewModel = mockViewModel,
+          homeViewModel = mockHomeViewModel,
+          userProfile = mockProfile,
+          itinerary =
+              Itinerary(
+                  "1",
+                  "Jack's Path",
+                  "Jack",
+                  Location(34.5, 34.5, "jo"),
+                  0,
+                  0,
+                  0,
+                  0,
+                  "start",
+                  "end",
+                  listOf(),
+                  "description",
+                  listOf()),
+          offline = true,
+          itineraryDownload = mockItineraryDownload,
+          onLoadingChange = {})
+    }
+    composeTestRule
+        .onNodeWithTag("EmptyStar")
+        .assertIsDisplayed()
+        .assertHasClickAction()
+        .performClick()
   }
 }

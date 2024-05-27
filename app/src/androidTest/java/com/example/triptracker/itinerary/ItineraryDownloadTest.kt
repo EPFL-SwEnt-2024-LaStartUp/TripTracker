@@ -95,7 +95,7 @@ class ItineraryDownloadTest {
     }
 
     itineraryDownload.saveItineraryToInternalStorage(mockItineraryWithPicture) {
-      val isDeleted = itineraryDownload.deleteItinerary(mockItineraryWithPicture.id)
+      val isDeleted = itineraryDownload.deleteImageFromInternalStorage("eiffel_itinerary.json")
       assertTrue(isDeleted)
       val file = File(appContext.filesDir, "eiffel_itinerary.json")
       assertFalse(file.exists())

@@ -2,6 +2,7 @@ package com.example.triptracker.view.profile
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.viewmodel.FilterType
@@ -17,12 +18,14 @@ import com.example.triptracker.viewmodel.HomeViewModel
  */
 @Composable
 fun UserProfileFavourite(
+    connection: Connection = Connection(),
     homeViewModel: HomeViewModel = viewModel(),
     navigation: Navigation,
     test: Boolean = false,
     userProfile: MutableUserProfile
 ) {
   UserProfileScreen(
+      connection = connection,
       homeViewModel = homeViewModel,
       navigation = navigation,
       test = test,

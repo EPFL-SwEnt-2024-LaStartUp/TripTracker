@@ -80,7 +80,6 @@ class HomeViewModel(
     } else {
       // If the device is not connected to the internet, fetch itineraries from the internal storage
       _itineraryList.value = ItineraryDownload().loadAllItineraries()
-      Log.d("HomeViewModel", "Fetched itineraries from local storage: ${_itineraryList.value}")
     }
   }
 
