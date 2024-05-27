@@ -43,8 +43,7 @@ Other data to save are :
 
 ## Architecture diagram
 
-![Untitled-2024-04-08-0830-5](https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/assets/73248361/be06fd85-2890-43d4-b57c-486673be7e59)
-
+![architecture_diagram](/resources/architecture_diagram)
 
 ---
 
