@@ -41,6 +41,8 @@ import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_orange
+import com.example.triptracker.view.theme.md_theme_tri_state
+import com.example.triptracker.view.theme.md_theme_warning_orange
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
 /**
@@ -81,7 +83,7 @@ fun UserProfileSettings(
 
                       // Determine the text and background colors based on the state
                       val textColor = md_theme_light_onPrimary
-                      val backgroundColor = if (isPublic) md_theme_grey else md_theme_orange
+                      val backgroundColor = if (isPublic) md_theme_tri_state else md_theme_orange
                       val buttonText = if (isPublic) "Public" else "Private"
                       FilledTonalButton(
                           modifier =
@@ -205,7 +207,7 @@ fun UserProfileSettings(
                           },
                           colors =
                               ButtonDefaults.filledTonalButtonColors(
-                                  containerColor = md_theme_grey,
+                                  containerColor = md_theme_warning_orange,
                                   contentColor = md_theme_light_onPrimary)) {
                             Text(
                                 text = "Sign out",
@@ -270,11 +272,11 @@ fun TriStateButton(
   when (state) {
     1 -> {
       buttonText = state2
-      backgroundColor = md_theme_light_dark
+      backgroundColor = MaterialTheme.colorScheme.scrim
     }
     0 -> {
       buttonText = state1
-      backgroundColor = md_theme_grey
+      backgroundColor = md_theme_tri_state
     }
     else -> {
       buttonText = state3
