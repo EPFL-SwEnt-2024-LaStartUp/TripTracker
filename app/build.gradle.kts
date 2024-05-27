@@ -156,7 +156,7 @@ dependencies {
   implementation("androidx.compose.runtime:runtime")
   implementation("androidx.compose.runtime:runtime-rxjava2")
   implementation("androidx.compose.runtime:runtime-livedata")
-    implementation(libs.androidx.exifinterface)
+  implementation(libs.androidx.exifinterface)
   implementation(libs.core.ktx)
 
   // Camera
