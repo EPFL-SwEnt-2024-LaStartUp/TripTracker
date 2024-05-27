@@ -86,7 +86,7 @@ fun UserProfileSettings(
                       FilledTonalButton(
                           modifier =
                               Modifier.size(
-                                  width = (LocalConfiguration.current.screenWidthDp * 0.27).dp,
+                                  width = (LocalConfiguration.current.screenWidthDp * 0.30).dp,
                                   height = (LocalConfiguration.current.screenHeightDp * 0.06).dp),
                           onClick = {
                             setIsPrivate(!isPublic)
@@ -136,7 +136,7 @@ fun UserProfileSettings(
                           state = buttonState,
                           modifier =
                               Modifier.size(
-                                  width = (LocalConfiguration.current.screenWidthDp * 0.27).dp,
+                                  width = (LocalConfiguration.current.screenWidthDp * 0.30).dp,
                                   height = (LocalConfiguration.current.screenHeightDp * 0.06).dp),
                           onClick = {
                             setButtonState((buttonState + 1) % 3)
@@ -185,7 +185,7 @@ fun UserProfileSettings(
                       FilledTonalButton(
                           modifier =
                               Modifier.size(
-                                  width = (LocalConfiguration.current.screenWidthDp * 0.27).dp,
+                                  width = (LocalConfiguration.current.screenWidthDp * 0.30).dp,
                                   height = (LocalConfiguration.current.screenHeightDp * 0.06).dp),
                           onClick = {
                             val context = MainActivity.applicationContext()

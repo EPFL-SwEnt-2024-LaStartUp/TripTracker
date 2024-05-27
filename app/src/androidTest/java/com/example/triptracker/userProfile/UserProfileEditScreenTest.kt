@@ -5,6 +5,7 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -73,6 +74,8 @@ class UserProfileEditScreenTest : TestCase() {
       composeTestRule.setContent {
         UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
       }
+      // we scroll to the calendar
+      composeTestRule.onNodeWithContentDescription("Calendar").performScrollTo()
       composeTestRule.onNodeWithContentDescription("Calendar").assertHasClickAction()
       composeTestRule.onNodeWithContentDescription("Calendar").performClick()
       composeTestRule.onNodeWithTag("CustomDatePickerDialog").assertExists()
@@ -87,6 +90,8 @@ class UserProfileEditScreenTest : TestCase() {
       composeTestRule.setContent {
         UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
       }
+      // we scroll to the calendar
+      composeTestRule.onNodeWithContentDescription("Calendar").performScrollTo()
       composeTestRule.onNodeWithContentDescription("Calendar").assertHasClickAction()
       composeTestRule.onNodeWithContentDescription("Calendar").performClick()
       composeTestRule.onNodeWithTag("CustomDatePickerDialog").assertExists()
@@ -138,7 +143,7 @@ class UserProfileEditScreenTest : TestCase() {
   }
 
   @Test
-  fun SaveProfile() {
+  fun saveProfile() {
     composeTestRule.setContent {
       UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
     }
@@ -146,7 +151,7 @@ class UserProfileEditScreenTest : TestCase() {
   }
 
   @Test
-  fun SaveProfileUserPassed() {
+  fun saveProfileUserPassed() {
 
     val mutableUser = MutableUserProfile()
     mutableUser.userProfile.value =
@@ -168,7 +173,7 @@ class UserProfileEditScreenTest : TestCase() {
   }
 
   @Test
-  fun SaveProfileUserLongName() {
+  fun saveProfileUserLongName() {
 
     val mutableUser = MutableUserProfile()
     mutableUser.userProfile.value =
@@ -193,7 +198,7 @@ class UserProfileEditScreenTest : TestCase() {
   }
 
   @Test
-  fun AcceptDate() {
+  fun acceptDate() {
     val mutableUser = MutableUserProfile()
     mutableUser.userProfile.value =
         UserProfile(
@@ -213,6 +218,8 @@ class UserProfileEditScreenTest : TestCase() {
 
     /* Try to accept */
     // write long username in text field
+    // we scroll to the iconDate
+    composeTestRule.onNodeWithTag("iconDate").performScrollTo()
     composeTestRule.onNodeWithTag("iconDate").performClick()
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     val accept = device.findObject(UiSelector().text("Accept"))
@@ -224,7 +231,7 @@ class UserProfileEditScreenTest : TestCase() {
   }
 
   @Test
-  fun SelctDate() {
+  fun selectDate() {
     val mutableUser = MutableUserProfile()
     mutableUser.userProfile.value =
         UserProfile(
@@ -244,6 +251,8 @@ class UserProfileEditScreenTest : TestCase() {
 
     /* Try to accept */
     // write long username in text field
+    // we scroll to the iconDate
+    composeTestRule.onNodeWithTag("iconDate").performScrollTo()
     composeTestRule.onNodeWithTag("iconDate").performClick()
 
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
@@ -260,7 +269,7 @@ class UserProfileEditScreenTest : TestCase() {
   }
 
   @Test
-  fun RejectDate() {
+  fun rejectDate() {
     val mutableUser = MutableUserProfile()
     mutableUser.userProfile.value =
         UserProfile(
@@ -281,6 +290,8 @@ class UserProfileEditScreenTest : TestCase() {
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     /* Try to cancel */
     // write long username in text field
+    // we scroll to the iconDate
+    composeTestRule.onNodeWithTag("iconDate").performScrollTo()
     composeTestRule.onNodeWithTag("iconDate").performClick()
     val cancel = device.findObject(UiSelector().text("Cancel"))
     if (cancel.exists()) {
@@ -295,6 +306,7 @@ class UserProfileEditScreenTest : TestCase() {
     composeTestRule.setContent {
       UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
     }
+    // we scroll to the interests
     composeTestRule.onNodeWithText("Interests").performScrollTo().assertIsDisplayed()
   }
 
@@ -303,6 +315,7 @@ class UserProfileEditScreenTest : TestCase() {
     composeTestRule.setContent {
       UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
     }
+    // we scroll to the travel style
     composeTestRule.onNodeWithText("Travel style").performScrollTo().assertIsDisplayed()
   }
 
@@ -311,6 +324,18 @@ class UserProfileEditScreenTest : TestCase() {
     composeTestRule.setContent {
       UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
     }
+    // we scroll to the languages
     composeTestRule.onNodeWithText("Languages").performScrollTo().assertIsDisplayed()
+  }
+
+  @Test
+  fun downArrowTest() {
+    composeTestRule.setContent {
+      UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
+    }
+    // we ensure that the arrow is displayed and perform a click on it
+    composeTestRule.onNodeWithContentDescription("Scroll down").assertIsDisplayed().performClick()
+    // we ensure that once at the bottom of the page, the arrow disappears
+    composeTestRule.onNodeWithContentDescription("Scroll down").assertIsNotDisplayed()
   }
 }

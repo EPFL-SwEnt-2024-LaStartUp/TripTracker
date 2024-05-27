@@ -277,8 +277,8 @@ fun RemoveFriendButton(
             modifier = Modifier.fillMaxWidth(),
             style =
                 TextStyle(
-                    fontSize = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
-                    lineHeight = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
+                    fontSize = (LocalConfiguration.current.screenHeightDp * 0.014f).sp,
+                    lineHeight = (LocalConfiguration.current.screenHeightDp * 0.014f).sp,
                     fontFamily = Montserrat,
                     fontWeight = FontWeight(500),
                     color = md_theme_light_onPrimary,
