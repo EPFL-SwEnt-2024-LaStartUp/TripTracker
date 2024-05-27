@@ -132,10 +132,10 @@ fun UserProfileScreen(
                             canBeDeleted = canBeDeleted(filterType),
                             navigation = navigation,
                             onDelete = {
-                                homeViewModel.deleteItinerary(itinerary.id) {
-                                    homeViewModel.setSearchFilter(filterType)
-                                    homeViewModel.setSearchQuery(userProfile.userProfile.value.username)
-                                }
+                              homeViewModel.deleteItinerary(itinerary.id) {
+                                homeViewModel.setSearchFilter(filterType)
+                                homeViewModel.setSearchQuery(userProfile.userProfile.value.username)
+                              }
                             })
                       }
                     }

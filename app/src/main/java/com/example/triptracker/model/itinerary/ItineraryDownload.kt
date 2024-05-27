@@ -102,7 +102,7 @@ class ItineraryDownload(
    * @param imageUrl the url of the image to be saved
    * @param callback the callback function to be called after the image is saved
    */
-  private fun saveImageToInternalStorage(imageUrl: String, callback: (String) -> Unit) {
+  fun saveImageToInternalStorage(imageUrl: String, callback: (String) -> Unit) {
     DownloadImageTask(context, callback).execute(imageUrl)
   }
 
@@ -112,7 +112,7 @@ class ItineraryDownload(
    * @param imagePath the path of the image to be deleted
    * @return true if the image is deleted successfully, false otherwise
    */
-  private fun deleteImageFromInternalStorage(imagePath: String): Boolean {
+  fun deleteImageFromInternalStorage(imagePath: String): Boolean {
     val file = File(imagePath)
     return file.delete()
   }
@@ -154,7 +154,7 @@ class ItineraryDownload(
   }
 
   /** List all the itinerary files in the internal storage */
-  private fun listItineraryFiles(): List<String> {
+  fun listItineraryFiles(): List<String> {
     return context.filesDir
         .listFiles()
         ?.filter { it.name.endsWith("$itinerarySuffix.json") }
