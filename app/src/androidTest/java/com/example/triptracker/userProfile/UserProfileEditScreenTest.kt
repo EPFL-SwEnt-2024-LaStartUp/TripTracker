@@ -5,6 +5,7 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -312,5 +313,16 @@ class UserProfileEditScreenTest : TestCase() {
       UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
     }
     composeTestRule.onNodeWithText("Languages").performScrollTo().assertIsDisplayed()
+  }
+
+  @Test
+  fun downArrowTest() {
+    composeTestRule.setContent {
+      UserProfileEditScreen(navigation = navigation, profile = MutableUserProfile())
+    }
+    // we ensure that the arrow is displayed and perform a click on it
+    composeTestRule.onNodeWithContentDescription("Scroll down").assertIsDisplayed().performClick()
+    // we ensure that once at the bottom of the page, the arrow disappears
+    composeTestRule.onNodeWithContentDescription("Scroll down").assertIsNotDisplayed()
   }
 }
