@@ -290,6 +290,7 @@ fun TriStateButton(
               containerColor = backgroundColor, contentColor = md_theme_light_onPrimary)) {
         Text(
             text = buttonText,
+            lineHeight = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
             fontSize = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
             fontFamily = Montserrat,
             fontWeight = FontWeight.Bold,
