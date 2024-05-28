@@ -77,47 +77,6 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
 
 var allProfilesFetched: List<UserProfile> = emptyList()
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun <T> PullToRefreshLazyColumn(
-    items: List<T>,
-    content: @Composable (T) -> Unit,
-    isRefreshing: Boolean,
-    onRefresh: () -> Unit,
-    modifier: Modifier = Modifier,
-    lazyListState: LazyListState = rememberLazyListState()
-) {
-  val pullToRefreshState = rememberPullToRefreshState()
-  Box(modifier = modifier.nestedScroll(pullToRefreshState.nestedScrollConnection)) {
-    LazyColumn(
-        state = lazyListState,
-        contentPadding = PaddingValues(8.dp),
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)) {
-          items(items) { content(it) }
-        }
-
-    if (pullToRefreshState.isRefreshing) {
-      LaunchedEffect(true) { onRefresh() }
-    }
-
-    LaunchedEffect(isRefreshing) {
-      if (isRefreshing) {
-        pullToRefreshState.startRefresh()
-      } else {
-        Log.e("MAMAMIA", "endRefresh")
-        pullToRefreshState.endRefresh()
-      }
-    }
-
-    PullToRefreshContainer(
-        state = pullToRefreshState,
-        modifier = Modifier.align(Alignment.TopCenter).offset(y = (-40).dp),
-        containerColor = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.onBackground)
-  }
-}
-
 /**
  * HomeScreen composable that displays the list of itineraries
  *
@@ -575,4 +534,57 @@ fun ItineraryItem(itinerary: Itinerary, onItineraryClick: (String) -> Unit) {
               .testTag("ItineraryItem")) {
         Text(text = itinerary.title, style = MaterialTheme.typography.bodyMedium)
       }
+}
+
+/**
+ * PullToRefreshLazyColumn is a composable function that displays a list of items in a LazyColumn
+ * with pull-to-refresh functionality.
+ *
+ * @param items List of items to display in the LazyColumn.
+ * @param content Composable function that displays an item in the list.
+ * @param isRefreshing Boolean flag to indicate if the list is refreshing.
+ * @param onRefresh Function to call when the list is refreshing.
+ * @param modifier Modifier for styling the LazyColumn.
+ * @param lazyListState LazyListState for the LazyColumn.
+ * @param T Type of the items in the list.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun <T> PullToRefreshLazyColumn(
+    items: List<T>,
+    content: @Composable (T) -> Unit,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
+    modifier: Modifier = Modifier,
+    lazyListState: LazyListState = rememberLazyListState()
+) {
+  val pullToRefreshState = rememberPullToRefreshState()
+  Box(modifier = modifier.nestedScroll(pullToRefreshState.nestedScrollConnection)) {
+    LazyColumn(
+        state = lazyListState,
+        contentPadding = PaddingValues(8.dp),
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          items(items) { content(it) }
+        }
+
+    if (pullToRefreshState.isRefreshing) {
+      LaunchedEffect(true) { onRefresh() }
+    }
+
+    LaunchedEffect(isRefreshing) {
+      if (isRefreshing) {
+        pullToRefreshState.startRefresh()
+      } else {
+        Log.e("MAMAMIA", "endRefresh")
+        pullToRefreshState.endRefresh()
+      }
+    }
+
+    PullToRefreshContainer(
+        state = pullToRefreshState,
+        modifier = Modifier.align(Alignment.TopCenter).offset(y = (-40).dp).testTag("Refreshing"),
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground)
+  }
 }

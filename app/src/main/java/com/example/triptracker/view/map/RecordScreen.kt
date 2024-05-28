@@ -336,6 +336,7 @@ fun Map(
                           fontSize = 36.sp,
                           fontFamily = Montserrat,
                           fontWeight = FontWeight.Bold,
+                          lineHeight = 40.sp,
                           color = md_theme_light_onPrimary,
                           modifier = Modifier.padding(top = 50.dp, start = 30.dp, end = 30.dp),
                       )
