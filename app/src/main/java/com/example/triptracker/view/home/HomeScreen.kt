@@ -69,7 +69,6 @@ import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
-import com.example.triptracker.view.theme.md_theme_light_black
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeCategory
@@ -77,7 +76,6 @@ import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
 
 var allProfilesFetched: List<UserProfile> = emptyList()
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,49 +87,35 @@ fun <T> PullToRefreshLazyColumn(
     modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState()
 ) {
-    val pullToRefreshState = rememberPullToRefreshState()
-    Box(
-        modifier = modifier
-            .nestedScroll(pullToRefreshState.nestedScrollConnection)
-    ) {
-        LazyColumn(
-            state = lazyListState,
-            contentPadding = PaddingValues(8.dp),
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(items) {
-                content(it)
-            }
+  val pullToRefreshState = rememberPullToRefreshState()
+  Box(modifier = modifier.nestedScroll(pullToRefreshState.nestedScrollConnection)) {
+    LazyColumn(
+        state = lazyListState,
+        contentPadding = PaddingValues(8.dp),
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          items(items) { content(it) }
         }
 
-        if (pullToRefreshState.isRefreshing) {
-            LaunchedEffect(true) {
-                onRefresh()
-
-            }
-        }
-
-        LaunchedEffect(isRefreshing) {
-            if (isRefreshing) {
-                pullToRefreshState.startRefresh()
-            } else {
-                Log.e("MAMAMIA", "endRefresh")
-                pullToRefreshState.endRefresh()
-            }
-        }
-
-        PullToRefreshContainer(
-            state = pullToRefreshState,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .offset(y = (-40).dp),
-            containerColor = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground
-
-        )
+    if (pullToRefreshState.isRefreshing) {
+      LaunchedEffect(true) { onRefresh() }
     }
+
+    LaunchedEffect(isRefreshing) {
+      if (isRefreshing) {
+        pullToRefreshState.startRefresh()
+      } else {
+        Log.e("MAMAMIA", "endRefresh")
+        pullToRefreshState.endRefresh()
+      }
+    }
+
+    PullToRefreshContainer(
+        state = pullToRefreshState,
+        modifier = Modifier.align(Alignment.TopCenter).offset(y = (-40).dp),
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground)
+  }
 }
 
 /**
@@ -150,115 +134,109 @@ fun HomeScreen(
     userProfileViewModel: UserProfileViewModel = viewModel(),
     test: Boolean = false
 ) {
-    var readyToDisplay by remember { mutableStateOf(false) }
-    var allProfiles by remember { mutableStateOf(emptyList<UserProfile>()) }
-    userProfileViewModel.fetchAllUserProfiles() { fetch ->
-        allProfiles = fetch
-        readyToDisplay = true
+  var readyToDisplay by remember { mutableStateOf(false) }
+  var allProfiles by remember { mutableStateOf(emptyList<UserProfile>()) }
+  userProfileViewModel.fetchAllUserProfiles() { fetch ->
+    allProfiles = fetch
+    readyToDisplay = true
+  }
+  when (readyToDisplay || test) {
+    false -> {
+      Log.d("UserProfileList", "User profile list is null")
     }
-    when (readyToDisplay || test) {
-        false -> {
-            Log.d("UserProfileList", "User profile list is null")
-        }
-        true -> {
-            val selectedFilterType by homeViewModel.selectedFilter.observeAsState(FilterType.TITLE)
-            allProfilesFetched = allProfiles
-            val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
-            var showFilterDropdown by remember { mutableStateOf(false) }
-            var isSearchActive by remember { mutableStateOf(false) }
-            val isNoResultFound = remember(filteredList, isSearchActive) {
-                isSearchActive && filteredList.isEmpty() && homeViewModel.searchQuery.value!!.isNotEmpty()
-            }
+    true -> {
+      val selectedFilterType by homeViewModel.selectedFilter.observeAsState(FilterType.TITLE)
+      allProfilesFetched = allProfiles
+      val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
+      var showFilterDropdown by remember { mutableStateOf(false) }
+      var isSearchActive by remember { mutableStateOf(false) }
+      val isNoResultFound =
+          remember(filteredList, isSearchActive) {
+            isSearchActive &&
+                filteredList.isEmpty() &&
+                homeViewModel.searchQuery.value!!.isNotEmpty()
+          }
 
-            Scaffold(
-                topBar = {
-                    Column {
-                        SearchBarImplementation(
-                            onBackClicked = { navigation.goBack() },
-                            viewModel = homeViewModel,
-                            onSearchActivated = { isActive -> isSearchActive = isActive },
-                            navigation = navigation,
-                            selectedFilterType = selectedFilterType,
-                            isNoResultFound = isNoResultFound
-                        )
-                    }
-                    if (isSearchActive) {
-                        Box(
-                            modifier = Modifier
-                                .padding(290.dp, 25.dp, 25.dp, 235.dp)
-                                .width(200.dp)
-                                .testTag("DropDownBox")
-                        ) {
-                            DropdownMenu(
-                                expanded = showFilterDropdown,
-                                onDismissRequest = { showFilterDropdown = false },
-                                modifier = Modifier.testTag("DropDownFilter")
-                            ) {
-                                FilterType.entries.forEach { filterType ->
-                                    DropdownMenuItem(
-                                        text = { Text(text = filterType.name.replace('_', ' '), modifier = Modifier.testTag("FilterText")) },
-                                        onClick = {
-                                            homeViewModel.setSearchFilter(filterType)
-                                            showFilterDropdown = false
-                                        }
-                                    )
-                                }
-                            }
-                            Text(
-                                text = selectedFilterType.name,
-                                modifier = Modifier
-                                    .clickable { showFilterDropdown = true }
-                                    .background(MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.medium)
-                                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                                fontFamily = FontFamily(Font(R.font.montserrat_semi_bold)),
-                                fontSize = 12.sp,
-                            )
+      Scaffold(
+          topBar = {
+            Column {
+              SearchBarImplementation(
+                  onBackClicked = { navigation.goBack() },
+                  viewModel = homeViewModel,
+                  onSearchActivated = { isActive -> isSearchActive = isActive },
+                  navigation = navigation,
+                  selectedFilterType = selectedFilterType,
+                  isNoResultFound = isNoResultFound)
+            }
+            if (isSearchActive) {
+              Box(
+                  modifier =
+                      Modifier.padding(290.dp, 25.dp, 25.dp, 235.dp)
+                          .width(200.dp)
+                          .testTag("DropDownBox")) {
+                    DropdownMenu(
+                        expanded = showFilterDropdown,
+                        onDismissRequest = { showFilterDropdown = false },
+                        modifier = Modifier.testTag("DropDownFilter")) {
+                          FilterType.entries.forEach { filterType ->
+                            DropdownMenuItem(
+                                text = {
+                                  Text(
+                                      text = filterType.name.replace('_', ' '),
+                                      modifier = Modifier.testTag("FilterText"))
+                                },
+                                onClick = {
+                                  homeViewModel.setSearchFilter(filterType)
+                                  showFilterDropdown = false
+                                })
+                          }
                         }
-                    }
-                },
-                bottomBar = { NavigationBar(navigation = navigation) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("HomeScreen")
-            ) {
-                when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
-                    emptyList<Itinerary>() -> {
-                        Text(
-                            text = "You do not have any itineraries yet.",
-                            modifier = Modifier
-                                .padding(10.dp)
-                                .testTag("NoItinerariesText"),
-                            fontSize = 1.sp
-                        )
-                    }
-                    else -> {
-                        if (!test) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(PaddingValues(0.dp, 80.dp, 0.dp, 0.dp))
-                            ) {
-                                HomePager(
-                                    navigation = navigation, homeViewModel = homeViewModel, test = test
-                                )
-                            }
-                        } else {
-                            DisplayItineraries(
-                                itineraries = itineraries,
-                                navigation = navigation,
-                                homeViewModel = homeViewModel,
-                                test = test,
-                                tabSelected = HomeCategory.TRENDING
-                            )
-                        }
-                    }
+                    Text(
+                        text = selectedFilterType.name,
+                        modifier =
+                            Modifier.clickable { showFilterDropdown = true }
+                                .background(
+                                    MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = MaterialTheme.shapes.medium)
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                        fontFamily = FontFamily(Font(R.font.montserrat_semi_bold)),
+                        fontSize = 12.sp,
+                    )
+                  }
+            }
+          },
+          bottomBar = { NavigationBar(navigation = navigation) },
+          modifier = Modifier.fillMaxWidth().testTag("HomeScreen")) {
+            when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
+              emptyList<Itinerary>() -> {
+                Text(
+                    text = "You do not have any itineraries yet.",
+                    modifier = Modifier.padding(10.dp).testTag("NoItinerariesText"),
+                    fontSize = 1.sp)
+              }
+              else -> {
+                if (!test) {
+                  Column(
+                      modifier =
+                          Modifier.fillMaxSize().padding(PaddingValues(0.dp, 80.dp, 0.dp, 0.dp))) {
+                        HomePager(
+                            navigation = navigation, homeViewModel = homeViewModel, test = test)
+                      }
+                } else {
+                  DisplayItineraries(
+                      itineraries = itineraries,
+                      navigation = navigation,
+                      homeViewModel = homeViewModel,
+                      test = test,
+                      tabSelected = HomeCategory.TRENDING)
                 }
+              }
             }
-        }
+          }
     }
-    Log.d("HomeScreen", "Rendering HomeScreen")
+  }
+  Log.d("HomeScreen", "Rendering HomeScreen")
 }
-
 
 /**
  * Displays the search bar at the top of the screen
@@ -430,17 +408,17 @@ fun DisplayItineraries(
       items = itineraries,
       isRefreshing = isRefreshing.value,
       onRefresh = {
-          isRefreshing.value = true
-          homeViewModel.fetchItineraries() {
-              isRefreshing.value = false
-              if(tabSelected == HomeCategory.TRENDING){
-                  homeViewModel.filterByTrending()
-              } else {
-                  homeViewModel.filterByFollowing(usermail)
-              }
-              //navigation.goBack() // Simulate back button press
+        isRefreshing.value = true
+        homeViewModel.fetchItineraries() {
+          isRefreshing.value = false
+          if (tabSelected == HomeCategory.TRENDING) {
+            homeViewModel.filterByTrending()
+          } else {
+            homeViewModel.filterByFollowing(usermail)
           }
-                  },
+          // navigation.goBack() // Simulate back button press
+        }
+      },
       content = { itinerary ->
         DisplayItinerary(
             itinerary = itinerary,
@@ -451,7 +429,6 @@ fun DisplayItineraries(
             displayImage = true,
             navigation = navigation)
       })
-
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -511,70 +488,74 @@ fun HomePager(
           }
         }
 
-    HorizontalPager(state = pagerState, modifier = Modifier.testTag("HomePager").background(MaterialTheme.colorScheme.background)) { page ->
-      when (HomeCategory.entries[page]) {
-        HomeCategory.TRENDING -> {
-          val trendingItineraries by homeViewModel.trendingList.observeAsState(emptyList())
+    HorizontalPager(
+        state = pagerState,
+        modifier =
+            Modifier.testTag("HomePager").background(MaterialTheme.colorScheme.background)) { page
+          ->
+          when (HomeCategory.entries[page]) {
+            HomeCategory.TRENDING -> {
+              val trendingItineraries by homeViewModel.trendingList.observeAsState(emptyList())
 
-          DisplayItineraries(
-              itineraries =
-                  trendingItineraries.filter {
-                    val itin = it
-                    val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
-                    if (ownerProfile != null) {
-                      ownerProfile.itineraryPrivacy == 0 ||
-                          (ownerProfile.itineraryPrivacy == 1 &&
-                              ambientProfile.userProfile.value.followers.contains(
-                                  ownerProfile.mail) &&
-                              ambientProfile.userProfile.value.following.contains(
-                                  ownerProfile.mail))
-                    } else {
-                      false
-                    }
-                  },
-              navigation = navigation,
-              homeViewModel = homeViewModel,
-              test = test,
-              tabSelected = HomeCategory.TRENDING)
-        }
-        HomeCategory.FOLLOWING -> {
-          val followingItineraries by homeViewModel.followingList.observeAsState(emptyList())
-          if (followingItineraries.isEmpty()) {
-            Text(
-                text = "Not following anyone yet.",
-                modifier =
-                    Modifier.fillMaxWidth()
-                        .padding(start = 70.dp, bottom = 250.dp)
-                        .testTag("NoFollowingText"),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Medium,
-                letterSpacing = 0.15.sp,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontFamily = FontFamily(Font(R.font.montserrat_regular)))
+              DisplayItineraries(
+                  itineraries =
+                      trendingItineraries.filter {
+                        val itin = it
+                        val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
+                        if (ownerProfile != null) {
+                          ownerProfile.itineraryPrivacy == 0 ||
+                              (ownerProfile.itineraryPrivacy == 1 &&
+                                  ambientProfile.userProfile.value.followers.contains(
+                                      ownerProfile.mail) &&
+                                  ambientProfile.userProfile.value.following.contains(
+                                      ownerProfile.mail))
+                        } else {
+                          false
+                        }
+                      },
+                  navigation = navigation,
+                  homeViewModel = homeViewModel,
+                  test = test,
+                  tabSelected = HomeCategory.TRENDING)
+            }
+            HomeCategory.FOLLOWING -> {
+              val followingItineraries by homeViewModel.followingList.observeAsState(emptyList())
+              if (followingItineraries.isEmpty()) {
+                Text(
+                    text = "Not following anyone yet.",
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .padding(start = 70.dp, bottom = 250.dp)
+                            .testTag("NoFollowingText"),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Medium,
+                    letterSpacing = 0.15.sp,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontFamily = FontFamily(Font(R.font.montserrat_regular)))
+              }
+              DisplayItineraries(
+                  itineraries =
+                      followingItineraries.filter {
+                        val itin = it
+                        val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
+                        if (ownerProfile != null) {
+                          ownerProfile.itineraryPrivacy == 0 ||
+                              (ownerProfile.itineraryPrivacy == 1 &&
+                                  ambientProfile.userProfile.value.followers.contains(
+                                      ownerProfile.mail) &&
+                                  ambientProfile.userProfile.value.following.contains(
+                                      ownerProfile.mail))
+                        } else {
+                          false
+                        }
+                      },
+                  navigation = navigation,
+                  homeViewModel = homeViewModel,
+                  test = test,
+                  tabSelected = HomeCategory.FOLLOWING)
+            }
           }
-          DisplayItineraries(
-              itineraries =
-                  followingItineraries.filter {
-                    val itin = it
-                    val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
-                    if (ownerProfile != null) {
-                      ownerProfile.itineraryPrivacy == 0 ||
-                          (ownerProfile.itineraryPrivacy == 1 &&
-                              ambientProfile.userProfile.value.followers.contains(
-                                  ownerProfile.mail) &&
-                              ambientProfile.userProfile.value.following.contains(
-                                  ownerProfile.mail))
-                    } else {
-                      false
-                    }
-                  },
-              navigation = navigation,
-              homeViewModel = homeViewModel,
-              test = test,
-              tabSelected = HomeCategory.FOLLOWING)
         }
-      }
-    }
   }
 }
 
