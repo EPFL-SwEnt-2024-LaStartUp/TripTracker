@@ -53,15 +53,14 @@ private val TOP_LEVEL_DESTINATIONS =
 
 /**
  * Navigation that handles the navigation in the app. Allows to go back to the previous screen in a
- * non blocking way. Allows to navigate to a specific TopLevelDestination.
+ * non blocking way. Allows to navigate to a specific TopLevelDestination. Connection object to
+ * check if the device is connected to the internet. Relevant here since the connection influences
+ * the navigation behavior.
  */
-class Navigation(val navController: NavHostController) {
-
-  /**
-   * Connection object to check if the device is connected to the internet. Relevant here since the
-   * connection influences the navigation behavior.
-   */
-  private val connection = Connection()
+class Navigation(
+    val navController: NavHostController,
+    private val connection: Connection = Connection()
+) {
 
   /** Current destination, helpful notably for the navigation bar */
   private var currentDestination: TopLevelDestination = getStartingDestination()

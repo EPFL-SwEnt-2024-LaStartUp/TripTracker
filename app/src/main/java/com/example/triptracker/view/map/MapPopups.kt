@@ -39,6 +39,7 @@ import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,9 +53,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -67,6 +70,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.itinerary.ItineraryDownload
 import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.location.popupState
 import com.example.triptracker.model.profile.AmbientUserProfile
@@ -252,15 +256,22 @@ fun getDisplayAddress(address: String): String {
 @Composable
 fun StartScreen(
     itinerary: Itinerary,
-    userProfileViewModel: UserProfileViewModel,
+    userProfileViewModel: UserProfileViewModel = viewModel(),
     onClick: () -> Unit,
     userProfile: MutableUserProfile,
     homeViewModel: HomeViewModel = viewModel(),
-    mapViewModel: MapViewModel
+    mapViewModel: MapViewModel = viewModel(),
+    offline: Boolean = false
 ) {
   val configuration = LocalConfiguration.current
   val screenWidth = configuration.screenWidthDp.dp
   val screenHeight = configuration.screenHeightDp.dp
+
+  /* Mutable state variable that holds the loading state of the screen */
+  var isLoading by remember { mutableStateOf(false) }
+
+  /** Alpha value for the screen depending on loading state */
+  val alpha = if (!isLoading) 1f else 0.99f
 
   val ambientProfile = AmbientUserProfile.current
   // The size of the user's avatar/profile picture
@@ -275,7 +286,16 @@ fun StartScreen(
   val imageIsEmpty = remember { mutableStateOf(true) }
   val descriptionsOpen = remember { mutableStateOf(List(itinerary.pinnedPlaces.size) { false }) }
   Log.d("descriptionsOpen", descriptionsOpen.value.toString())
-  Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(), contentAlignment = Alignment.Center) {
+    val onClickGoBack =
+        if (offline) {
+            onClick
+        } else {
+            {
+                // When you click on the back button, it should bring you back to the map
+                mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
+            }
+        }
+  Box(modifier = Modifier.fillMaxWidth().fillMaxHeight().alpha(alpha), contentAlignment = Alignment.Center) {
     Column(
         modifier =
             Modifier.fillMaxWidth(0.9f)
@@ -289,10 +309,7 @@ fun StartScreen(
                             bottomStart = 35.dp,
                             bottomEnd = 35.dp))) {
           IconButton(
-              onClick = {
-                // When you click on the back button, it should bring you back to the map
-                mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
-              },
+              onClick = onClickGoBack,
               modifier =
                   Modifier.size(40.dp).align(Alignment.CenterHorizontally).testTag("BackButton")) {
                 Icon(
@@ -336,7 +353,9 @@ fun StartScreen(
                                     .wrapContentHeight(align = Alignment.CenterVertically))
                         Spacer(Modifier.weight(1f))
 
-                        DisplayStar(userProfileViewModel, userProfile, itinerary, homeViewModel)
+                        DisplayStar(userProfileViewModel, userProfile, itinerary, homeViewModel, offline){
+                            isLoading =! isLoading
+                        }
                       }
 
                   // Spacer(modifier = Modifier.height(20.dp))
@@ -404,33 +423,44 @@ fun StartScreen(
                     Spacer(modifier = Modifier.height(screenHeight * 0.025f))
                   }
                 }
-                Button(
-                    onClick = {
-                      onClick()
-                      mapViewModel.asStartItinerary.value = true
-                    },
-                    modifier =
+                if(!offline) {
+                    Button(
+                        onClick = {
+                            onClick()
+                            mapViewModel.asStartItinerary.value = true
+                        },
+                        modifier =
                         Modifier.padding(bottom = screenHeight * 0.05f)
                             .align(Alignment.CenterHorizontally)
                             .height(
                                 screenHeight *
-                                    0.07f) // Set a specific height for the button to make it
+                                        0.07f
+                            ) // Set a specific height for the button to make it
                             // larger
                             .fillMaxWidth(fraction = 0.5f), // Make the button fill 90% of the width
-                    shape = RoundedCornerShape(50.dp),
-                    colors =
+                        shape = RoundedCornerShape(50.dp),
+                        colors =
                         ButtonDefaults.buttonColors(
                             containerColor = Color(0xFFF06F24),
                         ) // Rounded corners with a radius of 12.dp
                     ) {
-                      Text(
-                          "Start",
-                          fontSize = 24.sp,
-                          color = Color.White,
-                          fontFamily = Montserrat,
-                          fontWeight = FontWeight.Bold)
+                        Text(
+                            "Start",
+                            fontSize = 24.sp,
+                            color = Color.White,
+                            fontFamily = Montserrat,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
+                }
               }
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(64.dp).align(Alignment.CenterHorizontally),
+                    color = md_theme_orange,
+                    trackColor = md_theme_grey,
+                )
+            }
         }
   }
 }
@@ -445,36 +475,57 @@ fun StartScreen(
  * @param userProfile MutableUserProfile of the user
  * @param itinerary Itinerary to be favorited
  * @param homeViewModel ViewModel for the home screen
+ * @param offline Boolean flag for offline mode
+ * @param itineraryDownload Object that contains the download function for the itinerary
+ * @param onLoadingChange Function to change the loading state
  */
 @Composable
 fun DisplayStar(
     userProfileViewModel: UserProfileViewModel,
     userProfile: MutableUserProfile,
     itinerary: Itinerary,
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    offline: Boolean,
+    itineraryDownload: ItineraryDownload = ItineraryDownload(context = LocalContext.current),
+    onLoadingChange: () -> Unit
 ) {
+
+  val actionOnStarFull: () -> Unit = {
+    userProfileViewModel.removeFavorite(userProfile, itinerary.id)
+    // delete the itinerary from internal storage
+    itineraryDownload.deleteItinerary(itinerary.id)
+  }
+
+  val actionOnStarEmpty: () -> Unit =
+      if (offline) {
+        {}
+      } else {
+        {
+          onLoadingChange()
+          // save the itinerary to internal storage
+          itineraryDownload.saveItineraryToInternalStorage(itinerary) {
+            userProfileViewModel.addFavorite(userProfile, itinerary.id)
+            // when click on grey star, increment save count
+            homeViewModel.incrementSaveCount(itinerary.id)
+            onLoadingChange()
+          }
+        }
+      }
+
   if (userProfile.userProfile.value.favoritesPaths.contains(itinerary.id)) {
     // If the user has favorited this itinerary, display a star orange
     Icon(
         imageVector = Icons.Outlined.Star,
         contentDescription = "Star",
         tint = md_theme_orange,
-        modifier =
-            Modifier.size(30.dp).clickable {
-              userProfileViewModel.removeFavorite(userProfile, itinerary.id)
-            })
+        modifier = Modifier.size(30.dp).testTag("Star").clickable { actionOnStarFull() })
   } else {
     // If the user has not favorited this itinerary, display a star grey
     Icon(
         imageVector = Icons.Outlined.StarBorder,
-        contentDescription = "Star",
+        contentDescription = "EmptyStar",
         tint = md_theme_grey,
-        modifier =
-            Modifier.size(30.dp).clickable {
-              userProfileViewModel.addFavorite(userProfile, itinerary.id)
-              homeViewModel.incrementSaveCount(
-                  itinerary.id) // when click on grey star, increment save count
-            })
+        modifier = Modifier.size(30.dp).testTag("EmptyStar").clickable { actionOnStarEmpty() })
   }
 }
 
