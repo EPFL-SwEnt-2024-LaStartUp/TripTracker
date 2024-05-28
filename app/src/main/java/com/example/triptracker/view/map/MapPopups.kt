@@ -471,14 +471,14 @@ fun StartScreen(
                           }
                     }
                   }
-              if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(64.dp).align(Alignment.CenterHorizontally),
-                    color = md_theme_orange,
-                    trackColor = md_theme_grey,
-                )
-              }
             }
+        if (isLoading) {
+          CircularProgressIndicator(
+              modifier = Modifier.size(64.dp).align(Alignment.Center),
+              color = md_theme_orange,
+              trackColor = md_theme_grey,
+          )
+        }
       }
 }
 
