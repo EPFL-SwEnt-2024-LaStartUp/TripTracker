@@ -22,15 +22,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.StarBorder
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
@@ -49,6 +51,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.Font
@@ -62,6 +65,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.itinerary.ItineraryDownload
+import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
@@ -88,7 +93,11 @@ val dummyProfile = UserProfile("test@gmail.com", "Test User", "test", "test bio"
  * @param boxHeight: Height of the box that contains the itinerary
  * @param userProfileViewModel: UserProfileViewModel object to use for fetching user profiles
  * @param onClick: Function to call when the itinerary is clicked
+ * @param homeViewModel: HomeViewModel object to use for deleting the itinerary
+ * @param displayImage: Boolean to display the image of the pinned places
  * @param test : Boolean to test the function
+ * @param canBeDeleted: Boolean to check if the itinerary can be deleted
+ * @param connection: Connection object to check the device's internet connection
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -100,12 +109,17 @@ fun DisplayItinerary(
     homeViewModel: HomeViewModel = viewModel(),
     displayImage: Boolean = false,
     canBeDeleted: Boolean = false,
+    connection: Connection = Connection(),
     navigation: Navigation,
     onDelete: () -> Unit = {}
 ) {
   val configuration = LocalConfiguration.current
   val screenWidth = configuration.screenWidthDp.dp
   val screenHeight = configuration.screenHeightDp.dp
+
+  // The object that contains the download function for the itinerary
+  val itineraryDownload = ItineraryDownload(context = LocalContext.current)
+
   // Number of additional itineraries not displayed
   val pinListString = fetchPinNames(itinerary)
   Log.d("PinListString", pinListString)
@@ -123,6 +137,12 @@ fun DisplayItinerary(
 
   // Boolean to check if the image is empty
   val imageIsEmpty = remember { mutableStateOf(true) }
+
+  /* Mutable state variable that holds the loading state of the screen */
+  var isLoading by remember { mutableStateOf(false) }
+
+  /** Alpha value for the screen depending on loading state */
+  val alpha = if (!isLoading) 1f else 0.7f
 
   var showAlert by remember { mutableStateOf(false) }
 
@@ -204,8 +224,21 @@ fun DisplayItinerary(
                       offsetY = 20.dp,
                       offsetX = 0.dp,
                       spread = 9.dp)
-                  .background(color = md_theme_light_dark, shape = RoundedCornerShape(35.dp))) {
-            Column(modifier = Modifier.fillMaxWidth().padding(25.dp)) {
+                  .background(color = md_theme_light_dark, shape = RoundedCornerShape(35.dp))
+                  .combinedClickable(
+                      onClick = {
+                        onClick()
+                      }, // When you click on an itinerary, it should bring you to the map
+                      // overview with the selected itinerary highlighted and the first pinned
+                      // places
+                      onLongClick = {
+                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        if (canBeDeleted) {
+                          showAlert = true
+                        }
+                      })
+                  .testTag("Itinerary")) {
+            Column(modifier = Modifier.alpha(alpha).fillMaxWidth().padding(25.dp)) {
               Row(
                   modifier = Modifier.fillMaxWidth(),
                   horizontalArrangement = Arrangement.SpaceBetween) {
@@ -238,46 +271,59 @@ fun DisplayItinerary(
                     }
 
                     Spacer(modifier = Modifier.width(1.dp))
+                    val actionOnStarFull: () -> Unit = {
+                      userProfileViewModel.removeFavorite(ambientProfile, itinerary.id)
+                      // delete the itinerary from internal storage
+                      itineraryDownload.deleteItinerary(itinerary.id)
+                    }
+
+                    val actionOnStarEmpty: () -> Unit =
+                        if (!connection.isDeviceConnectedToInternet()) {
+                          {}
+                        } else {
+                          {
+                            isLoading = true
+                            // save the itinerary to internal storage
+                            itineraryDownload.saveItineraryToInternalStorage(itinerary) {
+                              userProfileViewModel.addFavorite(ambientProfile, itinerary.id)
+                              // when click on grey star, increment save count
+                              homeViewModel.incrementSaveCount(itinerary.id)
+                              isLoading = false
+                            }
+                          }
+                        }
+                    Spacer(modifier = Modifier.width(1.dp))
                     if (ambientProfile.userProfile.value.favoritesPaths.contains(itinerary.id)) {
                       // If the user has favorited this itinerary, display a star orange
                       Icon(
                           imageVector = Icons.Outlined.Star,
                           contentDescription = "Star",
                           tint = md_theme_orange,
-                          modifier =
-                              Modifier.size(28.dp).clickable {
-                                userProfileViewModel.removeFavorite(ambientProfile, itinerary.id)
-                              })
+                          modifier = Modifier.size(28.dp).clickable { actionOnStarFull() })
                     } else {
                       // If the user has not favorited this itinerary, display a star grey
                       Icon(
                           imageVector = Icons.Outlined.StarBorder,
                           contentDescription = "Star",
                           tint = md_theme_grey,
-                          modifier =
-                              Modifier.size(28.dp).clickable {
-                                userProfileViewModel.addFavorite(ambientProfile, itinerary.id)
-                                homeViewModel.incrementSaveCount(
-                                    itinerary.id) // when click on grey star, increment save count
-                              })
+                          modifier = Modifier.size(28.dp).clickable { actionOnStarEmpty() })
                     }
                   }
               Box(
                   modifier =
-                      Modifier.testTag("Itinerary")
-                          .combinedClickable(
-                              onClick = {
-                                onClick()
-                              }, // When you click on an itinerary, it should bring you to the map
-                              // overview with the selected itinerary highlighted and the first
-                              // pinned
-                              // places
-                              onLongClick = {
-                                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                                if (canBeDeleted) {
-                                  showAlert = true
-                                }
-                              })) {
+                      Modifier.combinedClickable(
+                          onClick = {
+                            onClick()
+                          }, // When you click on an itinerary, it should bring you to the map
+                          // overview with the selected itinerary highlighted and the first
+                          // pinned
+                          // places
+                          onLongClick = {
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            if (canBeDeleted) {
+                              showAlert = true
+                            }
+                          })) {
                     Column(
                         modifier =
                             Modifier.combinedClickable(
@@ -344,6 +390,15 @@ fun DisplayItinerary(
                         }
                   }
             }
+
+            // Loading bar for when the itinerary is downloading
+            if (isLoading) {
+              CircularProgressIndicator(
+                  modifier = Modifier.size(64.dp).align(Alignment.Center),
+                  color = md_theme_orange,
+                  trackColor = md_theme_grey,
+              )
+            }
           }
     }
   }
@@ -376,7 +431,7 @@ private fun ShowAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
             onClick = { onConfirm() },
             colors =
                 ButtonDefaults.buttonColors(
-                    backgroundColor = md_theme_light_error, contentColor = Color.White),
+                    containerColor = md_theme_light_error, contentColor = Color.White),
             shape = RoundedCornerShape(35.dp),
         ) {
           Text(
@@ -393,7 +448,7 @@ private fun ShowAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
             onClick = { onDismiss() },
             colors =
                 ButtonDefaults.buttonColors(
-                    backgroundColor = md_theme_light_black, contentColor = Color.White),
+                    containerColor = md_theme_light_black, contentColor = Color.White),
             shape = RoundedCornerShape(35.dp)) {
               Text(
                   text = "No",

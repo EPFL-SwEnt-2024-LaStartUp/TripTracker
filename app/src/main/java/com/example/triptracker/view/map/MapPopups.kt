@@ -39,6 +39,7 @@ import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,9 +53,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -67,6 +70,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
+import com.example.triptracker.model.itinerary.ItineraryDownload
 import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.location.popupState
 import com.example.triptracker.model.profile.AmbientUserProfile
@@ -252,15 +256,22 @@ fun getDisplayAddress(address: String): String {
 @Composable
 fun StartScreen(
     itinerary: Itinerary,
-    userProfileViewModel: UserProfileViewModel,
+    userProfileViewModel: UserProfileViewModel = viewModel(),
     onClick: () -> Unit,
     userProfile: MutableUserProfile,
     homeViewModel: HomeViewModel = viewModel(),
-    mapViewModel: MapViewModel
+    mapViewModel: MapViewModel = viewModel(),
+    offline: Boolean = false
 ) {
   val configuration = LocalConfiguration.current
   val screenWidth = configuration.screenWidthDp.dp
   val screenHeight = configuration.screenHeightDp.dp
+
+  /* Mutable state variable that holds the loading state of the screen */
+  var isLoading by remember { mutableStateOf(false) }
+
+  /** Alpha value for the screen depending on loading state */
+  val alpha = if (!isLoading) 1f else 0.99f
 
   val ambientProfile = AmbientUserProfile.current
   // The size of the user's avatar/profile picture
@@ -275,159 +286,190 @@ fun StartScreen(
   val imageIsEmpty = remember { mutableStateOf(true) }
   val descriptionsOpen = remember { mutableStateOf(List(itinerary.pinnedPlaces.size) { false }) }
   Log.d("descriptionsOpen", descriptionsOpen.value.toString())
-  Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(), contentAlignment = Alignment.Center) {
-    Box(
-        modifier =
-            Modifier.fillMaxWidth(0.9f)
-                .fillMaxHeight(0.95f)
-                .background(
-                    color = md_theme_light_dark,
-                    shape =
-                        RoundedCornerShape(
-                            topStart = 35.dp,
-                            topEnd = 35.dp,
-                            bottomStart = 35.dp,
-                            bottomEnd = 35.dp))) {
-          Column(
-              modifier =
-                  Modifier.fillMaxWidth()
-                      .verticalScroll(rememberScrollState())
-                      .padding(top = 15.dp, start = 25.dp, end = 25.dp, bottom = 0.dp)) {
-                IconButton(
-                    onClick = {
-                      // When you click on the back button, it should bring you back to the map
-                      mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
-                    },
-                    modifier =
-                        Modifier.size(40.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .testTag("BackButton")) {
-                      Icon(
-                          imageVector = Icons.Outlined.ExpandLess,
-                          contentDescription = "Back",
-                          tint = md_theme_light_outlineVariant,
-                          modifier = Modifier.size(40.dp))
-                    }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically) {
-                      // change the image to the user's profile picture
-                      AsyncImage(
-                          model = userOfPost.profileImageUrl,
-                          contentDescription = "User Avatar",
-                          modifier =
-                              Modifier.size(avatarSize)
-                                  .clip(CircleShape)
-                                  .sizeIn(maxWidth = 20.dp)
-                                  .testTag("ProfilePic")
-                                  .clickable { /* TODO bring user to profile page */})
-
-                      Spacer(modifier = Modifier.width(15.dp))
-                      Text(
-                          text = userOfPost.username,
-                          fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                          //                wrapContentHeight(align = Alignment.CenterVertically),
-                          fontWeight = FontWeight.Normal,
-                          fontSize = 16.sp,
-                          color = md_theme_light_outlineVariant,
-                          modifier =
-                              Modifier.testTag("Username")
-                                  .wrapContentHeight(align = Alignment.CenterVertically))
-                      Spacer(Modifier.weight(1f))
-
-                      DisplayStar(userProfileViewModel, userProfile, itinerary, homeViewModel)
-                    }
-
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = itinerary.title,
-                    fontFamily = Montserrat,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 26.sp,
-                    color = md_theme_light_onPrimary,
-                    modifier = Modifier.testTag("Title"))
-                Text(
-                    text = "${itinerary.flameCount} 🔥",
-                    color = md_theme_orange, // This is the orange color
-                    fontFamily = Montserrat,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp,
-                    modifier =
-                        Modifier.padding(
-                                bottom = 20.dp,
-                                top = 10.dp,
-                            )
-                            .testTag("FlameCount"))
-                Column(
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxHeight()) {
-                      LazyColumn(
-                          modifier =
-                              Modifier.padding(
-                                      top = 10.dp, start = 10.dp, end = 10.dp, bottom = 10.dp)
-                                  .size(screenWidth, screenHeight * 0.2f)) {
-                            items(itinerary.pinnedPlaces) { pin ->
-                              val index = itinerary.pinnedPlaces.indexOf(pin)
-                              PinDescription(
-                                  descriptionsOpen = descriptionsOpen, pin = pin, index = index)
-                              Spacer(modifier = Modifier.height(5.dp))
-                              OnDescriptionOpen(
-                                  descriptionsOpen = descriptionsOpen, pin = pin, index = index)
-                              Spacer(modifier = Modifier.height(5.dp))
-                            }
-                          }
-                      // check if it is possible to display the images
-                      val height = if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f
-                      LazyRow(
-                          modifier = Modifier.height(height),
-                          verticalAlignment = Alignment.CenterVertically) {
-                            items(itinerary.pinnedPlaces) { pin ->
-                              for (image in pin.image_url) {
-                                imageIsEmpty.value = false
-                                AsyncImage(
-                                    model = image,
-                                    contentDescription = pin.description,
-                                    modifier =
-                                        Modifier.clip(
-                                            RoundedCornerShape(corner = CornerSize(15.dp))))
-
-                                Spacer(modifier = Modifier.width(15.dp))
-                              }
-                            }
-                          }
-                      OnImageIsEmpty(imageIsEmpty = imageIsEmpty, screenHeight = screenHeight)
-                      // add spacer proportional to the screen height
-                      Spacer(modifier = Modifier.height(screenHeight * 0.07f))
-                      Button(
-                          onClick = {
-                            onClick()
-                            mapViewModel.asStartItinerary.value = true
-                          },
-                          modifier =
-                              Modifier.align(Alignment.CenterHorizontally)
-                                  .height(
-                                      screenHeight *
-                                          0.07f) // Set a specific height for the button to make it
-                                  // larger
-                                  .fillMaxWidth(
-                                      fraction = 0.5f), // Make the button fill 90% of the width
-                          shape = RoundedCornerShape(50.dp),
-                          colors =
-                              ButtonDefaults.buttonColors(
-                                  containerColor = Color(0xFFF06F24),
-                              ) // Rounded corners with a radius of 12.dp
-                          ) {
-                            Text(
-                                "Start",
-                                fontSize = 24.sp,
-                                color = Color.White,
-                                fontFamily = Montserrat,
-                                fontWeight = FontWeight.Bold)
-                          }
-                    }
-              }
+  val onClickGoBack =
+      if (offline) {
+        onClick
+      } else {
+        {
+          // When you click on the back button, it should bring you back to the map
+          mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
         }
-  }
+      }
+  Box(
+      modifier = Modifier.alpha(alpha).fillMaxWidth().fillMaxHeight(),
+      contentAlignment = Alignment.Center) {
+        Box(
+            modifier =
+                Modifier.fillMaxWidth(0.9f)
+                    .fillMaxHeight(0.95f)
+                    .background(
+                        color = md_theme_light_dark,
+                        shape =
+                            RoundedCornerShape(
+                                topStart = 35.dp,
+                                topEnd = 35.dp,
+                                bottomStart = 35.dp,
+                                bottomEnd = 35.dp))) {
+              Column(
+                  modifier =
+                      Modifier.fillMaxWidth()
+                          .verticalScroll(rememberScrollState())
+                          .padding(top = 15.dp, start = 25.dp, end = 25.dp, bottom = 0.dp)) {
+                    IconButton(
+                        onClick = onClickGoBack,
+                        modifier =
+                            Modifier.size(40.dp)
+                                .align(Alignment.CenterHorizontally)
+                                .testTag("BackButton")) {
+                          Icon(
+                              imageVector = Icons.Outlined.ExpandLess,
+                              contentDescription = "Back",
+                              tint = md_theme_light_outlineVariant,
+                              modifier = Modifier.size(40.dp))
+                        }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically) {
+                          // change the image to the user's profile picture
+                          AsyncImage(
+                              model = userOfPost.profileImageUrl,
+                              contentDescription = "User Avatar",
+                              modifier =
+                                  Modifier.size(avatarSize)
+                                      .clip(CircleShape)
+                                      .sizeIn(maxWidth = 20.dp)
+                                      .testTag("ProfilePic")
+                                      .clickable { /* TODO bring user to profile page */})
+
+                          Spacer(modifier = Modifier.width(15.dp))
+                          Text(
+                              text = userOfPost.username,
+                              fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                              //                wrapContentHeight(align =
+                              // Alignment.CenterVertically),
+                              fontWeight = FontWeight.Normal,
+                              fontSize = 16.sp,
+                              color = md_theme_light_outlineVariant,
+                              modifier =
+                                  Modifier.testTag("Username")
+                                      .wrapContentHeight(align = Alignment.CenterVertically))
+                          Spacer(Modifier.weight(1f))
+
+                          DisplayStar(
+                              userProfileViewModel,
+                              userProfile,
+                              itinerary,
+                              homeViewModel,
+                              offline,
+                          ) {
+                            isLoading = !isLoading
+                          }
+                        }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(
+                        text = itinerary.title,
+                        fontFamily = Montserrat,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 26.sp,
+                        color = md_theme_light_onPrimary,
+                        modifier = Modifier.testTag("Title"))
+                    Text(
+                        text = "${itinerary.flameCount} 🔥",
+                        color = md_theme_orange, // This is the orange color
+                        fontFamily = Montserrat,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp,
+                        modifier =
+                            Modifier.padding(
+                                    bottom = 20.dp,
+                                    top = 10.dp,
+                                )
+                                .testTag("FlameCount"))
+                    Column(
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxHeight()) {
+                          LazyColumn(
+                              modifier =
+                                  Modifier.padding(
+                                          top = 10.dp, start = 10.dp, end = 10.dp, bottom = 10.dp)
+                                      .size(screenWidth, screenHeight * 0.2f)) {
+                                items(itinerary.pinnedPlaces) { pin ->
+                                  val index = itinerary.pinnedPlaces.indexOf(pin)
+                                  PinDescription(
+                                      descriptionsOpen = descriptionsOpen, pin = pin, index = index)
+                                  Spacer(modifier = Modifier.height(5.dp))
+                                  OnDescriptionOpen(
+                                      descriptionsOpen = descriptionsOpen, pin = pin, index = index)
+                                  Spacer(modifier = Modifier.height(5.dp))
+                                }
+                              }
+                          // check if it is possible to display the images
+                          val height = if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f
+                          LazyRow(
+                              modifier = Modifier.height(height),
+                              verticalAlignment = Alignment.CenterVertically) {
+                                items(itinerary.pinnedPlaces) { pin ->
+                                  for (image in pin.image_url) {
+                                    imageIsEmpty.value = false
+                                    AsyncImage(
+                                        model = image,
+                                        contentDescription = pin.description,
+                                        modifier =
+                                            Modifier.clip(
+                                                RoundedCornerShape(corner = CornerSize(15.dp))))
+
+                                    Spacer(modifier = Modifier.width(15.dp))
+                                  }
+                                }
+                              }
+                          OnImageIsEmpty(imageIsEmpty = imageIsEmpty, screenHeight = screenHeight)
+                          // add spacer proportional to the screen height
+                          Spacer(modifier = Modifier.height(screenHeight * 0.07f))
+                          if (!offline) {
+                            Button(
+                                onClick = {
+                                  onClick()
+                                  mapViewModel.asStartItinerary.value = true
+                                },
+                                modifier =
+                                    Modifier.align(Alignment.CenterHorizontally)
+                                        .height(
+                                            screenHeight *
+                                                0.07f) // Set a specific height for the button to
+                                        // make
+                                        // it
+                                        // larger
+                                        .fillMaxWidth(
+                                            fraction =
+                                                0.5f), // Make the button fill 90% of the width
+                                shape = RoundedCornerShape(50.dp),
+                                colors =
+                                    ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFFF06F24),
+                                    ) // Rounded corners with a radius of 12.dp
+                                ) {
+                                  Text(
+                                      "Start",
+                                      fontSize = 24.sp,
+                                      color = Color.White,
+                                      fontFamily = Montserrat,
+                                      fontWeight = FontWeight.Bold)
+                                }
+                          }
+                        }
+                  }
+
+              // Loading bar for when the itinerary is downloading
+              if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(64.dp).align(Alignment.Center),
+                    color = md_theme_orange,
+                    trackColor = md_theme_grey,
+                )
+              }
+            }
+      }
 }
 
 /** Helper composable functions to lower complexity */
@@ -440,36 +482,57 @@ fun StartScreen(
  * @param userProfile MutableUserProfile of the user
  * @param itinerary Itinerary to be favorited
  * @param homeViewModel ViewModel for the home screen
+ * @param offline Boolean flag for offline mode
+ * @param itineraryDownload Object that contains the download function for the itinerary
+ * @param onLoadingChange Function to change the loading state
  */
 @Composable
 fun DisplayStar(
     userProfileViewModel: UserProfileViewModel,
     userProfile: MutableUserProfile,
     itinerary: Itinerary,
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    offline: Boolean,
+    itineraryDownload: ItineraryDownload = ItineraryDownload(context = LocalContext.current),
+    onLoadingChange: () -> Unit
 ) {
+
+  val actionOnStarFull: () -> Unit = {
+    userProfileViewModel.removeFavorite(userProfile, itinerary.id)
+    // delete the itinerary from internal storage
+    itineraryDownload.deleteItinerary(itinerary.id)
+  }
+
+  val actionOnStarEmpty: () -> Unit =
+      if (offline) {
+        {}
+      } else {
+        {
+          onLoadingChange()
+          // save the itinerary to internal storage
+          itineraryDownload.saveItineraryToInternalStorage(itinerary) {
+            userProfileViewModel.addFavorite(userProfile, itinerary.id)
+            // when click on grey star, increment save count
+            homeViewModel.incrementSaveCount(itinerary.id)
+            onLoadingChange()
+          }
+        }
+      }
+
   if (userProfile.userProfile.value.favoritesPaths.contains(itinerary.id)) {
     // If the user has favorited this itinerary, display a star orange
     Icon(
         imageVector = Icons.Outlined.Star,
         contentDescription = "Star",
         tint = md_theme_orange,
-        modifier =
-            Modifier.size(30.dp).clickable {
-              userProfileViewModel.removeFavorite(userProfile, itinerary.id)
-            })
+        modifier = Modifier.size(30.dp).testTag("Star").clickable { actionOnStarFull() })
   } else {
     // If the user has not favorited this itinerary, display a star grey
     Icon(
         imageVector = Icons.Outlined.StarBorder,
-        contentDescription = "Star",
+        contentDescription = "EmptyStar",
         tint = md_theme_grey,
-        modifier =
-            Modifier.size(30.dp).clickable {
-              userProfileViewModel.addFavorite(userProfile, itinerary.id)
-              homeViewModel.incrementSaveCount(
-                  itinerary.id) // when click on grey star, increment save count
-            })
+        modifier = Modifier.size(30.dp).testTag("EmptyStar").clickable { actionOnStarEmpty() })
   }
 }
 
