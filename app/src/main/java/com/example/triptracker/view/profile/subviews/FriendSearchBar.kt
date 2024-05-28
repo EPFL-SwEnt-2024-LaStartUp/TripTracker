@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -119,6 +120,15 @@ fun FriendSearchBar(viewModel: UserProfileViewModel, onSearchActivated: (Boolean
                 Modifier.fillMaxWidth()
                     .height((LocalConfiguration.current.screenHeightDp * 0.09f).dp)
                     .padding(horizontal = 12.dp)
-                    .testTag("SearchBar"))
+                    .testTag("SearchBar"),
+            textStyle =
+                TextStyle(
+                    textAlign = TextAlign.Start,
+                    fontFamily = FontFamily(Font(R.font.montserrat_bold)),
+                    fontSize = (LocalConfiguration.current.screenHeightDp * 0.025f).sp,
+                    fontWeight = FontWeight.Medium,
+                    letterSpacing = 0.15.sp,
+                    color = md_theme_grey,
+                ))
       }
 }

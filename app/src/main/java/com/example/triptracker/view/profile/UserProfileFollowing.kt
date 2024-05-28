@@ -51,7 +51,7 @@ fun UserProfileFollowing(
   }
 
   userProfileViewModel.setListToFilter(followingList)
-  var filteredList =
+  val filteredList =
       userProfileViewModel.filteredUserProfileList.observeAsState(initial = emptyList())
 
   Scaffold(
