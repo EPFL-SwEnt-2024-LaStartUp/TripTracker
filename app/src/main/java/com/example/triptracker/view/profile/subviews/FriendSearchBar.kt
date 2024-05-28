@@ -121,14 +121,14 @@ fun FriendSearchBar(viewModel: UserProfileViewModel, onSearchActivated: (Boolean
                     .height((LocalConfiguration.current.screenHeightDp * 0.09f).dp)
                     .padding(horizontal = 12.dp)
                     .testTag("SearchBar"),
-            textStyle = TextStyle(
-                textAlign = TextAlign.Start,
-                fontFamily = FontFamily(Font(R.font.montserrat_bold)),
-                fontSize = (LocalConfiguration.current.screenHeightDp * 0.025f).sp,
-                fontWeight = FontWeight.Medium,
-                letterSpacing = 0.15.sp,
-                color = md_theme_grey,
-            )
-        )
+            textStyle =
+                TextStyle(
+                    textAlign = TextAlign.Start,
+                    fontFamily = FontFamily(Font(R.font.montserrat_bold)),
+                    fontSize = (LocalConfiguration.current.screenHeightDp * 0.025f).sp,
+                    fontWeight = FontWeight.Medium,
+                    letterSpacing = 0.15.sp,
+                    color = md_theme_grey,
+                ))
       }
 }
