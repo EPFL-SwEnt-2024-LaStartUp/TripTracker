@@ -241,7 +241,7 @@ fun SearchBarImplementation(
     SearchBar(
         modifier =
             Modifier.fillMaxWidth()
-                .padding(horizontal = 30.dp, vertical = 5.dp)
+                .padding(horizontal = 17.dp, vertical = 5.dp)
                 .testTag("searchBar"),
         query = searchText,
         onQueryChange = { newText ->
