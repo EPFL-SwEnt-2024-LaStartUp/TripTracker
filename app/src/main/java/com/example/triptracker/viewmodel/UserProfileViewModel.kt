@@ -269,8 +269,7 @@ class UserProfileViewModel(
    */
   fun onConnectionRefresh(): Boolean {
     if (isDeviceConnectedToInternet) {
-      Log.d("BBB", _profile.toString())
-      updateProfile(_profile!!)
+      if (_profile != null) updateProfile(_profile!!)
       return true
     }
     return false
@@ -300,7 +299,7 @@ class UserProfileViewModel(
     if (isDeviceConnectedToInternet) {
       updateProfile(navigation, isCreated, onLoadingChange, filePathFromUri, profile)
     } else {
-      _profile?.userProfile?.value = profile.userProfile.value
+      _profile = profile // Save the profile to update it later
       navigation.goBack()
     }
   }
@@ -330,7 +329,7 @@ class UserProfileViewModel(
       }
     } else {
       updateUserProfileInDb(newProfile)
-      _profile?.userProfile?.value = newProfile
+      _profile = null
     }
   }
 

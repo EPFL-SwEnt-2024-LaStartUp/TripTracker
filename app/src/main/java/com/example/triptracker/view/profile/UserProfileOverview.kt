@@ -71,9 +71,6 @@ fun UserProfileOverview(
     homeViewModel: HomeViewModel = viewModel()
 ) {
 
-  // Set the profile to the view model
-  userProfileViewModel.setProfile(profile)
-
   var isConnected by remember { mutableStateOf(userProfileViewModel.onConnectionRefresh()) }
 
   val myTripsList = homeViewModel.filteredItineraryList
