@@ -444,15 +444,15 @@ fun HomePager(
             var flower = ""
             if (title == HomeCategory.FOLLOWING.name &&
                 ambientProfile.userProfile.value.flowerMode == 1) {
-              flower = "\uD83C\uDF38"
+              flower = " \uD83C\uDF38"
             } else if (title == HomeCategory.TRENDING.name &&
                 ambientProfile.userProfile.value.flowerMode == 1) {
-              flower = "\uD83C\uDF37"
+              flower = " \uD83C\uDF37"
             }
             isSelected = index == selectedTab
             Tab(selected = isSelected, onClick = { selectedTab = index }) {
               Text(
-                  "$title $flower",
+                  "$title$flower",
                   color =
                       if (isSelected) MaterialTheme.colorScheme.onBackground
                       else MaterialTheme.colorScheme.onSurface,
