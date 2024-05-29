@@ -40,6 +40,7 @@ class UserProfileEditScreenTest : TestCase() {
 
   @get:Rule val composeTestRule = createComposeRule()
   @RelaxedMockK private lateinit var userProfileViewModel: UserProfileViewModel
+  @RelaxedMockK private lateinit var mockProfile: MutableUserProfile
   @RelaxedMockK private lateinit var navigation: Navigation
   @RelaxedMockK
   private lateinit var manager: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>
@@ -51,6 +52,7 @@ class UserProfileEditScreenTest : TestCase() {
     navigation = mockk(relaxed = true)
     manager = mockk(relaxed = true)
     picture = mockk(relaxed = true)
+    mockProfile = mockk(relaxed = true)
     every { userProfileViewModel.getUserProfile(any(), any()) } coAnswers
         {
           secondArg<(UserProfile?) -> Unit>()
@@ -115,7 +117,11 @@ class UserProfileEditScreenTest : TestCase() {
   @Test
   fun testInsertPictureWhenOldPicture() {
     composeTestRule.setContent {
-      InsertPicture(pickMedia = manager, selectedPicture = null, oldPicture = picture.toString())
+      InsertPicture(
+          pickMedia = manager,
+          selectedPicture = null,
+          oldPicture = picture.toString(),
+          profile = mockProfile)
     }
     composeTestRule.onNodeWithTag("ProfilePicture").assertExists()
     composeTestRule.onNodeWithTag("ProfilePicture").performClick()
@@ -125,7 +131,8 @@ class UserProfileEditScreenTest : TestCase() {
   @Test
   fun testInsertPictureWhenNewPicture() {
     composeTestRule.setContent {
-      InsertPicture(pickMedia = manager, selectedPicture = picture, oldPicture = null)
+      InsertPicture(
+          pickMedia = manager, selectedPicture = picture, oldPicture = null, profile = mockProfile)
     }
     composeTestRule.onNodeWithTag("ProfilePicture").assertExists()
     composeTestRule.onNodeWithTag("ProfilePicture").performClick()
@@ -135,7 +142,8 @@ class UserProfileEditScreenTest : TestCase() {
   @Test
   fun testInsertPictureWhenNoNewPicture() {
     composeTestRule.setContent {
-      InsertPicture(pickMedia = manager, selectedPicture = null, oldPicture = null)
+      InsertPicture(
+          pickMedia = manager, selectedPicture = null, oldPicture = null, profile = mockProfile)
     }
     composeTestRule.onNodeWithTag("NoProfilePicture").assertExists()
     composeTestRule.onNodeWithTag("NoProfilePicture").performClick()

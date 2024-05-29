@@ -35,6 +35,7 @@ class UserProfileViewModel(
     get() = connection.isDeviceConnectedToInternet()
 
   private var _profile: MutableUserProfile? = null
+  private var newPicture: Boolean = false
 
   private var userProfileInstance = UserProfileList(listOf())
   private var _userProfileList = MutableLiveData<List<UserProfile>>()
@@ -299,7 +300,10 @@ class UserProfileViewModel(
     if (isDeviceConnectedToInternet) {
       updateProfile(navigation, isCreated, onLoadingChange, filePathFromUri, profile)
     } else {
-      _profile = profile // Save the profile to update it later
+      _profile = profile.copy() // Save the profile to update it later
+      if (filePathFromUri != null) {
+        newPicture = true
+      }
       navigation.goBack()
     }
   }
@@ -312,21 +316,28 @@ class UserProfileViewModel(
    * @param context : Context of the application.
    */
   private fun updateProfile(profile: MutableUserProfile, context: Context = applicationContext()) {
-    val selectedPicture: Uri? = Uri.parse(profile.userProfile.value.profileImageUrl)
-    val filePathFromUri = getFilePathFromUri(selectedPicture, context)
     var newProfile = profile.userProfile.value
-    if (filePathFromUri != null) {
-      addProfilePictureToStorage(filePathFromUri) { resp ->
-        val imageUrl =
-            if (resp is Response.Success) {
-              resp.data!!.toString()
-            } else {
-              profile.userProfile.value
-                  .profileImageUrl // Keep the old image if the new one could not be uploaded
-            }
-        newProfile = profile.userProfile.value.copy(profileImageUrl = imageUrl)
+    if (newPicture) {
+      val selectedPicture: Uri? = Uri.parse(profile.userProfile.value.profileImageUrl)
+      val filePathFromUri = getFilePathFromUri(selectedPicture, context)
+
+      if (filePathFromUri != null) {
+        addProfilePictureToStorage(filePathFromUri) { resp ->
+          val imageUrl =
+              if (resp is Response.Success) {
+                resp.data!!.toString()
+              } else {
+                profile.userProfile.value
+                    .profileImageUrl // Keep the old image if the new one could not be uploaded
+              }
+          newProfile = profile.userProfile.value.copy(profileImageUrl = imageUrl)
+          updateUserProfileInDb(newProfile)
+        }
+      } else {
         updateUserProfileInDb(newProfile)
+        _profile = null
       }
+      newPicture = false
     } else {
       updateUserProfileInDb(newProfile)
       _profile = null
