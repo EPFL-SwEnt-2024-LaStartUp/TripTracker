@@ -31,6 +31,7 @@ import com.example.triptracker.view.TopLevelDestination
 import com.example.triptracker.view.home.HomePager
 import com.example.triptracker.view.home.HomeScreen
 import com.example.triptracker.view.home.ItineraryItem
+import com.example.triptracker.view.home.flowerStringBasedOnCount
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
@@ -721,6 +722,32 @@ class HomeTest {
         composeTestRule.onNodeWithTag("ItineraryItem").assertIsDisplayed()
       }
     }
+  }
+
+  @Test
+  fun testFlowerString() {
+    every { mockItineraryRepository.getAllItineraries(any()) } answers
+        {
+          // Invoke the callback with mock data
+          val callback = arg<(List<Itinerary>) -> Unit>(0)
+          callback(mockItineraries)
+        }
+    every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.filteredItineraryList } returns MutableLiveData(mockItineraries)
+    every { mockProfile.userProfile.value } returns mockUsers[0]
+
+    assert(flowerStringBasedOnCount(0) == "🌸")
+    assert(flowerStringBasedOnCount(200) == "🌸")
+    assert(flowerStringBasedOnCount(201) == "🌸\uD83C\uDF37")
+    assert(flowerStringBasedOnCount(400) == "\uD83C\uDF38\uD83C\uDF37\uD83C\uDF39")
+    assert(flowerStringBasedOnCount(500) == "\uD83C\uDF38\uD83C\uDF37\uD83C\uDF39\uD83D\uDC90")
+    assert(
+        flowerStringBasedOnCount(600) ==
+            "\uD83C\uDF38\uD83C\uDF37\uD83C\uDF39\uD83C\uDF3A\uD83C\uDF3B")
+    assert(
+        flowerStringBasedOnCount(700) ==
+            "\uD83C\uDF38\uD83C\uDF37\uD83C\uDF39\uD83C\uDF3A\uD83C\uDF3B\uD83C\uDF3C")
+    assert(flowerStringBasedOnCount(800) == "🌸🌷🌹🌺🌻🌼\uD83D\uDC90")
   }
 
   @Test
