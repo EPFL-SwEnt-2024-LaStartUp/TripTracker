@@ -130,6 +130,7 @@ class UserProfileEditScreenTest : TestCase() {
 
   @Test
   fun testInsertPictureWhenNewPicture() {
+    every { mockProfile.userProfile.value.mail } returns ""
     composeTestRule.setContent {
       InsertPicture(
           pickMedia = manager, selectedPicture = picture, oldPicture = null, profile = mockProfile)
