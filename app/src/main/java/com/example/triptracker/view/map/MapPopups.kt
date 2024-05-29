@@ -253,6 +253,36 @@ fun getDisplayAddress(address: String): String {
   }
 }
 
+/**
+ * Get the height of the image based on whether the image is empty or not
+ *
+ * @param imageIsEmpty MutableState of a boolean that keeps track of whether there are images to
+ *   display or not
+ *     @param screenHeight Dp of the screen height
+ */
+private fun getHeight(imageIsEmpty: MutableState<Boolean>, screenHeight: Dp): Dp {
+  return if (imageIsEmpty.value) 0.dp else screenHeight * 0.2f
+}
+
+/**
+ * ShowPictures is a composable function that displays the images of the pins
+ *
+ * @param pin Pin to display the images of
+ * @param imageIsEmpty MutableState of a boolean that keeps track of whether there are images to
+ */
+@Composable
+private fun ShowPictures(pin: Pin, imageIsEmpty: MutableState<Boolean>) {
+  for (image in pin.image_url) {
+    imageIsEmpty.value = false
+    AsyncImage(
+        model = image,
+        contentDescription = pin.description,
+        modifier = Modifier.clip(RoundedCornerShape(corner = CornerSize(15.dp))))
+
+    Spacer(modifier = Modifier.width(15.dp))
+  }
+}
+
 @Composable
 fun StartScreen(
     itinerary: Itinerary,
@@ -418,22 +448,12 @@ fun StartScreen(
                                   }
                             }
                         // check if it is possible to display the images
-                        val height = if (imageIsEmpty.value) 0.dp else screenHeight * 0.2f
+                        val height = getHeight(imageIsEmpty, screenHeight)
                         LazyRow(
                             modifier = Modifier.height(height),
                             verticalAlignment = Alignment.CenterVertically) {
                               items(itinerary.pinnedPlaces) { pin ->
-                                for (image in pin.image_url) {
-                                  imageIsEmpty.value = false
-                                  AsyncImage(
-                                      model = image,
-                                      contentDescription = pin.description,
-                                      modifier =
-                                          Modifier.clip(
-                                              RoundedCornerShape(corner = CornerSize(15.dp))))
-
-                                  Spacer(modifier = Modifier.width(15.dp))
-                                }
+                                ShowPictures(pin = pin, imageIsEmpty = imageIsEmpty)
                               }
                             }
                         OnImageIsEmpty(imageIsEmpty = imageIsEmpty, screenHeight = screenHeight)

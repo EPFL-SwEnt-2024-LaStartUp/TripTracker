@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -158,6 +159,7 @@ fun Login(
     context: Context,
     authenticator: GoogleAuthenticator,
 ) {
+  val isDark = isSystemInDarkTheme()
   Column(
       modifier = Modifier.fillMaxSize().padding(15.dp).testTag("LoginScreen"),
       verticalArrangement = Arrangement.Center,
@@ -165,7 +167,11 @@ fun Login(
   ) {
     Image(
         modifier = Modifier.width(189.dp).height(189.dp),
-        painter = painterResource(id = R.drawable.logo_no_background),
+        painter =
+            painterResource(
+                id =
+                    if (!isDark) R.drawable.logo_no_background
+                    else R.drawable.logo_no_background_dark),
         contentDescription = "image logo",
         contentScale = ContentScale.FillBounds)
     Spacer(modifier = Modifier.height(40.dp))
