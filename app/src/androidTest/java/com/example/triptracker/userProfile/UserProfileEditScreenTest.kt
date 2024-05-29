@@ -115,7 +115,11 @@ class UserProfileEditScreenTest : TestCase() {
   @Test
   fun testInsertPictureWhenOldPicture() {
     composeTestRule.setContent {
-      InsertPicture(pickMedia = manager, selectedPicture = null, oldPicture = picture.toString())
+      InsertPicture(
+          pickMedia = manager,
+          selectedPicture = null,
+          oldPicture = picture.toString(),
+          MutableUserProfile())
     }
     composeTestRule.onNodeWithTag("ProfilePicture").assertExists()
     composeTestRule.onNodeWithTag("ProfilePicture").performClick()
@@ -125,7 +129,8 @@ class UserProfileEditScreenTest : TestCase() {
   @Test
   fun testInsertPictureWhenNewPicture() {
     composeTestRule.setContent {
-      InsertPicture(pickMedia = manager, selectedPicture = picture, oldPicture = null)
+      InsertPicture(
+          pickMedia = manager, selectedPicture = picture, oldPicture = null, MutableUserProfile())
     }
     composeTestRule.onNodeWithTag("ProfilePicture").assertExists()
     composeTestRule.onNodeWithTag("ProfilePicture").performClick()
@@ -135,7 +140,8 @@ class UserProfileEditScreenTest : TestCase() {
   @Test
   fun testInsertPictureWhenNoNewPicture() {
     composeTestRule.setContent {
-      InsertPicture(pickMedia = manager, selectedPicture = null, oldPicture = null)
+      InsertPicture(
+          pickMedia = manager, selectedPicture = null, oldPicture = null, MutableUserProfile())
     }
     composeTestRule.onNodeWithTag("NoProfilePicture").assertExists()
     composeTestRule.onNodeWithTag("NoProfilePicture").performClick()
