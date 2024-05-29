@@ -440,6 +440,8 @@ fun UserProfileEditScreen(
                               profileImageUrl = imageUrl,
                               followers = profile.userProfile.value.followers,
                               following = profile.userProfile.value.following,
+                              profilePrivacy = profile.userProfile.value.profilePrivacy,
+                              itineraryPrivacy = profile.userProfile.value.itineraryPrivacy,
                               interests = selectedInterests,
                               travelStyle = selectedTravelStyle,
                               languages = selectedLanguages)

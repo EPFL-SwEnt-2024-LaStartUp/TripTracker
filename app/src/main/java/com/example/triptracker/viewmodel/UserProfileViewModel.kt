@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.example.triptracker.MainActivity.Companion.applicationContext
 import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
@@ -16,6 +17,7 @@ import com.example.triptracker.model.repository.ImageRepository
 import com.example.triptracker.model.repository.Response
 import com.example.triptracker.model.repository.UserProfileRepository
 import com.example.triptracker.view.Navigation
+import com.example.triptracker.view.map.getFilePathFromUri
 import kotlinx.coroutines.launch
 
 /**
@@ -267,9 +269,7 @@ class UserProfileViewModel(
    */
   fun onConnectionRefresh(): Boolean {
     if (isDeviceConnectedToInternet) {
-      if (_profile != null && _selectedPicture != null) {
-        updateProfile(_selectedPicture!!, _profile!!)
-      }
+      updateProfile(_selectedPicture, _profile!!)
       return true
     }
     return false
@@ -293,11 +293,12 @@ class UserProfileViewModel(
       selectedPicture: Uri?,
       profile: MutableUserProfile
   ) {
-    if (selectedPicture == null || isDeviceConnectedToInternet) {
-      updateProfile(navigation, isCreated, onLoadingChange, selectedPicture, profile)
+    val filePathFromUri = getFilePathFromUri(selectedPicture, applicationContext())
+    if (isDeviceConnectedToInternet) {
+      updateProfile(navigation, isCreated, onLoadingChange, filePathFromUri, profile)
     } else {
-      profile.userProfile.value = profile.userProfile.value.copy()
-      _selectedPicture = Uri.parse(profile.toString())
+      _profile?.userProfile?.value = profile.userProfile.value
+      _selectedPicture = filePathFromUri
       navigation.goBack()
     }
   }
@@ -309,19 +310,22 @@ class UserProfileViewModel(
    * @param selectedPicture : Uri of the selected picture to update the user profile.
    * @param profile : User profile to update.
    */
-  private fun updateProfile(selectedPicture: Uri, profile: MutableUserProfile) {
-    addProfilePictureToStorage(selectedPicture) { resp ->
-      val imageUrl =
-          if (resp is Response.Success) {
-            resp.data!!.toString()
-          } else {
-            profile.userProfile.value
-                .profileImageUrl // Keep the old image if the new one could not be uploaded
-          }
-      val newProfile = profile.userProfile.value.copy(profileImageUrl = imageUrl)
-      updateUserProfileInDb(newProfile)
-      _profile?.userProfile?.value = newProfile
+  private fun updateProfile(selectedPicture: Uri?, profile: MutableUserProfile) {
+    var newProfile = profile.userProfile.value
+    if (selectedPicture != null) {
+      addProfilePictureToStorage(selectedPicture) { resp ->
+        val imageUrl =
+            if (resp is Response.Success) {
+              resp.data!!.toString()
+            } else {
+              profile.userProfile.value
+                  .profileImageUrl // Keep the old image if the new one could not be uploaded
+            }
+        newProfile = profile.userProfile.value.copy(profileImageUrl = imageUrl)
+      }
     }
+    updateUserProfileInDb(newProfile)
+    _profile?.userProfile?.value = newProfile
   }
 
   /**
@@ -344,7 +348,7 @@ class UserProfileViewModel(
   ) {
     onLoadingChange()
     if (selectedPicture != null) {
-      addProfilePictureToStorage(selectedPicture!!) { resp ->
+      addProfilePictureToStorage(selectedPicture) { resp ->
         val imageUrl =
             if (resp is Response.Success) {
               resp.data!!.toString()
