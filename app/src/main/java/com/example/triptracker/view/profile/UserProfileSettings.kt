@@ -38,7 +38,6 @@ import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.profile.subviews.ScaffoldTopBar
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
-import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.view.theme.md_theme_tri_state
