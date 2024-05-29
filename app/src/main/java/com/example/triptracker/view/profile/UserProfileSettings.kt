@@ -55,7 +55,7 @@ fun UserProfileSettings(
 ) {
   val userProfile = AmbientUserProfile.current.userProfile.value
   val userAmbient = AmbientUserProfile.current.userProfile
-  val (isFlowerMode, setIsFlowerMode) = remember { mutableStateOf(false) }
+  val isFlowerMode = remember { mutableStateOf(userProfile.flowerMode == 1) }
 
   Scaffold(
       topBar = { ScaffoldTopBar(navigation = navigation, label = "Settings") },
@@ -229,7 +229,7 @@ fun UserProfileSettings(
                                           (LocalConfiguration.current.screenHeightDp * 0.06).dp)
                                   .testTag("FlowerModeButton"),
                           onClick = {
-                            setIsFlowerMode(!isFlowerMode)
+                            val newMode = !isFlowerMode.value
                             val newProfile =
                                 UserProfile(
                                     mail = userProfile.mail,
@@ -242,7 +242,7 @@ fun UserProfileSettings(
                                     following = userProfile.following,
                                     profilePrivacy = userProfile.profilePrivacy,
                                     itineraryPrivacy = userProfile.itineraryPrivacy,
-                                    flowerMode = if (!isFlowerMode) 1 else 0)
+                                    flowerMode = if (newMode) 1 else 0)
                             userAmbient.value = newProfile
                             userProfileViewModel.updateUserProfileInDb(newProfile)
                           },
