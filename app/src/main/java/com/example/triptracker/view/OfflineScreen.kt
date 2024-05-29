@@ -80,7 +80,7 @@ fun OfflineScreen(navigation: Navigation, onRetry: () -> Unit) {
                 tint = color // Blinking effect
                 )
             Spacer(
-                modifier = Modifier.height((LocalConfiguration.current.screenHeightDp * 0.025f).dp))
+                modifier = Modifier.height((LocalConfiguration.current.screenHeightDp * 0.022f).dp))
             Text(
                 text = "Try again when you're back",
                 fontFamily = Montserrat,
