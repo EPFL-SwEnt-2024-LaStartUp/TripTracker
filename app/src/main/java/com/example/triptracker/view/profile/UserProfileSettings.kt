@@ -55,6 +55,7 @@ fun UserProfileSettings(
 ) {
   val userProfile = AmbientUserProfile.current.userProfile.value
   val userAmbient = AmbientUserProfile.current.userProfile
+  val (isFlowerMode, setIsFlowerMode) = remember { mutableStateOf(false) }
 
   Scaffold(
       topBar = { ScaffoldTopBar(navigation = navigation, label = "Settings") },
@@ -212,6 +213,53 @@ fun UserProfileSettings(
                                 fontSize = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
                                 fontFamily = Montserrat,
                                 fontWeight = FontWeight.Bold)
+                          }
+                    })
+                Spacer(modifier = Modifier.height(10.dp))
+                HorizontalDivider(thickness = 1.5.dp, color = md_theme_grey)
+                Spacer(modifier = Modifier.height(15.dp))
+                SettingsElement(
+                    "Flower Mode",
+                    actions = {
+                      FilledTonalButton(
+                          modifier =
+                              Modifier.size(
+                                      width = (LocalConfiguration.current.screenWidthDp * 0.30).dp,
+                                      height =
+                                          (LocalConfiguration.current.screenHeightDp * 0.06).dp)
+                                  .testTag("FlowerModeButton"),
+                          onClick = {
+                            setIsFlowerMode(!isFlowerMode)
+                            val newProfile =
+                                UserProfile(
+                                    mail = userProfile.mail,
+                                    name = userProfile.name,
+                                    surname = userProfile.surname,
+                                    birthdate = userProfile.birthdate,
+                                    username = userProfile.username,
+                                    profileImageUrl = userProfile.profileImageUrl,
+                                    followers = userProfile.followers,
+                                    following = userProfile.following,
+                                    profilePrivacy = userProfile.profilePrivacy,
+                                    itineraryPrivacy = userProfile.itineraryPrivacy,
+                                    flowerMode = if (!isFlowerMode) 1 else 0)
+                            userAmbient.value = newProfile
+                            userProfileViewModel.updateUserProfileInDb(newProfile)
+                          },
+                          colors =
+                              ButtonDefaults.filledTonalButtonColors(
+                                  containerColor =
+                                      if (userAmbient.value.flowerMode == 1) md_theme_orange
+                                      else md_theme_grey,
+                                  contentColor = md_theme_light_onPrimary)) {
+                            Text(
+                                text =
+                                    if (userAmbient.value.flowerMode == 1) "Enabled"
+                                    else "Disabled",
+                                fontSize = (LocalConfiguration.current.screenHeightDp * 0.016f).sp,
+                                fontFamily = Montserrat,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center)
                           }
                     })
               }

@@ -380,7 +380,10 @@ fun StartScreen(
                             color = md_theme_light_onPrimary,
                             modifier = Modifier.testTag("Title"))
                         Text(
-                            text = "${itinerary.flameCount} 🔥",
+                            text =
+                                if (ambientProfile.userProfile.value.flowerMode == 1)
+                                    "${itinerary.flameCount} 🌸🌷"
+                                else "${itinerary.flameCount} 🔥",
                             color = md_theme_orange, // This is the orange color
                             fontFamily = Montserrat,
                             fontWeight = FontWeight.Normal,

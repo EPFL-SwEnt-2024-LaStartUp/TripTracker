@@ -441,10 +441,18 @@ fun HomePager(
         modifier = Modifier.fillMaxWidth().height(50.dp),
         backgroundColor = MaterialTheme.colorScheme.background) {
           tabs.forEachIndexed { index, title ->
+            var flower = ""
+            if (title == HomeCategory.FOLLOWING.name &&
+                ambientProfile.userProfile.value.flowerMode == 1) {
+              flower = "\uD83C\uDF38"
+            } else if (title == HomeCategory.TRENDING.name &&
+                ambientProfile.userProfile.value.flowerMode == 1) {
+              flower = "\uD83C\uDF37"
+            }
             isSelected = index == selectedTab
             Tab(selected = isSelected, onClick = { selectedTab = index }) {
               Text(
-                  title,
+                  "$title $flower",
                   color =
                       if (isSelected) MaterialTheme.colorScheme.onBackground
                       else MaterialTheme.colorScheme.onSurface,

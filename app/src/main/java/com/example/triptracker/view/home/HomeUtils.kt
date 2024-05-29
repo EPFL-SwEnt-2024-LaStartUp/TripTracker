@@ -141,6 +141,9 @@ fun DisplayItinerary(
   /* Mutable state variable that holds the loading state of the screen */
   var isLoading by remember { mutableStateOf(false) }
 
+  // Mutable state variable that holds the flower mode state of the screen
+  val (isFlowerMode, setIsFlowerMode) = remember { mutableStateOf(false) }
+
   /** Alpha value for the screen depending on loading state */
   val alpha = if (!isLoading) 1f else 0.7f
 
@@ -350,7 +353,10 @@ fun DisplayItinerary(
                               color = md_theme_light_onPrimary,
                               modifier = Modifier.testTag("Title"))
                           Text(
-                              text = "${itinerary.flameCount} 🔥",
+                              text =
+                                  if (ambientProfile.userProfile.value.flowerMode == 1)
+                                      "${itinerary.flameCount} \uD83C\uDF38\uD83C\uDF37"
+                                  else "${itinerary.flameCount} 🔥",
                               color = md_theme_orange, // This is the orange color
                               fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                               fontSize = 14.sp)
