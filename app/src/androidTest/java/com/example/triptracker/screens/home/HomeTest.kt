@@ -13,6 +13,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeLeft
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.action.ViewActions.pressKey
@@ -37,8 +38,10 @@ import io.github.kakaocup.compose.node.element.ComposeScreen
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.invoke
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import junit.framework.TestCase
 import org.junit.Before
@@ -716,6 +719,59 @@ class HomeTest {
         performClick()
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag("ItineraryItem").assertIsDisplayed()
+      }
+    }
+  }
+
+  @Test
+  fun testPullToRefresh() {
+    // Slot to capture the callback
+    val callbackSlot = slot<(List<Itinerary>) -> Unit>()
+
+    // Mock the repository call to capture the callback
+    every { mockItineraryRepository.getAllItineraries(capture(callbackSlot)) } answers
+        {
+          // Log the capture action
+          println("Callback captured")
+        }
+
+    every { mockViewModel.itineraryList } returns MutableLiveData(mockItineraries)
+    every { mockViewModel.filteredItineraryList } returns MutableLiveData(null)
+    every { mockUserProfileViewModel.fetchAllUserProfiles(any()) } answers
+        {
+          val callback = arg<(List<UserProfile>) -> Unit>(0)
+          callback(mockUsers)
+        }
+
+    // Setting up the test composition
+    composeTestRule.setContent {
+      HomeScreen(
+          navigation = mockNav,
+          homeViewModel = mockViewModel,
+          userProfileViewModel = mockUserProfileViewModel,
+          test = true)
+    }
+
+    // Ensure the initial state is displayed
+    composeTestRule.onNodeWithTag("ItineraryList").assertIsDisplayed()
+
+    // Perform the swipe down action to trigger pull-to-refresh
+    composeTestRule.onNodeWithTag("ItineraryList").performTouchInput { swipeDown() }
+
+    // Ensure the loading state is displayed
+    composeTestRule.onNodeWithTag("Refreshing").assertIsDisplayed()
+
+    // Log the idle state
+    println("Compose test rule idle")
+
+    // Simulate the end of the refresh
+    composeTestRule.runOnIdle {
+      // Manually trigger the callback to simulate data being fetched
+      if (callbackSlot.isCaptured) {
+        callbackSlot.captured(mockItineraries)
+        println("Callback invoked")
+      } else {
+        println("Callback not captured")
       }
     }
   }

@@ -296,9 +296,9 @@ fun StartScreen(
         }
       }
   Box(
-      modifier = Modifier.alpha(alpha).fillMaxWidth().fillMaxHeight(),
+      modifier = Modifier.fillMaxWidth().fillMaxHeight().alpha(alpha),
       contentAlignment = Alignment.Center) {
-        Box(
+        Column(
             modifier =
                 Modifier.fillMaxWidth(0.9f)
                     .fillMaxHeight(0.95f)
@@ -310,165 +310,175 @@ fun StartScreen(
                                 topEnd = 35.dp,
                                 bottomStart = 35.dp,
                                 bottomEnd = 35.dp))) {
+              IconButton(
+                  onClick = onClickGoBack,
+                  modifier =
+                      Modifier.size(40.dp)
+                          .align(Alignment.CenterHorizontally)
+                          .testTag("BackButton")) {
+                    Icon(
+                        imageVector = Icons.Outlined.ExpandLess,
+                        contentDescription = "Back",
+                        tint = md_theme_light_outlineVariant,
+                        modifier = Modifier.size(40.dp))
+                  }
               Column(
                   modifier =
                       Modifier.fillMaxWidth()
+                          .fillMaxHeight()
                           .verticalScroll(rememberScrollState())
-                          .padding(top = 15.dp, start = 25.dp, end = 25.dp, bottom = 0.dp)) {
-                    IconButton(
-                        onClick = onClickGoBack,
-                        modifier =
-                            Modifier.size(40.dp)
-                                .align(Alignment.CenterHorizontally)
-                                .testTag("BackButton")) {
-                          Icon(
-                              imageVector = Icons.Outlined.ExpandLess,
-                              contentDescription = "Back",
-                              tint = md_theme_light_outlineVariant,
-                              modifier = Modifier.size(40.dp))
-                        }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically) {
-                          // change the image to the user's profile picture
-                          AsyncImage(
-                              model = userOfPost.profileImageUrl,
-                              contentDescription = "User Avatar",
-                              modifier =
-                                  Modifier.size(avatarSize)
-                                      .clip(CircleShape)
-                                      .sizeIn(maxWidth = 20.dp)
-                                      .testTag("ProfilePic")
-                                      .clickable { /* TODO bring user to profile page */})
-
-                          Spacer(modifier = Modifier.width(15.dp))
-                          Text(
-                              text = userOfPost.username,
-                              fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                              //                wrapContentHeight(align =
-                              // Alignment.CenterVertically),
-                              fontWeight = FontWeight.Normal,
-                              fontSize = 16.sp,
-                              color = md_theme_light_outlineVariant,
-                              modifier =
-                                  Modifier.testTag("Username")
-                                      .wrapContentHeight(align = Alignment.CenterVertically))
-                          Spacer(Modifier.weight(1f))
-
-                          DisplayStar(
-                              userProfileViewModel,
-                              userProfile,
-                              itinerary,
-                              homeViewModel,
-                              offline,
-                          ) {
-                            isLoading = !isLoading
-                          }
-                        }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Text(
-                        text = itinerary.title,
-                        fontFamily = Montserrat,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 26.sp,
-                        color = md_theme_light_onPrimary,
-                        modifier = Modifier.testTag("Title"))
-                    Text(
-                        text = "${itinerary.flameCount} 🔥",
-                        color = md_theme_orange, // This is the orange color
-                        fontFamily = Montserrat,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 16.sp,
-                        modifier =
-                            Modifier.padding(
-                                    bottom = 20.dp,
-                                    top = 10.dp,
-                                )
-                                .testTag("FlameCount"))
-                    Column(
-                        verticalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxHeight()) {
-                          LazyColumn(
-                              modifier =
-                                  Modifier.padding(
-                                          top = 10.dp, start = 10.dp, end = 10.dp, bottom = 10.dp)
-                                      .size(screenWidth, screenHeight * 0.2f)) {
-                                items(itinerary.pinnedPlaces) { pin ->
-                                  val index = itinerary.pinnedPlaces.indexOf(pin)
-                                  PinDescription(
-                                      descriptionsOpen = descriptionsOpen, pin = pin, index = index)
-                                  Spacer(modifier = Modifier.height(5.dp))
-                                  OnDescriptionOpen(
-                                      descriptionsOpen = descriptionsOpen, pin = pin, index = index)
-                                  Spacer(modifier = Modifier.height(5.dp))
-                                }
-                              }
-                          // check if it is possible to display the images
-                          val height = if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f
-                          LazyRow(
-                              modifier = Modifier.height(height),
-                              verticalAlignment = Alignment.CenterVertically) {
-                                items(itinerary.pinnedPlaces) { pin ->
-                                  for (image in pin.image_url) {
-                                    imageIsEmpty.value = false
-                                    AsyncImage(
-                                        model = image,
-                                        contentDescription = pin.description,
-                                        modifier =
-                                            Modifier.clip(
-                                                RoundedCornerShape(corner = CornerSize(15.dp))))
-
-                                    Spacer(modifier = Modifier.width(15.dp))
-                                  }
-                                }
-                              }
-                          OnImageIsEmpty(imageIsEmpty = imageIsEmpty, screenHeight = screenHeight)
-                          // add spacer proportional to the screen height
-                          Spacer(modifier = Modifier.height(screenHeight * 0.07f))
-                          if (!offline) {
-                            Button(
-                                onClick = {
-                                  onClick()
-                                  mapViewModel.asStartItinerary.value = true
-                                },
+                          .padding(top = 15.dp, start = 25.dp, end = 25.dp, bottom = 0.dp),
+                  verticalArrangement = Arrangement.SpaceBetween) {
+                    Column() {
+                      Row(
+                          modifier = Modifier.fillMaxWidth(),
+                          verticalAlignment = Alignment.CenterVertically) {
+                            // change the image to the user's profile picture
+                            AsyncImage(
+                                model = userOfPost.profileImageUrl,
+                                contentDescription = "User Avatar",
                                 modifier =
-                                    Modifier.align(Alignment.CenterHorizontally)
-                                        .height(
-                                            screenHeight *
-                                                0.07f) // Set a specific height for the button to
-                                        // make
-                                        // it
-                                        // larger
-                                        .fillMaxWidth(
-                                            fraction =
-                                                0.5f), // Make the button fill 90% of the width
-                                shape = RoundedCornerShape(50.dp),
-                                colors =
-                                    ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFFF06F24),
-                                    ) // Rounded corners with a radius of 12.dp
-                                ) {
-                                  Text(
-                                      "Start",
-                                      fontSize = 24.sp,
-                                      color = Color.White,
-                                      fontFamily = Montserrat,
-                                      fontWeight = FontWeight.Bold)
+                                    Modifier.size(avatarSize)
+                                        .clip(CircleShape)
+                                        .sizeIn(maxWidth = 20.dp)
+                                        .testTag("ProfilePic")
+                                        .clickable { /* TODO bring user to profile page */})
+
+                            Spacer(modifier = Modifier.width(15.dp))
+                            Text(
+                                text = userOfPost.username,
+                                fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                                //                wrapContentHeight(align =
+                                // Alignment.CenterVertically),
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 16.sp,
+                                color = md_theme_light_outlineVariant,
+                                modifier =
+                                    Modifier.testTag("Username")
+                                        .wrapContentHeight(align = Alignment.CenterVertically))
+                            Spacer(Modifier.weight(1f))
+
+                            DisplayStar(
+                                userProfileViewModel,
+                                userProfile,
+                                itinerary,
+                                homeViewModel,
+                                offline) {
+                                  isLoading = !isLoading
                                 }
                           }
-                        }
-                  }
 
-              // Loading bar for when the itinerary is downloading
-              if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(64.dp).align(Alignment.Center),
-                    color = md_theme_orange,
-                    trackColor = md_theme_grey,
-                )
-              }
+                      // Spacer(modifier = Modifier.height(20.dp))
+                      Column(
+                          modifier = Modifier.fillMaxWidth().padding(top = screenHeight * 0.015f),
+                      ) {
+                        Text(
+                            text = itinerary.title,
+                            fontFamily = Montserrat,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 26.sp,
+                            color = md_theme_light_onPrimary,
+                            modifier = Modifier.testTag("Title"))
+                        Text(
+                            text = "${itinerary.flameCount} 🔥",
+                            color = md_theme_orange, // This is the orange color
+                            fontFamily = Montserrat,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp,
+                            modifier =
+                                Modifier.padding(
+                                        bottom = 10.dp,
+                                        top = 10.dp,
+                                    )
+                                    .testTag("FlameCount"))
+                        Column(
+                            verticalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxHeight()) {
+                              LazyColumn(
+                                  modifier =
+                                      Modifier.padding(
+                                              top = 10.dp,
+                                              start = 10.dp,
+                                              end = 10.dp,
+                                              bottom = 0.dp)
+                                          .size(screenWidth, screenHeight * 0.2f)) {
+                                    items(itinerary.pinnedPlaces) { pin ->
+                                      val index = itinerary.pinnedPlaces.indexOf(pin)
+                                      PinDescription(
+                                          descriptionsOpen = descriptionsOpen,
+                                          pin = pin,
+                                          index = index)
+                                      Spacer(modifier = Modifier.height(5.dp))
+                                      OnDescriptionOpen(
+                                          descriptionsOpen = descriptionsOpen,
+                                          pin = pin,
+                                          index = index)
+                                      Spacer(modifier = Modifier.height(5.dp))
+                                    }
+                                  }
+                            }
+                        // check if it is possible to display the images
+                        val height = if (imageIsEmpty.value) 0.dp else screenHeight * 0.2f
+                        LazyRow(
+                            modifier = Modifier.height(height),
+                            verticalAlignment = Alignment.CenterVertically) {
+                              items(itinerary.pinnedPlaces) { pin ->
+                                for (image in pin.image_url) {
+                                  imageIsEmpty.value = false
+                                  AsyncImage(
+                                      model = image,
+                                      contentDescription = pin.description,
+                                      modifier =
+                                          Modifier.clip(
+                                              RoundedCornerShape(corner = CornerSize(15.dp))))
+
+                                  Spacer(modifier = Modifier.width(15.dp))
+                                }
+                              }
+                            }
+                        OnImageIsEmpty(imageIsEmpty = imageIsEmpty, screenHeight = screenHeight)
+                        // add spacer proportional to the screen height
+                        Spacer(modifier = Modifier.height(screenHeight * 0.025f))
+                      }
+                    }
+                    if (!offline) {
+                      Button(
+                          onClick = {
+                            onClick()
+                            mapViewModel.asStartItinerary.value = true
+                          },
+                          modifier =
+                              Modifier.padding(bottom = screenHeight * 0.05f)
+                                  .align(Alignment.CenterHorizontally)
+                                  .height(
+                                      screenHeight *
+                                          0.07f) // Set a specific height for the button to make it
+                                  // larger
+                                  .fillMaxWidth(
+                                      fraction = 0.5f), // Make the button fill 90% of the width
+                          shape = RoundedCornerShape(50.dp),
+                          colors =
+                              ButtonDefaults.buttonColors(
+                                  containerColor = Color(0xFFF06F24),
+                              ) // Rounded corners with a radius of 12.dp
+                          ) {
+                            Text(
+                                "Start",
+                                fontSize = 24.sp,
+                                color = Color.White,
+                                fontFamily = Montserrat,
+                                fontWeight = FontWeight.Bold)
+                          }
+                    }
+                  }
             }
+        if (isLoading) {
+          CircularProgressIndicator(
+              modifier = Modifier.size(64.dp).align(Alignment.Center),
+              color = md_theme_orange,
+              trackColor = md_theme_grey,
+          )
+        }
       }
 }
 
@@ -614,9 +624,9 @@ fun OnDescriptionOpen(descriptionsOpen: MutableState<List<Boolean>>, pin: Pin, i
 fun OnImageIsEmpty(imageIsEmpty: MutableState<Boolean>, screenHeight: Dp) {
   if (imageIsEmpty.value) {
     Text(
-        text = "No images to display",
+        text = "No pictures to display",
         color = md_theme_light_outlineVariant,
         fontSize = 16.sp,
-        modifier = Modifier.padding(start = 20.dp).height(screenHeight * 0.25f))
+        modifier = Modifier.padding(start = 20.dp).height(screenHeight * 0.15f))
   }
 }
