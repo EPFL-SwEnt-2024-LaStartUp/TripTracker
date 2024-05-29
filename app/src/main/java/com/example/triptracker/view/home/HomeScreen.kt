@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -51,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.Font
@@ -128,15 +130,21 @@ fun HomeScreen(
                   isNoResultFound = isNoResultFound)
             }
             if (isSearchActive) {
+              val horizontalPlacement = LocalConfiguration.current.screenWidthDp * 0.6f
+              val verticalPlacement = LocalConfiguration.current.screenHeightDp * 0.024f
               Box(
                   modifier =
-                      Modifier.padding(290.dp, 25.dp, 25.dp, 235.dp)
-                          .width(200.dp)
+                      Modifier.padding(
+                              PaddingValues(
+                                  horizontalPlacement.dp, verticalPlacement.dp, 0.dp, 0.dp))
+                          .fillMaxWidth()
+                          .fillMaxHeight()
                           .testTag("DropDownBox")) {
                     DropdownMenu(
                         expanded = showFilterDropdown,
                         onDismissRequest = { showFilterDropdown = false },
-                        modifier = Modifier.testTag("DropDownFilter")) {
+                        modifier =
+                            Modifier.padding(10.dp).width(400.dp).testTag("DropDownFilter")) {
                           FilterType.entries.forEach { filterType ->
                             DropdownMenuItem(
                                 text = {
@@ -241,7 +249,7 @@ fun SearchBarImplementation(
     SearchBar(
         modifier =
             Modifier.fillMaxWidth()
-                .padding(horizontal = 30.dp, vertical = 5.dp)
+                .padding(horizontal = 17.dp, vertical = 5.dp)
                 .testTag("searchBar"),
         query = searchText,
         onQueryChange = { newText ->

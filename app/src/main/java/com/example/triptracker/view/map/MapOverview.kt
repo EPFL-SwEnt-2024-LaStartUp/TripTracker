@@ -525,13 +525,13 @@ fun Map(
                           verticalArrangement = Arrangement.Center,
                           horizontalAlignment = Alignment.Start) {
                             Text(
-                                text = mapViewModel.selectedPin.value?.description ?: "",
+                                text = mapViewModel.selectedPin.value?.name ?: "",
                                 fontSize = 20.sp,
                                 fontFamily = Montserrat,
                                 fontWeight = FontWeight.Bold,
                                 color = md_theme_light_onPrimary)
                             Text(
-                                text = mapViewModel.selectedPin.value?.name ?: "",
+                                text = mapViewModel.selectedPin.value?.description ?: "",
                                 fontSize = 12.sp,
                                 fontFamily = Montserrat,
                                 fontWeight = FontWeight.Normal,

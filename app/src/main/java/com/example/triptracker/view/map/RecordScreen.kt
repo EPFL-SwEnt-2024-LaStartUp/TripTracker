@@ -420,7 +420,7 @@ fun Map(
                                   fontSize = 16.sp,
                                   fontFamily = Montserrat,
                                   fontWeight = FontWeight.Normal,
-                                  lineHeight = 10.sp),
+                                  lineHeight = 20.sp),
                           colors =
                               OutlinedTextFieldDefaults.colors(
                                   unfocusedTextColor = md_theme_light_onPrimary,
