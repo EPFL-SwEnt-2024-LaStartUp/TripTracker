@@ -130,17 +130,21 @@ fun HomeScreen(
                   isNoResultFound = isNoResultFound)
             }
             if (isSearchActive) {
-                val horizontalPlacement = LocalConfiguration.current.screenWidthDp * 0.6f
-
+              val horizontalPlacement = LocalConfiguration.current.screenWidthDp * 0.6f
+              val verticalPlacement = LocalConfiguration.current.screenHeightDp * 0.024f
               Box(
                   modifier =
-                      Modifier.padding(PaddingValues(horizontalPlacement.dp, 24.dp, 0.dp, 0.dp))
-                          .fillMaxWidth().fillMaxHeight()
+                      Modifier.padding(
+                              PaddingValues(
+                                  horizontalPlacement.dp, verticalPlacement.dp, 0.dp, 0.dp))
+                          .fillMaxWidth()
+                          .fillMaxHeight()
                           .testTag("DropDownBox")) {
                     DropdownMenu(
                         expanded = showFilterDropdown,
                         onDismissRequest = { showFilterDropdown = false },
-                        modifier = Modifier.padding(10.dp).width(400.dp).testTag("DropDownFilter")) {
+                        modifier =
+                            Modifier.padding(10.dp).width(400.dp).testTag("DropDownFilter")) {
                           FilterType.entries.forEach { filterType ->
                             DropdownMenuItem(
                                 text = {
