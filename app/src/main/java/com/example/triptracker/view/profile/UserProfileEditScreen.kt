@@ -168,17 +168,6 @@ fun UserProfileEditScreen(
       topBar = {},
       bottomBar = { NavigationBar(navigation) },
       modifier = Modifier.testTag("UserProfileEditScreen")) { innerPadding ->
-        if (!isCreated) {
-          Button(
-              onClick = { navigation.goBack() },
-              colors =
-                  ButtonDefaults.buttonColors(
-                      containerColor = Color.Transparent,
-                      contentColor = MaterialTheme.colorScheme.onSurface),
-              modifier = Modifier.testTag("GoBackButton")) {
-                Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
-              }
-        }
         Column(
             modifier =
                 Modifier.fillMaxSize()
@@ -186,6 +175,17 @@ fun UserProfileEditScreen(
                     .padding(top = 37.dp, bottom = 25.dp, start = 25.dp, end = 25.dp)
                     .background(md_theme_light_dark, shape = RoundedCornerShape(20.dp)),
         ) {
+          if (!isCreated) {
+            Button(
+                onClick = { navigation.goBack() },
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colorScheme.onSurface),
+                modifier = Modifier.testTag("GoBackButton")) {
+                  Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
+                }
+          }
           val showArrow by remember {
             derivedStateOf { scrollState.maxValue > 0 && scrollState.value < scrollState.maxValue }
           }
@@ -220,7 +220,7 @@ fun UserProfileEditScreen(
                                   modifier =
                                       Modifier.size(90.dp)
                                           .background(Color.White, shape = CircleShape)) {
-                                    InsertPicture(pickMedia, selectedPicture, imageUrl)
+                                    InsertPicture(pickMedia, selectedPicture, imageUrl, profile)
                                   }
                               // Position the small orange circle with a plus sign
                               Box(
@@ -440,6 +440,9 @@ fun UserProfileEditScreen(
                               profileImageUrl = imageUrl,
                               followers = profile.userProfile.value.followers,
                               following = profile.userProfile.value.following,
+                              favoritesPaths = profile.userProfile.value.favoritesPaths,
+                              profilePrivacy = profile.userProfile.value.profilePrivacy,
+                              itineraryPrivacy = profile.userProfile.value.itineraryPrivacy,
                               interests = selectedInterests,
                               travelStyle = selectedTravelStyle,
                               languages = selectedLanguages)
@@ -578,7 +581,8 @@ fun CustomDatePickerDialog(onAccept: (Long?) -> Unit, onCancel: () -> Unit) {
 fun InsertPicture(
     pickMedia: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
     selectedPicture: Uri?,
-    oldPicture: String?
+    oldPicture: String?,
+    profile: MutableUserProfile
 ) {
   when (selectedPicture != null) {
     // when no picture was selected show the add picture icon
@@ -615,6 +619,22 @@ fun InsertPicture(
     // when a picture was selected show the picture
     true -> {
       Box(modifier = Modifier.fillMaxSize().testTag("ProfilePicture")) {
+        profile.userProfile.value =
+            UserProfile(
+                mail = profile.userProfile.value.mail,
+                name = profile.userProfile.value.name,
+                surname = profile.userProfile.value.surname,
+                birthdate = profile.userProfile.value.birthdate,
+                username = profile.userProfile.value.username,
+                profileImageUrl = selectedPicture.toString(),
+                followers = profile.userProfile.value.followers,
+                following = profile.userProfile.value.following,
+                favoritesPaths = profile.userProfile.value.favoritesPaths,
+                profilePrivacy = profile.userProfile.value.profilePrivacy,
+                itineraryPrivacy = profile.userProfile.value.itineraryPrivacy,
+                interests = profile.userProfile.value.interests,
+                travelStyle = profile.userProfile.value.travelStyle,
+                languages = profile.userProfile.value.languages)
         AsyncImage(
             model = selectedPicture,
             contentDescription = "Profile picture",
