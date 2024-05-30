@@ -354,8 +354,7 @@ fun DisplayItineraries(
     userProfileViewModel: UserProfileViewModel = viewModel()
 ) {
   var goodPadding = PaddingValues(0.dp, 0.dp, 0.dp, 70.dp)
-  val userProfile = AmbientUserProfile.current.userProfile.value
-  val usermail = userProfile.mail
+  val usermail = AmbientUserProfile.current.userProfile.value.mail
   if (test) {
     goodPadding = PaddingValues(0.dp, 50.dp, 0.dp, 70.dp)
   }
