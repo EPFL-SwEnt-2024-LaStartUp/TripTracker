@@ -40,6 +40,7 @@ data class UserProfile(
     val interests: List<String> = emptyList(),
     val travelStyle: List<String> = emptyList(),
     val languages: List<String> = emptyList(),
+    val flowerMode: Int = 0,
 )
 
 /** This data class represents a mutable user's profile information. */

@@ -76,6 +76,7 @@ import com.example.triptracker.model.location.popupState
 import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
+import com.example.triptracker.view.home.flowerStringBasedOnCount
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
@@ -410,7 +411,10 @@ fun StartScreen(
                             color = md_theme_light_onPrimary,
                             modifier = Modifier.testTag("Title"))
                         Text(
-                            text = "${itinerary.flameCount} 🔥",
+                            text =
+                                if (ambientProfile.userProfile.value.flowerMode == 1)
+                                    "${itinerary.flameCount} ${flowerStringBasedOnCount(itinerary.flameCount)}"
+                                else "${itinerary.flameCount} 🔥",
                             color = md_theme_orange, // This is the orange color
                             fontFamily = Montserrat,
                             fontWeight = FontWeight.Normal,

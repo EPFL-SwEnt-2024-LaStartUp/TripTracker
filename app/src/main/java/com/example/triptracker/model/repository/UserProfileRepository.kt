@@ -128,6 +128,7 @@ open class UserProfileRepository {
     val languages =
         document.data?.get("languages") as? List<String>
             ?: createEmptyList(document.id, "languages")
+    val flowerMode = document.getLong("flowerMode") ?: 0
 
     return UserProfile(
         document.id,
@@ -143,7 +144,8 @@ open class UserProfileRepository {
         itineraryPrivacy.toInt(),
         interest,
         travelStyle,
-        languages)
+        languages,
+        flowerMode.toInt())
   }
 
   private fun createFavoritesPaths(id: String): List<String> {

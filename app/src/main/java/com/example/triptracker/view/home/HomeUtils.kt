@@ -141,6 +141,9 @@ fun DisplayItinerary(
   /* Mutable state variable that holds the loading state of the screen */
   var isLoading by remember { mutableStateOf(false) }
 
+  // Mutable state variable that holds the flower mode state of the screen
+  val (isFlowerMode, setIsFlowerMode) = remember { mutableStateOf(false) }
+
   /** Alpha value for the screen depending on loading state */
   val alpha = if (!isLoading) 1f else 0.7f
 
@@ -350,7 +353,10 @@ fun DisplayItinerary(
                               color = md_theme_light_onPrimary,
                               modifier = Modifier.testTag("Title"))
                           Text(
-                              text = "${itinerary.flameCount} 🔥",
+                              text =
+                                  if (ambientProfile.userProfile.value.flowerMode == 1)
+                                      "${itinerary.flameCount} ${flowerStringBasedOnCount(itinerary.flameCount)}"
+                                  else "${itinerary.flameCount} 🔥",
                               color = md_theme_orange, // This is the orange color
                               fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                               fontSize = 14.sp)
@@ -491,6 +497,25 @@ private fun checkIfImage(itinerary: Itinerary): Boolean {
     pin.image_url.forEach { imageUrl -> if (imageUrl.isNotEmpty()) return true }
   }
   return false // Return false if no valid URLs are found after checking all
+}
+
+/**
+ * Function to return a string of flowers based on the flame count
+ *
+ * @param flameCount: The flame count of the itinerary
+ * @return String of flowers based on the flame count
+ */
+fun flowerStringBasedOnCount(flameCount: Long): String {
+  return when {
+    flameCount > 700 -> "🌸🌷🌹🌺🌻🌼\uD83D\uDC90"
+    flameCount in 601..700 -> "🌸🌷🌹🌺🌻🌼"
+    flameCount in 501..600 -> "🌸🌷🌹🌺🌻"
+    flameCount in 401..500 -> "🌸🌷🌹\uD83D\uDC90"
+    flameCount in 301..400 -> "🌸🌷🌹"
+    flameCount in 201..300 -> "🌸🌷"
+    flameCount in 0..200 -> "🌸"
+    else -> "🌸" // This handles negative values, though it's unlikely in your context
+  }
 }
 
 /**
