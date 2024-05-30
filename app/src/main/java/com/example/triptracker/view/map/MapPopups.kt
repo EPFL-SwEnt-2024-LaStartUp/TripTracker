@@ -431,7 +431,7 @@ fun StartScreen(
                                               start = 10.dp,
                                               end = 10.dp,
                                               bottom = 0.dp)
-                                          .size(screenWidth, screenHeight * 0.2f)) {
+                                          .size(screenWidth, screenHeight * 0.3f)) {
                                     items(itinerary.pinnedPlaces) { pin ->
                                       val index = itinerary.pinnedPlaces.indexOf(pin)
                                       PinDescription(

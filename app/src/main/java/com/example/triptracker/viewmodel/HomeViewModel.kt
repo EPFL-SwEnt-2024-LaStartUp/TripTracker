@@ -338,6 +338,8 @@ class HomeViewModel(
 
   /** Filter the itinerary posted by your following users */
   fun filterByFollowing(usermail: String) {
+    UserProfileViewModel().fetchAllUserProfiles { userProfileList = it }
+    val testUser = userProfileList.firstOrNull { it.mail == usermail } ?: dummyProfile
     val userProfile = userProfileList.firstOrNull { it.mail == usermail } ?: return
     _followingList.value =
         _followingList.value?.filter { userProfile.following.contains(it.userMail) }

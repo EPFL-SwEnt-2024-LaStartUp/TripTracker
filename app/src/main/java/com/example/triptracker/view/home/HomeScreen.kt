@@ -359,6 +359,7 @@ fun DisplayItineraries(
     homeViewModel: HomeViewModel,
     test: Boolean = false,
     tabSelected: HomeCategory = HomeCategory.TRENDING,
+    userProfileViewModel: UserProfileViewModel = viewModel()
 ) {
   var goodPadding = PaddingValues(0.dp, 0.dp, 0.dp, 70.dp)
   val usermail = AmbientUserProfile.current.userProfile.value.mail
@@ -381,9 +382,9 @@ fun DisplayItineraries(
           if (tabSelected == HomeCategory.TRENDING) {
             homeViewModel.filterByTrending()
           } else {
+            userProfileViewModel.fetchAllUserProfiles { profiles -> allProfilesFetched = profiles }
             homeViewModel.filterByFollowing(usermail)
           }
-          // navigation.goBack() // Simulate back button press
         }
       },
       content = { itinerary ->
@@ -488,17 +489,32 @@ fun HomePager(
             HomeCategory.FOLLOWING -> {
               val followingItineraries by homeViewModel.followingList.observeAsState(emptyList())
               if (followingItineraries.isEmpty()) {
-                Text(
-                    text = "Not following anyone yet.",
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .padding(start = 70.dp, bottom = 250.dp)
-                            .testTag("NoFollowingText"),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Medium,
-                    letterSpacing = 0.15.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontFamily = FontFamily(Font(R.font.montserrat_regular)))
+                val isRefreshing = remember { mutableStateOf(false) }
+
+                PullToRefreshLazyColumn(
+                    items = listOf(Unit),
+                    content = {
+                      Text(
+                          text = "Not following anyone yet.",
+                          modifier =
+                              Modifier.fillMaxWidth()
+                                  .padding(start = 70.dp, bottom = 250.dp)
+                                  .testTag("NoFollowingText"),
+                          fontSize = 24.sp,
+                          fontWeight = FontWeight.Medium,
+                          letterSpacing = 0.15.sp,
+                          color = MaterialTheme.colorScheme.onBackground,
+                          fontFamily = FontFamily(Font(R.font.montserrat_regular)))
+                    },
+                    isRefreshing = isRefreshing.value,
+                    onRefresh = {
+                      isRefreshing.value = true
+                      homeViewModel.fetchItineraries() {
+                        isRefreshing.value = false
+                        homeViewModel.filterByFollowing(userEmail)
+                      }
+                    },
+                )
               }
               DisplayItineraries(
                   itineraries =
@@ -584,7 +600,7 @@ fun <T> PullToRefreshLazyColumn(
       if (isRefreshing) {
         pullToRefreshState.startRefresh()
       } else {
-        Log.e("MAMAMIA", "endRefresh")
+
         pullToRefreshState.endRefresh()
       }
     }
