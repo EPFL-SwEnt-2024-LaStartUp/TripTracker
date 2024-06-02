@@ -323,19 +323,24 @@ fun DisplaySearchResults(
         listToShow.filter {
           val itin = it
           val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
-          if (ownerProfile != null) {
-            ownerProfile.itineraryPrivacy == 0 ||
-                (ownerProfile.itineraryPrivacy == 1 &&
-                    currProfile.followers.contains(ownerProfile.mail) &&
-                    currProfile.following.contains(ownerProfile.mail))
-          } else {
-            false
-          }
+          shouldDisplayItinerary(ownerProfile, currProfile)
         }
     items(listToShow) { itinerary ->
       ItineraryItem(
           itinerary = itinerary,
           onItineraryClick = { navigation.navigateTo(Route.MAPS, itinerary.id) })
+    }
+  }
+}
+
+fun shouldDisplayItinerary(ownerProfile: UserProfile?, currProfile: UserProfile): Boolean {
+  return when (ownerProfile) {
+    null -> false
+    else -> {
+      ownerProfile.itineraryPrivacy == 0 ||
+          (ownerProfile.itineraryPrivacy == 1 &&
+              currProfile.followers.contains(ownerProfile.mail) &&
+              currProfile.following.contains(ownerProfile.mail))
     }
   }
 }
@@ -437,12 +442,7 @@ fun DisplayItineraries(
         isRefreshing.value = true
         homeViewModel.fetchItineraries {
           isRefreshing.value = false
-          if (tabSelected == HomeCategory.TRENDING) {
-            homeViewModel.filterByTrending()
-          } else {
-            userProfileViewModel.fetchAllUserProfiles { profiles -> allProfilesFetched = profiles }
-            homeViewModel.filterByFollowing(usermail)
-          }
+          filterByTabSelected(tabSelected, homeViewModel, usermail, userProfileViewModel)
         }
       },
       content = { itinerary ->
@@ -457,6 +457,19 @@ fun DisplayItineraries(
       })
 }
 
+fun filterByTabSelected(
+    tabSelected: HomeCategory,
+    homeViewModel: HomeViewModel,
+    usermail: String,
+    userProfileViewModel: UserProfileViewModel
+) {
+  if (tabSelected == HomeCategory.TRENDING) {
+    homeViewModel.filterByTrending()
+  } else {
+    userProfileViewModel.fetchAllUserProfiles { profiles -> allProfilesFetched = profiles }
+    homeViewModel.filterByFollowing(usermail)
+  }
+}
 /**
  * Represents the tabs and pager for the home screen. Contains two tabs that can be clicked to
  * switch between the trending and following categories. Or you can swipe left or right to switch
