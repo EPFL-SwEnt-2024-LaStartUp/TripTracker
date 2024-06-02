@@ -327,9 +327,7 @@ fun DisplayItinerary(
                           // places
                           onLongClick = {
                             haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                            if (canBeDeleted) {
-                              showAlert = true
-                            }
+                            updateDeletedStatus(canBeDeleted) { showAlert = true }
                           })) {
                     Column(
                         modifier =
@@ -342,9 +340,7 @@ fun DisplayItinerary(
                                 // places
                                 onLongClick = {
                                   haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                                  if (canBeDeleted) {
-                                    showAlert = true
-                                  }
+                                  updateDeletedStatus(canBeDeleted) { showAlert = true }
                                 })) {
                           Spacer(modifier = Modifier.width(120.dp))
                           Spacer(modifier = Modifier.height(5.dp))
@@ -371,28 +367,15 @@ fun DisplayItinerary(
                               fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                               color = md_theme_grey)
 
-                          if (displayImage) {
-                            Spacer(modifier = Modifier.height(screenHeight * 0.02f))
-                            LazyRow(
-                                modifier = Modifier.getHeight(imageIsEmpty, screenHeight),
-                                verticalAlignment = Alignment.CenterVertically) {
-                                  items(itinerary.pinnedPlaces) { pin ->
-                                    DisplayPictures(pin, imageIsEmpty)
-                                  }
-                                }
-                          }
+                          DisplayListOfPictures(
+                              displayImage = displayImage,
+                              screenHeight = screenHeight,
+                              itinerary = itinerary,
+                              imageIsEmpty = imageIsEmpty)
                         }
                   }
             }
-
-            // Loading bar for when the itinerary is downloading
-            if (isLoading) {
-              CircularProgressIndicator(
-                  modifier = Modifier.size(64.dp).align(Alignment.Center),
-                  color = md_theme_orange,
-                  trackColor = md_theme_grey,
-              )
-            }
+            DisplayLoadingScreen(isLoading = isLoading)
           }
     }
   }
@@ -452,6 +435,56 @@ private fun ShowAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
                   color = md_theme_light_background)
             }
       })
+}
+
+private fun updateDeletedStatus(canBeDeleted: Boolean, callback: () -> Unit) {
+  if (canBeDeleted) {
+    callback()
+  }
+}
+
+/**
+ * Displays the loading screen when the itinerary is downloading
+ *
+ * @param isLoading: Boolean to check if the itinerary is downloading
+ */
+@Composable
+private fun DisplayLoadingScreen(isLoading: Boolean) {
+  // Loading bar for when the itinerary is downloading
+  if (isLoading) {
+    Box(modifier = Modifier.fillMaxSize()) {
+      CircularProgressIndicator(
+          modifier = Modifier.size(64.dp).align(Alignment.Center),
+          color = md_theme_orange,
+          trackColor = md_theme_grey,
+      )
+    }
+  }
+}
+
+/**
+ * Displays the list of pictures of the pinned places in the itinerary
+ *
+ * @param displayImage: Boolean to display the image of the pinned places
+ * @param screenHeight: Dp value of the screen height
+ * @param itinerary: Itinerary object to get the pinned places
+ * @param imageIsEmpty: MutableState to check if the image is empty
+ */
+@Composable
+private fun DisplayListOfPictures(
+    displayImage: Boolean,
+    screenHeight: Dp,
+    itinerary: Itinerary,
+    imageIsEmpty: MutableState<Boolean>
+) {
+  if (displayImage) {
+    Spacer(modifier = Modifier.height(screenHeight * 0.02f))
+    LazyRow(
+        modifier = Modifier.getHeight(imageIsEmpty, screenHeight),
+        verticalAlignment = Alignment.CenterVertically) {
+          items(itinerary.pinnedPlaces) { pin -> DisplayPictures(pin, imageIsEmpty) }
+        }
+  }
 }
 
 /**
