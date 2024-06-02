@@ -39,7 +39,6 @@ import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -72,11 +71,12 @@ import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryDownload
 import com.example.triptracker.model.location.Pin
-import com.example.triptracker.model.location.PopUpState
+import com.example.triptracker.model.location.PopUpStatus
 import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
-import com.example.triptracker.view.home.flowerStringBasedOnCount
+import com.example.triptracker.view.home.DisplayLoadingScreen
+import com.example.triptracker.view.home.getTrendingCount
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_dark
@@ -344,7 +344,7 @@ fun StartScreen(
       } else {
         {
           // When you click on the back button, it should bring you back to the map
-          mapViewModel.popUpState.value = PopUpState.DISPLAY_ITINERARY
+          mapViewModel.popUpState.value = PopUpStatus.DISPLAY_ITINERARY
         }
       }
   Box(
@@ -432,10 +432,7 @@ fun StartScreen(
                             color = md_theme_light_onPrimary,
                             modifier = Modifier.testTag("Title"))
                         Text(
-                            text =
-                                if (ambientProfile.userProfile.value.flowerMode == 1)
-                                    "${itinerary.flameCount} ${flowerStringBasedOnCount(itinerary.flameCount)}"
-                                else "${itinerary.flameCount} 🔥",
+                            text = getTrendingCount(ambientProfile, itinerary),
                             color = md_theme_orange, // This is the orange color
                             fontFamily = Montserrat,
                             fontWeight = FontWeight.Normal,
@@ -518,13 +515,7 @@ fun StartScreen(
                     }
                   }
             }
-        if (isLoading) {
-          CircularProgressIndicator(
-              modifier = Modifier.size(64.dp).align(Alignment.Center),
-              color = md_theme_orange,
-              trackColor = md_theme_grey,
-          )
-        }
+        DisplayLoadingScreen(isLoading = isLoading)
       }
 }
 
