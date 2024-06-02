@@ -107,9 +107,6 @@ class E2ETest {
     // verify that the followers screen is open
     composeTestRule.onNodeWithTag("UserProfileSettings").assertIsDisplayed()
 
-    // Change privacy to private
-    composeTestRule.onNodeWithTag("ProfilePrivacyButton").performClick()
-
     // Go back and assert we are in the profile screen
     composeTestRule.onNodeWithTag("GoBackButton").performClick()
     composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
