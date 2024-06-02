@@ -9,7 +9,7 @@ import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryList
 import com.example.triptracker.model.location.Location
 import com.example.triptracker.model.location.Pin
-import com.example.triptracker.model.location.PopUpState
+import com.example.triptracker.model.location.PopUpStatus
 import com.example.triptracker.model.repository.ItineraryRepository
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -56,7 +56,7 @@ class MapViewModel(
 
   val displayPicturePopUp = mutableStateOf(false)
 
-  var popUpState = mutableStateOf(PopUpState.DISPLAY_ITINERARY)
+  var popUpState = mutableStateOf(PopUpStatus.DISPLAY_ITINERARY)
 
   var asStartItinerary = mutableStateOf(false)
 

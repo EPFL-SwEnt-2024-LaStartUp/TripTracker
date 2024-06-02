@@ -61,7 +61,7 @@ import coil.compose.AsyncImage
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryList
 import com.example.triptracker.model.location.Pin
-import com.example.triptracker.model.location.PopUpState
+import com.example.triptracker.model.location.PopUpStatus
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
@@ -289,7 +289,7 @@ fun Map(
                 callbackIfDisplayPicturePopUp = {
                   mapViewModel.displayPicturePopUp.value = false
                   mapViewModel.displayPopUp.value = true
-                  mapViewModel.popUpState.value = PopUpState.PATH_OVERLAY
+                  mapViewModel.popUpState.value = PopUpStatus.PATH_OVERLAY
                 })
           },
           onMapLoaded = {
@@ -331,7 +331,7 @@ fun Map(
                   onClick = {
                     if (!mapViewModel.asStartItinerary.value) {
                       selectedPolyline = MapViewModel.SelectedPolyline(location, latLngList[0])
-                      mapViewModel.popUpState.value = PopUpState.DISPLAY_ITINERARY
+                      mapViewModel.popUpState.value = PopUpStatus.DISPLAY_ITINERARY
                       mapViewModel.displayPopUp.value = true
                     }
                   })
@@ -402,7 +402,7 @@ fun Map(
                   mapViewModel.asStartItinerary.value = false
                   mapViewModel.displayPopUp.value = true
                   mapViewModel.displayPicturePopUp.value = false
-                  mapViewModel.popUpState.value = PopUpState.DISPLAY_ITINERARY
+                  mapViewModel.popUpState.value = PopUpStatus.DISPLAY_ITINERARY
                   showCancelDialog.value = false
                 },
                 colors =
@@ -477,33 +477,33 @@ fun Map(
         // Display the itinerary of the selected polyline
         // (only when the polyline is selected)
         when (mapViewModel.popUpState.value) {
-          PopUpState.DISPLAY_ITINERARY -> {
+          PopUpStatus.DISPLAY_ITINERARY -> {
             Box(
                 modifier =
                     Modifier.fillMaxHeight(0.3f).fillMaxWidth().align(Alignment.BottomCenter)) {
                   DisplayItinerary(
                       itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                      onClick = { mapViewModel.popUpState.value = PopUpState.DISPLAY_PIN },
+                      onClick = { mapViewModel.popUpState.value = PopUpStatus.DISPLAY_PIN },
                       navigation = navigation,
                   )
                 }
           }
-          PopUpState.DISPLAY_PIN -> {
+          PopUpStatus.DISPLAY_PIN -> {
             Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
               StartScreen(
                   itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
                   userProfileViewModel = UserProfileViewModel(),
                   userProfile = userProfile,
-                  onClick = { mapViewModel.popUpState.value = PopUpState.PATH_OVERLAY },
+                  onClick = { mapViewModel.popUpState.value = PopUpStatus.PATH_OVERLAY },
                   mapViewModel = mapViewModel)
             }
           }
-          PopUpState.PATH_OVERLAY -> {
+          PopUpStatus.PATH_OVERLAY -> {
             Box(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)) {
               PathOverlaySheet(
                   itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
                   onClick = {
-                    mapViewModel.popUpState.value = PopUpState.DISPLAY_ITINERARY
+                    mapViewModel.popUpState.value = PopUpStatus.DISPLAY_ITINERARY
                     mapViewModel.displayPopUp.value = false
                     mapViewModel.displayPicturePopUp.value = true
                     mapViewModel.selectedPin.value = it
