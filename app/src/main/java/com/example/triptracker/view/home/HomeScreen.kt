@@ -119,22 +119,39 @@ fun HomeScreen(
             when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
               emptyList<Itinerary>() -> NoItinerariesMessage()
               else -> {
-                if (!test) {
-                  TabsAndPager(navigation = navigation, homeViewModel = homeViewModel)
-                } else {
-                  DisplayItineraries(
-                      itineraries = itineraries,
-                      navigation = navigation,
-                      homeViewModel = homeViewModel,
-                      test = test,
-                      tabSelected = HomeCategory.TRENDING)
-                }
+                DisplayContent(
+                    itineraries = itineraries,
+                    navigation = navigation,
+                    homeViewModel = homeViewModel,
+                    userProfileViewModel = userProfileViewModel,
+                    test = test)
               }
             }
           }
     }
   }
   Log.d("HomeScreen", "Rendering HomeScreen")
+}
+
+/** Composable function to display the content of the home screen depending on the test boolean. */
+@Composable
+fun DisplayContent(
+    itineraries: List<Itinerary>,
+    navigation: Navigation,
+    homeViewModel: HomeViewModel,
+    userProfileViewModel: UserProfileViewModel,
+    test: Boolean
+) {
+  if (!test) {
+    TabsAndPager(navigation = navigation, homeViewModel = homeViewModel)
+  } else {
+    DisplayItineraries(
+        itineraries = itineraries,
+        navigation = navigation,
+        homeViewModel = homeViewModel,
+        test = test,
+        tabSelected = HomeCategory.TRENDING)
+  }
 }
 
 /** Displays a message when the user does not have any itineraries yet. */
@@ -386,7 +403,7 @@ fun DisplayItineraries(
     userProfileViewModel: UserProfileViewModel = viewModel()
 ) {
   val goodPadding =
-      if (test) PaddingValues(0.dp, 50.dp, 0.dp, 70.dp) else PaddingValues(0.dp, 0.dp, 0.dp, 70.dp)
+      if (test) PaddingValues(0.dp, 50.dp, 0.dp, 70.dp) else PaddingValues(0.dp, 10.dp, 0.dp, 70.dp)
   val usermail = AmbientUserProfile.current.userProfile.value.mail
   val isRefreshing = remember { mutableStateOf(false) }
   PullToRefreshLazyColumn(
