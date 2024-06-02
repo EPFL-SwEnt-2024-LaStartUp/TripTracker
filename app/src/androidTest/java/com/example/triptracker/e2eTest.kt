@@ -12,9 +12,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -69,7 +71,6 @@ class E2ETest {
     @Test
     fun profileScreenFlow(){
 
-
         composeTestRule.setContent {
             Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                 val navController = rememberNavController()
@@ -90,6 +91,9 @@ class E2ETest {
                             navigation = navigation,
                             userProfile = profile,
                         )
+                    }
+                    composable(Route.EDIT) {
+                        UserProfileEditScreen(navigation = navigation, profile = profile)
                     }
                     composable(Route.SETTINGS) { UserProfileSettings(navigation) }
                     composable(Route.FAVORITES) {
@@ -131,6 +135,9 @@ class E2ETest {
         //verify that the followers screen is open
         composeTestRule.onNodeWithTag("UserProfileSettings").assertIsDisplayed()
 
+        //Change privacy to private
+        composeTestRule.onNodeWithTag("ProfilePrivacyButton").performClick()
+
         //Go back and assert we are in the profile screen
         composeTestRule.onNodeWithTag("GoBackButton").performClick()
         composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
@@ -146,7 +153,13 @@ class E2ETest {
         composeTestRule.onNodeWithTag("GoBackButton").performClick()
         composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
 
+        //Edit profile
+        composeTestRule.onNodeWithContentDescription("Edit").assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription("Edit").performClick()
 
+        //verify that the edit screen is open
+        composeTestRule.onNodeWithTag("UserProfileEditScreen").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Save").isDisplayed()
     }
 
 
