@@ -139,9 +139,4 @@ class E2ETest {
     composeTestRule.onNodeWithTag("GoBackButton").performClick()
     composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
   }
-
-  /*
-   Test to check the flow of the app navigating through different places, to be implemented
-  */
-  @Test fun appFlow() {}
 }
