@@ -357,7 +357,7 @@ fun DisplayItinerary(
                               color = md_theme_light_onPrimary,
                               modifier = Modifier.testTag("Title"))
                           Text(
-                              text = getText(ambientProfile, itinerary),
+                              text = getTrendingCount(ambientProfile, itinerary),
                               color = md_theme_orange, // This is the orange color
                               fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                               fontSize = 14.sp)
@@ -490,7 +490,7 @@ private fun Modifier.getHeight(imageIsEmpty: MutableState<Boolean>, screenHeight
  * @param ambientProfile: MutableUserProfile object to get the user's profile
  * @param itinerary: Itinerary object to get the flame count
  */
-private fun getText(ambientProfile: MutableUserProfile, itinerary: Itinerary): String {
+private fun getTrendingCount(ambientProfile: MutableUserProfile, itinerary: Itinerary): String {
   return if (ambientProfile.userProfile.value.flowerMode == 1)
       "${itinerary.flameCount} ${flowerStringBasedOnCount(itinerary.flameCount)}"
   else "${itinerary.flameCount} 🔥"
