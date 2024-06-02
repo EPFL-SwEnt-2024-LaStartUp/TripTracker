@@ -242,6 +242,12 @@ fun SearchBarImplementation(
   }
 }
 
+/**
+ * Displays the leading icon in the search bar
+ *
+ * @param isActive: Boolean to indicate if the search bar is active
+ * @param onBackClicked: Function to call when the back button is clicked
+ */
 @Composable
 fun DisplayLeadingIcon(isActive: Boolean, onBackClicked: () -> Unit) {
   if (isActive) {
@@ -254,6 +260,15 @@ fun DisplayLeadingIcon(isActive: Boolean, onBackClicked: () -> Unit) {
   }
 }
 
+/**
+ * Displays the trailing icon in the search bar
+ *
+ * @param isActive: Boolean to indicate if the search bar is active
+ * @param onBackClicked: Function to call when the back button is clicked
+ * @param viewModel: HomeViewModel to use for searching itineraries
+ * @param searchText: MutableState to store the search text
+ * @param onSearchActivated: Function to call when the search bar is activated
+ */
 @Composable
 fun DisplayTrailingIcon(
     isActive: Boolean,
@@ -280,6 +295,14 @@ fun DisplayTrailingIcon(
   }
 }
 
+/**
+ * Resets the search bar text and searchQuery if it is not active
+ *
+ * @param activeState: Boolean to indicate if the search bar is active
+ * @param searchText: MutableState to store the search text
+ * @param viewModel: HomeViewModel to use for searching itineraries
+ * @param onSearchActivated: Function to call when the search bar is activated
+ */
 fun resetIfNotActive(
     activeState: Boolean,
     searchText: MutableState<String>,
@@ -293,6 +316,11 @@ fun resetIfNotActive(
   }
 }
 
+/**
+ * Displays a message when no results are found
+ *
+ * @param isNoResultFound: Boolean to indicate if no results were found
+ */
 @Composable
 fun DisplayNoResultFount(isNoResultFound: Boolean) {
   val horizontalPlacement = LocalConfiguration.current.screenWidthDp * 0.6f
@@ -311,6 +339,14 @@ fun DisplayNoResultFount(isNoResultFound: Boolean) {
   }
 }
 
+/**
+ * Displays the search results
+ *
+ * @param isActive: Boolean to indicate if the search bar is active
+ * @param items: List of itineraries to display
+ * @param viewModel: HomeViewModel to use for searching itineraries
+ * @param navigation: Navigation object to use for navigation
+ */
 @Composable
 fun DisplaySearchResults(
     isActive: Boolean,
@@ -335,6 +371,14 @@ fun DisplaySearchResults(
   }
 }
 
+/**
+ * Function to check if the itinerary should be displayed based on the owner's profile and the
+ * current user's profile
+ *
+ * @param ownerProfile: UserProfile of the owner of the itinerary
+ * @param currProfile: UserProfile of the current user
+ * @return Boolean to indicate if the itinerary should be displayed
+ */
 fun shouldDisplayItinerary(ownerProfile: UserProfile?, currProfile: UserProfile): Boolean {
   return when (ownerProfile) {
     null -> false
@@ -347,6 +391,14 @@ fun shouldDisplayItinerary(ownerProfile: UserProfile?, currProfile: UserProfile)
   }
 }
 
+/**
+ * Composable function to display a dropdown menu for filtering itineraries
+ *
+ * @param selectedFilterType: FilterType to use for filtering itineraries
+ * @param showFilterDropdown: MutableState to indicate if the dropdown menu is shown
+ * @param homeViewModel: HomeViewModel to use for fetching itineraries
+ * @return DropdownMenu to display the filter dropdown menu
+ */
 @Composable
 fun FilterDropdownMenu(
     selectedFilterType: FilterType,
@@ -459,6 +511,14 @@ fun DisplayItineraries(
       })
 }
 
+/**
+ * Function to filter itineraries based on the selected tab
+ *
+ * @param tabSelected: HomeCategory to use for filtering itineraries
+ * @param homeViewModel: HomeViewModel to use for fetching itineraries
+ * @param usermail: String to use for filtering itineraries
+ * @param userProfileViewModel: UserProfileViewModel to use for fetching users
+ */
 fun filterByTabSelected(
     tabSelected: HomeCategory,
     homeViewModel: HomeViewModel,
@@ -554,6 +614,18 @@ fun TabsAndPager(
       }
 }
 
+/**
+ * Function to display the content of the pager based on the current page
+ *
+ * @param itineraries: List of itineraries to display
+ * @param navigation: Navigation object to use for navigation
+ * @param homeViewModel: HomeViewModel to use for fetching itineraries
+ * @param verticalPlacement: Float to use for vertical placement
+ * @param ambientProfile: MutableUserProfile to use for fetching user profile
+ * @param test: Boolean to test the function
+ * @param page: Int to use for the current page
+ * @return the content to display in the pager
+ */
 @Composable
 fun DisplayPagerContent(
     itineraries: List<Itinerary>,
@@ -580,6 +652,13 @@ fun DisplayPagerContent(
   }
 }
 
+/**
+ * Function to get the flower emoji based on the user's flower mode
+ *
+ * @param ambientProfile: MutableUserProfile to use for fetching user profile
+ * @param title: String to use for the title
+ * @return the flower emoji to display, if any
+ */
 fun getFlower(ambientProfile: MutableUserProfile, title: String): String {
   val flowerStr =
       if (ambientProfile.userProfile.value.flowerMode == 1) {
@@ -588,16 +667,19 @@ fun getFlower(ambientProfile: MutableUserProfile, title: String): String {
   return flowerStr
 }
 
+/** Function to get the color based on if the tab is selected */
 @Composable
 fun getColor(isSelected: Boolean): Color {
   return if (isSelected) MaterialTheme.colorScheme.onBackground
   else MaterialTheme.colorScheme.onSurface
 }
 
+/** Function to get the font weight based on if the tab is selected */
 @Composable
 fun getFontWeight(isSelected: Boolean): FontWeight {
   return if (isSelected) FontWeight.SemiBold else FontWeight.Normal
 }
+
 /**
  * Function to get the itineraries for the current page.
  *
@@ -648,6 +730,13 @@ fun NotFollowingText(itineraries: List<Itinerary>, page: Int, verticalPlacement:
   }
 }
 
+/**
+ * Function to display drop down menu if the search bar is active.
+ *
+ * @param isSearchActive: Boolean to indicate if the search bar is active
+ * @param selectedFilterType: FilterType to use for filtering itineraries
+ * @param homeViewModel: HomeViewModel to use for fetching itineraries
+ */
 @Composable
 fun DisplayDropDownIfActive(
     isSearchActive: Boolean,
