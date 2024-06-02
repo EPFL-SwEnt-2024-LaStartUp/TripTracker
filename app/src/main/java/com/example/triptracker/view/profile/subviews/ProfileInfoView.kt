@@ -43,7 +43,7 @@ import com.example.triptracker.view.theme.md_theme_light_primary
  *
  * @param navigation : the navigation object to navigate to other screens.
  * @param userProfile : the user profile to display.
- * @param editable : a boolean to know if the profile is editable.
+ * @param editable : a boolean to know if the profile is editable (default is true).
  */
 @Composable
 fun ProfileInfoView(navigation: Navigation, userProfile: UserProfile, editable: Boolean = true) {

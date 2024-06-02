@@ -72,7 +72,7 @@ import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryDownload
 import com.example.triptracker.model.location.Pin
-import com.example.triptracker.model.location.popupState
+import com.example.triptracker.model.location.PopUpState
 import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
@@ -90,13 +90,15 @@ import com.example.triptracker.viewmodel.MapViewModel
 import com.example.triptracker.viewmodel.UserProfileViewModel
 import kotlinx.coroutines.delay
 
-val DELAY_ADDRESS = 1000L
-val numberOfCharVisible = 20
+const val DELAY_ADDRESS = 1000L
+const val numberOfCharVisible = 20
 
 /**
  * PathOverlaySheet is a composable function that displays the all of the pins of a path
  *
  * @param itinerary Itinerary of that path
+ * @param userProfileViewModel ViewModel for the user's profile
+ * @param onClick Function to be called when a pin is clicked
  */
 @Composable
 fun PathOverlaySheet(
@@ -175,6 +177,7 @@ fun PathOverlaySheet(
  * PathItem is a composable function that displays a single pin in the path
  *
  * @param pinnedPlace specific Pin to be displayed
+ * @param onClick function to be called when the pin is clicked
  */
 @Composable
 fun PathItem(pinnedPlace: Pin, onClick: (Pin) -> Unit) {
@@ -209,6 +212,13 @@ fun PathItem(pinnedPlace: Pin, onClick: (Pin) -> Unit) {
   Spacer(modifier = Modifier.height(16.dp))
 }
 
+/**
+ * Composable function that displays the address of a pin
+ *
+ * @param mapPopupViewModel ViewModel for the map popup
+ * @param latitude Latitude of the pin
+ * @param longitude Longitude of the pin
+ */
 @Composable
 fun AddressText(mapPopupViewModel: MapPopupViewModel, latitude: Float, longitude: Float) {
   val address = remember { mutableStateOf("Loading address...") }
@@ -233,7 +243,7 @@ fun AddressText(mapPopupViewModel: MapPopupViewModel, latitude: Float, longitude
 }
 
 /**
- * getDisplayAddress is a helper function that formats the address to display
+ * Helper function that formats the address to display
  *
  * @param address String of the address to format
  * @return String of the formatted address
@@ -259,7 +269,7 @@ fun getDisplayAddress(address: String): String {
  *
  * @param imageIsEmpty MutableState of a boolean that keeps track of whether there are images to
  *   display or not
- *     @param screenHeight Dp of the screen height
+ * @param screenHeight Dp of the screen height
  */
 private fun getHeight(imageIsEmpty: MutableState<Boolean>, screenHeight: Dp): Dp {
   return if (imageIsEmpty.value) 0.dp else screenHeight * 0.2f
@@ -273,7 +283,7 @@ private fun getHeight(imageIsEmpty: MutableState<Boolean>, screenHeight: Dp): Dp
  */
 @Composable
 private fun ShowPictures(pin: Pin, imageIsEmpty: MutableState<Boolean>) {
-  for (image in pin.image_url) {
+  for (image in pin.imageUrl) {
     imageIsEmpty.value = false
     AsyncImage(
         model = image,
@@ -284,6 +294,17 @@ private fun ShowPictures(pin: Pin, imageIsEmpty: MutableState<Boolean>) {
   }
 }
 
+/**
+ * Composable function that displays the start screen of an itinerary
+ *
+ * @param itinerary Itinerary to display
+ * @param userProfileViewModel ViewModel for the user's profile (default is viewModel())
+ * @param onClick Function to be called when the start button is clicked
+ * @param userProfile MutableUserProfile of the user
+ * @param homeViewModel ViewModel for the home screen(default is viewModel())
+ * @param mapViewModel ViewModel for the map (default is viewModel())
+ * @param offline Boolean flag for offline mode (default is false)
+ */
 @Composable
 fun StartScreen(
     itinerary: Itinerary,
@@ -323,7 +344,7 @@ fun StartScreen(
       } else {
         {
           // When you click on the back button, it should bring you back to the map
-          mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
+          mapViewModel.popUpState.value = PopUpState.DISPLAY_ITINERARY
         }
       }
   Box(

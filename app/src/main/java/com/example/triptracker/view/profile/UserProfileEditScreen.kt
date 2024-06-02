@@ -92,6 +92,9 @@ import kotlinx.coroutines.launch
  * This composable function displays the user profile edit screen.
  *
  * @param navigation : Navigation object that manages the navigation in the application.
+ * @param profile : MutableUserProfile object that holds the user profile to edit.
+ * @param userProfileViewModel : UserProfileViewModel object that holds the user profile view model.
+ * @param isCreated : Boolean indicating if the user profile is created (default is false).
  */
 @Composable
 fun UserProfileEditScreen(

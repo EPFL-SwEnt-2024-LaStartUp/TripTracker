@@ -103,11 +103,13 @@ fun AllowLocationPermission(onPermissionGranted: () -> Unit, onPermissionDenied:
   }
 }
 
-@Composable
 /**
  * Composable that launches the permission request for location and sets the result to a mutable
  * state only if the permission was not already granted
+ *
+ * @param context The context of the activity (needed to check for location permission)
  */
+@Composable
 fun LaunchPermissionRequest(context: Context) {
   var hasLocationPermission by remember { mutableStateOf(checkForLocationPermission(context)) }
 
@@ -177,6 +179,7 @@ fun getCurrentLocation(
  * @param latLng1 The first LatLng point
  * @param latLng2 The second LatLng point
  * @param distance The distance to compare
+ * @return True if the distance between the two points is less than or equal to the given distance
  */
 fun compareDistance(latLng1: LatLng, latLng2: LatLng, distance: Double): Boolean {
   Log.d("MAP-DISTANCE", latLng1.sphericalDistance(latLng2).toString())
@@ -187,6 +190,7 @@ fun compareDistance(latLng1: LatLng, latLng2: LatLng, distance: Double): Boolean
  * Function that calculates the mean location of a list of LatLng points.
  *
  * @param list The list of LatLng points
+ * @return The mean location of the list
  */
 fun meanLocation(list: List<LatLng>): LatLng {
   var sumLat = 0.0

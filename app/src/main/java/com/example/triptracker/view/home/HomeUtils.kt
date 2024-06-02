@@ -462,7 +462,7 @@ private fun ShowAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
  */
 @Composable
 private fun DisplayPictures(pin: Pin, imageIsEmpty: MutableState<Boolean>) {
-  for (image in pin.image_url) {
+  for (image in pin.imageUrl) {
     imageIsEmpty.value = false
     AsyncImage(
         model = image,
@@ -529,7 +529,7 @@ private fun convertPinListToString(pinList: List<String>): String {
 
 private fun checkIfImage(itinerary: Itinerary): Boolean {
   itinerary.pinnedPlaces.forEach { pin ->
-    pin.image_url.forEach { imageUrl -> if (imageUrl.isNotEmpty()) return true }
+    pin.imageUrl.forEach { imageUrl -> if (imageUrl.isNotEmpty()) return true }
   }
   return false // Return false if no valid URLs are found after checking all
 }

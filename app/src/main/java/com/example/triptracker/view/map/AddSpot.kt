@@ -503,6 +503,16 @@ fun FillAddSpot(
       }
 }
 
+/**
+ * Function to save the spot to the database
+ *
+ * @param recordViewModel: the record ViewModel
+ * @param location: the location of the spot
+ * @param description: the description of the spot
+ * @param position: the position of the spot
+ * @param selectedPictures: the pictures of the spot
+ * @param context: the context of the application
+ */
 private fun saveSpot(
     recordViewModel: RecordViewModel,
     location: String,
@@ -520,7 +530,7 @@ private fun saveSpot(
               longitude = position.longitude,
               name = location,
               description = description,
-              image_url =
+              imageUrl =
                   recordViewModel.addImageToStorageResponse.map { resp ->
                     if (resp is Response.Success) {
                       resp.data!!.toString()
@@ -539,7 +549,7 @@ private fun saveSpot(
               longitude = position.longitude,
               name = location,
               description = description,
-              image_url =
+              imageUrl =
                   recordViewModel.addImageToStorageResponse.map { pictureUrl ->
                     if (pictureUrl is Response.Success) {
                       pictureUrl.data!!.toString()

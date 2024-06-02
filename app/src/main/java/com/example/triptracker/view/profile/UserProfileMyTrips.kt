@@ -1,7 +1,6 @@
 package com.example.triptracker.view.profile
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.view.Navigation
@@ -13,7 +12,7 @@ import com.example.triptracker.viewmodel.HomeViewModel
  *
  * @param homeViewModel ViewModel for the home screen.
  * @param navigation Navigation object for navigating between screens.
- * @param test Boolean flag for testing.
+ * @param test Boolean flag for testing (default is false).
  * @param userProfile MutableUserProfile object for the user's profile.
  */
 @Composable

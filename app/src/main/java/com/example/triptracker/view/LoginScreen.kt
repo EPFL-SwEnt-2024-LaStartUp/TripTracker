@@ -23,9 +23,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -56,13 +54,16 @@ import com.google.android.gms.tasks.Task
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-@Composable
 /**
+ * Composable that displays the login screen or the user's information if they are already
+ * authenticated or an error screen if the login fails
+ *
  * @param navigation: Navigation object to navigate to other screens
- * @param loginViewModel: ViewModel to handle the login logic @return: Composable function to
- *   Displays the login screen or the user's information if they are already authenticated or an
- *   error screen if the login fails
+ * @param profile: MutableUserProfile object to store the user's profile
+ * @param loginViewModel: ViewModel to handle the login logic
+ * @param profileViewModel: ViewModel to handle the user's profile
  */
+@Composable
 fun LoginScreen(
     navigation: Navigation,
     profile: MutableUserProfile,
@@ -149,12 +150,13 @@ fun LoginScreen(
   }
 }
 
-@Composable
 /**
+ * Composable that displays the login screen screen and button when no user is authenticated
+ *
  * @param context: Context of the application
- * @param authenticator: GoogleAuthenticator object to handle the login logic @return: Composable
- *   Displays the login screen screen and button when no user is authenticated
+ * @param authenticator: GoogleAuthenticator object to handle the login logic
  */
+@Composable
 fun Login(
     context: Context,
     authenticator: GoogleAuthenticator,
@@ -215,11 +217,12 @@ fun Login(
   }
 }
 
-@Composable
 /**
- * @param message: String containing the error message to be displayed Displays an error message
- *   when the login fails
+ * Composable that displays an error message when the login fails
+ *
+ * @param message: String containing the error message to be displayed
  */
+@Composable
 fun LoginResponseFailure(message: String) {
   Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
     Card(modifier = Modifier.padding(16.dp)) {

@@ -211,6 +211,7 @@ fun HomeScreen(
  * @param onBackClicked: Function to call when the back button is clicked
  * @param onSearchActivated: Function to call when the search bar is activated
  * @param viewModel: HomeViewModel to use for searching itineraries
+ * @param selectedFilterType: FilterType to use for filtering itineraries
  * @param isNoResultFound: Boolean to indicate if no results were found
  * @param navigation: Navigation object to use for navigation, i.e when an itinerary is clicked
  */
@@ -352,6 +353,17 @@ fun SearchBarImplementation(
   }
 }
 
+/**
+ * Composable function to display a list of itineraries
+ *
+ * @param itineraries: List of itineraries to display
+ * @param navigation: Navigation object to use for navigation
+ * @param homeViewModel: HomeViewModel to use for fetching itineraries
+ * @param test: Boolean to test the function (default is false)
+ * @param tabSelected: HomeCategory to use for filtering itineraries (default is TRENDING)
+ * @param userProfileViewModel: UserProfileViewModel to use for fetching users (default is
+ *   viewModel())
+ */
 @Composable
 fun DisplayItineraries(
     itineraries: List<Itinerary>,

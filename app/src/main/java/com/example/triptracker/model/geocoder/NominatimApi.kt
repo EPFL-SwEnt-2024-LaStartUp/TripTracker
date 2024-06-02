@@ -59,6 +59,12 @@ class NominatimApi {
     return "$searchURL$query$format"
   }
 
+  /**
+   * Function to decode the location from a query.
+   *
+   * @param query : address to search for
+   * @param callback : function to call when the location is decoded into a json object
+   */
   fun decode(query: String, callback: (Location) -> Unit) {
     val url = getSearchUrl(query)
     val request = Request.Builder().url(url).build()

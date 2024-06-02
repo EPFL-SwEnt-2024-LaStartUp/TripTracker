@@ -4,7 +4,14 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.SignalWifiOff
@@ -35,6 +42,7 @@ import com.example.triptracker.view.theme.md_theme_orange
  * Screen that is displayed when the device is not connected to the internet. It shows a message
  * that the device is not connected to the internet and a button to retry.
  *
+ * @param navigation: Navigation object for navigating between screens.
  * @param onRetry: Callback that is called when the user clicks on the retry button.
  */
 @Composable

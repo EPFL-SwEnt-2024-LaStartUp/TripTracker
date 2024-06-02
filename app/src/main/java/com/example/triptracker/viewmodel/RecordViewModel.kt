@@ -42,14 +42,9 @@ class RecordViewModel(
   val description = mutableStateOf("")
   val title = mutableStateOf("")
 
-  // Private mutable list of LatLng points
-  // private var _latLongList = mutableListOf<LatLng>()
   // Public immutable list of LatLng points
   val latLongList: List<LatLng>
     get() = _latLongList
-
-  // Private mutable list of Pin points
-  // private var _pinList = mutableListOf<Pin>()
 
   // Public immutable list of LatLng points
   val pinList: List<Pin>
@@ -244,6 +239,7 @@ class RecordViewModel(
     }
   }
 
+  /** Adds an image to the storage. */
   fun addImageToStorage(imageUri: Uri, callback: (Response<Uri>) -> Unit) {
     viewModelScope.launch {
       val elem = imageRepository.addImageToFirebaseStorage(imageRepository.pinPictures, imageUri)
