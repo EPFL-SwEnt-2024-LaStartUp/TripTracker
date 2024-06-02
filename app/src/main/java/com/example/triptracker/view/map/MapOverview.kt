@@ -336,13 +336,13 @@ fun Map(
               DisplayPins(
                   isSelected = isSelected,
                   selectedPolyline = selectedPolyline,
-                  ) { pin ->
-                    mapViewModel.selectedPin.value = pin
+              ) { pin ->
+                mapViewModel.selectedPin.value = pin
 
-                    mapViewModel.displayPicturePopUp.value = true
+                mapViewModel.displayPicturePopUp.value = true
 
-                    mapViewModel.displayPopUp.value = false
-                  }
+                mapViewModel.displayPopUp.value = false
+              }
             }
           }
     }
@@ -443,47 +443,46 @@ fun Map(
             }
       }
 
-    if (mapViewModel.displayPopUp.value && mapViewModel.selectedPolylineState.value != null) {
-      Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
-        // Display the itinerary of the selected polyline
-        // (only when the polyline is selected)
-        when (mapViewModel.popUpState.value) {
-          PopUpStatus.DISPLAY_ITINERARY -> {
-            Box(
-                modifier =
-                    Modifier.fillMaxHeight(0.3f).fillMaxWidth().align(Alignment.BottomCenter)) {
-                  DisplayItinerary(
-                      itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                      onClick = { mapViewModel.popUpState.value = PopUpStatus.DISPLAY_PIN },
-                      navigation = navigation,
-                  )
-                }
+  if (mapViewModel.displayPopUp.value && mapViewModel.selectedPolylineState.value != null) {
+    Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
+      // Display the itinerary of the selected polyline
+      // (only when the polyline is selected)
+      when (mapViewModel.popUpState.value) {
+        PopUpStatus.DISPLAY_ITINERARY -> {
+          Box(
+              modifier =
+                  Modifier.fillMaxHeight(0.3f).fillMaxWidth().align(Alignment.BottomCenter)) {
+                DisplayItinerary(
+                    itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                    onClick = { mapViewModel.popUpState.value = PopUpStatus.DISPLAY_PIN },
+                    navigation = navigation,
+                )
+              }
+        }
+        PopUpStatus.DISPLAY_PIN -> {
+          Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
+            StartScreen(
+                itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                userProfileViewModel = UserProfileViewModel(),
+                userProfile = userProfile,
+                onClick = { mapViewModel.popUpState.value = PopUpStatus.PATH_OVERLAY },
+                mapViewModel = mapViewModel)
           }
-          PopUpStatus.DISPLAY_PIN -> {
-            Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
-              StartScreen(
-                  itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                  userProfileViewModel = UserProfileViewModel(),
-                  userProfile = userProfile,
-                  onClick = { mapViewModel.popUpState.value = PopUpStatus.PATH_OVERLAY },
-                  mapViewModel = mapViewModel)
-            }
-          }
-          PopUpStatus.PATH_OVERLAY -> {
-            Box(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)) {
-              PathOverlaySheet(
-                  itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                  onClick = {
-                    mapViewModel.popUpState.value = PopUpStatus.DISPLAY_ITINERARY
-                    mapViewModel.displayPopUp.value = false
-                    mapViewModel.displayPicturePopUp.value = true
-                    mapViewModel.selectedPin.value = it
-                  })
-            }
+        }
+        PopUpStatus.PATH_OVERLAY -> {
+          Box(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)) {
+            PathOverlaySheet(
+                itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                onClick = {
+                  mapViewModel.popUpState.value = PopUpStatus.DISPLAY_ITINERARY
+                  mapViewModel.displayPopUp.value = false
+                  mapViewModel.displayPicturePopUp.value = true
+                  mapViewModel.selectedPin.value = it
+                })
           }
         }
       }
-
+    }
   }
   Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
     AnimatedVisibility(
