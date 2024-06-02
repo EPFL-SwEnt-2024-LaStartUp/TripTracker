@@ -462,7 +462,7 @@ private fun ShowAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
  */
 @Composable
 private fun DisplayPictures(pin: Pin, imageIsEmpty: MutableState<Boolean>) {
-  for (image in pin.image_url) {
+  for (image in pin.imageUrl) {
     imageIsEmpty.value = false
     AsyncImage(
         model = image,
