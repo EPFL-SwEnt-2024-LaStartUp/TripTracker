@@ -38,10 +38,9 @@ class E2ETest {
 
   var profile = MutableUserProfile()
 
-
   /*
-      Test to check the flow of the profile screen navigating through different screens
-   */
+     Test to check the flow of the profile screen navigating through different screens
+  */
   @Test
   fun profileScreenFlow() {
 
@@ -139,15 +138,10 @@ class E2ETest {
     // Go back and assert we are in the profile screen
     composeTestRule.onNodeWithTag("GoBackButton").performClick()
     composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
-
   }
 
   /*
-    Test to check the flow of the app navigating through different places, to be implemented
-   */
-  @Test
-  fun appFlow(){
-
-  }
-
+   Test to check the flow of the app navigating through different places, to be implemented
+  */
+  @Test fun appFlow() {}
 }
