@@ -418,7 +418,7 @@ fun TabsAndPager(
       HomeCategory.FOLLOWING -> homeViewModel.filterByFollowing(userEmail)
     }
   }
-  val verticalPlacement = LocalConfiguration.current.screenHeightDp * 0.07f
+  val verticalPlacement = LocalConfiguration.current.screenHeightDp * 0.09f
   Column(
       modifier =
           Modifier.background(md_theme_light_onPrimary)
@@ -452,13 +452,7 @@ fun TabsAndPager(
             modifier =
                 Modifier.testTag("HomePager").background(MaterialTheme.colorScheme.background)) {
                 page ->
-              val itineraries =
-                  when (HomeCategory.entries[page]) {
-                    HomeCategory.TRENDING ->
-                        homeViewModel.trendingList.observeAsState(emptyList()).value
-                    HomeCategory.FOLLOWING ->
-                        homeViewModel.followingList.observeAsState(emptyList()).value
-                  }
+              val itineraries = itinerariesForPage(page, homeViewModel)
               if (checkIfFollowingCategory(itineraries, page)) {
                 NotFollowingText(itineraries, page, verticalPlacement)
               } else {
@@ -483,6 +477,25 @@ fun TabsAndPager(
               }
             }
       }
+}
+
+/**
+ * Function to get the itineraries for the current page.
+ *
+ * @param page the current page index
+ * @param homeViewModel the view model to get the itineraries
+ */
+@Composable
+fun itinerariesForPage(
+    page: Int,
+    homeViewModel: HomeViewModel,
+): List<Itinerary> {
+  val itineraries =
+      when (HomeCategory.entries[page]) {
+        HomeCategory.TRENDING -> homeViewModel.trendingList.observeAsState(emptyList()).value
+        HomeCategory.FOLLOWING -> homeViewModel.followingList.observeAsState(emptyList()).value
+      }
+  return itineraries
 }
 
 // Helper function to check if the current category is the following category
@@ -514,59 +527,6 @@ fun NotFollowingText(itineraries: List<Itinerary>, page: Int, verticalPlacement:
         letterSpacing = 0.15.sp,
         color = MaterialTheme.colorScheme.onBackground,
         fontFamily = FontFamily(Font(R.font.montserrat_regular)))
-            HomeCategory.FOLLOWING -> {
-              val followingItineraries by homeViewModel.followingList.observeAsState(emptyList())
-              if (followingItineraries.isEmpty()) {
-                val isRefreshing = remember { mutableStateOf(false) }
-
-                PullToRefreshLazyColumn(
-                    items = listOf(Unit),
-                    content = {
-                      Text(
-                          text = "Not following anyone yet.",
-                          modifier =
-                              Modifier.fillMaxWidth()
-                                  .padding(start = 70.dp, bottom = 250.dp)
-                                  .testTag("NoFollowingText"),
-                          fontSize = 24.sp,
-                          fontWeight = FontWeight.Medium,
-                          letterSpacing = 0.15.sp,
-                          color = MaterialTheme.colorScheme.onBackground,
-                          fontFamily = FontFamily(Font(R.font.montserrat_regular)))
-                    },
-                    isRefreshing = isRefreshing.value,
-                    onRefresh = {
-                      isRefreshing.value = true
-                      homeViewModel.fetchItineraries() {
-                        isRefreshing.value = false
-                        homeViewModel.filterByFollowing(userEmail)
-                      }
-                    },
-                )
-              }
-              DisplayItineraries(
-                  itineraries =
-                      followingItineraries.filter {
-                        val itin = it
-                        val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
-                        if (ownerProfile != null) {
-                          ownerProfile.itineraryPrivacy == 0 ||
-                              (ownerProfile.itineraryPrivacy == 1 &&
-                                  ambientProfile.userProfile.value.followers.contains(
-                                      ownerProfile.mail) &&
-                                  ambientProfile.userProfile.value.following.contains(
-                                      ownerProfile.mail))
-                        } else {
-                          false
-                        }
-                      },
-                  navigation = navigation,
-                  homeViewModel = homeViewModel,
-                  test = test,
-                  tabSelected = HomeCategory.FOLLOWING)
-            }
-          }
-        }
   }
 }
 
