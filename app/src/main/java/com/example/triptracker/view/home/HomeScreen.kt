@@ -56,6 +56,19 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
 
 var allProfilesFetched: List<UserProfile> = emptyList()
 
+/**
+ * Composable function to display the home screen. The home screen displays a list of itineraries
+ * that the user can scroll through. The user can also search for itineraries using the search bar
+ * at the top of the screen. The user can also filter the itineraries by title, username, flame
+ * count or favourites. The user can also switch between the trending and following categories using
+ * the tabs at the top of the screen. Can also swipe left or right to switch between the two
+ * categories. The user can also click on an itinerary to view the itinerary details.
+ *
+ * @param navigation the navigation object to use for navigation
+ * @param homeViewModel the view model to use for fetching itineraries
+ * @param userProfileViewModel the view model to use for fetching users
+ * @param test the boolean to test the function (default is false)
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
@@ -126,6 +139,7 @@ fun HomeScreen(
   Log.d("HomeScreen", "Rendering HomeScreen")
 }
 
+/** Displays a message when the user does not have any itineraries yet. */
 @Composable
 fun NoItinerariesMessage() {
   Text(
@@ -323,6 +337,12 @@ fun FilterDropdownMenu(
       }
 }
 
+/**
+ * Function to get the placeholder text for the search bar based on the selected filter type
+ *
+ * @param selectedFilterType: FilterType to use for filtering itineraries
+ * @return the placeholder text to display in the search bar
+ */
 fun getPlaceholderText(selectedFilterType: FilterType): String {
   return when (selectedFilterType) {
     FilterType.FLAME -> "Example: <500"
@@ -389,6 +409,15 @@ fun DisplayItineraries(
       })
 }
 
+/**
+ * Represents the tabs and pager for the home screen. Contains two tabs that can be clicked to
+ * switch between the trending and following categories. Or you can swipe left or right to switch
+ * between the two categories (Trending and Following.
+ *
+ * @param navigation the navigation object to use for navigation
+ * @param homeViewModel the view model to use for fetching itineraries
+ * @param test the boolean to test the function (default is false)
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TabsAndPager(
@@ -484,18 +513,17 @@ fun TabsAndPager(
  *
  * @param page the current page index
  * @param homeViewModel the view model to get the itineraries
+ * @return the list of itineraries for the current page
  */
 @Composable
 fun itinerariesForPage(
     page: Int,
     homeViewModel: HomeViewModel,
 ): List<Itinerary> {
-  val itineraries =
-      when (HomeCategory.entries[page]) {
-        HomeCategory.TRENDING -> homeViewModel.trendingList.observeAsState(emptyList()).value
-        HomeCategory.FOLLOWING -> homeViewModel.followingList.observeAsState(emptyList()).value
-      }
-  return itineraries
+  return when (HomeCategory.entries[page]) {
+    HomeCategory.TRENDING -> homeViewModel.trendingList.observeAsState(emptyList()).value
+    HomeCategory.FOLLOWING -> homeViewModel.followingList.observeAsState(emptyList()).value
+  }
 }
 
 // Helper function to check if the current category is the following category
@@ -530,6 +558,12 @@ fun NotFollowingText(itineraries: List<Itinerary>, page: Int, verticalPlacement:
   }
 }
 
+/**
+ * Function to display an itinerary item in search mode.
+ *
+ * @param itinerary the itinerary to display
+ * @param onItineraryClick the function to call when the itinerary is clicked
+ */
 @Composable
 fun ItineraryItem(itinerary: Itinerary, onItineraryClick: (String) -> Unit) {
   Row(
@@ -542,6 +576,16 @@ fun ItineraryItem(itinerary: Itinerary, onItineraryClick: (String) -> Unit) {
       }
 }
 
+/**
+ * Function to enable pull to refresh in a LazyColumn.
+ *
+ * @param items the list of items to display
+ * @param content the content to display
+ * @param isRefreshing the boolean to indicate if the list is refreshing
+ * @param onRefresh the function to call when the list is refreshing
+ * @param modifier the modifier to apply to the LazyColumn
+ * @param lazyListState the state of the LazyColumn
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> PullToRefreshLazyColumn(
