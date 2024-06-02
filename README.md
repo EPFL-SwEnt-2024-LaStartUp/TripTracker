@@ -52,4 +52,8 @@ Other data to save are :
 
 [Click here to access the Figma prototype](https://www.figma.com/file/mz89h5wBUL7VgwNr0ck3ol/TripTracker?type=design&node-id=0%3A1&mode=design&t=lfFxVepbbW9RYcwM-1) and explore the interactive design.
 
+## Promo Video
+
+Check out our ![promo video](https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/assets/67064193/5cf0cba2-50b5-4268-8a25-1d0547fa44ea) to see TripTracker in action and learn more about how it can enhance your travel experience.
+
 Feel free to navigate through the prototype to get a glimpse of TripTracker's interface and functionalities.
