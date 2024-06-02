@@ -541,23 +541,42 @@ fun TabsAndPager(
                 Modifier.testTag("HomePager").background(MaterialTheme.colorScheme.background)) {
                 page ->
               val itineraries = itinerariesForPage(page, homeViewModel)
-              if (checkIfFollowingCategory(itineraries, page)) {
-                NotFollowingText(itineraries, page, verticalPlacement)
-              } else {
-                DisplayItineraries(
-                    itineraries =
-                        itineraries.filter {
-                          val ownerProfile =
-                              allProfilesFetched.find { profile -> profile.mail == it.userMail }
-                          shouldDisplayItinerary(ownerProfile, ambientProfile.userProfile.value)
-                        },
-                    navigation = navigation,
-                    homeViewModel = homeViewModel,
-                    test = test,
-                    tabSelected = HomeCategory.entries[page])
-              }
+              DisplayPagerContent(
+                  itineraries = itineraries,
+                  navigation = navigation,
+                  homeViewModel = homeViewModel,
+                  verticalPlacement = verticalPlacement,
+                  ambientProfile = ambientProfile,
+                  test = test,
+                  page = page)
             }
       }
+}
+
+@Composable
+fun DisplayPagerContent(
+    itineraries: List<Itinerary>,
+    navigation: Navigation,
+    homeViewModel: HomeViewModel,
+    verticalPlacement: Float,
+    ambientProfile: MutableUserProfile,
+    test: Boolean,
+    page: Int
+) {
+  if (checkIfFollowingCategory(itineraries, page)) {
+    NotFollowingText(itineraries, page, verticalPlacement)
+  } else {
+    DisplayItineraries(
+        itineraries =
+            itineraries.filter {
+              val ownerProfile = allProfilesFetched.find { profile -> profile.mail == it.userMail }
+              shouldDisplayItinerary(ownerProfile, ambientProfile.userProfile.value)
+            },
+        navigation = navigation,
+        homeViewModel = homeViewModel,
+        test = test,
+        tabSelected = HomeCategory.entries[page])
+  }
 }
 
 fun getFlower(ambientProfile: MutableUserProfile, title: String): String {
