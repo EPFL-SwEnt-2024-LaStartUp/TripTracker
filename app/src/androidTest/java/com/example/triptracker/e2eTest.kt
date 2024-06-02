@@ -214,7 +214,7 @@ class E2ETest {
       }
     }
 
-    composeTestRule.onNodeWithText("Maps").performClick()
+    composeTestRule.onNodeWithText("Profile").performClick()
 
     composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
 
