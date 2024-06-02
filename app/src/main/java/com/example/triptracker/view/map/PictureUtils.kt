@@ -24,6 +24,7 @@ import kotlin.coroutines.suspendCoroutine
  *
  * @param uri The URI of the file.
  * @param context The context of the application.
+ * @return The real file path.
  */
 @Throws(IOException::class)
 fun getFilePathFromUri(uri: Uri?, context: Context?): Uri? {
@@ -61,6 +62,7 @@ fun copyFile(`in`: InputStream?, out: OutputStream) {
  *
  * @param uri The URI of the file.
  * @param context The context of the application.
+ * @return The file name.
  */
 fun getFileName(uri: Uri?, context: Context?): String? {
   var fileName: String? = getFileNameFromCursor(uri, context)
@@ -79,6 +81,7 @@ fun getFileName(uri: Uri?, context: Context?): String? {
  *
  * @param uri The URI of the file.
  * @param context The context of the application.
+ * @return The file extension.
  */
 fun getFileExtension(uri: Uri?, context: Context?): String? {
   val fileType: String? = uri?.let { context?.contentResolver?.getType(it) }
@@ -90,6 +93,7 @@ fun getFileExtension(uri: Uri?, context: Context?): String? {
  *
  * @param uri The URI of the file.
  * @param context The context of the application.
+ * @return The file name.
  */
 @SuppressLint("Recycle")
 fun getFileNameFromCursor(uri: Uri?, context: Context?): String? {

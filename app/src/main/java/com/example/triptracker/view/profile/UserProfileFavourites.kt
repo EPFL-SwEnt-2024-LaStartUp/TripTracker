@@ -11,9 +11,10 @@ import com.example.triptracker.viewmodel.HomeViewModel
 /**
  * UserProfileFavourite is a Composable function that displays the user's favourite trips.
  *
+ * @param connection Connection object for the network connection.
  * @param homeViewModel ViewModel for the home screen.
  * @param navigation Navigation object for navigating between screens.
- * @param test Boolean flag for testing.
+ * @param test Boolean flag for testing (default is false).
  * @param userProfile MutableUserProfile object for the user's profile.
  */
 @Composable

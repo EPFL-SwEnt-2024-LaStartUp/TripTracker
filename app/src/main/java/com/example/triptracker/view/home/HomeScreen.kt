@@ -134,6 +134,16 @@ fun NoItinerariesMessage() {
       fontSize = 1.sp)
 }
 
+/**
+ * Displays the search bar at the top of the screen
+ *
+ * @param onBackClicked: Function to call when the back button is clicked
+ * @param onSearchActivated: Function to call when the search bar is activated
+ * @param viewModel: HomeViewModel to use for searching itineraries
+ * @param selectedFilterType: FilterType to use for filtering itineraries
+ * @param isNoResultFound: Boolean to indicate if no results were found
+ * @param navigation: Navigation object to use for navigation, i.e when an itinerary is clicked
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBarImplementation(
@@ -323,6 +333,17 @@ fun getPlaceholderText(selectedFilterType: FilterType): String {
   }
 }
 
+/**
+ * Composable function to display a list of itineraries
+ *
+ * @param itineraries: List of itineraries to display
+ * @param navigation: Navigation object to use for navigation
+ * @param homeViewModel: HomeViewModel to use for fetching itineraries
+ * @param test: Boolean to test the function (default is false)
+ * @param tabSelected: HomeCategory to use for filtering itineraries (default is TRENDING)
+ * @param userProfileViewModel: UserProfileViewModel to use for fetching users (default is
+ *   viewModel())
+ */
 @Composable
 fun DisplayItineraries(
     itineraries: List<Itinerary>,
@@ -330,6 +351,7 @@ fun DisplayItineraries(
     homeViewModel: HomeViewModel,
     test: Boolean = false,
     tabSelected: HomeCategory = HomeCategory.TRENDING,
+    userProfileViewModel: UserProfileViewModel = viewModel()
 ) {
   val goodPadding =
       if (test) PaddingValues(0.dp, 50.dp, 0.dp, 70.dp) else PaddingValues(0.dp, 0.dp, 0.dp, 70.dp)
@@ -350,6 +372,7 @@ fun DisplayItineraries(
           if (tabSelected == HomeCategory.TRENDING) {
             homeViewModel.filterByTrending()
           } else {
+            userProfileViewModel.fetchAllUserProfiles { profiles -> allProfilesFetched = profiles }
             homeViewModel.filterByFollowing(usermail)
           }
         }
@@ -491,6 +514,59 @@ fun NotFollowingText(itineraries: List<Itinerary>, page: Int, verticalPlacement:
         letterSpacing = 0.15.sp,
         color = MaterialTheme.colorScheme.onBackground,
         fontFamily = FontFamily(Font(R.font.montserrat_regular)))
+            HomeCategory.FOLLOWING -> {
+              val followingItineraries by homeViewModel.followingList.observeAsState(emptyList())
+              if (followingItineraries.isEmpty()) {
+                val isRefreshing = remember { mutableStateOf(false) }
+
+                PullToRefreshLazyColumn(
+                    items = listOf(Unit),
+                    content = {
+                      Text(
+                          text = "Not following anyone yet.",
+                          modifier =
+                              Modifier.fillMaxWidth()
+                                  .padding(start = 70.dp, bottom = 250.dp)
+                                  .testTag("NoFollowingText"),
+                          fontSize = 24.sp,
+                          fontWeight = FontWeight.Medium,
+                          letterSpacing = 0.15.sp,
+                          color = MaterialTheme.colorScheme.onBackground,
+                          fontFamily = FontFamily(Font(R.font.montserrat_regular)))
+                    },
+                    isRefreshing = isRefreshing.value,
+                    onRefresh = {
+                      isRefreshing.value = true
+                      homeViewModel.fetchItineraries() {
+                        isRefreshing.value = false
+                        homeViewModel.filterByFollowing(userEmail)
+                      }
+                    },
+                )
+              }
+              DisplayItineraries(
+                  itineraries =
+                      followingItineraries.filter {
+                        val itin = it
+                        val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
+                        if (ownerProfile != null) {
+                          ownerProfile.itineraryPrivacy == 0 ||
+                              (ownerProfile.itineraryPrivacy == 1 &&
+                                  ambientProfile.userProfile.value.followers.contains(
+                                      ownerProfile.mail) &&
+                                  ambientProfile.userProfile.value.following.contains(
+                                      ownerProfile.mail))
+                        } else {
+                          false
+                        }
+                      },
+                  navigation = navigation,
+                  homeViewModel = homeViewModel,
+                  test = test,
+                  tabSelected = HomeCategory.FOLLOWING)
+            }
+          }
+        }
   }
 }
 
@@ -534,7 +610,6 @@ fun <T> PullToRefreshLazyColumn(
       if (isRefreshing) {
         pullToRefreshState.startRefresh()
       } else {
-        Log.e("MAMAMIA", "endRefresh")
         pullToRefreshState.endRefresh()
       }
     }

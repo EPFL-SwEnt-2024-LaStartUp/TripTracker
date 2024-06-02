@@ -96,6 +96,7 @@ const val DELAY = 5000L
  * Composable function for displaying the RecordScreen.
  *
  * @param context The application context.
+ * @param navigation The navigation instance.
  * @param viewModel The RecordViewModel instance.
  */
 @Composable
@@ -526,6 +527,7 @@ fun SaveButton(
  * Composable function to display the start window.
  *
  * @param viewModel The RecordViewModel instance.
+ * @param context The application context.
  */
 @Composable
 fun StartWindow(viewModel: RecordViewModel, context: Context) {

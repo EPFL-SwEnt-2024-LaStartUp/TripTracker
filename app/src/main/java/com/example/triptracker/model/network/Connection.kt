@@ -18,9 +18,10 @@ class Connection() {
   }
 
   /**
+   * Function to check if the device is connected to the internet. If the function is called when
+   * testing, always return true
+   *
    * @return Boolean: True if the device is connected to the internet, false otherwise
-   * @brief Function to check if the device is connected to the internet If the function is called
-   *   when testing, always return true
    */
   fun isDeviceConnectedToInternet(): Boolean {
     // Context can be null when testing because no application context

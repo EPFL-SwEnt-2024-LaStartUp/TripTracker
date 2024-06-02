@@ -6,9 +6,6 @@ package com.example.triptracker.model.repository
  * @param T: Type of the data
  */
 sealed class Response<out T> {
-  // Loading state
-  // data object Loading : Response<Nothing>()
-
   // Success state which returns the data
   data class Success<out T>(val data: T?) : Response<T>()
 
