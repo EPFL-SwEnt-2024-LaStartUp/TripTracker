@@ -307,6 +307,7 @@ fun Map(
                     val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
                     if (ownerProfile != null) {
                       ownerProfile.itineraryPrivacy == 0 ||
+                          ownerProfile == userProfile.userProfile.value ||
                           (ownerProfile.itineraryPrivacy == 1 &&
                               userProfile.userProfile.value.followers.contains(ownerProfile.mail) &&
                               userProfile.userProfile.value.following.contains(ownerProfile.mail))
