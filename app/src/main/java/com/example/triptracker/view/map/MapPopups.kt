@@ -491,6 +491,7 @@ fun StartScreen(
                           onClick = {
                             onClick()
                             mapViewModel.asStartItinerary.value = true
+                            homeViewModel.incrementNumStarts(itinerary.id)
                           },
                           modifier =
                               Modifier.padding(bottom = screenHeight * 0.05f)

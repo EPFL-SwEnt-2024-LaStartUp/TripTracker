@@ -6,18 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -31,23 +20,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -80,12 +57,17 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
 var allProfilesFetched: List<UserProfile> = emptyList()
 
 /**
- * HomeScreen composable that displays the list of itineraries
+ * Composable function to display the home screen. The home screen displays a list of itineraries
+ * that the user can scroll through. The user can also search for itineraries using the search bar
+ * at the top of the screen. The user can also filter the itineraries by title, username, flame
+ * count or favourites. The user can also switch between the trending and following categories using
+ * the tabs at the top of the screen. Can also swipe left or right to switch between the two
+ * categories. The user can also click on an itinerary to view the itinerary details.
  *
- * @param navigation: Navigation object to use for navigation
- * @param homeViewModel: HomeViewModel to use for fetching itineraries
- * @param userProfileViewModel: UserProfileViewModel to use for fetching users
- * @param test: Boolean to test the function
+ * @param navigation the navigation object to use for navigation
+ * @param homeViewModel the view model to use for fetching itineraries
+ * @param userProfileViewModel the view model to use for fetching users
+ * @param test the boolean to test the function (default is false)
  */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -106,10 +88,9 @@ fun HomeScreen(
       Log.d("UserProfileList", "User profile list is null")
     }
     true -> {
-      val selectedFilterType by homeViewModel.selectedFilter.observeAsState(FilterType.TITLE)
       allProfilesFetched = allProfiles
+      val selectedFilterType by homeViewModel.selectedFilter.observeAsState(FilterType.TITLE)
       val filteredList by homeViewModel.filteredItineraryList.observeAsState(initial = emptyList())
-      var showFilterDropdown by remember { mutableStateOf(false) }
       var isSearchActive by remember { mutableStateOf(false) }
       val isNoResultFound =
           remember(filteredList, isSearchActive) {
@@ -117,7 +98,6 @@ fun HomeScreen(
                 filteredList.isEmpty() &&
                 homeViewModel.searchQuery.value!!.isNotEmpty()
           }
-
       Scaffold(
           topBar = {
             Column {
@@ -130,65 +110,19 @@ fun HomeScreen(
                   isNoResultFound = isNoResultFound)
             }
             if (isSearchActive) {
-              val horizontalPlacement = LocalConfiguration.current.screenWidthDp * 0.6f
-              val verticalPlacement = LocalConfiguration.current.screenHeightDp * 0.024f
-              Box(
-                  modifier =
-                      Modifier.padding(
-                              PaddingValues(
-                                  horizontalPlacement.dp, verticalPlacement.dp, 0.dp, 0.dp))
-                          .fillMaxWidth()
-                          .fillMaxHeight()
-                          .testTag("DropDownBox")) {
-                    DropdownMenu(
-                        expanded = showFilterDropdown,
-                        onDismissRequest = { showFilterDropdown = false },
-                        modifier =
-                            Modifier.padding(10.dp).width(400.dp).testTag("DropDownFilter")) {
-                          FilterType.entries.forEach { filterType ->
-                            DropdownMenuItem(
-                                text = {
-                                  Text(
-                                      text = filterType.name.replace('_', ' '),
-                                      modifier = Modifier.testTag("FilterText"))
-                                },
-                                onClick = {
-                                  homeViewModel.setSearchFilter(filterType)
-                                  showFilterDropdown = false
-                                })
-                          }
-                        }
-                    Text(
-                        text = selectedFilterType.name,
-                        modifier =
-                            Modifier.clickable { showFilterDropdown = true }
-                                .background(
-                                    MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = MaterialTheme.shapes.medium)
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                        fontFamily = FontFamily(Font(R.font.montserrat_semi_bold)),
-                        fontSize = 12.sp,
-                    )
-                  }
+              FilterDropdownMenu(
+                  selectedFilterType = selectedFilterType,
+                  showFilterDropdown = remember { mutableStateOf(false) },
+                  homeViewModel = homeViewModel)
             }
           },
           bottomBar = { NavigationBar(navigation = navigation) },
           modifier = Modifier.fillMaxWidth().testTag("HomeScreen")) {
             when (val itineraries = homeViewModel.itineraryList.value ?: emptyList()) {
-              emptyList<Itinerary>() -> {
-                Text(
-                    text = "You do not have any itineraries yet.",
-                    modifier = Modifier.padding(10.dp).testTag("NoItinerariesText"),
-                    fontSize = 1.sp)
-              }
+              emptyList<Itinerary>() -> NoItinerariesMessage()
               else -> {
                 if (!test) {
-                  Column(
-                      modifier =
-                          Modifier.fillMaxSize().padding(PaddingValues(0.dp, 80.dp, 0.dp, 0.dp))) {
-                        HomePager(
-                            navigation = navigation, homeViewModel = homeViewModel, test = test)
-                      }
+                  TabsAndPager(navigation = navigation, homeViewModel = homeViewModel)
                 } else {
                   DisplayItineraries(
                       itineraries = itineraries,
@@ -203,6 +137,15 @@ fun HomeScreen(
     }
   }
   Log.d("HomeScreen", "Rendering HomeScreen")
+}
+
+/** Displays a message when the user does not have any itineraries yet. */
+@Composable
+fun NoItinerariesMessage() {
+  Text(
+      text = "You do not have any itineraries yet.",
+      modifier = Modifier.padding(10.dp).testTag("NoItinerariesText"),
+      fontSize = 1.sp)
 }
 
 /**
@@ -229,21 +172,9 @@ fun SearchBarImplementation(
   var searchText by remember { mutableStateOf("") }
   val items = viewModel.filteredItineraryList.value ?: listOf()
   val focusManager = LocalFocusManager.current
-  // If the search bar is active (in focus or contains text), we'll consider it active.
   var isActive by remember { mutableStateOf(false) }
-  // Update the placeholder text based on the selected filter type
-  val placeholderText =
-      remember(selectedFilterType) {
-        when (selectedFilterType) {
-          FilterType.FLAME -> "Example: <500"
-          FilterType.PIN -> "Example: EPFL"
-          FilterType.TITLE -> "Find Itineraries"
-          FilterType.USERNAME -> "Search for a User"
-          FilterType.FAVOURITES -> "Find Favourites"
-        }
-      }
+  val placeholderText = getPlaceholderText(selectedFilterType)
 
-  // fixes the back button showing weird display
   BackHandler { onBackClicked() }
 
   Box(modifier = Modifier.fillMaxWidth()) {
@@ -279,12 +210,10 @@ fun SearchBarImplementation(
                 modifier =
                     Modifier.clickable {
                           if (searchText.isEmpty()) {
-                            // if click on clear button when text is empty, go back to home screen
                             onBackClicked()
                           } else {
-                            // only clear
-                            searchText = "" // Clear the text but keep the search bar active
-                            viewModel.setSearchQuery(searchText) // Reset search query
+                            searchText = ""
+                            viewModel.setSearchQuery(searchText)
                           }
                           onSearchActivated(isActive)
                         }
@@ -296,9 +225,9 @@ fun SearchBarImplementation(
         active = isActive,
         onActiveChange = { activeState ->
           isActive = activeState
-          if (!activeState) { // When deactivating, clear the search text.
+          if (!activeState) {
             searchText = ""
-            viewModel.setSearchQuery("") // Reset search query
+            viewModel.setSearchQuery("")
             onSearchActivated(false)
           }
         },
@@ -327,29 +256,100 @@ fun SearchBarImplementation(
             letterSpacing = 0.15.sp,
             color = Color.Red)
       }
-      // Itinerary items list
-      var listToShow = if (isActive) items else viewModel.itineraryList.value ?: listOf()
-      LazyColumn {
-        listToShow =
-            listToShow.filter {
-              val itin = it
-              val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
-              if (ownerProfile != null) {
-                ownerProfile.itineraryPrivacy == 0 ||
-                    (ownerProfile.itineraryPrivacy == 1 &&
-                        currProfile.followers.contains(ownerProfile.mail) &&
-                        currProfile.following.contains(ownerProfile.mail))
-              } else {
-                false
+      DisplaySearchResults(isActive, items, viewModel, navigation)
+    }
+  }
+}
+
+@Composable
+fun DisplaySearchResults(
+    isActive: Boolean,
+    items: List<Itinerary>,
+    viewModel: HomeViewModel,
+    navigation: Navigation
+) {
+  val currProfile = AmbientUserProfile.current.userProfile.value
+  var listToShow = if (isActive) items else viewModel.itineraryList.value ?: listOf()
+  LazyColumn {
+    listToShow =
+        listToShow.filter {
+          val itin = it
+          val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
+          if (ownerProfile != null) {
+            ownerProfile.itineraryPrivacy == 0 ||
+                (ownerProfile.itineraryPrivacy == 1 &&
+                    currProfile.followers.contains(ownerProfile.mail) &&
+                    currProfile.following.contains(ownerProfile.mail))
+          } else {
+            false
+          }
+        }
+    items(listToShow) { itinerary ->
+      ItineraryItem(
+          itinerary = itinerary,
+          onItineraryClick = { navigation.navigateTo(Route.MAPS, itinerary.id) })
+    }
+  }
+}
+
+@Composable
+fun FilterDropdownMenu(
+    selectedFilterType: FilterType,
+    showFilterDropdown: MutableState<Boolean>,
+    homeViewModel: HomeViewModel
+) {
+  val horizontalPlacement = LocalConfiguration.current.screenWidthDp * 0.6f
+  val verticalPlacement = LocalConfiguration.current.screenHeightDp * 0.024f
+  Box(
+      modifier =
+          Modifier.padding(PaddingValues(horizontalPlacement.dp, verticalPlacement.dp, 0.dp, 0.dp))
+              .fillMaxWidth()
+              .fillMaxHeight()
+              .testTag("DropDownBox")) {
+        DropdownMenu(
+            expanded = showFilterDropdown.value,
+            onDismissRequest = { showFilterDropdown.value = false },
+            modifier = Modifier.width(400.dp).testTag("DropDownFilter")) {
+              FilterType.entries.forEach { filterType ->
+                DropdownMenuItem(
+                    text = {
+                      Text(
+                          text = filterType.name.replace('_', ' '),
+                          modifier = Modifier.testTag("FilterText"))
+                    },
+                    onClick = {
+                      homeViewModel.setSearchFilter(filterType)
+                      showFilterDropdown.value = false
+                    })
               }
             }
-        items(listToShow) { itinerary ->
-          ItineraryItem(
-              itinerary = itinerary,
-              onItineraryClick = { navigation.navigateTo(Route.MAPS, itinerary.id) })
-        }
+        Text(
+            text = selectedFilterType.name,
+            modifier =
+                Modifier.clickable { showFilterDropdown.value = true }
+                    .background(
+                        MaterialTheme.colorScheme.surfaceVariant,
+                        shape = MaterialTheme.shapes.medium)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+            fontFamily = FontFamily(Font(R.font.montserrat_semi_bold)),
+            fontSize = 12.sp,
+        )
       }
-    }
+}
+
+/**
+ * Function to get the placeholder text for the search bar based on the selected filter type
+ *
+ * @param selectedFilterType: FilterType to use for filtering itineraries
+ * @return the placeholder text to display in the search bar
+ */
+fun getPlaceholderText(selectedFilterType: FilterType): String {
+  return when (selectedFilterType) {
+    FilterType.FLAME -> "Example: <500"
+    FilterType.PIN -> "Example: EPFL"
+    FilterType.TITLE -> "Find Itineraries"
+    FilterType.USERNAME -> "Search for a User"
+    FilterType.FAVOURITES -> "Find Favourites"
   }
 }
 
@@ -373,23 +373,21 @@ fun DisplayItineraries(
     tabSelected: HomeCategory = HomeCategory.TRENDING,
     userProfileViewModel: UserProfileViewModel = viewModel()
 ) {
-  var goodPadding = PaddingValues(0.dp, 0.dp, 0.dp, 70.dp)
+  val goodPadding =
+      if (test) PaddingValues(0.dp, 50.dp, 0.dp, 70.dp) else PaddingValues(0.dp, 0.dp, 0.dp, 70.dp)
   val usermail = AmbientUserProfile.current.userProfile.value.mail
-  if (test) {
-    goodPadding = PaddingValues(0.dp, 50.dp, 0.dp, 70.dp)
-  }
   val isRefreshing = remember { mutableStateOf(false) }
   PullToRefreshLazyColumn(
       modifier =
           Modifier.fillMaxSize()
-              .padding(goodPadding) // this ensures having a padding at the bottom
+              .padding(goodPadding)
               .testTag("ItineraryList")
               .background(color = MaterialTheme.colorScheme.background),
       items = itineraries,
       isRefreshing = isRefreshing.value,
       onRefresh = {
         isRefreshing.value = true
-        homeViewModel.fetchItineraries() {
+        homeViewModel.fetchItineraries {
           isRefreshing.value = false
           if (tabSelected == HomeCategory.TRENDING) {
             homeViewModel.filterByTrending()
@@ -411,9 +409,18 @@ fun DisplayItineraries(
       })
 }
 
+/**
+ * Represents the tabs and pager for the home screen. Contains two tabs that can be clicked to
+ * switch between the trending and following categories. Or you can swipe left or right to switch
+ * between the two categories (Trending and Following.
+ *
+ * @param navigation the navigation object to use for navigation
+ * @param homeViewModel the view model to use for fetching itineraries
+ * @param test the boolean to test the function (default is false)
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomePager(
+fun TabsAndPager(
     navigation: Navigation,
     homeViewModel: HomeViewModel = viewModel(),
     test: Boolean = false
@@ -422,15 +429,10 @@ fun HomePager(
   val userEmail = ambientProfile.userProfile.value.mail
   val tabs = listOf(HomeCategory.TRENDING.name, HomeCategory.FOLLOWING.name)
   val numTabs = tabs.size
-  val pagerState =
-      rememberPagerState(initialPage = 0) {
-        numTabs // initial page is 0, trending tab
-      }
+  val pagerState = rememberPagerState(initialPage = 0) { numTabs }
   var selectedTab by remember { mutableStateOf(pagerState.currentPage) }
-  var isSelected by remember { mutableStateOf(false) }
 
-  // added for page animation, if the animation is not smooth, change to pagerState.scrollToPage
-  LaunchedEffect(key1 = selectedTab) {
+  LaunchedEffect(selectedTab) {
     pagerState.animateScrollToPage(page = selectedTab)
     when (HomeCategory.entries[selectedTab]) {
       HomeCategory.TRENDING -> homeViewModel.filterByTrending()
@@ -438,7 +440,6 @@ fun HomePager(
     }
   }
 
-  // LaunchedEffect to synchronize the pager state with the selected tab
   LaunchedEffect(pagerState.currentPage) {
     selectedTab = pagerState.currentPage
     when (HomeCategory.entries[pagerState.currentPage]) {
@@ -446,127 +447,122 @@ fun HomePager(
       HomeCategory.FOLLOWING -> homeViewModel.filterByFollowing(userEmail)
     }
   }
-
-  Column(modifier = Modifier.background(md_theme_light_onPrimary)) {
-    TabRow(
-        selectedTabIndex = pagerState.currentPage,
-        contentColor = MaterialTheme.colorScheme.onBackground,
-        modifier = Modifier.fillMaxWidth().height(50.dp),
-        backgroundColor = MaterialTheme.colorScheme.background) {
-          tabs.forEachIndexed { index, title ->
-            var flower = ""
-            if (title == HomeCategory.FOLLOWING.name &&
-                ambientProfile.userProfile.value.flowerMode == 1) {
-              flower = " \uD83C\uDF38"
-            } else if (title == HomeCategory.TRENDING.name &&
-                ambientProfile.userProfile.value.flowerMode == 1) {
-              flower = " \uD83C\uDF37"
-            }
-            isSelected = index == selectedTab
-            Tab(selected = isSelected, onClick = { selectedTab = index }) {
-              Text(
-                  "$title$flower",
-                  color =
-                      if (isSelected) MaterialTheme.colorScheme.onBackground
-                      else MaterialTheme.colorScheme.onSurface,
-                  fontFamily = Montserrat,
-                  fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                  fontSize = 20.sp) // same size as itinerary title
-            }
-          }
-        }
-
-    HorizontalPager(
-        state = pagerState,
-        modifier =
-            Modifier.testTag("HomePager").background(MaterialTheme.colorScheme.background)) { page
-          ->
-          when (HomeCategory.entries[page]) {
-            HomeCategory.TRENDING -> {
-              val trendingItineraries by homeViewModel.trendingList.observeAsState(emptyList())
-
-              DisplayItineraries(
-                  itineraries =
-                      trendingItineraries.filter {
-                        val itin = it
-                        val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
-                        if (ownerProfile != null) {
-                          ownerProfile.itineraryPrivacy == 0 ||
-                              (ownerProfile.itineraryPrivacy == 1 &&
-                                  ambientProfile.userProfile.value.followers.contains(
-                                      ownerProfile.mail) &&
-                                  ambientProfile.userProfile.value.following.contains(
-                                      ownerProfile.mail))
-                        } else {
-                          false
-                        }
-                      },
-                  navigation = navigation,
-                  homeViewModel = homeViewModel,
-                  test = test,
-                  tabSelected = HomeCategory.TRENDING)
-            }
-            HomeCategory.FOLLOWING -> {
-              val followingItineraries by homeViewModel.followingList.observeAsState(emptyList())
-              if (followingItineraries.isEmpty()) {
-                val isRefreshing = remember { mutableStateOf(false) }
-
-                PullToRefreshLazyColumn(
-                    items = listOf(Unit),
-                    content = {
-                      Text(
-                          text = "Not following anyone yet.",
-                          modifier =
-                              Modifier.fillMaxWidth()
-                                  .padding(start = 70.dp, bottom = 250.dp)
-                                  .testTag("NoFollowingText"),
-                          fontSize = 24.sp,
-                          fontWeight = FontWeight.Medium,
-                          letterSpacing = 0.15.sp,
-                          color = MaterialTheme.colorScheme.onBackground,
-                          fontFamily = FontFamily(Font(R.font.montserrat_regular)))
-                    },
-                    isRefreshing = isRefreshing.value,
-                    onRefresh = {
-                      isRefreshing.value = true
-                      homeViewModel.fetchItineraries() {
-                        isRefreshing.value = false
-                        homeViewModel.filterByFollowing(userEmail)
-                      }
-                    },
-                )
+  val verticalPlacement = LocalConfiguration.current.screenHeightDp * 0.09f
+  Column(
+      modifier =
+          Modifier.background(md_theme_light_onPrimary)
+              .padding(0.dp, verticalPlacement.dp, 0.dp, 0.dp)) {
+        TabRow(
+            selectedTabIndex = pagerState.currentPage,
+            contentColor = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.fillMaxWidth().height(60.dp),
+            backgroundColor = MaterialTheme.colorScheme.background) {
+              tabs.forEachIndexed { index, title ->
+                val flower =
+                    if (ambientProfile.userProfile.value.flowerMode == 1) {
+                      if (title == HomeCategory.FOLLOWING.name) " \uD83C\uDF38" else " \uD83C\uDF37"
+                    } else ""
+                val isSelected = index == selectedTab
+                Tab(selected = isSelected, onClick = { selectedTab = index }) {
+                  Text(
+                      "$title$flower",
+                      color =
+                          if (isSelected) MaterialTheme.colorScheme.onBackground
+                          else MaterialTheme.colorScheme.onSurface,
+                      fontFamily = Montserrat,
+                      fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                      fontSize = 20.sp)
+                }
               }
-              DisplayItineraries(
-                  itineraries =
-                      followingItineraries.filter {
-                        val itin = it
-                        val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
-                        if (ownerProfile != null) {
-                          ownerProfile.itineraryPrivacy == 0 ||
-                              (ownerProfile.itineraryPrivacy == 1 &&
-                                  ambientProfile.userProfile.value.followers.contains(
-                                      ownerProfile.mail) &&
-                                  ambientProfile.userProfile.value.following.contains(
-                                      ownerProfile.mail))
-                        } else {
-                          false
-                        }
-                      },
-                  navigation = navigation,
-                  homeViewModel = homeViewModel,
-                  test = test,
-                  tabSelected = HomeCategory.FOLLOWING)
             }
-          }
-        }
+
+        HorizontalPager(
+            state = pagerState,
+            modifier =
+                Modifier.testTag("HomePager").background(MaterialTheme.colorScheme.background)) {
+                page ->
+              val itineraries = itinerariesForPage(page, homeViewModel)
+              if (checkIfFollowingCategory(itineraries, page)) {
+                NotFollowingText(itineraries, page, verticalPlacement)
+              } else {
+                DisplayItineraries(
+                    itineraries =
+                        itineraries.filter {
+                          val ownerProfile =
+                              allProfilesFetched.find { profile -> profile.mail == it.userMail }
+                          ownerProfile?.let { profile ->
+                            profile.itineraryPrivacy == 0 ||
+                                (profile.itineraryPrivacy == 1 &&
+                                    ambientProfile.userProfile.value.followers.contains(
+                                        profile.mail) &&
+                                    ambientProfile.userProfile.value.following.contains(
+                                        profile.mail))
+                          } ?: false
+                        },
+                    navigation = navigation,
+                    homeViewModel = homeViewModel,
+                    test = test,
+                    tabSelected = HomeCategory.entries[page])
+              }
+            }
+      }
+}
+
+/**
+ * Function to get the itineraries for the current page.
+ *
+ * @param page the current page index
+ * @param homeViewModel the view model to get the itineraries
+ * @return the list of itineraries for the current page
+ */
+@Composable
+fun itinerariesForPage(
+    page: Int,
+    homeViewModel: HomeViewModel,
+): List<Itinerary> {
+  return when (HomeCategory.entries[page]) {
+    HomeCategory.TRENDING -> homeViewModel.trendingList.observeAsState(emptyList()).value
+    HomeCategory.FOLLOWING -> homeViewModel.followingList.observeAsState(emptyList()).value
+  }
+}
+
+// Helper function to check if the current category is the following category
+fun checkIfFollowingCategory(itineraries: List<Itinerary>, page: Int): Boolean {
+  return itineraries.isEmpty() && HomeCategory.entries[page] == HomeCategory.FOLLOWING
+}
+
+/**
+ * Function to display a text message when the user is not following anyone yet.
+ *
+ * @param itineraries list of itineraries to check if it is empty
+ * @param page the current page index
+ * @param verticalPlacement the vertical placement of the text
+ */
+@Composable
+fun NotFollowingText(itineraries: List<Itinerary>, page: Int, verticalPlacement: Float) {
+  if (itineraries.isEmpty() && HomeCategory.entries[page] == HomeCategory.FOLLOWING) {
+    Text(
+        text = "Not following anyone yet.",
+        modifier =
+            Modifier.fillMaxWidth()
+                .padding(
+                    start = 70.dp,
+                    top = (verticalPlacement * 3).dp,
+                    bottom = (verticalPlacement * 5.3).dp)
+                .testTag("NoFollowingText"),
+        fontSize = 24.sp,
+        fontWeight = FontWeight.Medium,
+        letterSpacing = 0.15.sp,
+        color = MaterialTheme.colorScheme.onBackground,
+        fontFamily = FontFamily(Font(R.font.montserrat_regular)))
   }
 }
 
 /**
- * Displays an itinerary item when searching for itineraries
+ * Function to display an itinerary item in search mode.
  *
- * @param itinerary: Itinerary object to display
- * @param onItineraryClick: Function to call when the itinerary is clicked
+ * @param itinerary the itinerary to display
+ * @param onItineraryClick the function to call when the itinerary is clicked
  */
 @Composable
 fun ItineraryItem(itinerary: Itinerary, onItineraryClick: (String) -> Unit) {
@@ -581,16 +577,14 @@ fun ItineraryItem(itinerary: Itinerary, onItineraryClick: (String) -> Unit) {
 }
 
 /**
- * PullToRefreshLazyColumn is a composable function that displays a list of items in a LazyColumn
- * with pull-to-refresh functionality.
+ * Function to enable pull to refresh in a LazyColumn.
  *
- * @param items List of items to display in the LazyColumn.
- * @param content Composable function that displays an item in the list.
- * @param isRefreshing Boolean flag to indicate if the list is refreshing.
- * @param onRefresh Function to call when the list is refreshing.
- * @param modifier Modifier for styling the LazyColumn.
- * @param lazyListState LazyListState for the LazyColumn.
- * @param T Type of the items in the list.
+ * @param items the list of items to display
+ * @param content the content to display
+ * @param isRefreshing the boolean to indicate if the list is refreshing
+ * @param onRefresh the function to call when the list is refreshing
+ * @param modifier the modifier to apply to the LazyColumn
+ * @param lazyListState the state of the LazyColumn
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -620,7 +614,6 @@ fun <T> PullToRefreshLazyColumn(
       if (isRefreshing) {
         pullToRefreshState.startRefresh()
       } else {
-
         pullToRefreshState.endRefresh()
       }
     }

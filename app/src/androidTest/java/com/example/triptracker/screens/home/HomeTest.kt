@@ -28,9 +28,9 @@ import com.example.triptracker.userProfile.MockUserList
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.TopLevelDestination
-import com.example.triptracker.view.home.HomePager
 import com.example.triptracker.view.home.HomeScreen
 import com.example.triptracker.view.home.ItineraryItem
+import com.example.triptracker.view.home.TabsAndPager
 import com.example.triptracker.view.home.flowerStringBasedOnCount
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeViewModel
@@ -565,7 +565,7 @@ class HomeTest {
   @Test
   fun testTabIsDisplayed() {
     composeTestRule.setContent {
-      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      TabsAndPager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
     }
 
     composeTestRule.onNodeWithText("TRENDING", useUnmergedTree = true).assertIsDisplayed()
@@ -577,7 +577,7 @@ class HomeTest {
   fun testClickOnFollowing() {
     every { mockViewModel.itineraryList } returns MutableLiveData(emptyList())
     composeTestRule.setContent {
-      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      TabsAndPager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
     }
     composeTestRule.onNodeWithText("FOLLOWING", useUnmergedTree = true).performClick()
   }
@@ -586,7 +586,7 @@ class HomeTest {
   @Test
   fun testSwipeLeft() {
     composeTestRule.setContent {
-      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      TabsAndPager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
     }
 
     // Find the node representing the pager
@@ -618,7 +618,7 @@ class HomeTest {
         }
 
     composeTestRule.setContent {
-      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
+      TabsAndPager(navigation = mockNav, homeViewModel = mockViewModel, test = true)
       HomeScreen(navigation = mockNav, homeViewModel = mockViewModel, test = true)
     }
 
@@ -656,7 +656,7 @@ class HomeTest {
           homeViewModel = mockViewModel,
           userProfileViewModel = mockUserProfileViewModel,
           test = false)
-      HomePager(navigation = mockNav, homeViewModel = mockViewModel, test = false)
+      TabsAndPager(navigation = mockNav, homeViewModel = mockViewModel, test = false)
     }
     composeTestRule.onNodeWithTag("HomePager").performTouchInput { swipeLeft() }
   }

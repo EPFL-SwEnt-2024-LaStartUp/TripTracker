@@ -54,6 +54,22 @@ Other data to save are :
 
 ## Promo Video
 
-Check out our ![promo video](https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/assets/67064193/5cf0cba2-50b5-4268-8a25-1d0547fa44ea) to see TripTracker in action and learn more about how it can enhance your travel experience.
+Check out our release video to see TripTracker in action and learn more about how it can enhance your travel experience. ![promo video](https://github.com/EPFL-SwEnt-2024-LaStartUp/TripTracker/assets/67064193/5cf0cba2-50b5-4268-8a25-1d0547fa44ea) 
 
 Feel free to navigate through the prototype to get a glimpse of TripTracker's interface and functionalities.
+
+
+## Team
+Our team is composed of 7 EPFL students. We are passionate about creating innovative solutions to real-world problems and are excited to share our project with you.
+The team members are:
+- Cléo Renaud 
+- Jérémy Barghorn
+- Loïc Misenta
+- Théo Schifferli
+- Pol Fuentes Camacho
+- Jérémy Chaverot
+- Léopold Galhaud
+
+## Contact
+If you have any questions or feedback, feel free to reach out to us at
+triptracker@lastartup.com
