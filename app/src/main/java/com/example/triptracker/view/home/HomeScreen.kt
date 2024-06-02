@@ -109,7 +109,7 @@ fun HomeScreen(
               emptyList<Itinerary>() -> NoItinerariesMessage()
               else -> {
                 if (!test) {
-                  HomePager(navigation = navigation, homeViewModel = homeViewModel, test = test)
+                  TabsAndPager(navigation = navigation, homeViewModel = homeViewModel)
                 } else {
                   DisplayItineraries(
                       itineraries = itineraries,
@@ -285,7 +285,7 @@ fun FilterDropdownMenu(
         DropdownMenu(
             expanded = showFilterDropdown.value,
             onDismissRequest = { showFilterDropdown.value = false },
-            modifier = Modifier.padding(10.dp).width(400.dp).testTag("DropDownFilter")) {
+            modifier = Modifier.width(400.dp).testTag("DropDownFilter")) {
               FilterType.entries.forEach { filterType ->
                 DropdownMenuItem(
                     text = {
@@ -368,7 +368,7 @@ fun DisplayItineraries(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomePager(
+fun TabsAndPager(
     navigation: Navigation,
     homeViewModel: HomeViewModel = viewModel(),
     test: Boolean = false
@@ -395,76 +395,102 @@ fun HomePager(
       HomeCategory.FOLLOWING -> homeViewModel.filterByFollowing(userEmail)
     }
   }
-
-  Column(modifier = Modifier.background(md_theme_light_onPrimary)) {
-    TabRow(
-        selectedTabIndex = pagerState.currentPage,
-        contentColor = MaterialTheme.colorScheme.onBackground,
-        modifier = Modifier.fillMaxWidth().height(50.dp),
-        backgroundColor = MaterialTheme.colorScheme.background) {
-          tabs.forEachIndexed { index, title ->
-            val flower =
-                if (ambientProfile.userProfile.value.flowerMode == 1) {
-                  if (title == HomeCategory.FOLLOWING.name) " \uD83C\uDF38" else " \uD83C\uDF37"
-                } else ""
-            val isSelected = index == selectedTab
-            Tab(selected = isSelected, onClick = { selectedTab = index }) {
-              Text(
-                  "$title$flower",
-                  color =
-                      if (isSelected) MaterialTheme.colorScheme.onBackground
-                      else MaterialTheme.colorScheme.onSurface,
-                  fontFamily = Montserrat,
-                  fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                  fontSize = 20.sp)
-            }
-          }
-        }
-
-    HorizontalPager(
-        state = pagerState,
-        modifier =
-            Modifier.testTag("HomePager").background(MaterialTheme.colorScheme.background)) { page
-          ->
-          val itineraries =
-              when (HomeCategory.entries[page]) {
-                HomeCategory.TRENDING ->
-                    homeViewModel.trendingList.observeAsState(emptyList()).value
-                HomeCategory.FOLLOWING ->
-                    homeViewModel.followingList.observeAsState(emptyList()).value
+  val verticalPlacement = LocalConfiguration.current.screenHeightDp * 0.07f
+  Column(
+      modifier =
+          Modifier.background(md_theme_light_onPrimary)
+              .padding(0.dp, verticalPlacement.dp, 0.dp, 0.dp)) {
+        TabRow(
+            selectedTabIndex = pagerState.currentPage,
+            contentColor = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.fillMaxWidth().height(60.dp),
+            backgroundColor = MaterialTheme.colorScheme.background) {
+              tabs.forEachIndexed { index, title ->
+                val flower =
+                    if (ambientProfile.userProfile.value.flowerMode == 1) {
+                      if (title == HomeCategory.FOLLOWING.name) " \uD83C\uDF38" else " \uD83C\uDF37"
+                    } else ""
+                val isSelected = index == selectedTab
+                Tab(selected = isSelected, onClick = { selectedTab = index }) {
+                  Text(
+                      "$title$flower",
+                      color =
+                          if (isSelected) MaterialTheme.colorScheme.onBackground
+                          else MaterialTheme.colorScheme.onSurface,
+                      fontFamily = Montserrat,
+                      fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                      fontSize = 20.sp)
+                }
               }
+            }
 
-          if (itineraries.isEmpty() && HomeCategory.entries[page] == HomeCategory.FOLLOWING) {
-            Text(
-                text = "Not following anyone yet.",
-                modifier =
-                    Modifier.fillMaxWidth()
-                        .padding(start = 70.dp, bottom = 250.dp)
-                        .testTag("NoFollowingText"),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Medium,
-                letterSpacing = 0.15.sp,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontFamily = FontFamily(Font(R.font.montserrat_regular)))
-          } else {
-            DisplayItineraries(
-                itineraries =
-                    itineraries.filter {
-                      val ownerProfile =
-                          allProfilesFetched.find { profile -> profile.mail == it.userMail }
-                      ownerProfile?.let { profile ->
-                        profile.itineraryPrivacy == 0 ||
-                            (profile.itineraryPrivacy == 1 &&
-                                ambientProfile.userProfile.value.followers.contains(profile.mail) &&
-                                ambientProfile.userProfile.value.following.contains(profile.mail))
-                      } ?: false
-                    },
-                navigation = navigation,
-                homeViewModel = homeViewModel,
-                test = test,
-                tabSelected = HomeCategory.entries[page])
-          }
-        }
+        HorizontalPager(
+            state = pagerState,
+            modifier =
+                Modifier.testTag("HomePager").background(MaterialTheme.colorScheme.background)) {
+                page ->
+              val itineraries =
+                  when (HomeCategory.entries[page]) {
+                    HomeCategory.TRENDING ->
+                        homeViewModel.trendingList.observeAsState(emptyList()).value
+                    HomeCategory.FOLLOWING ->
+                        homeViewModel.followingList.observeAsState(emptyList()).value
+                  }
+              if (checkIfFollowingCategory(itineraries, page)) {
+                NotFollowingText(itineraries, page, verticalPlacement)
+              } else {
+                DisplayItineraries(
+                    itineraries =
+                        itineraries.filter {
+                          val ownerProfile =
+                              allProfilesFetched.find { profile -> profile.mail == it.userMail }
+                          ownerProfile?.let { profile ->
+                            profile.itineraryPrivacy == 0 ||
+                                (profile.itineraryPrivacy == 1 &&
+                                    ambientProfile.userProfile.value.followers.contains(
+                                        profile.mail) &&
+                                    ambientProfile.userProfile.value.following.contains(
+                                        profile.mail))
+                          } ?: false
+                        },
+                    navigation = navigation,
+                    homeViewModel = homeViewModel,
+                    test = test,
+                    tabSelected = HomeCategory.entries[page])
+              }
+            }
+      }
+}
+
+// Helper function to check if the current category is the following category
+fun checkIfFollowingCategory(itineraries: List<Itinerary>, page: Int): Boolean {
+  return itineraries.isEmpty() && HomeCategory.entries[page] == HomeCategory.FOLLOWING
+}
+
+/**
+ * Function to display a text message when the user is not following anyone yet.
+ *
+ * @param itineraries list of itineraries to check if it is empty
+ * @param page the current page index
+ * @param verticalPlacement the vertical placement of the text
+ */
+@Composable
+fun NotFollowingText(itineraries: List<Itinerary>, page: Int, verticalPlacement: Float) {
+  if (itineraries.isEmpty() && HomeCategory.entries[page] == HomeCategory.FOLLOWING) {
+    Text(
+        text = "Not following anyone yet.",
+        modifier =
+            Modifier.fillMaxWidth()
+                .padding(
+                    start = 70.dp,
+                    top = (verticalPlacement * 3).dp,
+                    bottom = (verticalPlacement * 5.3).dp)
+                .testTag("NoFollowingText"),
+        fontSize = 24.sp,
+        fontWeight = FontWeight.Medium,
+        letterSpacing = 0.15.sp,
+        color = MaterialTheme.colorScheme.onBackground,
+        fontFamily = FontFamily(Font(R.font.montserrat_regular)))
   }
 }
 
