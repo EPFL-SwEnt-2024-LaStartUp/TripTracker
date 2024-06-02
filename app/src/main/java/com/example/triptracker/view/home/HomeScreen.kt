@@ -277,6 +277,7 @@ fun DisplaySearchResults(
           val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
           if (ownerProfile != null) {
             ownerProfile.itineraryPrivacy == 0 ||
+                ownerProfile == currProfile ||
                 (ownerProfile.itineraryPrivacy == 1 &&
                     currProfile.followers.contains(ownerProfile.mail) &&
                     currProfile.following.contains(ownerProfile.mail))
@@ -492,6 +493,7 @@ fun TabsAndPager(
                               allProfilesFetched.find { profile -> profile.mail == it.userMail }
                           ownerProfile?.let { profile ->
                             profile.itineraryPrivacy == 0 ||
+                                ownerProfile == ambientProfile.userProfile.value ||
                                 (profile.itineraryPrivacy == 1 &&
                                     ambientProfile.userProfile.value.followers.contains(
                                         profile.mail) &&
