@@ -43,7 +43,7 @@ Other data to save are :
 
 ## Architecture diagram
 
-![architecture_diagram](/resources/architecture_diagram)
+![architecture_diagram](/resources/architecture_diagram.png)
 
 ---
 
