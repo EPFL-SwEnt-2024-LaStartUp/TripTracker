@@ -1,11 +1,15 @@
 package com.example.triptracker
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.RadioButtonChecked
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -60,65 +64,27 @@ class E2ETest {
 
     @get:Rule val composeTestRule = createComposeRule()
 
-    @RelaxedMockK private lateinit var userProfilevm: UserProfileViewModel
-    @RelaxedMockK private lateinit var homevm: HomeViewModel
-    @RelaxedMockK private lateinit var mockNavigation: Navigation
-    @RelaxedMockK private lateinit var connection: Connection
-    val profile = MutableUserProfile()
-
-
-    //setup navhostcontroller
-
-    @Before
-    fun setup() {
-
-        mockNavigation = mockk(relaxed = true)
-        userProfilevm = mockk(relaxed = true)
-        homevm = mockk(relaxed = true)
-        connection = mockk(relaxed = true)
-
-
-        every { mockNavigation.getTopLevelDestinations() } returns
-                listOf(
-                    TopLevelDestination(Route.HOME, Icons.Outlined.Home, "Home"),
-                    TopLevelDestination(Route.MAPS, Icons.Outlined.Place, "Maps"),
-                    TopLevelDestination(Route.RECORD, Icons.Outlined.RadioButtonChecked, "Record"),
-                    TopLevelDestination(Route.PROFILE, Icons.Outlined.Person, "Profile"),
-                )
-
-
-
-    }
-
-
+    var profile= MutableUserProfile()
 
     @Test
     fun profileScreenFlow(){
 
-        userProfilevm = mockk {
-            every { getUserProfileList() } returns
-                    listOf(UserProfile("email@example.com", "Test User", "Stupid", "Yesterday"))
-            every { getUserProfile(any(), any()) } coAnswers
-                    {
-                        secondArg<(UserProfile?) -> Unit>()
-                            .invoke(UserProfile("email@example.com", "Test User", "Stupid", "Yesterday"))
-                    }
-            every { onConnectionRefresh() } returns true
-            every { setProfile(any()) } returns Unit
-        }
+
         composeTestRule.setContent {
-            val navController = rememberNavController()
-            val navigation = remember(navController) { Navigation(navController) }
-            NavHost(
-                navController = navController,
-                startDestination = Route.PROFILE,
-            ) {
-                composable(Route.HOME) { HomeScreen(navigation) }
-                composable(Route.FRIENDS) {
-                    UserProfileFriendsFinder(navigation = navigation, profile = profile)
-                }
-                composable(Route.PROFILE) {
-                    UserProfileOverview(navigation = navigation, profile = profile)
+            Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                val navController = rememberNavController()
+                val navigation = remember(navController) { Navigation(navController) }
+                NavHost(
+                    navController = navController,
+                    startDestination = Route.PROFILE,
+                ) {
+                    composable(Route.HOME) { HomeScreen(navigation) }
+                    composable(Route.FRIENDS) {
+                        UserProfileFriendsFinder(navigation = navigation, profile = profile)
+                    }
+                    composable(Route.PROFILE) {
+                        UserProfileOverview(navigation = navigation, profile = profile)
+                    }
                 }
             }
 
@@ -127,7 +93,6 @@ class E2ETest {
         composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
         composeTestRule.onNodeWithTag("FriendsButton").assertHasClickAction()
         composeTestRule.onNodeWithTag("FriendsButton").performClick()
-
         //verify that the favorites screen is open
 
 
