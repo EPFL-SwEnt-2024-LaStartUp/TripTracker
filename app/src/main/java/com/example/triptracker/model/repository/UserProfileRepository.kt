@@ -148,6 +148,12 @@ open class UserProfileRepository {
         flowerMode.toInt())
   }
 
+  /**
+   * Function to create an empty favorite paths list for the user
+   *
+   * @param id : Unique identifier of the user's profile
+   * @return List of favorite paths
+   */
   private fun createFavoritesPaths(id: String): List<String> {
     val favoritesPaths = mutableListOf<String>()
     userProfileDb
@@ -158,6 +164,12 @@ open class UserProfileRepository {
     return favoritesPaths
   }
 
+  /**
+   * Function to set the profile privacy to 0 by default
+   *
+   * @param id : Unique identifier of the user's profile
+   * @return Profile privacy
+   */
   private fun createProfilePrivacy(id: String): Int {
     val profilePrivacy = 0
     userProfileDb
@@ -168,6 +180,12 @@ open class UserProfileRepository {
     return profilePrivacy
   }
 
+  /**
+   * Function to set the itinerary privacy to 0 by default
+   *
+   * @param id : Unique identifier of the user's profile
+   * @return Itinerary privacy
+   */
   private fun createItineraryPrivacy(id: String): Int {
     val itineraryPrivacy = 0
     userProfileDb

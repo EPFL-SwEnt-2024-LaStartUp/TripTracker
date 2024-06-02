@@ -30,6 +30,13 @@ class ImageRepository {
   val profilePictures: String
     get() = PROFILE_PICTURES
 
+  /**
+   * Function to add an image to Firebase Storage
+   *
+   * @param folder the folder to store the image in
+   * @param imageUri the Uri of the image to store
+   * @return a Response object containing the download URL of the image
+   */
   suspend fun addImageToFirebaseStorage(folder: String, imageUri: Uri): Response<Uri> {
     return try {
 

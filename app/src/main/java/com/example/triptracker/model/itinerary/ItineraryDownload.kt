@@ -24,6 +24,7 @@ class ItineraryDownload(
     private val gson: Gson = Gson()
 ) {
 
+  // Suffix for the itinerary file
   private val itinerarySuffix = "_itinerary"
 
   /**
@@ -39,17 +40,17 @@ class ItineraryDownload(
 
     itinerary.pinnedPlaces.forEach { pin ->
       val updatedImages = mutableListOf<String>()
-      val imagesToProcess = pin.image_url.size
+      val imagesToProcess = pin.imageUrl.size
       var processedImages = 0
 
-      pin.image_url.forEach { imageUrl ->
+      pin.imageUrl.forEach { imageUrl ->
         saveImageToInternalStorage(imageUrl) { imagePath ->
           updatedImages.add(imagePath)
           processedImages++
 
           // When all images for the pin are saved
           if (processedImages == imagesToProcess) {
-            updatedPins.add(pin.copy(image_url = updatedImages))
+            updatedPins.add(pin.copy(imageUrl = updatedImages))
             processedPins++
 
             // When all pins are saved
@@ -129,7 +130,7 @@ class ItineraryDownload(
     val itinerary = loadItineraryFromInternalStorage(fileName)
 
     itinerary?.pinnedPlaces?.forEach { pin ->
-      pin.image_url.forEach { imagePath -> deleteImageFromInternalStorage(imagePath) }
+      pin.imageUrl.forEach { imagePath -> deleteImageFromInternalStorage(imagePath) }
     }
 
     return file.delete()

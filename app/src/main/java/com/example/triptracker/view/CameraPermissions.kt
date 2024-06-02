@@ -23,6 +23,7 @@ import androidx.core.app.ActivityCompat
  * Check if the camera permission is granted
  *
  * @param context the context of the activity
+ * @return true if the camera permission is granted, false otherwise
  */
 fun checkForCameraPermission(context: Context): Boolean {
   return ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==

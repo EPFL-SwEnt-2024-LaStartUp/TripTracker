@@ -3,9 +3,12 @@ package com.example.triptracker.view.theme
 import androidx.compose.ui.graphics.Color
 
 val md_theme_orange = Color(0xFFD4622B)
+val md_theme_warning_orange = Color(0xFFDF0101)
 val md_theme_grey = Color(0xC0C0C7CD)
 val md_theme_light_dark = Color(0xFF1D2022)
 val md_theme_dark_gray = Color(0xFF6C7378)
+
+val md_theme_tri_state = Color(0xB26C7378)
 
 val md_theme_light_black = Color(0xFF1D2022)
 val md_theme_light_primary = Color(0xFF00668A)
@@ -38,6 +41,7 @@ val md_theme_light_surfaceTint = Color(0xFF00668A)
 val md_theme_light_outlineVariant = Color(0xFFC0C7CD)
 val md_theme_light_scrim = Color(0xFF000000)
 
+val md_theme_dark_tri_state = Color(0xFFE2DFDD)
 val md_theme_dark_black = Color(0xFFE2DFDD)
 val md_theme_dark_primary = Color(0xFF7BD0FF)
 val md_theme_dark_onPrimary = Color(0xFF003549)
@@ -67,6 +71,6 @@ val md_theme_dark_inverseOnSurface = Color(0xFF191C1E)
 val md_theme_dark_inversePrimary = Color(0xFF00668A)
 val md_theme_dark_surfaceTint = Color(0xFF7BD0FF)
 val md_theme_dark_outlineVariant = Color(0xFF41484D)
-val md_theme_dark_scrim = Color(0xFF000000)
+val md_theme_dark_scrim = Color(0xC0C0C7CD)
 
 val seed = Color(0xFF008BBB)
