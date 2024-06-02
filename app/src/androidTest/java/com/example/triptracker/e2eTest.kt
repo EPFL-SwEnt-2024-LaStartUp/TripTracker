@@ -12,7 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -38,6 +40,7 @@ import com.example.triptracker.view.TopLevelDestination
 import com.example.triptracker.view.home.HomeScreen
 import com.example.triptracker.view.map.MapOverview
 import com.example.triptracker.view.map.RecordScreen
+import com.example.triptracker.view.profile.UserProfileEditScreen
 import com.example.triptracker.view.profile.UserProfileFavourite
 import com.example.triptracker.view.profile.UserProfileFriendsFinder
 import com.example.triptracker.view.profile.UserProfileMyTrips
@@ -111,7 +114,7 @@ class E2ETest {
   }
 
   @Test
-  fun profileScreenFlow() {
+  fun E2ETestFinal() {
 
     every { mockUserProfileRepository.getUserProfileByEmail(mockMail) {} } returns
         mockk(relaxUnitFun = true)
@@ -150,6 +153,9 @@ class E2ETest {
                 navigation = navigation,
                 userProfile = profile,
             )
+          }
+          composable(Route.EDIT) {
+            UserProfileEditScreen(navigation = navigation, profile = profile)
           }
           composable("MAPS?id={id}", arguments = listOf(navArgument("id") { defaultValue = "" })) {
               backStackEntry ->
@@ -261,6 +267,19 @@ class E2ETest {
     // verify that the my trips screen is open
     composeTestRule.onNodeWithTag("UserProfileMyTripsScreen").assertIsDisplayed()
 
+    // Go back and assert we are in the profile screen
+    composeTestRule.onNodeWithTag("GoBackButton").performClick()
+    composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
+
+    // Edit profile
+    composeTestRule.onNodeWithContentDescription("Edit").assertHasClickAction()
+    composeTestRule.onNodeWithContentDescription("Edit").performClick()
+
+    // verify that the edit screen is open
+    composeTestRule.onNodeWithTag("UserProfileEditScreen").assertIsDisplayed()
+
+    // input into the field
+    composeTestRule.onNodeWithText("Save").isDisplayed()
     // Go back and assert we are in the profile screen
     composeTestRule.onNodeWithTag("GoBackButton").performClick()
     composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
