@@ -206,9 +206,6 @@ fun Map(
   }
   var visibleRegion: VisibleRegion?
 
-  // val displayPopUp by remember { mutableStateOf(mapViewModel.displayPopUp) }
-  // var displayPicturesPopUp by remember { mutableStateOf(mapViewModel.displayPicturePopUp) }
-
   var selectedPolyline by remember { mapViewModel.selectedPolylineState }
 
   val showCancelDialog = remember { mutableStateOf(false) }
@@ -310,48 +307,23 @@ fun Map(
                   color = md_theme_orange,
                   width = width,
                   onClick = {
-                    if (!mapViewModel.asStartItinerary.value) {
+                    onSelectedPolyline(mapViewModel) {
                       selectedPolyline = MapViewModel.SelectedPolyline(location, latLngList[0])
                       mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
                       mapViewModel.displayPopUp.value = true
                     }
                   })
 
-              // Display the start marker of the polyline and a thicker path when selected
-              if (isSelected) {
-                if (selectedPolyline!!.itinerary.route.isNotEmpty()) {
-                  val startMarkerState =
-                      rememberMarkerState(position = selectedPolyline!!.itinerary.route[0])
-                  MarkerComposable(state = startMarkerState) {
-                    Icon(
-                        imageVector = Icons.Outlined.ArrowDownward,
-                        contentDescription = "Start Location",
-                        tint = md_theme_light_black)
+              DisplayPins(
+                  isSelected = isSelected,
+                  selectedPolyline = selectedPolyline,
+                  mapViewModel = mapViewModel) { pin ->
+                    mapViewModel.selectedPin.value = pin
+
+                    mapViewModel.displayPicturePopUp.value = true
+
+                    mapViewModel.displayPopUp.value = false
                   }
-                }
-
-                selectedPolyline!!.itinerary.pinnedPlaces.forEach { pin ->
-                  val markerState =
-                      rememberMarkerState(position = LatLng(pin.latitude, pin.longitude))
-                  MarkerComposable(
-                      state = markerState,
-                      onClick = {
-                        // Display the pin information
-                        mapViewModel.selectedPin.value = pin
-
-                        mapViewModel.displayPicturePopUp.value = true
-
-                        mapViewModel.displayPopUp.value = false
-
-                        true
-                      }) {
-                        Icon(
-                            imageVector = Icons.Outlined.PinDrop,
-                            contentDescription = "Add Picture",
-                            tint = md_theme_light_black)
-                      }
-                }
-              }
             }
           }
     }
@@ -451,45 +423,43 @@ fun Map(
                   deviceLocation = deviceLocation)
             }
       }
-  if (mapViewModel.displayPopUp.value) {
 
-    if (mapViewModel.selectedPolylineState.value != null) {
-      Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
-        // Display the itinerary of the selected polyline
-        // (only when the polyline is selected)
-        when (mapViewModel.popUpState.value) {
-          popupState.DISPLAYITINERARY -> {
-            Box(
-                modifier =
-                    Modifier.fillMaxHeight(0.3f).fillMaxWidth().align(Alignment.BottomCenter)) {
-                  DisplayItinerary(
-                      itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                      onClick = { mapViewModel.popUpState.value = popupState.DISPLAYPIN },
-                      navigation = navigation,
-                  )
-                }
+  if (mapViewModel.displayPopUp.value && mapViewModel.selectedPolylineState.value != null) {
+    Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
+      // Display the itinerary of the selected polyline
+      // (only when the polyline is selected)
+      when (mapViewModel.popUpState.value) {
+        popupState.DISPLAYITINERARY -> {
+          Box(
+              modifier =
+                  Modifier.fillMaxHeight(0.3f).fillMaxWidth().align(Alignment.BottomCenter)) {
+                DisplayItinerary(
+                    itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                    onClick = { mapViewModel.popUpState.value = popupState.DISPLAYPIN },
+                    navigation = navigation,
+                )
+              }
+        }
+        popupState.DISPLAYPIN -> {
+          Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
+            StartScreen(
+                itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                userProfileViewModel = UserProfileViewModel(),
+                userProfile = userProfile,
+                onClick = { mapViewModel.popUpState.value = popupState.PATHOVERLAY },
+                mapViewModel = mapViewModel)
           }
-          popupState.DISPLAYPIN -> {
-            Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
-              StartScreen(
-                  itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                  userProfileViewModel = UserProfileViewModel(),
-                  userProfile = userProfile,
-                  onClick = { mapViewModel.popUpState.value = popupState.PATHOVERLAY },
-                  mapViewModel = mapViewModel)
-            }
-          }
-          popupState.PATHOVERLAY -> {
-            Box(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)) {
-              PathOverlaySheet(
-                  itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                  onClick = {
-                    mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
-                    mapViewModel.displayPopUp.value = false
-                    mapViewModel.displayPicturePopUp.value = true
-                    mapViewModel.selectedPin.value = it
-                  })
-            }
+        }
+        popupState.PATHOVERLAY -> {
+          Box(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)) {
+            PathOverlaySheet(
+                itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                onClick = {
+                  mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
+                  mapViewModel.displayPopUp.value = false
+                  mapViewModel.displayPicturePopUp.value = true
+                  mapViewModel.selectedPin.value = it
+                })
           }
         }
       }
@@ -553,6 +523,47 @@ fun Map(
                       displayPinImages(selectedPin)
                     }
               }
+        }
+  }
+}
+
+private fun onSelectedPolyline(mapViewModel: MapViewModel, callback: () -> Unit) {
+  if (!mapViewModel.asStartItinerary.value) {
+    callback()
+  }
+}
+
+@Composable
+private fun DisplayPins(
+    isSelected: Boolean,
+    selectedPolyline: MapViewModel.SelectedPolyline?,
+    mapViewModel: MapViewModel,
+    callback: (pin: Pin) -> Unit
+) {
+  // Display the start marker of the polyline and a thicker path when selected
+  if (isSelected && selectedPolyline!!.itinerary.route.isNotEmpty()) {
+    val startMarkerState = rememberMarkerState(position = selectedPolyline!!.itinerary.route[0])
+    MarkerComposable(state = startMarkerState) {
+      Icon(
+          imageVector = Icons.Outlined.ArrowDownward,
+          contentDescription = "Start Location",
+          tint = md_theme_light_black)
+    }
+  }
+
+  selectedPolyline!!.itinerary.pinnedPlaces.forEach { pin ->
+    val markerState = rememberMarkerState(position = LatLng(pin.latitude, pin.longitude))
+    MarkerComposable(
+        state = markerState,
+        onClick = {
+          // Display the pin information
+          callback(pin)
+          true
+        }) {
+          Icon(
+              imageVector = Icons.Outlined.PinDrop,
+              contentDescription = "Add Picture",
+              tint = md_theme_light_black)
         }
   }
 }

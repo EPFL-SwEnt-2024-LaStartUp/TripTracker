@@ -449,7 +449,7 @@ private fun updateDeletedStatus(canBeDeleted: Boolean, callback: () -> Unit) {
  * @param isLoading: Boolean to check if the itinerary is downloading
  */
 @Composable
-private fun DisplayLoadingScreen(isLoading: Boolean) {
+fun DisplayLoadingScreen(isLoading: Boolean) {
   // Loading bar for when the itinerary is downloading
   if (isLoading) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -523,7 +523,7 @@ private fun Modifier.getHeight(imageIsEmpty: MutableState<Boolean>, screenHeight
  * @param ambientProfile: MutableUserProfile object to get the user's profile
  * @param itinerary: Itinerary object to get the flame count
  */
-private fun getTrendingCount(ambientProfile: MutableUserProfile, itinerary: Itinerary): String {
+fun getTrendingCount(ambientProfile: MutableUserProfile, itinerary: Itinerary): String {
   return if (ambientProfile.userProfile.value.flowerMode == 1)
       "${itinerary.flameCount} ${flowerStringBasedOnCount(itinerary.flameCount)}"
   else "${itinerary.flameCount} 🔥"
