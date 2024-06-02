@@ -251,10 +251,10 @@ fun RemoveFriendButton(
       colors =
           if (areConnected) {
             ButtonDefaults.buttonColors(
-                containerColor = md_theme_orange, contentColor = md_theme_light_onPrimary)
+                containerColor = md_theme_grey, contentColor = md_theme_light_onPrimary)
           } else {
             ButtonDefaults.buttonColors(
-                containerColor = md_theme_grey, contentColor = md_theme_light_onPrimary)
+                containerColor = md_theme_orange, contentColor = md_theme_light_onPrimary)
           },
       modifier =
           Modifier.height((LocalConfiguration.current.screenHeightDp * 0.05f).dp)
