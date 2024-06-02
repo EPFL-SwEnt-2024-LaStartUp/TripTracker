@@ -336,7 +336,7 @@ fun Map(
               DisplayPins(
                   isSelected = isSelected,
                   selectedPolyline = selectedPolyline,
-                  mapViewModel = mapViewModel) { pin ->
+                  ) { pin ->
                     mapViewModel.selectedPin.value = pin
 
                     mapViewModel.displayPicturePopUp.value = true
@@ -443,43 +443,42 @@ fun Map(
             }
       }
 
-    if (mapViewModel.displayPopUp.value && mapViewModel.selectedPolylineState.value != null) {
-      Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
-        // Display the itinerary of the selected polyline
-        // (only when the polyline is selected)
-        when (mapViewModel.popUpState.value) {
-          PopUpState.DISPLAY_ITINERARY -> {
-            Box(
-                modifier =
-                    Modifier.fillMaxHeight(0.3f).fillMaxWidth().align(Alignment.BottomCenter)) {
-                  DisplayItinerary(
-                      itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                      onClick = { mapViewModel.popUpState.value = PopUpState.DISPLAY_PIN },
-                      navigation = navigation,
-                  )
-                }
+  if (mapViewModel.displayPopUp.value && mapViewModel.selectedPolylineState.value != null) {
+    Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
+      // Display the itinerary of the selected polyline
+      // (only when the polyline is selected)
+      when (mapViewModel.popUpState.value) {
+        PopUpState.DISPLAY_ITINERARY -> {
+          Box(
+              modifier =
+                  Modifier.fillMaxHeight(0.3f).fillMaxWidth().align(Alignment.BottomCenter)) {
+                DisplayItinerary(
+                    itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                    onClick = { mapViewModel.popUpState.value = PopUpState.DISPLAY_PIN },
+                    navigation = navigation,
+                )
+              }
+        }
+        PopUpState.DISPLAY_PIN -> {
+          Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
+            StartScreen(
+                itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                userProfileViewModel = UserProfileViewModel(),
+                userProfile = userProfile,
+                onClick = { mapViewModel.popUpState.value = PopUpState.PATH_OVERLAY },
+                mapViewModel = mapViewModel)
           }
-          PopUpState.DISPLAY_PIN -> {
-            Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
-              StartScreen(
-                  itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                  userProfileViewModel = UserProfileViewModel(),
-                  userProfile = userProfile,
-                  onClick = { mapViewModel.popUpState.value = PopUpState.PATH_OVERLAY },
-                  mapViewModel = mapViewModel)
-            }
-          }
-          PopUpState.PATH_OVERLAY -> {
-            Box(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)) {
-              PathOverlaySheet(
-                  itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                  onClick = {
-                    mapViewModel.popUpState.value = PopUpState.DISPLAY_ITINERARY
-                    mapViewModel.displayPopUp.value = false
-                    mapViewModel.displayPicturePopUp.value = true
-                    mapViewModel.selectedPin.value = it
-                  })
-            }
+        }
+        PopUpState.PATH_OVERLAY -> {
+          Box(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)) {
+            PathOverlaySheet(
+                itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
+                onClick = {
+                  mapViewModel.popUpState.value = PopUpState.DISPLAY_ITINERARY
+                  mapViewModel.displayPopUp.value = false
+                  mapViewModel.displayPicturePopUp.value = true
+                  mapViewModel.selectedPin.value = it
+                })
           }
         }
       }
@@ -557,7 +556,6 @@ private fun onSelectedPolyline(mapViewModel: MapViewModel, callback: () -> Unit)
 private fun DisplayPins(
     isSelected: Boolean,
     selectedPolyline: MapViewModel.SelectedPolyline?,
-    mapViewModel: MapViewModel,
     callback: (pin: Pin) -> Unit
 ) {
   // Display the start marker of the polyline and a thicker path when selected
