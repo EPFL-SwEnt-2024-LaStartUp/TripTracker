@@ -85,18 +85,66 @@ class E2ETest {
                     composable(Route.PROFILE) {
                         UserProfileOverview(navigation = navigation, profile = profile)
                     }
+                    composable(Route.MYTRIPS) {
+                        UserProfileMyTrips(
+                            navigation = navigation,
+                            userProfile = profile,
+                        )
+                    }
+                    composable(Route.SETTINGS) { UserProfileSettings(navigation) }
+                    composable(Route.FAVORITES) {
+                        UserProfileFavourite(navigation = navigation, userProfile = profile)
+                    }
                 }
             }
 
         }
 
         composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
+
+        //travel to the friends screen
         composeTestRule.onNodeWithTag("FriendsButton").assertHasClickAction()
         composeTestRule.onNodeWithTag("FriendsButton").performClick()
+
         //verify that the favorites screen is open
+        composeTestRule.onNodeWithTag("FriendsFinderScreen").assertIsDisplayed()
 
+        //Go back and assert we are in the profile screen
+        composeTestRule.onNodeWithTag("GoBackButton").performClick()
+        composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
 
+        //travel to the favorites
+        composeTestRule.onNodeWithTag("FavoritesButton").assertHasClickAction()
+        composeTestRule.onNodeWithTag("FavoritesButton").performClick()
 
+        //verify that the favorites screen is open
+        composeTestRule.onNodeWithTag("UserProfileFavouriteScreen").assertIsDisplayed()
+
+        //Go back and assert we are in the profile screen
+        composeTestRule.onNodeWithTag("GoBackButton").performClick()
+        composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
+
+        //travel to the settings
+        composeTestRule.onNodeWithTag("SettingsButton").assertHasClickAction()
+        composeTestRule.onNodeWithTag("SettingsButton").performClick()
+
+        //verify that the followers screen is open
+        composeTestRule.onNodeWithTag("UserProfileSettings").assertIsDisplayed()
+
+        //Go back and assert we are in the profile screen
+        composeTestRule.onNodeWithTag("GoBackButton").performClick()
+        composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
+
+        //travel to the my trips
+        composeTestRule.onNodeWithTag("MyTripsButton").assertHasClickAction()
+        composeTestRule.onNodeWithTag("MyTripsButton").performClick()
+
+        //verify that the my trips screen is open
+        composeTestRule.onNodeWithTag("UserProfileMyTripsScreen").assertIsDisplayed()
+
+        //Go back and assert we are in the profile screen
+        composeTestRule.onNodeWithTag("GoBackButton").performClick()
+        composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
 
 
     }
