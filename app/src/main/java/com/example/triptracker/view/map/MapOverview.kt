@@ -69,6 +69,7 @@ import com.example.triptracker.navigation.getCurrentLocation
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.home.DisplayItinerary
+import com.example.triptracker.view.home.allProfilesFetched
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
 import com.example.triptracker.view.theme.md_theme_light_black
@@ -182,11 +183,11 @@ fun Map(
     currentSelectedId: String,
     userProfile: MutableUserProfile,
     navigation: Navigation,
+    userProfileViewModel: UserProfileViewModel = viewModel()
 ) {
   // Used to display the gradient with the top bar and the changing city location
   val ui by remember { mutableStateOf(uiSettings) }
   val properties by remember { mutableStateOf(mapProperties) }
-
   val coroutineScope = rememberCoroutineScope()
 
   // var mapPopupState by remember { mutableStateOf(mapViewModel.popUpState) }
@@ -204,6 +205,7 @@ fun Map(
           })
     }
   }
+
   var visibleRegion: VisibleRegion?
 
   // val displayPopUp by remember { mutableStateOf(mapViewModel.displayPopUp) }
@@ -299,7 +301,24 @@ fun Map(
             mapViewModel.getFilteredPaths(visibleRegion?.latLngBounds)
           }) {
             // Display the path of the trips on the map only when they enter the screen
-            mapViewModel.filteredPathList.value?.forEach { (location, latLngList) ->
+            var itsNotPrivacy = mapViewModel.filteredPathList.value ?: emptyMap()
+
+            if (itsNotPrivacy.isNotEmpty()) {
+              itsNotPrivacy =
+                  itsNotPrivacy.filter { (k, v) ->
+                    val itin = k
+                    val ownerProfile = allProfilesFetched.find { it.mail == itin.userMail }
+                    if (ownerProfile != null) {
+                      ownerProfile.itineraryPrivacy == 0 ||
+                          (ownerProfile.itineraryPrivacy == 1 &&
+                              userProfile.userProfile.value.followers.contains(ownerProfile.mail) &&
+                              userProfile.userProfile.value.following.contains(ownerProfile.mail))
+                    } else {
+                      false
+                    }
+                  }
+            }
+            itsNotPrivacy.forEach { (location, latLngList) ->
               // Check if the polyline is selected
               val isSelected = selectedPolyline?.itinerary?.id == location.id
               val width = if (isSelected) 25f else 15f

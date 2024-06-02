@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.R
-import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
@@ -224,45 +223,47 @@ fun UserView(
                           Modifier.height((LocalConfiguration.current.screenHeightDp * 0.45).dp),
                       horizontalAlignment = Alignment.CenterHorizontally,
                       verticalArrangement = Arrangement.Center) {
-                        when (filteredList) {
+                        if (filteredList.isEmpty() ||
+                            displayedUser.itineraryPrivacy == 2 ||
+                            (displayedUser.itineraryPrivacy == 1 &&
+                                !(displayedUser.following.contains(
+                                    loggedUser.userProfile.value.mail) &&
+                                    displayedUser.followers.contains(
+                                        loggedUser.userProfile.value.mail)))) {
                           // If the displayed user doesn't have any itineraries we display a message
-                          emptyList<Itinerary>() -> {
-                            // Display a message when the list is empty
-                            Box(
-                                modifier = Modifier.fillMaxWidth().fillMaxHeight(),
-                                contentAlignment = Alignment.Center) {
-                                  Text(
-                                      text =
-                                          "${displayedUser.name} ${displayedUser.surname} does not have any trips yet",
-                                      modifier =
-                                          Modifier.padding(30.dp)
-                                              .align(Alignment.Center)
-                                              .testTag("NoTripsText"),
-                                      fontSize = 16.sp,
-                                      fontFamily = Montserrat,
-                                      fontWeight = FontWeight.SemiBold,
-                                      color = md_theme_grey)
+
+                          // Display a message when the list is empty
+                          Box(
+                              modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                              contentAlignment = Alignment.Center) {
+                                Text(
+                                    text =
+                                        "${displayedUser.name} ${displayedUser.surname} does not have any trips yet",
+                                    modifier =
+                                        Modifier.padding(30.dp)
+                                            .align(Alignment.Center)
+                                            .testTag("NoTripsText"),
+                                    fontSize = 16.sp,
+                                    fontFamily = Montserrat,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = md_theme_grey)
+                              }
+                        } else {
+                          // Display the list of itineraries when the list is not empty
+                          val listState = rememberLazyListState()
+                          LazyColumn(
+                              modifier =
+                                  Modifier.fillMaxWidth().fillMaxHeight().testTag("MyTripsList"),
+                              contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
+                              state = listState) {
+                                items(filteredList) { itinerary ->
+                                  Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
+                                  DisplayItinerary(
+                                      itinerary = itinerary,
+                                      onClick = { navigation.navigateTo(Route.MAPS, itinerary.id) },
+                                      navigation = navigation)
                                 }
-                          }
-                          else -> {
-                            // Display the list of itineraries when the list is not empty
-                            val listState = rememberLazyListState()
-                            LazyColumn(
-                                modifier =
-                                    Modifier.fillMaxWidth().fillMaxHeight().testTag("MyTripsList"),
-                                contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
-                                state = listState) {
-                                  items(filteredList) { itinerary ->
-                                    Log.d("ItineraryToDisplay", "Displaying itinerary: $itinerary")
-                                    DisplayItinerary(
-                                        itinerary = itinerary,
-                                        onClick = {
-                                          navigation.navigateTo(Route.MAPS, itinerary.id)
-                                        },
-                                        navigation = navigation)
-                                  }
-                                }
-                          }
+                              }
                         }
                       }
                 }
