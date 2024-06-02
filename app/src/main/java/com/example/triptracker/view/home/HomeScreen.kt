@@ -216,11 +216,7 @@ fun SearchBarImplementation(
         active = isActive,
         onActiveChange = { activeState ->
           isActive = activeState
-          if (!activeState) {
-            searchText.value = ""
-            viewModel.setSearchQuery("")
-            onSearchActivated(false)
-          }
+          resetIfNotActive(activeState, searchText, viewModel, onSearchActivated)
         },
         placeholder = {
           Text(
@@ -237,16 +233,8 @@ fun SearchBarImplementation(
     ) {
       LaunchedEffect(searchText) { onSearchActivated(isActive) }
 
-      if (isNoResultFound) {
-        Text(
-            "No results found",
-            modifier = Modifier.padding(16.dp).testTag("NoResultsFound"),
-            fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 0.15.sp,
-            color = Color.Red)
-      }
+      DisplayNoResultFount(isNoResultFound)
+
       DisplaySearchResults(isActive, items, viewModel, navigation)
     }
   }
@@ -287,6 +275,37 @@ fun DisplayTrailingIcon(
                 .testTag("ClearButton"),
         imageVector = Icons.Default.Close,
         contentDescription = "Clear text field")
+  }
+}
+
+fun resetIfNotActive(
+    activeState: Boolean,
+    searchText: MutableState<String>,
+    viewModel: HomeViewModel,
+    onSearchActivated: (Boolean) -> Unit
+) {
+  if (!activeState) {
+    searchText.value = ""
+    viewModel.setSearchQuery("")
+    onSearchActivated(false)
+  }
+}
+
+@Composable
+fun DisplayNoResultFount(isNoResultFound: Boolean) {
+  val horizontalPlacement = LocalConfiguration.current.screenWidthDp * 0.6f
+  val verticalPlacement = LocalConfiguration.current.screenHeightDp * 0.024f
+  if (isNoResultFound) {
+    Text(
+        "No results found",
+        modifier =
+            Modifier.padding((horizontalPlacement / 2).dp, verticalPlacement.dp, 0.dp, 0.dp)
+                .testTag("NoResultsFound"),
+        fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Bold,
+        letterSpacing = 0.15.sp,
+        color = Color.Red)
   }
 }
 
