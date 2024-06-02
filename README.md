@@ -1,11 +1,14 @@
 # TripTracker
 
-## Functionalities 
+**TripTracker is a mobile application designed to enhance the experience of exploring a city on foot by providing pleasant walking itineraries around interesting spots. Record and share your own walking paths, discover paths created by others, connect with your friends, and stay updated with trending routes. It’s the ultimate travel companion that turns every trip into a memorable journey shared with the community!**
 
-Tired of bringing your heavy guidebook with you on your trips ? Say hello to TripTracker. This application will make it super easy to find relevant places to visit in a city and will enable users to find pleasant walk paths between points of interest (museums, restaurants, nice viewpoints, bars or buildings…) while avoiding crowded or unattractive areas. 
-Users who want to share their favorite routes can record their path using their GPS position along the way. They can then add points of interest to describe where to stop as well as some text or pictures to describe them. Before they can share the circuit they will need to add an approximation of the time needed, a title and a short description. Then they can choose to publish the tour with one of the three modes of publishing paths : private, friends only or public. It is also possible to add comments and pictures to registered points of interest and paths. Each recorded path is associated with a rating, this way users can either upvote or downvote them and the best ranked paths are proposed with a higher probability.
-The user can select points of interest he wants to see/visit and the desired time. Then the application proposes paths with good rankings corresponding to the criteria and the user just has to follow the GPS. When the user knows that he will be offline during the walk, he can download the path he wants to follow. Each user will have an associated profile and will be able to connect with friends. This way they can easily access each other's recorded paths.
-By analyzing the data about the paths recently registered into the application, and the ones that users download and follow, the application will highlight the points of interest that are the most popular in the last week/month and display them in a « trending » tab. This way users will easily see points of interest and paths that might be more relevant currently as it might change depending on the time of the year (based on the seasons, the expositions in museums…).
+## Overview 
+
+The TripTracker application goal is to simplify the way people explore places on foot. By providing users with enjoyable walking itineraries around interesting spots, this application ensures that users make the most of their trips. The application also allows users to record their own paths as they walk and add points of interest on the way. They can upload photos and descriptions of the spots they visit while recording their paths and when saving the path they can add a title and a description to it.
+
+The application also offers a community aspect, as the recorded paths can be shared with other users of TripTracker. This way, tourists and locals alike can benefit from the experiences of others and discover new places to explore. It is also a social platform where users can look up their friends’ profiles and start following them. By connecting with their friends, users can easily stay updated with the latest paths created by their friends and share their own paths with them.
+
+Users can save the paths they like to easily find them later in their favorites. The itineraries added to this folder are automatically downloaded to enable offline access. This way, users can view the paths they have saved offline and enjoy their trip without worrying about an internet connection.
 
 ## Design
 
