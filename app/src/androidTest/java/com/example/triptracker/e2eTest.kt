@@ -37,6 +37,7 @@ import com.example.triptracker.view.Route
 import com.example.triptracker.view.TopLevelDestination
 import com.example.triptracker.view.home.HomeScreen
 import com.example.triptracker.view.map.MapOverview
+import com.example.triptracker.view.map.RecordScreen
 import com.example.triptracker.view.profile.UserProfileFavourite
 import com.example.triptracker.view.profile.UserProfileFriendsFinder
 import com.example.triptracker.view.profile.UserProfileMyTrips
@@ -139,6 +140,8 @@ class E2ETest {
           composable(Route.FRIENDS) {
             UserProfileFriendsFinder(navigation = navigation, profile = profile)
           }
+
+          composable(Route.RECORD) { RecordScreen(appContext, navigation) }
           composable(Route.PROFILE) {
             UserProfileOverview(navigation = navigation, profile = profile)
           }
@@ -261,5 +264,12 @@ class E2ETest {
     // Go back and assert we are in the profile screen
     composeTestRule.onNodeWithTag("GoBackButton").performClick()
     composeTestRule.onNodeWithTag("ProfileOverview").assertIsDisplayed()
+
+    // Travel accross the application
+
+    composeTestRule.onNodeWithText("Home").performClick()
+    composeTestRule.onNodeWithTag("HomeScreen").assertIsDisplayed()
+
+    composeTestRule.onNodeWithText("Maps").performClick()
   }
 }
