@@ -561,29 +561,29 @@ private fun DisplayPins(
 ) {
   // Display the start marker of the polyline and a thicker path when selected
   if (isSelected && selectedPolyline!!.itinerary.route.isNotEmpty()) {
-    val startMarkerState = rememberMarkerState(position = selectedPolyline!!.itinerary.route[0])
+    val startMarkerState = rememberMarkerState(position = selectedPolyline.itinerary.route[0])
     MarkerComposable(state = startMarkerState) {
       Icon(
           imageVector = Icons.Outlined.ArrowDownward,
           contentDescription = "Start Location",
           tint = md_theme_light_black)
     }
-  }
 
-  selectedPolyline!!.itinerary.pinnedPlaces.forEach { pin ->
-    val markerState = rememberMarkerState(position = LatLng(pin.latitude, pin.longitude))
-    MarkerComposable(
-        state = markerState,
-        onClick = {
-          // Display the pin information
-          callback(pin)
-          true
-        }) {
-          Icon(
-              imageVector = Icons.Outlined.PinDrop,
-              contentDescription = "Add Picture",
-              tint = md_theme_light_black)
-        }
+    selectedPolyline.itinerary.pinnedPlaces.forEach { pin ->
+      val markerState = rememberMarkerState(position = LatLng(pin.latitude, pin.longitude))
+      MarkerComposable(
+          state = markerState,
+          onClick = {
+            // Display the pin information
+            callback(pin)
+            true
+          }) {
+            Icon(
+                imageVector = Icons.Outlined.PinDrop,
+                contentDescription = "Add Picture",
+                tint = md_theme_light_black)
+          }
+    }
   }
 }
 
