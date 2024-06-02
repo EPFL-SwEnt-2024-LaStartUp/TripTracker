@@ -72,7 +72,7 @@ import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryDownload
 import com.example.triptracker.model.location.Pin
-import com.example.triptracker.model.location.popupState
+import com.example.triptracker.model.location.PopUpState
 import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
@@ -273,7 +273,7 @@ private fun getHeight(imageIsEmpty: MutableState<Boolean>, screenHeight: Dp): Dp
  */
 @Composable
 private fun ShowPictures(pin: Pin, imageIsEmpty: MutableState<Boolean>) {
-  for (image in pin.image_url) {
+  for (image in pin.imageUrl) {
     imageIsEmpty.value = false
     AsyncImage(
         model = image,
@@ -323,7 +323,7 @@ fun StartScreen(
       } else {
         {
           // When you click on the back button, it should bring you back to the map
-          mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
+          mapViewModel.popUpState.value = PopUpState.DISPLAY_ITINERARY
         }
       }
   Box(

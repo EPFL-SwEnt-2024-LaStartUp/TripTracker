@@ -61,7 +61,7 @@ import coil.compose.AsyncImage
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryList
 import com.example.triptracker.model.location.Pin
-import com.example.triptracker.model.location.popupState
+import com.example.triptracker.model.location.PopUpState
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.navigation.AllowLocationPermission
 import com.example.triptracker.navigation.checkForLocationPermission
@@ -287,7 +287,7 @@ fun Map(
                 callbackIfDisplayPicturePopUp = {
                   mapViewModel.displayPicturePopUp.value = false
                   mapViewModel.displayPopUp.value = true
-                  mapViewModel.popUpState.value = popupState.PATHOVERLAY
+                  mapViewModel.popUpState.value = PopUpState.PATH_OVERLAY
                 })
           },
           onMapLoaded = {
@@ -312,7 +312,7 @@ fun Map(
                   onClick = {
                     if (!mapViewModel.asStartItinerary.value) {
                       selectedPolyline = MapViewModel.SelectedPolyline(location, latLngList[0])
-                      mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
+                      mapViewModel.popUpState.value = PopUpState.DISPLAY_ITINERARY
                       mapViewModel.displayPopUp.value = true
                     }
                   })
@@ -383,7 +383,7 @@ fun Map(
                   mapViewModel.asStartItinerary.value = false
                   mapViewModel.displayPopUp.value = true
                   mapViewModel.displayPicturePopUp.value = false
-                  mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
+                  mapViewModel.popUpState.value = PopUpState.DISPLAY_ITINERARY
                   showCancelDialog.value = false
                 },
                 colors =
@@ -458,33 +458,33 @@ fun Map(
         // Display the itinerary of the selected polyline
         // (only when the polyline is selected)
         when (mapViewModel.popUpState.value) {
-          popupState.DISPLAYITINERARY -> {
+          PopUpState.DISPLAY_ITINERARY -> {
             Box(
                 modifier =
                     Modifier.fillMaxHeight(0.3f).fillMaxWidth().align(Alignment.BottomCenter)) {
                   DisplayItinerary(
                       itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
-                      onClick = { mapViewModel.popUpState.value = popupState.DISPLAYPIN },
+                      onClick = { mapViewModel.popUpState.value = PopUpState.DISPLAY_PIN },
                       navigation = navigation,
                   )
                 }
           }
-          popupState.DISPLAYPIN -> {
+          PopUpState.DISPLAY_PIN -> {
             Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
               StartScreen(
                   itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
                   userProfileViewModel = UserProfileViewModel(),
                   userProfile = userProfile,
-                  onClick = { mapViewModel.popUpState.value = popupState.PATHOVERLAY },
+                  onClick = { mapViewModel.popUpState.value = PopUpState.PATH_OVERLAY },
                   mapViewModel = mapViewModel)
             }
           }
-          popupState.PATHOVERLAY -> {
+          PopUpState.PATH_OVERLAY -> {
             Box(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)) {
               PathOverlaySheet(
                   itinerary = mapViewModel.selectedPolylineState.value!!.itinerary,
                   onClick = {
-                    mapViewModel.popUpState.value = popupState.DISPLAYITINERARY
+                    mapViewModel.popUpState.value = PopUpState.DISPLAY_ITINERARY
                     mapViewModel.displayPopUp.value = false
                     mapViewModel.displayPicturePopUp.value = true
                     mapViewModel.selectedPin.value = it
@@ -609,7 +609,7 @@ fun DisplayCenterLocationButtonIfNeeded(
 
 @Composable
 fun displayPinImages(selectedPin: Pin?) {
-  if (selectedPin?.image_url?.isEmpty() == true) {
+  if (selectedPin?.imageUrl?.isEmpty() == true) {
     Log.e("MapOverview", "No images available")
     Text(
         text = "No images available",
@@ -618,7 +618,7 @@ fun displayPinImages(selectedPin: Pin?) {
         fontWeight = FontWeight.Light,
         color = md_theme_grey)
   } else {
-    selectedPin?.image_url?.forEach { url ->
+    selectedPin?.imageUrl?.forEach { url ->
       AsyncImage(
           modifier =
               Modifier.clip(shape = RoundedCornerShape(20.dp))

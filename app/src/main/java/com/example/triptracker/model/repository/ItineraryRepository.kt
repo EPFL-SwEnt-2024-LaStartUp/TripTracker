@@ -36,12 +36,11 @@ open class ItineraryRepository {
   }
 
   /**
-   * Get all itineraries from the database
+   * This function gets all itineraries from the database and adds them to the _itineraryList
    *
+   * @param callback Callback function to call with the list of itineraries
    * @return List of itineraries
    */
-  // I kept the original function signature and added a callback parameter to return the list of
-  // itineraries
   open fun getAllItineraries(callback: (List<Itinerary>) -> Unit) {
     db.collection("itineraries")
         .get()
@@ -56,22 +55,6 @@ open class ItineraryRepository {
         }
   }
 
-  /**
-   * Get the names of all pinned places for an itinerary and return them as a list of strings
-   *
-   * @param itinerary Itinerary object to get the pinned place names from
-   * @return List of pinned place names
-   */
-  //  open fun getPinNames(itinerary: Itinerary): List<String> {
-  //    val pinNames = mutableListOf<String>()
-  //    for (pin in itinerary.pinnedPlaces) {
-  //      pinNames.add(pin.name)
-  //    }
-  //    Log.d("PinNames", pinNames.toString())
-  //    return pinNames
-  //  }
-
-  // Convert the query snapshot to a list of itineraries
   /**
    * Convert the query snapshot to a list of itineraries and add them to the _itineraryList
    *
@@ -118,49 +101,6 @@ open class ItineraryRepository {
       _itineraryList.add(itinerary)
     }
   }
-  //
-  //  // Update an itinerary in the database
-  //  /**
-  //   * Update an itinerary in the database
-  //   *
-  //   * @param itinerary Itinerary object to update Serialize the Itinerary object to a map and
-  // update
-  //   *   it in the database
-  //   */
-  //  fun updateItinerary(itinerary: Itinerary) {
-  //    val itineraryData =
-  //        hashMapOf<String, Any>(
-  //            "id" to itinerary.id,
-  //            "title" to itinerary.title,
-  //            "userMail" to itinerary.userMail,
-  //            "location" to
-  //                hashMapOf(
-  //                    "latitude" to itinerary.location.latitude,
-  //                    "longitude" to itinerary.location.longitude,
-  //                    "name" to itinerary.location.name),
-  //            "flameCount" to itinerary.flameCount,
-  //            "saves" to itinerary.saves, // Added saves field to Itinerary class
-  //            "clicks" to itinerary.clicks, // Added clicks field to Itinerary class
-  //            "numStarts" to itinerary.numStarts, // Added numStarts field to Itinerary class
-  //            "startDateAndTime" to itinerary.startDateAndTime,
-  //            "endDateAndTime" to itinerary.endDateAndTime,
-  //            "pinnedPlaces" to
-  //                itinerary.pinnedPlaces.map { pin ->
-  //                  hashMapOf(
-  //                      "latitude" to pin.latitude,
-  //                      "longitude" to pin.longitude,
-  //                      "name" to pin.name,
-  //                      "description" to pin.description,
-  //                      "image-url" to pin.image_url)
-  //                },
-  //            "description" to itinerary.description,
-  //            "route" to convertLatLngToMap(itinerary.route))
-  //    db.collection("itineraries")
-  //        .document(itinerary.id)
-  //        .set(itineraryData)
-  //        .addOnSuccessListener { Log.d(TAG, "Itinerary updated successfully") }
-  //        .addOnFailureListener { e -> Log.e(TAG, "Error updating itinerary", e) }
-  //  }
 
   /**
    * Add a new itinerary to the database
@@ -168,7 +108,7 @@ open class ItineraryRepository {
    * @param itinerary Itinerary object to add Serialize the Itinerary object to a map and add it to
    *   the database
    */
-  suspend fun addNewItinerary(itinerary: Itinerary) {
+  fun addNewItinerary(itinerary: Itinerary) {
     val itineraryData =
         hashMapOf<String, Any>(
             "id" to itinerary.id,
@@ -192,7 +132,7 @@ open class ItineraryRepository {
                       "longitude" to pin.longitude,
                       "name" to pin.name,
                       "description" to pin.description,
-                      "image-url" to pin.image_url)
+                      "image-url" to pin.imageUrl)
                 },
             "description" to itinerary.description,
             "route" to
@@ -208,7 +148,12 @@ open class ItineraryRepository {
         .addOnFailureListener { e -> Log.e(TAG, "Error adding new itinerary", e) }
   }
 
-  // Remove an itinerary from the database
+    /**
+     * Function to remove an itinerary from the database
+     *
+     * @param id : id of the itinerary to remove
+     * @param callback : function to call after the itinerary is removed
+     */
   fun removeItinerary(id: String, callback: () -> Unit = {}) {
     db.collection("itineraries")
         .document(id)
@@ -224,7 +169,7 @@ open class ItineraryRepository {
    * Increment a field in the itinerary document
    *
    * @param itineraryId Id of the itinerary document
-   * @param fieldName Name of the field to increment
+   * @param field Name of the field to increment
    * @return Unit
    */
   fun incrementField(itineraryId: String, field: IncrementableField) {

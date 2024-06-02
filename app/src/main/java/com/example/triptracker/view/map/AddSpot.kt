@@ -520,7 +520,7 @@ private fun saveSpot(
               longitude = position.longitude,
               name = location,
               description = description,
-              image_url =
+              imageUrl =
                   recordViewModel.addImageToStorageResponse.map { resp ->
                     if (resp is Response.Success) {
                       resp.data!!.toString()
@@ -539,7 +539,7 @@ private fun saveSpot(
               longitude = position.longitude,
               name = location,
               description = description,
-              image_url =
+              imageUrl =
                   recordViewModel.addImageToStorageResponse.map { pictureUrl ->
                     if (pictureUrl is Response.Success) {
                       pictureUrl.data!!.toString()

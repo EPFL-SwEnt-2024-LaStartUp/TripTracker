@@ -2,13 +2,13 @@ package com.example.triptracker.model.geocoder
 
 import android.util.Log
 import com.example.triptracker.model.location.Location
-import java.io.IOException
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
+import java.io.IOException
 
 /**
  * Class containing all the nominatim API variants that describe a city to reverse decode the
@@ -59,6 +59,12 @@ class NominatimApi {
     return "$searchURL$query$format"
   }
 
+  /**
+   * Function to decode the location from a query.
+   *
+   * @param query : address to search for
+   * @param callback : function to call when the location is decoded into a json object
+   */
   fun decode(query: String, callback: (Location) -> Unit) {
     val url = getSearchUrl(query)
     val request = Request.Builder().url(url).build()
