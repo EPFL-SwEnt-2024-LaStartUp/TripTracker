@@ -55,8 +55,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 /**
- * Composable that displays the login screen or the user's information if they are already authenticated or an
- * error screen if the login fails
+ * Composable that displays the login screen or the user's information if they are already
+ * authenticated or an error screen if the login fails
  *
  * @param navigation: Navigation object to navigate to other screens
  * @param profile: MutableUserProfile object to store the user's profile

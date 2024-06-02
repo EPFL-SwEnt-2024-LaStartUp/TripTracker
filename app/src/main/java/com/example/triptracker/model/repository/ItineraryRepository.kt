@@ -148,12 +148,12 @@ open class ItineraryRepository {
         .addOnFailureListener { e -> Log.e(TAG, "Error adding new itinerary", e) }
   }
 
-    /**
-     * Function to remove an itinerary from the database
-     *
-     * @param id : id of the itinerary to remove
-     * @param callback : function to call after the itinerary is removed
-     */
+  /**
+   * Function to remove an itinerary from the database
+   *
+   * @param id : id of the itinerary to remove
+   * @param callback : function to call after the itinerary is removed
+   */
   fun removeItinerary(id: String, callback: () -> Unit = {}) {
     db.collection("itineraries")
         .document(id)

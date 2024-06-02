@@ -24,9 +24,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
   private val _authResult = MutableLiveData<AuthResponse<SignInResult>>()
   val authResult: LiveData<AuthResponse<SignInResult>> = _authResult
 
-  /**
-   * Function to handle the sign-in result.
-   */
+  /** Function to handle the sign-in result. */
   fun onSignInResult(result: AuthStatus) {
     _authResult.value =
         when (result) {

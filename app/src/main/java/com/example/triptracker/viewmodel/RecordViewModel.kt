@@ -239,9 +239,7 @@ class RecordViewModel(
     }
   }
 
-  /**
-   * Adds an image to the storage.
-   */
+  /** Adds an image to the storage. */
   fun addImageToStorage(imageUri: Uri, callback: (Response<Uri>) -> Unit) {
     viewModelScope.launch {
       val elem = imageRepository.addImageToFirebaseStorage(imageRepository.pinPictures, imageUri)

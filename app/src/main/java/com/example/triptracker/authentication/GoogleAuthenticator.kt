@@ -15,7 +15,8 @@ class GoogleAuthenticator(
 
   override var signInLauncher: ActivityResultLauncher<Intent>? = null
 
-  /** Creates a sign-in intent for Google sign-in.
+  /**
+   * Creates a sign-in intent for Google sign-in.
    *
    * @param applicationContext The context of the application.
    * @return The sign-in intent.
@@ -31,20 +32,20 @@ class GoogleAuthenticator(
     return googleSignInClient.signInIntent
   }
 
-    /**
-     * Signs in the user using Google sign-in.
-     *
-     * @param signInIntent The sign-in intent.
-     */
+  /**
+   * Signs in the user using Google sign-in.
+   *
+   * @param signInIntent The sign-in intent.
+   */
   override fun signIn(signInIntent: Intent) {
     signInLauncher?.launch(signInIntent)
   }
 
-    /**
-     * Signs out the user using Google sign-in.
-     *
-     * @param context The context of the application.
-     */
+  /**
+   * Signs out the user using Google sign-in.
+   *
+   * @param context The context of the application.
+   */
   override fun signOut(context: Context) {
     Firebase.auth.signOut()
     GoogleSignIn.getClient(context, GoogleSignInOptions.DEFAULT_SIGN_IN).signOut()
@@ -60,11 +61,11 @@ class GoogleAuthenticator(
     return GoogleSignIn.getLastSignedInAccount(context) != null
   }
 
-    /**
-     * Gets the signed-in account using Google sign-in.
-     *
-     * @param context The context of the application.
-     * @return The signed-in account.
-     */
+  /**
+   * Gets the signed-in account using Google sign-in.
+   *
+   * @param context The context of the application.
+   * @return The signed-in account.
+   */
   fun getSignedInAccount(context: Context) = GoogleSignIn.getLastSignedInAccount(context)
 }

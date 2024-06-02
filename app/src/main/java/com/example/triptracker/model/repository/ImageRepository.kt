@@ -8,9 +8,9 @@ import androidx.core.net.toFile
 import com.example.triptracker.view.map.adjustBitmapOrientation
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
-import kotlinx.coroutines.tasks.await
 import java.io.ByteArrayOutputStream
 import java.util.UUID
+import kotlinx.coroutines.tasks.await
 
 /** Repository for interacting with Firebase Storage to upload and download images. */
 class ImageRepository {
@@ -30,13 +30,13 @@ class ImageRepository {
   val profilePictures: String
     get() = PROFILE_PICTURES
 
-    /**
-     * Function to add an image to Firebase Storage
-     *
-     * @param folder the folder to store the image in
-     * @param imageUri the Uri of the image to store
-     * @return a Response object containing the download URL of the image
-     */
+  /**
+   * Function to add an image to Firebase Storage
+   *
+   * @param folder the folder to store the image in
+   * @param imageUri the Uri of the image to store
+   * @return a Response object containing the download URL of the image
+   */
   suspend fun addImageToFirebaseStorage(folder: String, imageUri: Uri): Response<Uri> {
     return try {
 

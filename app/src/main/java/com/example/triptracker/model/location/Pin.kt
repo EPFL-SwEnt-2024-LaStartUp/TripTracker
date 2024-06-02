@@ -16,12 +16,11 @@ data class Pin(
     val description: String,
     val imageUrl: List<String>
 ) {
-    /**
-     * Function that returns the attribute of the pin as a string
-     *
-     * @return the pin attributes as a string
-
-     */
+  /**
+   * Function that returns the attribute of the pin as a string
+   *
+   * @return the pin attributes as a string
+   */
   override fun toString(): String {
     return "Pin(latitude=$latitude, longitude=$longitude, name='$name', description='$description', image=$imageUrl)"
   }

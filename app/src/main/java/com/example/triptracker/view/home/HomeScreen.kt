@@ -361,7 +361,8 @@ fun SearchBarImplementation(
  * @param homeViewModel: HomeViewModel to use for fetching itineraries
  * @param test: Boolean to test the function (default is false)
  * @param tabSelected: HomeCategory to use for filtering itineraries (default is TRENDING)
- * @param userProfileViewModel: UserProfileViewModel to use for fetching users (default is viewModel())
+ * @param userProfileViewModel: UserProfileViewModel to use for fetching users (default is
+ *   viewModel())
  */
 @Composable
 fun DisplayItineraries(

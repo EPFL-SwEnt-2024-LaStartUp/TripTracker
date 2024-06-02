@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import com.example.triptracker.model.geocoder.NominatimApi
 
 /**
- * ViewModel for the MapPopup composable.
- * It contains the address state and the geocoder to reverse decode the location.
+ * ViewModel for the MapPopup composable. It contains the address state and the geocoder to reverse
+ * decode the location.
  */
 open class MapPopupViewModel : ViewModel() {
 

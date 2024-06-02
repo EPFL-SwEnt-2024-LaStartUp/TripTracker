@@ -14,7 +14,8 @@ import com.example.triptracker.model.network.Connection
  * Composable that displays the bottom navigation bar once logged in
  *
  * @param navigation (Navigation): Navigation object to navigate to other screens
- * @param connection (Connection): Connection object to check if the device is connected to the internet
+ * @param connection (Connection): Connection object to check if the device is connected to the
+ *   internet
  */
 @Composable
 fun NavigationBar(navigation: Navigation, connection: Connection = Connection()) {
