@@ -42,6 +42,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.profile.AmbientUserProfile
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.NavigationBar
@@ -109,7 +110,7 @@ fun HomeScreen(
                   selectedFilterType = selectedFilterType,
                   isNoResultFound = isNoResultFound)
             }
-            displayDropDownIfActive(
+            DisplayDropDownIfActive(
                 isSearchActive = isSearchActive,
                 selectedFilterType = selectedFilterType,
                 homeViewModel = homeViewModel)
@@ -470,6 +471,7 @@ fun filterByTabSelected(
     homeViewModel.filterByFollowing(usermail)
   }
 }
+
 /**
  * Represents the tabs and pager for the home screen. Contains two tabs that can be clicked to
  * switch between the trending and following categories. Or you can swipe left or right to switch
@@ -508,6 +510,7 @@ fun TabsAndPager(
       HomeCategory.FOLLOWING -> homeViewModel.filterByFollowing(userEmail)
     }
   }
+
   val verticalPlacement = LocalConfiguration.current.screenHeightDp * 0.09f
   Column(
       modifier =
@@ -519,19 +522,14 @@ fun TabsAndPager(
             modifier = Modifier.fillMaxWidth().height(60.dp),
             backgroundColor = MaterialTheme.colorScheme.background) {
               tabs.forEachIndexed { index, title ->
-                val flower =
-                    if (ambientProfile.userProfile.value.flowerMode == 1) {
-                      if (title == HomeCategory.FOLLOWING.name) " \uD83C\uDF38" else " \uD83C\uDF37"
-                    } else ""
+                val flower = getFlower(ambientProfile, title)
                 val isSelected = index == selectedTab
                 Tab(selected = isSelected, onClick = { selectedTab = index }) {
                   Text(
                       "$title$flower",
-                      color =
-                          if (isSelected) MaterialTheme.colorScheme.onBackground
-                          else MaterialTheme.colorScheme.onSurface,
+                      color = getColor(isSelected),
                       fontFamily = Montserrat,
-                      fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                      fontWeight = getFontWeight(isSelected),
                       fontSize = 20.sp)
                 }
               }
@@ -551,14 +549,7 @@ fun TabsAndPager(
                         itineraries.filter {
                           val ownerProfile =
                               allProfilesFetched.find { profile -> profile.mail == it.userMail }
-                          ownerProfile?.let { profile ->
-                            profile.itineraryPrivacy == 0 ||
-                                (profile.itineraryPrivacy == 1 &&
-                                    ambientProfile.userProfile.value.followers.contains(
-                                        profile.mail) &&
-                                    ambientProfile.userProfile.value.following.contains(
-                                        profile.mail))
-                          } ?: false
+                          shouldDisplayItinerary(ownerProfile, ambientProfile.userProfile.value)
                         },
                     navigation = navigation,
                     homeViewModel = homeViewModel,
@@ -569,6 +560,24 @@ fun TabsAndPager(
       }
 }
 
+fun getFlower(ambientProfile: MutableUserProfile, title: String): String {
+  val flowerStr =
+      if (ambientProfile.userProfile.value.flowerMode == 1) {
+        if (title == HomeCategory.FOLLOWING.name) " \uD83C\uDF38" else " \uD83C\uDF37"
+      } else ""
+  return flowerStr
+}
+
+@Composable
+fun getColor(isSelected: Boolean): Color {
+  return if (isSelected) MaterialTheme.colorScheme.onBackground
+  else MaterialTheme.colorScheme.onSurface
+}
+
+@Composable
+fun getFontWeight(isSelected: Boolean): FontWeight {
+  return if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+}
 /**
  * Function to get the itineraries for the current page.
  *
@@ -620,7 +629,7 @@ fun NotFollowingText(itineraries: List<Itinerary>, page: Int, verticalPlacement:
 }
 
 @Composable
-fun displayDropDownIfActive(
+fun DisplayDropDownIfActive(
     isSearchActive: Boolean,
     selectedFilterType: FilterType,
     homeViewModel: HomeViewModel
