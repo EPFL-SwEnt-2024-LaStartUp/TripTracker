@@ -50,7 +50,6 @@ import com.example.triptracker.view.NavigationBar
 import com.example.triptracker.view.Route
 import com.example.triptracker.view.theme.Montserrat
 import com.example.triptracker.view.theme.md_theme_grey
-import com.example.triptracker.view.theme.md_theme_light_onPrimary
 import com.example.triptracker.viewmodel.FilterType
 import com.example.triptracker.viewmodel.HomeCategory
 import com.example.triptracker.viewmodel.HomeViewModel
@@ -576,7 +575,7 @@ fun TabsAndPager(
   val verticalPlacement = LocalConfiguration.current.screenHeightDp * 0.09f
   Column(
       modifier =
-          Modifier.background(md_theme_light_onPrimary)
+          Modifier.background(color = MaterialTheme.colorScheme.background)
               .padding(0.dp, verticalPlacement.dp, 0.dp, 0.dp)) {
         TabRow(
             selectedTabIndex = pagerState.currentPage,
