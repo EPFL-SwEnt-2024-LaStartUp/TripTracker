@@ -1,5 +1,6 @@
 package com.example.triptracker.view.home
 
+import android.annotation.SuppressLint
 import android.graphics.BlurMaskFilter
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -35,6 +36,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,8 +68,10 @@ import coil.compose.AsyncImage
 import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryDownload
+import com.example.triptracker.model.location.Pin
 import com.example.triptracker.model.network.Connection
 import com.example.triptracker.model.profile.AmbientUserProfile
+import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
 import com.example.triptracker.view.Navigation
 import com.example.triptracker.view.Route
@@ -353,10 +357,7 @@ fun DisplayItinerary(
                               color = md_theme_light_onPrimary,
                               modifier = Modifier.testTag("Title"))
                           Text(
-                              text =
-                                  if (ambientProfile.userProfile.value.flowerMode == 1)
-                                      "${itinerary.flameCount} ${flowerStringBasedOnCount(itinerary.flameCount)}"
-                                  else "${itinerary.flameCount} 🔥",
+                              text = getText(ambientProfile, itinerary),
                               color = md_theme_orange, // This is the orange color
                               fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                               fontSize = 14.sp)
@@ -373,23 +374,10 @@ fun DisplayItinerary(
                           if (displayImage) {
                             Spacer(modifier = Modifier.height(screenHeight * 0.02f))
                             LazyRow(
-                                modifier =
-                                    Modifier.height(
-                                        if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f),
+                                modifier = Modifier.getHeight(imageIsEmpty, screenHeight),
                                 verticalAlignment = Alignment.CenterVertically) {
                                   items(itinerary.pinnedPlaces) { pin ->
-                                    for (image in pin.image_url) {
-                                      imageIsEmpty.value = false
-                                      AsyncImage(
-                                          model = image,
-                                          contentDescription = pin.description,
-                                          modifier =
-                                              Modifier.clip(
-                                                      RoundedCornerShape(
-                                                          corner = CornerSize(15.dp)))
-                                                  .background(Color.Red))
-                                      Spacer(modifier = Modifier.width(15.dp).weight(1f))
-                                    }
+                                    DisplayPictures(pin, imageIsEmpty)
                                   }
                                 }
                           }
@@ -466,6 +454,53 @@ private fun ShowAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
       })
 }
 
+/**
+ * Displays the images of the pinned places in the itinerary
+ *
+ * @param pin: Pin object to display
+ * @param imageIsEmpty: MutableState to check if the image is empty
+ */
+@Composable
+private fun DisplayPictures(pin: Pin, imageIsEmpty: MutableState<Boolean>) {
+  for (image in pin.image_url) {
+    imageIsEmpty.value = false
+    AsyncImage(
+        model = image,
+        contentDescription = pin.description,
+        modifier =
+            Modifier.clip(RoundedCornerShape(corner = CornerSize(15.dp))).background(Color.Red))
+    Spacer(modifier = Modifier.width(15.dp))
+  }
+}
+
+/**
+ * Modifier function to set the height of the box that contains the itinerary
+ *
+ * @param imageIsEmpty: MutableState to check if the image is empty
+ * @param screenHeight: Dp value of the screen height
+ */
+@SuppressLint("ModifierFactoryUnreferencedReceiver")
+private fun Modifier.getHeight(imageIsEmpty: MutableState<Boolean>, screenHeight: Dp): Modifier {
+  return Modifier.height(if (imageIsEmpty.value) 0.dp else screenHeight * 0.25f)
+}
+
+/**
+ * Function to get the text to display based on the flame count
+ *
+ * @param ambientProfile: MutableUserProfile object to get the user's profile
+ * @param itinerary: Itinerary object to get the flame count
+ */
+private fun getText(ambientProfile: MutableUserProfile, itinerary: Itinerary): String {
+  return if (ambientProfile.userProfile.value.flowerMode == 1)
+      "${itinerary.flameCount} ${flowerStringBasedOnCount(itinerary.flameCount)}"
+  else "${itinerary.flameCount} 🔥"
+}
+
+/**
+ * Function to fetch the names of the pinned places in the itinerary
+ *
+ * @param itinerary: Itinerary object to get the pinned places
+ */
 private fun fetchPinNames(itinerary: Itinerary): String {
   val pinNames = mutableListOf<String>()
   for (pin in itinerary.pinnedPlaces) {
