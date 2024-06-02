@@ -71,7 +71,7 @@ import com.example.triptracker.R
 import com.example.triptracker.model.itinerary.Itinerary
 import com.example.triptracker.model.itinerary.ItineraryDownload
 import com.example.triptracker.model.location.Pin
-import com.example.triptracker.model.location.PopUpState
+import com.example.triptracker.model.location.PopUpStatus
 import com.example.triptracker.model.profile.AmbientUserProfile
 import com.example.triptracker.model.profile.MutableUserProfile
 import com.example.triptracker.model.profile.UserProfile
@@ -344,7 +344,7 @@ fun StartScreen(
       } else {
         {
           // When you click on the back button, it should bring you back to the map
-          mapViewModel.popUpState.value = PopUpState.DISPLAY_ITINERARY
+          mapViewModel.popUpState.value = PopUpStatus.DISPLAY_ITINERARY
         }
       }
   Box(
