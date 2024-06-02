@@ -109,12 +109,10 @@ fun HomeScreen(
                   selectedFilterType = selectedFilterType,
                   isNoResultFound = isNoResultFound)
             }
-            if (isSearchActive) {
-              FilterDropdownMenu(
-                  selectedFilterType = selectedFilterType,
-                  showFilterDropdown = remember { mutableStateOf(false) },
-                  homeViewModel = homeViewModel)
-            }
+            displayDropDownIfActive(
+                isSearchActive = isSearchActive,
+                selectedFilterType = selectedFilterType,
+                homeViewModel = homeViewModel)
           },
           bottomBar = { NavigationBar(navigation = navigation) },
           modifier = Modifier.fillMaxWidth().testTag("HomeScreen")) {
@@ -169,7 +167,7 @@ fun SearchBarImplementation(
     navigation: Navigation
 ) {
   val currProfile = AmbientUserProfile.current.userProfile.value
-  var searchText by remember { mutableStateOf("") }
+  var searchText = remember { mutableStateOf("") }
   val items = viewModel.filteredItineraryList.value ?: listOf()
   val focusManager = LocalFocusManager.current
   var isActive by remember { mutableStateOf(false) }
@@ -183,50 +181,26 @@ fun SearchBarImplementation(
             Modifier.fillMaxWidth()
                 .padding(horizontal = 17.dp, vertical = 5.dp)
                 .testTag("searchBar"),
-        query = searchText,
+        query = searchText.value,
         onQueryChange = { newText ->
-          searchText = newText
+          searchText.value = newText
           viewModel.setSearchQuery(newText)
           onSearchActivated(isActive)
           isActive = newText.isNotEmpty() || focusManager.equals(true)
         },
         onSearch = {
-          viewModel.setSearchQuery(searchText)
+          viewModel.setSearchQuery(searchText.value)
           isActive = false
         },
-        leadingIcon = {
-          if (isActive) {
-            Icon(
-                modifier = Modifier.clickable { onBackClicked() }.testTag("BackButton"),
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back")
-          } else {
-            Icon(imageVector = Icons.Default.Search, contentDescription = "Menu")
-          }
-        },
+        leadingIcon = { DisplayLeadingIcon(isActive, onBackClicked) },
         trailingIcon = {
-          if (isActive) {
-            Icon(
-                modifier =
-                    Modifier.clickable {
-                          if (searchText.isEmpty()) {
-                            onBackClicked()
-                          } else {
-                            searchText = ""
-                            viewModel.setSearchQuery(searchText)
-                          }
-                          onSearchActivated(isActive)
-                        }
-                        .testTag("ClearButton"),
-                imageVector = Icons.Default.Close,
-                contentDescription = "Clear text field")
-          }
+          DisplayTrailingIcon(isActive, onBackClicked, viewModel, searchText, onSearchActivated)
         },
         active = isActive,
         onActiveChange = { activeState ->
           isActive = activeState
           if (!activeState) {
-            searchText = ""
+            searchText.value = ""
             viewModel.setSearchQuery("")
             onSearchActivated(false)
           }
@@ -258,6 +232,44 @@ fun SearchBarImplementation(
       }
       DisplaySearchResults(isActive, items, viewModel, navigation)
     }
+  }
+}
+
+@Composable
+fun DisplayLeadingIcon(isActive: Boolean, onBackClicked: () -> Unit) {
+  if (isActive) {
+    Icon(
+        modifier = Modifier.clickable { onBackClicked() }.testTag("BackButton"),
+        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+        contentDescription = "Back")
+  } else {
+    Icon(imageVector = Icons.Default.Search, contentDescription = "Menu")
+  }
+}
+
+@Composable
+fun DisplayTrailingIcon(
+    isActive: Boolean,
+    onBackClicked: () -> Unit,
+    viewModel: HomeViewModel,
+    searchText: MutableState<String>,
+    onSearchActivated: (Boolean) -> Unit
+) {
+  if (isActive) {
+    Icon(
+        modifier =
+            Modifier.clickable {
+                  if (searchText.value.isEmpty()) {
+                    onBackClicked()
+                  } else {
+                    searchText.value = ""
+                    viewModel.setSearchQuery(searchText.value)
+                  }
+                  onSearchActivated(isActive)
+                }
+                .testTag("ClearButton"),
+        imageVector = Icons.Default.Close,
+        contentDescription = "Clear text field")
   }
 }
 
@@ -555,6 +567,20 @@ fun NotFollowingText(itineraries: List<Itinerary>, page: Int, verticalPlacement:
         letterSpacing = 0.15.sp,
         color = MaterialTheme.colorScheme.onBackground,
         fontFamily = FontFamily(Font(R.font.montserrat_regular)))
+  }
+}
+
+@Composable
+fun displayDropDownIfActive(
+    isSearchActive: Boolean,
+    selectedFilterType: FilterType,
+    homeViewModel: HomeViewModel
+) {
+  if (isSearchActive) {
+    FilterDropdownMenu(
+        selectedFilterType = selectedFilterType,
+        showFilterDropdown = remember { mutableStateOf(false) },
+        homeViewModel = homeViewModel)
   }
 }
 
