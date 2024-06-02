@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -713,18 +714,27 @@ fun <T> PullToRefreshLazyColumn(
       LaunchedEffect(true) { onRefresh() }
     }
 
-    LaunchedEffect(isRefreshing) {
-      if (isRefreshing) {
-        pullToRefreshState.startRefresh()
-      } else {
-        pullToRefreshState.endRefresh()
-      }
-    }
+    LaunchedEffect(isRefreshing) { updateRefreshState(isRefreshing, pullToRefreshState) }
 
     PullToRefreshContainer(
         state = pullToRefreshState,
         modifier = Modifier.align(Alignment.TopCenter).offset(y = (-40).dp).testTag("Refreshing"),
         containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground)
+  }
+}
+
+/**
+ * Function to update the refresh state of the pull to refresh container.
+ *
+ * @param isRefreshing the boolean to indicate if the list is refreshing
+ * @param pullToRefreshState the state of the pull to refresh container
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+fun updateRefreshState(isRefreshing: Boolean, pullToRefreshState: PullToRefreshState) {
+  if (isRefreshing) {
+    pullToRefreshState.startRefresh()
+  } else {
+    pullToRefreshState.endRefresh()
   }
 }
