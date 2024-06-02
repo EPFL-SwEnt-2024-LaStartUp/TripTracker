@@ -383,7 +383,7 @@ fun shouldDisplayItinerary(ownerProfile: UserProfile?, currProfile: UserProfile)
   return when (ownerProfile) {
     null -> false
     else -> {
-      ownerProfile.itineraryPrivacy == 0 ||
+      ownerProfile.itineraryPrivacy == 0 || ownerProfile == currProfile ||
           (ownerProfile.itineraryPrivacy == 1 &&
               currProfile.followers.contains(ownerProfile.mail) &&
               currProfile.following.contains(ownerProfile.mail))
