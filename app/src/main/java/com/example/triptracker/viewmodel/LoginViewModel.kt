@@ -14,6 +14,7 @@ import com.example.triptracker.model.authentication.SignInResult
  */
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
+  /** Enum class to represent the authentication status. */
   enum class AuthStatus {
     LOGGED_IN,
     CREATE_ACCOUNT,
@@ -23,6 +24,9 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
   private val _authResult = MutableLiveData<AuthResponse<SignInResult>>()
   val authResult: LiveData<AuthResponse<SignInResult>> = _authResult
 
+  /**
+   * Function to handle the sign-in result.
+   */
   fun onSignInResult(result: AuthStatus) {
     _authResult.value =
         when (result) {

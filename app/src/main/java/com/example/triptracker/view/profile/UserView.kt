@@ -65,8 +65,11 @@ import com.example.triptracker.viewmodel.UserProfileViewModel
  * to access more detailed information about a user (as his/her saved and recorded trips)
  *
  * @param navigation : the navigation object to navigate to other screens.
+ * @param profile : the logged user profile.
  * @param userMail : the user profile to display.
  * @param userProfileViewModel : the view model to handle the user profile.
+ * @param homeViewModel : the view model to handle the home screen.
+ * @param test : a boolean to know if the function is in test mode (default is false).
  */
 @Composable
 fun UserView(

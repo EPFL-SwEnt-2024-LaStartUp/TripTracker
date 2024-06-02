@@ -503,6 +503,16 @@ fun FillAddSpot(
       }
 }
 
+/**
+ * Function to save the spot to the database
+ *
+ * @param recordViewModel: the record ViewModel
+ * @param location: the location of the spot
+ * @param description: the description of the spot
+ * @param position: the position of the spot
+ * @param selectedPictures: the pictures of the spot
+ * @param context: the context of the application
+ */
 private fun saveSpot(
     recordViewModel: RecordViewModel,
     location: String,

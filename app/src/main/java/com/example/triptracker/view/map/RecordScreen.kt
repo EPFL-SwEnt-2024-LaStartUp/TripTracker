@@ -84,10 +84,10 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 // Define the delay for the location update
 const val DELAY = 5000L
@@ -96,6 +96,7 @@ const val DELAY = 5000L
  * Composable function for displaying the RecordScreen.
  *
  * @param context The application context.
+ * @param navigation The navigation instance.
  * @param viewModel The RecordViewModel instance.
  */
 @Composable
@@ -526,6 +527,7 @@ fun SaveButton(
  * Composable function to display the start window.
  *
  * @param viewModel The RecordViewModel instance.
+ * @param context The application context.
  */
 @Composable
 fun StartWindow(viewModel: RecordViewModel, context: Context) {

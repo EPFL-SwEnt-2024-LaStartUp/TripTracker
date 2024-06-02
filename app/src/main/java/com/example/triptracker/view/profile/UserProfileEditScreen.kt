@@ -82,16 +82,19 @@ import com.example.triptracker.view.theme.md_theme_light_dark
 import com.example.triptracker.view.theme.md_theme_light_error
 import com.example.triptracker.view.theme.md_theme_orange
 import com.example.triptracker.viewmodel.UserProfileViewModel
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.launch
 
 /**
  * This composable function displays the user profile edit screen.
  *
  * @param navigation : Navigation object that manages the navigation in the application.
+ * @param profile : MutableUserProfile object that holds the user profile to edit.
+ * @param userProfileViewModel : UserProfileViewModel object that holds the user profile view model.
+ * @param isCreated : Boolean indicating if the user profile is created (default is false).
  */
 @Composable
 fun UserProfileEditScreen(

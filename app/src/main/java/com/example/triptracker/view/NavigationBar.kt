@@ -10,11 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.triptracker.model.network.Connection
 
-@Composable
 /**
+ * Composable that displays the bottom navigation bar once logged in
+ *
  * @param navigation (Navigation): Navigation object to navigate to other screens
- * @brief NavigationBar composable that displays the bottom navigation bar once logged in
+ * @param connection (Connection): Connection object to check if the device is connected to the internet
  */
+@Composable
 fun NavigationBar(navigation: Navigation, connection: Connection = Connection()) {
   NavigationBar(
       modifier = Modifier.height(73.dp),

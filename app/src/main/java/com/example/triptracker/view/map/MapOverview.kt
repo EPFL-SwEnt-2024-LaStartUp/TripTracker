@@ -550,7 +550,7 @@ fun Map(
                             .padding(bottom = 20.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.Bottom) {
-                      displayPinImages(selectedPin)
+                      DisplayPinImages(selectedPin)
                     }
               }
         }
@@ -578,6 +578,17 @@ fun DisplayCancelItineraryButton(
   }
 }
 
+/**
+ * Composable that decides whether to display the center location button on the map or not.
+ *
+ * @param ui: The UI settings of the map
+ * @param properties: The properties of the map
+ * @param mapViewModel: The view model of the map
+ * @param coroutineScope: The coroutine scope
+ * @param cameraPositionState: The state of the camera position
+ * @param context: The context of the app
+ * @param deviceLocation: The location of the device
+ */
 @Composable
 fun DisplayCenterLocationButtonIfNeeded(
     ui: MapUiSettings,
@@ -607,8 +618,13 @@ fun DisplayCenterLocationButtonIfNeeded(
   }
 }
 
+/**
+ * Composable that handles the display of the images of a pin
+ *
+ * @param selectedPin: The selected pin
+ */
 @Composable
-fun displayPinImages(selectedPin: Pin?) {
+fun DisplayPinImages(selectedPin: Pin?) {
   if (selectedPin?.imageUrl?.isEmpty() == true) {
     Log.e("MapOverview", "No images available")
     Text(
